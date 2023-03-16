@@ -21,5 +21,6 @@ from accounts import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("__debug__/", include("debug_toolbar.urls")),
-    path("", views.index),
+    path("", views.index, name="empty-index"),
+    path("<str:lang>", views.index, name="index"),
 ]

@@ -1,16 +1,86 @@
 {% load static %}
-
+{% load humanize %}
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{% static 'pico.min.css' %}">
-    <title>Hello, world!</title>
+    <title>👩‍💻🧑‍💻 Dev Tribe</title>
+    <style>
+      td {
+        min-width: 88px;
+      }
+      .avatar {
+        vertical-align: middle;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+      }
+      .pagination {
+        display: flex;
+        justify-content: center;
+      }
+    </style>
   </head>
   <body>
     <main class="container">
-      <h1>Hello, world!</h1>
+      <h1>👩‍💻🧑‍💻 Dev Tribe</h1>
+      <nav>
+        <ul>
+          {% for language, emoji in languages %}
+            <li>
+              <a href="{% url "index" language %}"
+                 class="{% if lang != language %}outline{% endif %} "
+                 role="button">{{ emoji }} {{ language }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+      <article>
+        <h2>Awesome {{ lang }} developers</h2>
+        <figure>
+          <table role="grid">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Note</th>
+                <th>Last Status</th>
+                <th>Followers Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for account in accounts %}
+                <tr>
+                  <td>
+                    <img class="avatar"
+                         src="{{ account.avatar }}"
+                         alt="{{ account.login }}"
+                         width="50"
+                         height="50"/>
+                  </td>
+                  <td>
+                    <a href="{{ account.url }}" target="_blank">{% firstof account.display_name account.username %}</a>
+                  </td>
+                  <td>{{ account.note | safe }}</td>
+                  <td>{{ account.last_status_at | naturaltime }}</td>
+                  <td>{{ account.followers_count }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </figure>
+        <footer>
+          <div class="pagination">
+            <span class="step-links">
+              {% if accounts.has_previous %}<a href="?page={{ accounts.previous_page_number }}">&laquo; previous</a>{% endif %}
+              <span class="current">Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}</span>
+              {% if accounts.has_next %}<a href="?page={{ accounts.next_page_number }}">next &raquo;</a>{% endif %}
+            </span>
+          </div>
+        </footer>
+      </article>
     </main>
   </body>
 </html>
