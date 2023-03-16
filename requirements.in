@@ -4,6 +4,7 @@ httpx
 # Dev
 django-debug-toolbar
 django-rich
+djlint
 black
 mypy
 rich
