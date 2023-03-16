@@ -1,0 +1,4 @@
+[tool.ruff]
+# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
+select = ["E", "F", "I", "N", "UP", "PL", "RUF"]
+ignore = ["E501"]
