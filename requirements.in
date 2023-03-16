@@ -1,0 +1,11 @@
+# Prod
+django
+httpx
+# Dev
+django-debug-toolbar
+django-rich
+black
+mypy
+rich
+ruff
+pip-tools
