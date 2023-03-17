@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{% static 'pico.min.css' %}">
-    <title>👩‍💻🧑‍💻 Dev Tribe</title>
+    <title>👩‍💻🧑‍💻 FediDevs.com</title>
     <style>
       td {
         min-width: 88px;
@@ -25,8 +25,13 @@
   </head>
   <body>
     <main class="container">
-      <h1>👩‍💻🧑‍💻 Dev Tribe</h1>
-      <nav>
+      <header style="text-align:center;">
+        <h1>👩‍💻 FediDevs 🧑‍💻</h1>
+        <h3>
+          A list of <mark>awesome</mark> developers from the fediverse 🌐.
+        </h3>
+      </header>
+      <nav style="display: flex; justify-content: center;">
         <ul>
           {% for language, emoji in languages %}
             <li>
@@ -38,7 +43,6 @@
         </ul>
       </nav>
       <article>
-        <h2>Awesome {{ lang }} developers</h2>
         <figure>
           <table role="grid">
             <thead>
