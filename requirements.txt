@@ -40,6 +40,8 @@ editorconfig==0.12.3
     # via
     #   cssbeautifier
     #   jsbeautifier
+gunicorn==20.1.0
+    # via -r requirements.in
 h11==0.14.0
     # via httpcore
 html-tag-names==0.1.2
@@ -115,6 +117,8 @@ typing-extensions==4.5.0
     # via mypy
 wheel==0.40.0
     # via pip-tools
+whitenoise==6.4.0
+    # via -r requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

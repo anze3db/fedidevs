@@ -1,6 +1,8 @@
 # Prod
 django
 httpx
+whitenoise
+gunicorn
 # Dev
 django-debug-toolbar
 django-rich
