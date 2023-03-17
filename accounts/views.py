@@ -20,5 +20,27 @@ def index(request, lang=None):
     return render(
         request,
         "index.html",
-        {"accounts": page_obj, "lang": lang, "languages": LANGUAGES},
+        {
+            "accounts": page_obj,
+            "lang": lang,
+            "languages": LANGUAGES,
+            "adjectives": [
+                "great",
+                "awesome",
+                "marvelous",
+                "wonderful",
+                "fantastic",
+                "amazing",
+                "incredible",
+                "superb",
+                "spectacular",
+                "stupendous",
+                "fabulous",
+                "brilliant",
+                "magnificent",
+                "excellent",
+                "outstanding",
+                "terrific",
+            ],
+        },
     )
