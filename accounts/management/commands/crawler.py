@@ -14,16 +14,15 @@ class Command(RichCommand):
     help = "Crawles the fosstodon.org API and saves all accounts to the database"
 
     def add_arguments(self, parser):
-        ...
+        parser.add_argument("--offset", type=int, nargs="?", default=0)
 
-    def handle(self, *args, **options):
-        self.main()
+    def handle(self, *args, offset=0, **options):
+        self.main(offset=offset)
 
     @async_to_sync
-    async def main(self):
+    async def main(self, offset):
         async with httpx.AsyncClient() as client:
             start_time = datetime.now(tz=timezone.utc)
-            cnt = 244
             instances = [
                 "mastodon.social",
                 "fosstodon.org",
@@ -42,9 +41,8 @@ class Command(RichCommand):
             while instances:
                 now = datetime.now(tz=timezone.utc)
                 results = await asyncio.gather(
-                    *[self.fetch(client, cnt, instance) for instance in instances]
+                    *[self.fetch(client, offset, instance) for instance in instances]
                 )
-                cnt += 1
                 fetched_accounts = []
                 for instance, response in results:
                     if not response:
@@ -114,16 +112,17 @@ class Command(RichCommand):
                     ],
                 )
                 self.console.print(
-                    f"Inserted {len(fetched_accounts)}. Current offset {cnt}. Started {naturaltime(start_time)}"
+                    f"Inserted {len(fetched_accounts)}. Current offset {offset}. Started {naturaltime(start_time)}"
                 )
+                offset += 1
 
-    async def fetch(self, client, cnt, instance):
+    async def fetch(self, client, offset, instance):
         try:
             response = await client.get(
                 f"https://{instance}/api/v1/directory",
                 params={
                     "limit": 80,
-                    "offset": cnt * 80,
+                    "offset": offset * 80,
                     "local": True,
                     "sort": "active",
                 },
@@ -136,6 +135,6 @@ class Command(RichCommand):
             httpx.RemoteProtocolError,
         ):
             self.console.print(
-                f"[bold red]Error timeout[/bold red] for {instance} at offset {cnt}"
+                f"[bold red]Error timeout[/bold red] for {instance} at offset {offset}"
             )
             return [], instance
