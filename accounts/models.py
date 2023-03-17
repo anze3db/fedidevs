@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from django.db import models
 
 
@@ -33,3 +35,24 @@ class Account(models.Model):
 
     def __str__(self):
         return self.username
+
+    @property
+    def source(self):
+        return self.url.split("/")[2]
+
+
+@dataclass
+class Language:
+    code: str
+    name: str
+    emoji: str
+
+
+LANGUAGES = [
+    Language("python", "Python", "🐍"),
+    Language("javascript", "JavaScript", "📜"),
+    Language("ruby", "Ruby", "💎"),
+    # Language("rust", "Rust", "🦀"), # Filter not working well
+    Language("golang", "Go", "🐹"),
+    Language("php", "PHP", "🐘"),
+]

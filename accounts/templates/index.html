@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{% static 'pico.min.css' %}">
-    <title>👩‍💻🧑‍💻 FediDevs.com</title>
+    <title>👩‍💻 FediDevs 🧑‍💻</title>
     <style>
       td {
         min-width: 88px;
@@ -28,62 +28,76 @@
       <header style="text-align:center;">
         <h1>👩‍💻 FediDevs 🧑‍💻</h1>
         <h3>
-          A list of <mark>awesome</mark> developers from the fediverse 🌐.
+          Discover <mark>awesome</mark> devs from across the fediverse 🌐
         </h3>
+        <p>
+          More languages and features will be added soon. <a href="">Sign up to the newsletter</a> for updates.
+        </p>
+        <p>
+          Suggestions on how to make FediDevs more useful are very welcome! Feel free to reach out on <a href="https://fosstodon.org/@anze3db">Mastodon</a> or <a href="mailto:anze@pecar.me">Email</a>!
+        </p>
       </header>
       <nav style="display: flex; justify-content: center;">
         <ul>
-          {% for language, emoji in languages %}
+          {% for language in languages %}
             <li>
-              <a href="{% url "index" language %}"
-                 class="{% if lang != language %}outline{% endif %} "
-                 role="button">{{ emoji }} {{ language }}</a>
+              <a href="{% url "index" language.code %}"
+                 class="{% if lang != language.code %}outline{% endif %} "
+                 role="button">{{ language.emoji }} {{ language.name }}</a>
             </li>
           {% endfor %}
         </ul>
       </nav>
       <article>
-        <figure>
-          <table role="grid">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Note</th>
-                <th>Last Status</th>
-                <th>Followers Count</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for account in accounts %}
+        {% if accounts %}
+          <figure>
+            <table role="grid">
+              <thead>
                 <tr>
-                  <td>
-                    <img class="avatar"
-                         src="{{ account.avatar }}"
-                         alt="{{ account.login }}"
-                         width="50"
-                         height="50"/>
-                  </td>
-                  <td>
-                    <a href="{{ account.url }}" target="_blank">{% firstof account.display_name account.username %}</a>
-                  </td>
-                  <td>{{ account.note | safe }}</td>
-                  <td>{{ account.last_status_at | naturaltime }}</td>
-                  <td>{{ account.followers_count }}</td>
+                  <th></th>
+                  <th>Name</th>
+                  <th>Note</th>
+                  <th>Last Status</th>
+                  <th>Followers Count</th>
+                  <th>Source</th>
                 </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </figure>
-        <footer>
-          <div class="pagination">
-            <span class="step-links">
-              {% if accounts.has_previous %}<a href="?page={{ accounts.previous_page_number }}">&laquo; previous</a>{% endif %}
-              <span class="current">Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}</span>
-              {% if accounts.has_next %}<a href="?page={{ accounts.next_page_number }}">next &raquo;</a>{% endif %}
-            </span>
-          </div>
-        </footer>
+              </thead>
+              <tbody>
+                {% for account in accounts %}
+                  <tr>
+                    <td>
+                      <img class="avatar"
+                           src="{{ account.avatar }}"
+                           alt="{{ account.login }}"
+                           width="50"
+                           height="50"/>
+                    </td>
+                    <td>
+                      <a href="{{ account.url }}" target="_blank">{% firstof account.display_name account.username %}</a>
+                    </td>
+                    <td>{{ account.note | safe }}</td>
+                    <td>{{ account.last_status_at | naturaltime }}</td>
+                    <td>{{ account.followers_count }}</td>
+                    <td>
+                      <a href="https://{{ account.source }}">{{ account.source }}</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </figure>
+          <footer>
+            <div class="pagination">
+              <span class="step-links">
+                {% if accounts.has_previous %}<a href="?page={{ accounts.previous_page_number }}">&laquo; previous</a>{% endif %}
+                <span class="current">Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}</span>
+                {% if accounts.has_next %}<a href="?page={{ accounts.next_page_number }}">next &raquo;</a>{% endif %}
+              </span>
+            </div>
+          </footer>
+        {% else %}
+          <p style="text-align:center;">Pick a programming language above and start exploring the fediverse!</p>
+        {% endif %}
       </article>
     </main>
   </body>
