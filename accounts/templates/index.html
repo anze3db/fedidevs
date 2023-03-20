@@ -76,7 +76,7 @@
                       <a href="{{ account.url }}" target="_blank">{% firstof account.display_name account.username %}</a>
                     </td>
                     <td>{{ account.note | safe }}</td>
-                    <td>{{ account.last_status_at | naturaltime }}</td>
+                    <td>{{ account.last_status_at_cached }}</td>
                     <td>{{ account.followers_count }}</td>
                     <td>
                       <a href="https://{{ account.source }}">{{ account.source }}</a>
@@ -101,4 +101,7 @@
       </article>
     </main>
   </body>
+  <script data-goatcounter="https://fedidevs.goatcounter.com/count"
+          async
+          src="//gc.zgo.at/count.js"></script>
 </html>

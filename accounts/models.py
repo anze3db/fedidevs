@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+from datetime import timedelta
 
+from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.db import models
 
 
@@ -39,6 +41,19 @@ class Account(models.Model):
     @property
     def source(self):
         return self.url.split("/")[2]
+
+    @property
+    def last_status_at_cached(self):
+        if self.last_status_at is None:
+            return "Never posted"
+
+        from django.utils import timezone
+
+        if timezone.now() - self.last_status_at < timedelta(days=7):
+            return "Less than a week ago"
+
+        # use natural time to display last status
+        return naturaltime(self.last_status_at)
 
 
 @dataclass
