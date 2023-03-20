@@ -6,7 +6,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{% static 'pico.min.css' %}">
-    <title>👩‍💻 FediDevs 🧑‍💻</title>
+    <title>
+      {% if selected_lang %}
+        {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
+      {% else %}
+        👩‍💻 FediDevs 🧑‍💻
+      {% endif %}
+    </title>
     <style>
       td {
         min-width: 88px;
@@ -42,7 +48,7 @@
           {% for language in languages %}
             <li>
               <a href="{% url "index" language.code %}"
-                 class="{% if lang != language.code %}outline{% endif %} "
+                 class="{% if selected_lang.code != language.code %}outline{% endif %} "
                  role="button">{{ language.emoji }} {{ language.name }}</a>
             </li>
           {% endfor %}

@@ -5,14 +5,14 @@ from .models import LANGUAGES, Account
 
 
 def index(request, lang=None):
-    if lang not in [l.code for l in LANGUAGES]:
-        lang = None
-    if not lang:
+    langs_map = {l.code: l for l in LANGUAGES}
+    selected_lang = langs_map.get(lang)
+    if not selected_lang:
         accounts = Account.objects.none()
     else:
-        accounts = Account.objects.filter(accountlookup__language=lang).order_by(
-            "-followers_count"
-        )
+        accounts = Account.objects.filter(
+            accountlookup__language=selected_lang.code
+        ).order_by("-followers_count")
     paginator = Paginator(accounts, 25)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -22,7 +22,7 @@ def index(request, lang=None):
         "index.html",
         {
             "accounts": page_obj,
-            "lang": lang,
+            "selected_lang": selected_lang,
             "languages": LANGUAGES,
             "adjectives": [
                 "great",
