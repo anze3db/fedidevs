@@ -16,6 +16,7 @@ certifi==2022.12.7
     # via
     #   httpcore
     #   httpx
+    #   sentry-sdk
 click==8.1.3
     # via
     #   black
@@ -98,6 +99,8 @@ rich==13.3.1
     #   django-rich
 ruff==0.0.256
     # via -r requirements.in
+sentry-sdk==1.17.0
+    # via -r requirements.in
 six==1.16.0
     # via
     #   cssbeautifier
@@ -115,6 +118,8 @@ tqdm==4.65.0
     # via djlint
 typing-extensions==4.5.0
     # via mypy
+urllib3==1.26.15
+    # via sentry-sdk
 wheel==0.40.0
     # via pip-tools
 whitenoise==6.4.0
