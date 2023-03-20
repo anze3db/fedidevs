@@ -12,21 +12,34 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 
+import environ
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+
+# Prevent environ from casting based on the type of the default
+# parameter (https://django-environ.readthedocs.io/en/latest/tips.html#smart-casting)
+env.smart_cast = False
+
+environ.Env.read_env(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-+cu-af#-ne##6bhb732yucl&1+qygvo4j#s#thisl%@9hdl0f%"
+SECRET_KEY = env.str(
+    "SECRET_KEY",
+    default="django-insecure-+cu-af#-ne##6bhb732yucl&1+qygvo4j#s#thisl%@9hdl0f%",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=True)
+
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
 CACHES = {
     "default": {

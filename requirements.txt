@@ -33,6 +33,8 @@ django==4.1.7
     #   django-rich
 django-debug-toolbar==3.8.1
     # via -r requirements.in
+django-environ==0.10.0
+    # via -r requirements.in
 django-rich==1.5.0
     # via -r requirements.in
 djlint==1.19.16
