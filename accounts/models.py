@@ -5,6 +5,23 @@ from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.db import models
 
 
+@dataclass
+class Language:
+    code: str
+    name: str
+    emoji: str
+
+
+LANGUAGES = [
+    Language("python", "Python", "🐍"),
+    Language("javascript", "JavaScript", "📜"),
+    Language("ruby", "Ruby", "💎"),
+    # Language("rust", "Rust", "🦀"), # Filter not working well
+    Language("golang", "Go", "🐹"),
+    Language("php", "PHP", "🐘"),
+]
+
+
 class Account(models.Model):
     username = models.TextField()
     acct = models.TextField()
@@ -56,18 +73,14 @@ class Account(models.Model):
         return naturaltime(self.last_status_at)
 
 
-@dataclass
-class Language:
-    code: str
-    name: str
-    emoji: str
+class AccountLookup(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    language = models.CharField(
+        max_length=55,
+        choices=[(lang.code, lang.name) for lang in LANGUAGES],
+    )
 
-
-LANGUAGES = [
-    Language("python", "Python", "🐍"),
-    Language("javascript", "JavaScript", "📜"),
-    Language("ruby", "Ruby", "💎"),
-    # Language("rust", "Rust", "🦀"), # Filter not working well
-    Language("golang", "Go", "🐹"),
-    Language("php", "PHP", "🐘"),
-]
+    class Meta:
+        indexes = [
+            models.Index(fields=["language"]),
+        ]
