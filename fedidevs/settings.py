@@ -25,7 +25,12 @@ SECRET_KEY = "django-insecure-+cu-af#-ne##6bhb732yucl&1+qygvo4j#s#thisl%@9hdl0f%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": "/var/tmp/django_cache",
+    }
+}
 
 
 # Application definition

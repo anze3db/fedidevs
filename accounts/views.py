@@ -1,9 +1,11 @@
 from django.core.paginator import Paginator
+from django.views.decorators.cache import cache_page
 from django.shortcuts import render
 
 from .models import Account, LANGUAGES
 
 
+@cache_page(60 * 60 * 24)
 def index(request, lang=None):
     if lang not in [l.code for l in LANGUAGES]:
         lang = None
