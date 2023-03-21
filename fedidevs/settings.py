@@ -162,9 +162,10 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-if not DEBUG:
+
+if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
     sentry_sdk.init(
-        dsn="https://96a12cc4b2014ac3b958084a83f80989@o240335.ingest.sentry.io/4504869478596608",
+        dsn=SENTRY_DSN,
         integrations=[
             DjangoIntegration(),
         ],
