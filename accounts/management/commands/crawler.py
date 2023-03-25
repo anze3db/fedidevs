@@ -81,6 +81,7 @@ class Command(RichCommand):
                             fields=account["fields"],
                         )
                         for account in response
+                        if account.get("id")
                     ]
                 await Account.objects.abulk_create(
                     fetched_accounts,
