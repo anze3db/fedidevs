@@ -4,9 +4,9 @@ from django.shortcuts import render
 from .models import LANGUAGES, Account
 
 
-def index(request, lang=None):
+def index(request, lang: str | None = None):
     langs_map = {l.code: l for l in LANGUAGES}
-    selected_lang = langs_map.get(lang)
+    selected_lang = langs_map.get(lang) or LANGUAGES[0]
     if not selected_lang:
         accounts = Account.objects.none()
     else:
