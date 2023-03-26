@@ -64,18 +64,18 @@
           Suggestions on how to make FediDevs more useful are very welcome! Feel free to reach out on <a href="https://fosstodon.org/@anze3db">Mastodon</a> or <a href="mailto:anze@pecar.me">Email</a>!
         </p>
       </header>
-      <nav style="display: flex; justify-content: center;">
-        <ul>
-          {% for language in languages %}
-            <li>
-              <a href="{% url "index" language.code %}"
-                 class="{% if selected_lang.code != language.code %}outline{% endif %} "
-                 role="button">{{ language.emoji }} {{ language.name }}</a>
-            </li>
-          {% endfor %}
-        </ul>
-      </nav>
       <article>
+        <nav style="display: flex; justify-content: center; padding-bottom: 60px;">
+          <ul>
+            {% for language in languages %}
+              <li>
+                <a href="{% url "index" language.code %}"
+                   class="{% if selected_lang.code != language.code %}outline{% endif %} "
+                   role="button">{{ language.emoji }} {{ language.name }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
         {% if accounts %}
           <figure>
             <table role="grid">
