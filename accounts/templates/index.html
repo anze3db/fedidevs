@@ -66,7 +66,7 @@
       </header>
       <article>
         <nav style="display: flex; justify-content: center; padding-bottom: 60px;">
-          <ul>
+          <ul style="flex-wrap: wrap;">
             {% for language in languages %}
               <li>
                 <a href="{% url "index" language.code %}"
