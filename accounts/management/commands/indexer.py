@@ -13,7 +13,7 @@ class Command(RichCommand):
             self.console.print(f"Fetching {lang.code} objects.")
             lookup_objects = [
                 AccountLookup(account=account, language=lang.code)
-                for account in Account.objects.filter(note__contains=lang.code)
+                for account in Account.objects.filter(note__iregex=lang.regex)
             ]
             self.console.print(f"Creating {lang.code} index.")
             AccountLookup.objects.bulk_create(lookup_objects)

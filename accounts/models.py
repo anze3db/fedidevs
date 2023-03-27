@@ -10,15 +10,17 @@ class Language:
     code: str
     name: str
     emoji: str
+    regex: str
 
 
 LANGUAGES = [
-    Language("python", "Python", "🐍"),
-    Language("javascript", "JavaScript", "📜"),
-    Language("ruby", "Ruby", "💎"),
-    # Language("rust", "Rust", "🦀"), # Filter not working well
-    Language("golang", "Go", "🐹"),
-    Language("php", "PHP", "🐘"),
+    Language("python", "Python", "🐍", r"python"),
+    Language("javascript", "JavaScript", "📜", r"javascript"),
+    Language("ruby", "Ruby", "💎", r"ruby"),
+    Language("rust", "Rust", "🦀", r"[^a-z\d:]rust"),
+    Language("golang", "Go", "🐹", r"golang"),
+    Language("php", "PHP", "🐘", r"php"),
+    Language("nix", "Nix", "❄️", r"[^a-z\d:]nix"),
 ]
 
 
