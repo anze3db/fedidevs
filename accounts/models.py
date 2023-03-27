@@ -21,6 +21,7 @@ LANGUAGES = [
     Language("golang", "Go", "🐹", r"golang"),
     Language("php", "PHP", "🐘", r"php"),
     Language("linux", "Linux", "🐧", r"linux"),
+    Language("haskell", "Haskell", "🦥", r"haskell"),
     Language("nix", "Nix", "❄️", r"[^a-z:]nix"),  # Filters out unix, linux, etc.
 ]
 
