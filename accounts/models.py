@@ -20,6 +20,7 @@ LANGUAGES = [
     Language("rust", "Rust", "🦀", r"[^a-z:]rust"),  # Filters out trust, etc.
     Language("golang", "Go", "🐹", r"golang"),
     Language("php", "PHP", "🐘", r"php"),
+    Language("linux", "Linux", "🐧", r"linux"),
     Language("nix", "Nix", "❄️", r"[^a-z:]nix"),  # Filters out unix, linux, etc.
 ]
 
