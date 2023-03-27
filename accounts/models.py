@@ -17,10 +17,10 @@ LANGUAGES = [
     Language("python", "Python", "🐍", r"python"),
     Language("javascript", "JavaScript", "📜", r"javascript"),
     Language("ruby", "Ruby", "💎", r"ruby"),
-    Language("rust", "Rust", "🦀", r"[^a-z\d:]rust"),
+    Language("rust", "Rust", "🦀", r"[^a-z:]rust"),  # Filters out trust, etc.
     Language("golang", "Go", "🐹", r"golang"),
     Language("php", "PHP", "🐘", r"php"),
-    Language("nix", "Nix", "❄️", r"[^a-z\d:]nix"),
+    Language("nix", "Nix", "❄️", r"[^a-z:]nix"),  # Filters out unix, linux, etc.
 ]
 
 
