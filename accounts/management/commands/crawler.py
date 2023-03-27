@@ -9,45 +9,52 @@ from django_rich.management import RichCommand
 
 from accounts.models import Account
 
+INSTANCES = [
+    "chaos.social",
+    "cyberplace.social",
+    "fosstodon.org",
+    "hachyderm.io",
+    "infosec.exchange",
+    "mas.to",
+    "mastodon.gamedev.place",
+    "mastodon.online",
+    "mastodon.social",
+    "mstdn.social",
+    "phpc.social",
+    "ruby.social",
+    "tech.lgbt",
+    "techhub.social",
+]
+
 
 class Command(RichCommand):
     help = "Crawles the fosstodon.org API and saves all accounts to the database"
 
     def add_arguments(self, parser):
         parser.add_argument("--offset", type=int, nargs="?", default=0)
+        parser.add_argument("--instances", type=str, nargs="?", default=None)
 
-    def handle(self, *args, offset=0, **options):
-        self.main(offset=offset)
+    def handle(self, *args, offset=0, instances=None, **options):
+        self.main(offset=offset, instances=instances)
 
     @async_to_sync
-    async def main(self, offset):
+    async def main(self, offset: int, instances: str | None):
         async with httpx.AsyncClient() as client:
             start_time = datetime.now(tz=timezone.utc)
-            instances = [
-                "mastodon.social",
-                "fosstodon.org",
-                "hachyderm.io",
-                "ruby.social",
-                "phpc.social",
-                "infosec.exchange",
-                "chaos.social",
-                "mastodon.online",
-                "mstdn.social",
-                "tech.lgbt",
-                "mas.to",
-                "mastodon.gamedev.place",
-                "techhub.social",
-            ]
-            while instances:
+            if instances:
+                to_index = instances.split(",")
+            else:
+                to_index = INSTANCES
+            while to_index:
                 now = datetime.now(tz=timezone.utc)
                 results = await asyncio.gather(
-                    *[self.fetch(client, offset, instance) for instance in instances]
+                    *[self.fetch(client, offset, instance) for instance in to_index]
                 )
                 fetched_accounts = []
                 for instance, response in results:
                     if not response:
                         self.console.print(f"[green]Done with {instance}[/green]")
-                        instances.remove(instance)
+                        to_index.remove(instance)
                         continue
                     fetched_accounts += [
                         Account(
