@@ -46,21 +46,7 @@
       </a>
     </p>
     <h4>
-      2. Your instance must be indexed
-    </h3>
-    <p>We currently index the following instances.</p>
-    <ul>
-      {% for instance in instances %}
-        <li>
-          <a href="https://{{ instance }}/">{{ instance }}</a>
-        </li>
-      {% endfor %}
-    </ul>
-    <p>
-      If you don't see your instance on the list, <a href="mailto:anze@pecar.me">please reach out</a> and we'll add it 🙏
-    </p>
-    <h4>
-      3. Your bio has to have at least one of the filter keywords
+      2. Your bio has to have at least one of the filter keywords
     </h3>
     <p>
       The keywords are case-insensitive and can be anywhere in your bio. Valid keywords are:
@@ -74,6 +60,20 @@
     </p>
     <p>
       If you did all the steps above and still don't see your account on FediDevs.com, <a href="mailto:anze@pecar.me">reach out</a> and we'll check!
+    </p>
+    <h4>
+      2. Your instance must be indexed
+    </h3>
+    <p>We currently index the following instances.</p>
+    <ul>
+      {% for instance in instances %}
+        <li>
+          <a href="https://{{ instance }}/">{{ instance }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <p>
+      If you don't see your instance on the list, <a href="mailto:anze@pecar.me">please reach out</a> and we'll add it 🙏
     </p>
     <h2>How often is the data refreshed?</h2>
     <p>
