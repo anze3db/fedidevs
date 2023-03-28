@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block page_title %}
+  {% if selected_lang %}
+    {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
+  {% else %}
+    👩‍💻 FediDevs 🧑‍💻
+  {% endif %}
+{% endblock %}
+{% block title %}
+  {% if selected_lang %}
+    {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
+  {% else %}
+    👩‍💻 FediDevs 🧑‍💻
+  {% endif %}
+{% endblock %}
+{% block twitter_title %}
+  {% if selected_lang %}
+    {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
+  {% else %}
+    👩‍💻 FediDevs 🧑‍💻
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <header style="text-align:center;">
+    <h1>
+      <a href="{% url 'index' 'python' %}">👩‍💻 FediDevs 🧑‍💻</a>
+      <br>
+      Frequently Asked Questions
+    </h1>
+  </header>
+  <article>
+    <h2>How to get listed?</h2>
+    <p>There are a few prerequisites for your account to be listed on FediDevs.com</p>
+    <h4>
+      1. Your account must be discoverable
+    </h3>
+    Your account must be <b>discoverable</b>. Check the checkbox that says "Suggest account to others" at <code>{your_instance}/settings/profile</code>.
+    <p style="text-align:center; margin: 20px;">
+      <a href="{% static 'faq-discoverable.png' %}">
+        <img width="80%"
+             height="80%"
+             alt="Screenshot of the Mastodon Edit profile page showing the Suggest account to others checkbox"
+             src="{% static 'faq-discoverable.png' %}"
+             style=""/>
+      </a>
+    </p>
+    <h4>
+      2. Your instance must be indexed
+    </h3>
+    <p>We currently index the following instances.</p>
+    <ul>
+      {% for instance in instances %}
+        <li>
+          <a href="https://{{ instance }}/">{{ instance }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <p>
+      If you don't see your instance on the list, <a href="mailto:anze@pecar.me">please reach out</a> and we'll add it 🙏
+    </p>
+    <h4>
+      3. Your bio has to have at least one of the filter keywords
+    </h3>
+    <p>
+      The keywords are case-insensitive and can be anywhere in your bio. Valid keywords are:
+      <ul>
+        {% for language in languages %}
+          <li>
+            <code>{{ language.code }}</code> for {{ language.emoji }} {{ language.name }}
+          </li>
+        {% endfor %}
+      </ul>
+    </p>
+    <p>
+      If you did all the steps above and still don't see your account on FediDevs.com, <a href="mailto:anze@pecar.me">reach out</a> and we'll check!
+    </p>
+    <h2>How often is the data refreshed?</h2>
+    <p>
+      The data is refreshed about <b>once per week</b>, but if you want your profile on FediDevs.com updated sooner, <a href="mailto:anze@pecar.me">send us an email</a> and we'll update it manually.
+    </p>
+    <h2>How to get removed from FediDevs.com?</h2>
+    <p>
+      The easiest way is to mark your account as not discoverable in the Mastodon profile settings. Uncheck the checkbox that says "Suggest account to others" at <code>{your_instance}/settings/profile</code>. This will remove your account the next time we sync.
+    </p>
+    <p>
+      If you don't want to wait until the next sync <a href="mailto:anze@pecar.me">please reach out</a> and we'll remove you immediately.
+    </p>
+  </article>
+{% endblock %}

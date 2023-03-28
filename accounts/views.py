@@ -44,3 +44,10 @@ def index(request, lang: str | None = None):
             ],
         },
     )
+
+
+def faq(request):
+    from .management.commands.crawler import INSTANCES
+    from .models import LANGUAGES
+
+    return render(request, "faq.html", {"instances": INSTANCES, "languages": LANGUAGES})

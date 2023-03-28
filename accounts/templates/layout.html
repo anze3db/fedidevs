@@ -1,0 +1,57 @@
+{% load static %}
+{% load humanize %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{% static 'pico.min.css' %}">
+        <title>
+            {% block page_title %}{% endblock %}
+        </title>
+        <style>
+      td {
+        min-width: 88px;
+      }
+      .avatar {
+        vertical-align: middle;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+      }
+      .pagination {
+        display: flex;
+        justify-content: center;
+      }
+        </style>
+        <meta name="description"
+              description="Discover amazing developers from across the fediverse.">
+        <!-- Facebook Meta Tags -->
+        <meta property="og:url" content="https://fedidevs.com">
+        <meta property="og:type" content="website">
+        <meta property="og:title"
+              content="{% block title %}👩‍💻 FediDevs 🧑‍💻{% endblock %}">
+        <meta property="og:description"
+              content="Discover amazing developers from across the fediverse.">
+        <meta property="og:image"
+              content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static 'og.png' %}">
+        <!-- Twitter Meta Tags -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta property="twitter:domain" content="fedidevs.com">
+        <meta property="twitter:url" content="https://fedidevs.com">
+        <meta name="twitter:title"
+              content="{% block twitter_title %}👩‍💻 FediDevs 🧑‍💻{% endblock %}">
+        <meta name="twitter:description"
+              content="Discover amazing developers from across the fediverse.">
+        <meta name="twitter:image"
+              content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static 'og.png' %}">
+    </head>
+    <body>
+        <main class="container">
+            {% block content %}{% endblock %}
+        </main>
+    </body>
+    <script data-goatcounter="https://fedidevs.goatcounter.com/count"
+            async
+            src="//gc.zgo.at/count.js"></script>
+</html>

@@ -1,134 +1,101 @@
-{% load static %}
-{% load humanize %}
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{% static 'pico.min.css' %}">
-    <title>
-      {% if selected_lang %}
-        {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
-      {% else %}
-        👩‍💻 FediDevs 🧑‍💻
-      {% endif %}
-    </title>
-    <style>
-      td {
-        min-width: 88px;
-      }
-      .avatar {
-        vertical-align: middle;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-      }
-      .pagination {
-        display: flex;
-        justify-content: center;
-      }
-    </style>
-    <meta name="description"
-          description="Discover amazing developers from across the fediverse.">
-    <!-- Facebook Meta Tags -->
-    <meta property="og:url" content="https://fedidevs.com">
-    <meta property="og:type" content="website">
-    <meta property="og:title"
-          content="{% if selected_lang %} {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻 {% else %} 👩‍💻 FediDevs 🧑‍💻 {% endif %}">
-    <meta property="og:description"
-          content="Discover amazing developers from across the fediverse.">
-    <meta property="og:image"
-          content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static 'og.png' %}">
-    <!-- Twitter Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta property="twitter:domain" content="fedidevs.com">
-    <meta property="twitter:url" content="https://fedidevs.com">
-    <meta name="twitter:title"
-          content="{% if selected_lang %} {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻 {% else %} 👩‍💻 FediDevs 🧑‍💻 {% endif %}">
-    <meta name="twitter:description"
-          content="Discover amazing developers from across the fediverse.">
-    <meta name="twitter:image"
-          content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static 'og.png' %}">
-  </head>
-  <body>
-    <main class="container">
-      <header style="text-align:center;">
-        <h1>👩‍💻 FediDevs 🧑‍💻</h1>
-        <h3>
-          Discover <mark>{{ adjectives|random }}</mark> devs from across the fediverse 🌐
-        </h3>
-        <p>
-          More languages and features will be added soon. <a target="_blank" href="https://anze3db.ck.page/76db70f6e0 ">Sign up to the newsletter</a> for updates.
-        </p>
-        <p>
-          Suggestions on how to make FediDevs more useful are very welcome! Feel free to reach out on <a href="https://fosstodon.org/@anze3db">Mastodon</a> or <a href="mailto:anze@pecar.me">Email</a>!
-        </p>
-      </header>
-      <article>
-        <nav style="padding-bottom: 60px;">
-          <ul style="flex-wrap: wrap; justify-content: center;">
-            {% for language in languages %}
-              <li>
-                <a href="{% url "index" language.code %}"
-                   class="{% if selected_lang.code != language.code %}outline{% endif %} "
-                   role="button">{{ language.emoji }} {{ language.name }}</a>
-              </li>
+{% extends "layout.html" %}
+{% block page_title %}
+  {% if selected_lang %}
+    {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
+  {% else %}
+    👩‍💻 FediDevs 🧑‍💻
+  {% endif %}
+{% endblock %}
+{% block title %}
+  {% if selected_lang %}
+    {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
+  {% else %}
+    👩‍💻 FediDevs 🧑‍💻
+  {% endif %}
+{% endblock %}
+{% block twitter_title %}
+  {% if selected_lang %}
+    {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
+  {% else %}
+    👩‍💻 FediDevs 🧑‍💻
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <header style="text-align:center;">
+    <h1>👩‍💻 FediDevs 🧑‍💻</h1>
+    <h3>
+      Discover <mark>{{ adjectives|random }}</mark> devs from across the fediverse 🌐
+    </h3>
+    <p>
+      Read <a href="{% url 'faq' %}">the FAQ</a> to see how to get listed. <a target="_blank" href="https://anze3db.ck.page/76db70f6e0 ">Sign up to the newsletter</a> for updates.
+    </p>
+    <p>
+      Suggestions on how to make FediDevs more useful are very welcome! Feel free to reach out on <a href="https://fosstodon.org/@anze3db">Mastodon</a> or <a href="mailto:anze@pecar.me">Email</a>!
+    </p>
+  </header>
+  <article>
+    <nav style="padding-bottom: 60px;">
+      <ul style="flex-wrap: wrap; justify-content: center;">
+        {% for language in languages %}
+          <li>
+            <a href="{% url "index" language.code %}"
+               class="{% if selected_lang.code != language.code %}outline{% endif %} "
+               role="button">{{ language.emoji }} {{ language.name }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+    {% if accounts %}
+      <figure>
+        <table role="grid">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Note</th>
+              <th>Last Status</th>
+              <th>Followers Count</th>
+              <th>Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for account in accounts %}
+              <tr>
+                <td>
+                  <img class="avatar"
+                       src="{{ account.avatar }}"
+                       alt="{{ account.login }}"
+                       width="50"
+                       height="50"/>
+                </td>
+                <td>
+                  <a href="{{ account.url }}" target="_blank">{% firstof account.display_name account.username %}</a>
+                </td>
+                <td>{{ account.note | safe }}</td>
+                <td>{{ account.last_status_at_cached }}</td>
+                <td>{{ account.followers_count }}</td>
+                <td>
+                  <a href="https://{{ account.source }}">{{ account.source }}</a>
+                </td>
+              </tr>
             {% endfor %}
-          </ul>
-        </nav>
-        {% if accounts %}
-          <figure>
-            <table role="grid">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>Name</th>
-                  <th>Note</th>
-                  <th>Last Status</th>
-                  <th>Followers Count</th>
-                  <th>Source</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for account in accounts %}
-                  <tr>
-                    <td>
-                      <img class="avatar"
-                           src="{{ account.avatar }}"
-                           alt="{{ account.login }}"
-                           width="50"
-                           height="50"/>
-                    </td>
-                    <td>
-                      <a href="{{ account.url }}" target="_blank">{% firstof account.display_name account.username %}</a>
-                    </td>
-                    <td>{{ account.note | safe }}</td>
-                    <td>{{ account.last_status_at_cached }}</td>
-                    <td>{{ account.followers_count }}</td>
-                    <td>
-                      <a href="https://{{ account.source }}">{{ account.source }}</a>
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </figure>
-          <footer>
-            <div class="pagination">
-              <span class="step-links">
-                {% if accounts.has_previous %}<a href="?page={{ accounts.previous_page_number }}">&laquo; previous</a>{% endif %}
-                <span class="current">Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}</span>
-                {% if accounts.has_next %}<a href="?page={{ accounts.next_page_number }}">next &raquo;</a>{% endif %}
-              </span>
-            </div>
-          </footer>
-        {% else %}
-          <p style="text-align:center;">Pick a programming language above and start exploring the fediverse!</p>
-        {% endif %}
-      </article>
-    </main>
-  </body>
-  <script data-goatcounter="https://fedidevs.goatcounter.com/count"
-          async
-          src="//gc.zgo.at/count.js"></script>
-</html>
+          </tbody>
+        </table>
+      </figure>
+      <footer>
+        <div class="pagination">
+          <span class="step-links">
+            {% if accounts.has_previous %}<a href="?page={{ accounts.previous_page_number }}">&laquo; previous</a>{% endif %}
+            <span class="current">Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}</span>
+            {% if accounts.has_next %}<a href="?page={{ accounts.next_page_number }}">next &raquo;</a>{% endif %}
+          </span>
+        </div>
+        <p style="text-align:center">
+          <small>Don't see yourself on the list? Read through <a href="{% url 'faq' %}">the FAQ</a> to make sure you're eligible to be listed.</small>
+        </p>
+      </footer>
+    {% else %}
+      <p style="text-align:center;">Pick a programming language above and start exploring the fediverse!</p>
+    {% endif %}
+  </article>
+{% endblock %}
