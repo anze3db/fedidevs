@@ -13,6 +13,7 @@ INSTANCES = [
     "chaos.social",
     "cyberplace.social",
     "fosstodon.org",
+    "functional.cafe",
     "hachyderm.io",
     "infosec.exchange",
     "mas.to",
