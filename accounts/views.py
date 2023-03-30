@@ -17,6 +17,7 @@ def index(request, lang: str | None = None):
         search_query &= (
             Q(note__icontains=query)
             | Q(display_name__icontains=query)
+            | Q(username__icontains=query)
             | Q(url__icontains=query)
         )
 
