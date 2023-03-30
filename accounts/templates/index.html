@@ -34,17 +34,31 @@
     </p>
   </header>
   <article>
-    <nav style="padding-bottom: 60px;">
+    <nav>
       <ul style="flex-wrap: wrap; justify-content: center;">
         {% for language in languages %}
           <li>
-            <a href="{% url "index" language.code %}"
+            <a href="{% url "index" language.code %}?q={{ query }}"
                class="{% if selected_lang.code != language.code %}outline{% endif %} "
                role="button">{{ language.emoji }} {{ language.name }}</a>
           </li>
         {% endfor %}
       </ul>
     </nav>
+    <form method="GET" action="{% url 'index' selected_lang.code %}">
+      <div style="padding-bottom: 60px;">
+        <div style="display:flex; gap: 16px;">
+          <input type="text"
+                 name="q"
+                 placeholder="Filter by name, bio, or instance..."
+                 value="{{ query }}"/>
+          {% if query %}
+            <a style="margin: 16px 0px;" href="{% url 'index' selected_lang.code %}">Clear</a>
+          {% endif %}
+          <input style="width:120px;" type="submit" value="Search" />
+        </div>
+      </div>
+    </form>
     {% if accounts %}
       <figure>
         <table role="grid">
@@ -95,7 +109,9 @@
         </p>
       </footer>
     {% else %}
-      <p style="text-align:center;">Pick a programming language above and start exploring the fediverse!</p>
+      <p style="text-align:center;">
+        No results, <a href="{% url "index" selected_lang.code %}">try clearing your search</a>!
+      </p>
     {% endif %}
   </article>
 {% endblock %}
