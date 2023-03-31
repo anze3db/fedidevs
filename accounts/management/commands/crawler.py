@@ -24,7 +24,7 @@ INSTANCES = [
     "mstdn.social",
     "phpc.social",
     "ruby.social",
-    "social.kernel.org",
+    # "social.kernel.org",
     "tech.lgbt",
     "techhub.social",
 ]
@@ -67,8 +67,8 @@ class Command(RichCommand):
                             display_name=account["display_name"],
                             locked=account["locked"],
                             bot=account["bot"],
-                            discoverable=account["discoverable"],
-                            group=account["group"],
+                            discoverable=account.get("discoverable", False),
+                            group=account.get("group", False),
                             noindex=account.get("noindex", None),
                             created_at=(datetime.fromisoformat(account["created_at"])),
                             last_status_at=make_aware(
@@ -93,6 +93,7 @@ class Command(RichCommand):
                         for account in response
                         if account.get("id")
                     ]
+
                 await Account.objects.abulk_create(
                     fetched_accounts,
                     unique_fields=["id"],
@@ -122,10 +123,16 @@ class Command(RichCommand):
                         "fields",
                     ],
                 )
+
                 self.console.print(
                     f"Inserted {len(fetched_accounts)}. Current offset {offset}. Started {naturaltime(start_time)}"
                 )
                 offset += 1
+            self.console.print("Disabling accounts that are not discoverable anymore")
+            # TODO: Maybe we should fetch the most recent data from the instances instead?
+            # Account.objects.filter(last_sync_at__lt=start_time).update(
+            #     discoverable=False
+            # )
 
     async def fetch(self, client, offset, instance):
         try:
