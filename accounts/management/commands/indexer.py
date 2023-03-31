@@ -14,7 +14,9 @@ class Command(RichCommand):
             lookup_objects = [
                 AccountLookup(account=account, language=lang.code)
                 for account in Account.objects.filter(
-                    note__iregex=lang.regex, discoverable=True
+                    note__iregex=lang.regex,
+                    discoverable=True,
+                    noindex=False,
                 )
             ]
             self.console.print(f"Creating {lang.code} index.")

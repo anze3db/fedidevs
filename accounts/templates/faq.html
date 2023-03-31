@@ -32,7 +32,7 @@
   <article>
     <h2>How to get listed?</h2>
     <p>There are a few prerequisites for your account to be listed on FediDevs.com</p>
-    <h4>1. Your account must be discoverable</h4>
+    <h4>1. Your account must be discoverable and not opt-out of search engine indexing</h4>
     Your account must be <b>discoverable</b>. Check the checkbox that says "Suggest account to others" at <code>{your_instance}/settings/profile</code>.
     <p style="text-align:center; margin: 20px;">
       <a href="{% static 'faq-discoverable.png' %}">
@@ -40,6 +40,16 @@
              height="80%"
              alt="Screenshot of the Mastodon Edit profile page showing the Suggest account to others checkbox"
              src="{% static 'faq-discoverable.png' %}"
+             style=""/>
+      </a>
+    </p>
+    Opt-out of search engine indexing checkbox must <b>NOT</b> be checked. The checkbox is on the <code>{your_instance}/preferences/other</code> page:
+    <p style="text-align:center; margin: 20px;">
+      <a href="{% static 'faq-opt-out.png' %}">
+        <img width="80%"
+             height="80%"
+             alt="Screenshot of the Mastodon Preferences page showing the Opt-out of search engine indexing checkbox"
+             src="{% static 'faq-opt-out.png' %}"
              style=""/>
       </a>
     </p>
