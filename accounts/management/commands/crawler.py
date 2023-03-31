@@ -20,9 +20,11 @@ INSTANCES = [
     "mastodon.gamedev.place",
     "mastodon.online",
     "mastodon.social",
+    "mozilla.social",
     "mstdn.social",
     "phpc.social",
     "ruby.social",
+    "social.kernel.org",
     "tech.lgbt",
     "techhub.social",
 ]
