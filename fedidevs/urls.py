@@ -14,13 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.http import HttpResponse
 from django.urls import include, path
 
 from accounts import views
 
+
+def robots_txt(request):
+    return HttpResponse("User-agent: *\nDisallow:", content_type="text/plain")
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("__debug__/", include("debug_toolbar.urls")),
+    path("robots.txt", robots_txt),
     path("faq/", views.faq, name="faq"),
     path("", views.index, name="empty-index"),
     path("<str:lang>", views.index, name="index"),
