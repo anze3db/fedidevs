@@ -13,6 +13,9 @@ def index(request, lang: str | None = None):
         search_query = Q(accountlookup__language=selected_lang.code)
 
     query = request.GET.get("q", "")
+    order = request.GET.get("o", "-followers_count")
+    if order not in ["-followers_count", "url", "-last_status_at"]:
+        order = "-followers_count"
     if query:
         search_query &= (
             Q(note__icontains=query)
@@ -21,7 +24,7 @@ def index(request, lang: str | None = None):
             | Q(url__icontains=query)
         )
 
-    accounts = Account.objects.filter(search_query).order_by("-followers_count")
+    accounts = Account.objects.filter(search_query).order_by(order)
     paginator = Paginator(accounts, 25)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -34,6 +37,7 @@ def index(request, lang: str | None = None):
             "selected_lang": selected_lang,
             "languages": LANGUAGES,
             "query": query,
+            "order": order,
             "adjectives": [
                 "great",
                 "awesome",

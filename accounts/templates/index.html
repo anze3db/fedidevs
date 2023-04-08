@@ -38,7 +38,7 @@
       <ul style="flex-wrap: wrap; justify-content: center;">
         {% for language in languages %}
           <li>
-            <a href="{% url "index" language.code %}?q={{ query }}"
+            <a href="{% url "index" language.code %}?q={{ query }}&o={{ order }}"
                class="{% if selected_lang.code != language.code %}outline{% endif %} "
                role="button">{{ language.emoji }} {{ language.name }}</a>
           </li>
@@ -52,6 +52,7 @@
                  name="q"
                  placeholder="Filter by name, bio, or instance..."
                  value="{{ query }}"/>
+          <input type="hidden" name="o" value="{{ order }}" />
           {% if query %}
             <a style="margin: 16px 0px;" href="{% url 'index' selected_lang.code %}">Clear</a>
           {% endif %}
@@ -67,9 +68,33 @@
               <th></th>
               <th>Name</th>
               <th>Note</th>
-              <th>Last Status</th>
-              <th>Followers Count</th>
-              <th>Source</th>
+              <th>
+                <a href="{% url "index" selected_lang.code %}?q={{ query }}&o=-last_status_at">
+                  {% if order == '-last_status_at' %}
+                    <strong>&#9660;&nbsp;Last Status</strong>
+                  {% else %}
+                    Last Status
+                  {% endif %}
+                </a>
+              </th>
+              <th>
+                <a href="{% url "index" selected_lang.code %}?q={{ query }}&o=-followers_count">
+                  {% if order == '-followers_count' %}
+                    <strong>&#9660;&nbsp;Followers Count</strong>
+                  {% else %}
+                    Followers Count
+                  {% endif %}
+                </a>
+              </th>
+              <th>
+                <a href="{% url "index" selected_lang.code %}?q={{ query }}&o=url">
+                  {% if order == 'url' %}
+                    <strong>&#9660;&nbsp;Source</strong>
+                  {% else %}
+                    Source
+                  {% endif %}
+                </a>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -99,9 +124,13 @@
       <footer>
         <div class="pagination">
           <span class="step-links">
-            {% if accounts.has_previous %}<a href="?page={{ accounts.previous_page_number }}">&laquo; previous</a>{% endif %}
+            {% if accounts.has_previous %}
+              <a href="?page={{ accounts.previous_page_number }}&q={{ query }}&o={{ order }}">&laquo; previous</a>
+            {% endif %}
             <span class="current">Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}</span>
-            {% if accounts.has_next %}<a href="?page={{ accounts.next_page_number }}">next &raquo;</a>{% endif %}
+            {% if accounts.has_next %}
+              <a href="?page={{ accounts.next_page_number }}&q={{ query }}&o={{ order }}">next &raquo;</a>
+            {% endif %}
           </span>
         </div>
         <p style="text-align:center">
