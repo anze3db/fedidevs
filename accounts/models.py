@@ -16,8 +16,13 @@ class Language:
 LANGUAGES = [
     Language("python", "Python", "🐍", r"python"),
     Language("javascript", "JavaScript", "📜", r"javascript"),
-    Language("ruby", "Ruby", "💎", r"ruby"),
     Language("rust", "Rust", "🦀", r"[^a-z:]rust"),  # Filters out trust, etc.
+    Language("ruby", "Ruby", "💎", r"ruby"),
+    Language("java", "Java", "☕", r"java[^script]"),
+    Language("csharp", "C#", "♫", r"csharp|c#"),
+    Language("kotlin", "Kotlin", "🤖", r"kotlin"),
+    Language("fsharp", "F#", "♬", r"fsharp|f#"),
+    Language("scala", "Scala", "🧪", r"[^e]scala[^b]"),
     Language("golang", "Go", "🐹", r"golang"),
     Language("php", "PHP", "🐘", r"php"),
     Language("linux", "Linux", "🐧", r"linux"),
