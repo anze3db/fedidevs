@@ -14,7 +14,7 @@ def index(request, lang: str | None = None):
 
     query = request.GET.get("q", "")
     order = request.GET.get("o", "-followers_count")
-    if order not in ["-followers_count", "url", "-last_status_at"]:
+    if order not in ("-followers_count", "url", "-last_status_at", "-statuses_count"):
         order = "-followers_count"
     if query:
         search_query &= (

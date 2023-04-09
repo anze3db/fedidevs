@@ -78,6 +78,15 @@
                 </a>
               </th>
               <th>
+                <a href="{% url "index" selected_lang.code %}?q={{ query }}&o=-statuses_count">
+                  {% if order == '-statuses_count' %}
+                    <strong>&#9660;&nbsp;Statuses Count</strong>
+                  {% else %}
+                    Statuses Count
+                  {% endif %}
+                </a>
+              </th>
+              <th>
                 <a href="{% url "index" selected_lang.code %}?q={{ query }}&o=-followers_count">
                   {% if order == '-followers_count' %}
                     <strong>&#9660;&nbsp;Followers Count</strong>
@@ -112,6 +121,7 @@
                 </td>
                 <td>{{ account.note | safe }}</td>
                 <td>{{ account.last_status_at_cached }}</td>
+                <td>{{ account.statuses_count }}</td>
                 <td>{{ account.followers_count }}</td>
                 <td>
                   <a href="https://{{ account.source }}">{{ account.source }}</a>
