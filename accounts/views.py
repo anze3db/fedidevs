@@ -1,7 +1,9 @@
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.views.decorators.http import require_http_methods
 
+from .management.commands.crawler import INSTANCES
 from .models import LANGUAGES, Account
 
 
@@ -36,6 +38,8 @@ def index(request, lang: str | None = None):
             "accounts": page_obj,
             "selected_lang": selected_lang,
             "languages": LANGUAGES,
+            "instances": INSTANCES,
+            "selected_instance": request.session.get("selected_instance"),
             "query": query,
             "order": order,
             "adjectives": [
@@ -61,7 +65,10 @@ def index(request, lang: str | None = None):
 
 
 def faq(request):
-    from .management.commands.crawler import INSTANCES
-    from .models import LANGUAGES
-
     return render(request, "faq.html", {"instances": INSTANCES, "languages": LANGUAGES})
+
+
+@require_http_methods(["POST"])
+def instance(request):
+    request.session["selected_instance"] = request.POST.get("instance")
+    return redirect("empty-index")

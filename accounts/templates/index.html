@@ -31,6 +31,29 @@
     </p>
   </header>
   <article>
+    <form method="POST" action="{% url 'instance' %}">
+      {% csrf_token %}
+      <div>
+        <label for="instance"
+               data-tooltip="Use your instance for account links to make it easier to follow people. This way you'll avoid the Follow Dialog for people on different instances.">
+          1. Select your Mastodon instance.
+        </label>
+        <select id="instance" name="instance" onchange="this.form.submit()">
+          <option value="">
+            -- Select an instance --
+          </option>
+          {% for instance in instances %}
+            <option value="{{ instance }}"
+                    {% if instance == selected_instance %}selected{% endif %}>
+              {{ instance }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </form>
+    <label data-tooltip="Use the existing filter links or use the search box below to search through bios, account names, and instance names.">
+      2. Use the filters below to find developers with your interests.
+    </label>
     <nav>
       <ul style="flex-wrap: wrap; justify-content: center;">
         {% for language in languages %}
@@ -43,7 +66,7 @@
       </ul>
     </nav>
     <form method="GET" action="{% url 'index' selected_lang.code %}">
-      <div style="padding-bottom: 60px;">
+      <div>
         <div style="display:flex; gap: 16px;">
           <input type="text"
                  name="q"
@@ -114,7 +137,8 @@
                        height="50"/>
                 </td>
                 <td>
-                  <a href="{{ account.url }}" target="_blank">{% firstof account.display_name account.username %}</a>
+                  <a href="https://{% firstof selected_instance account.source %}/@{{ account.username }}@{{ account.source }}"
+                     target="_blank">{% firstof account.display_name account.username %}</a>
                 </td>
                 <td>{{ account.note | safe }}</td>
                 <td>{{ account.last_status_at_cached }}</td>

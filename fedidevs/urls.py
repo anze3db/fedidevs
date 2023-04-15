@@ -29,6 +29,7 @@ urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path("robots.txt", robots_txt),
     path("faq/", views.faq, name="faq"),
+    path("instance/", views.instance, name="instance"),
     path("", views.index, name="empty-index"),
     path("<str:lang>", views.index, name="index"),
 ]
