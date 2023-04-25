@@ -31,29 +31,6 @@
     </p>
   </header>
   <article>
-    <form method="POST" action="{% url 'instance' %}">
-      {% csrf_token %}
-      <div>
-        <label for="instance"
-               data-tooltip="Use your instance for account links to make it easier to follow people. This way you'll avoid the Follow Dialog for people on different instances.">
-          1. Select your Mastodon instance.
-        </label>
-        <select id="instance" name="instance" onchange="this.form.submit()">
-          <option value="">
-            -- Select an instance --
-          </option>
-          {% for instance in instances %}
-            <option value="{{ instance }}"
-                    {% if instance == selected_instance %}selected{% endif %}>
-              {{ instance }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-    </form>
-    <label data-tooltip="Use the existing filter links or use the search box below to search through bios, account names, and instance names.">
-      2. Use the filters below to find developers with your interests.
-    </label>
     <nav>
       <ul style="flex-wrap: wrap; justify-content: center;">
         {% for language in languages %}
@@ -81,6 +58,51 @@
       </div>
     </form>
     {% if accounts %}
+      <form method="POST" action="{% url 'instance' %}">
+        {% csrf_token %}
+        <div>
+          <a style="cursor:pointer"
+             data-target="modal-example"
+             onClick="toggleModal(event)">Select your Mastodon instance</a>  to make it easier to follow accounts below.
+          <dialog id="modal-example">
+            <article>
+              <a href="#close"
+                 aria-label="Close"
+                 class="close"
+                 data-target="modal-example"
+                 onClick="toggleModal(event)"></a>
+              <h3>Select your Mastodon instance</h3>
+              <p>
+                Account links will use your instance making it easier to follow accounts that you open. This way you'll avoid the Follow Dialog for people on different instances.
+              </p>
+              <p>
+                <select id="instance" name="instance">
+                  <option value="">
+                    -- Select an instance --
+                  </option>
+                  {% for instance in instances %}
+                    <option value="{{ instance }}"
+                            {% if instance == selected_instance %}selected{% endif %}>
+                      {{ instance }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </p>
+              <footer>
+                <a href="#cancel"
+                   role="button"
+                   class="secondary"
+                   data-target="modal-example"
+                   onClick="toggleModal(event)">Cancel</a>
+                <a href="#confirm"
+                   role="button"
+                   data-target="modal-example"
+                   onClick="closest('form').submit()">Confirm</a>
+              </footer>
+            </article>
+          </dialog>
+        </div>
+      </form>
       <figure>
         <table role="grid">
           <thead>
