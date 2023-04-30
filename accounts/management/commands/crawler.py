@@ -24,9 +24,10 @@ INSTANCES = [
     "mstdn.social",
     "phpc.social",
     "ruby.social",
-    # "social.kernel.org",
+    "social.juanlu.space",
     "tech.lgbt",
     "techhub.social",
+    # "social.kernel.org",
 ]
 
 
@@ -146,6 +147,11 @@ class Command(RichCommand):
                 },
                 timeout=30,
             )
+            if response.status_code != 200:
+                self.console.print(
+                    f"[bold red]Error status code[/bold red] for {instance} at offset {offset}. {response.json()}"
+                )
+                return instance, []
             return instance, response.json()
         except (
             httpx.ReadTimeout,
