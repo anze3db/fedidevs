@@ -149,7 +149,7 @@ class Command(RichCommand):
             )
             if response.status_code != 200:
                 self.console.print(
-                    f"[bold red]Error status code[/bold red] for {instance} at offset {offset}. {response.json()}"
+                    f"[bold red]Error status code[/bold red] for {instance} at offset {offset}. {response.status_code}"
                 )
                 return instance, []
             return instance, response.json()
