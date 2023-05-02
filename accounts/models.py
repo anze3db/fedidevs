@@ -14,7 +14,7 @@ class Language:
 
 
 LANGUAGES = [
-    Language("python", "Python", "🐍", r"python"),
+    Language("python", "Python", "🐍", r"python|psf"),
     Language("javascript", "JavaScript", "📜", r"javascript"),
     Language("rust", "Rust", "🦀", r"[^a-z:]rust"),  # Filters out trust, etc.
     Language("ruby", "Ruby", "💎", r"ruby"),
