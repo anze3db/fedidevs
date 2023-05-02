@@ -9,12 +9,13 @@ class AuthorAdmin(admin.ModelAdmin):
     list_display = (
         "username",
         "display_name",
+        "discoverable",
+        "noindex",
         "followers_count",
         "following_count",
         "statuses_count",
         "bot",
         "locked",
-        "discoverable",
         "last_sync_at",
         "html_note",
     )
