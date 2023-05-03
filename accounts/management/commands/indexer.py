@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django_rich.management import RichCommand
 
 from accounts.models import LANGUAGES, Account, AccountLookup
@@ -14,7 +15,7 @@ class Command(RichCommand):
             lookup_objects = [
                 AccountLookup(account=account, language=lang.code)
                 for account in Account.objects.filter(
-                    note__iregex=lang.regex,
+                    (Q(note__iregex=lang.regex) | Q(display_name__iregex=lang.regex)),
                     discoverable=True,
                     noindex=False,
                 )
