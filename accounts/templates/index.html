@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% load account_extras %}
+{% load static %}
 {% block page_title %}
   {% if selected_lang %}
     {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
@@ -38,7 +39,13 @@
           <li>
             <a href="{% url "index" language.code %}?q={{ query }}&o={{ order }}"
                class="{% if selected_lang.code != language.code %}outline{% endif %} "
-               role="button">{{ language.emoji }} {{ language.name }}</a>
+               role="button">
+              <img src="{% static language.image %}"
+                   alt="{{ language.code }}"
+                   class="emojione"
+                   height="16"
+                   width="16"/>
+            {{ language.name }}</a>
           </li>
         {% endfor %}
       </ul>

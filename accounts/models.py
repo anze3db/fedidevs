@@ -11,23 +11,30 @@ class Language:
     name: str
     emoji: str
     regex: str
+    image: str
 
 
 LANGUAGES = [
-    Language("python", "Python", "🐍", r"python|psf"),
-    Language("javascript", "JavaScript", "📜", r"javascript"),
-    Language("rust", "Rust", "🦀", r"[^a-z:]rust"),  # Filters out trust, etc.
-    Language("ruby", "Ruby", "💎", r"ruby"),
-    Language("java", "Java", "☕", r"java[^script]"),
-    Language("csharp", "C#", "♫", r"csharp|c#"),
-    Language("kotlin", "Kotlin", "🤖", r"kotlin"),
-    Language("fsharp", "F#", "♬", r"fsharp|f#"),
-    Language("scala", "Scala", "🧪", r"[^e]scala[^b]"),
-    Language("golang", "Go", "🐹", r"golang"),
-    Language("php", "PHP", "🐘", r"php"),
-    Language("linux", "Linux", "🐧", r"linux"),
-    Language("haskell", "Haskell", "🦥", r"haskell"),
-    Language("nix", "Nix", "❄️", r"[^a-z:]nix"),  # Filters out unix, linux, etc.
+    Language("python", "Python", "🐍", r"python|psf", "languages/python.png"),
+    Language(
+        "javascript", "JavaScript", "📜", r"javascript", "languages/javascript.png"
+    ),
+    Language(
+        "rust", "Rust", "🦀", r"[^a-z:]rust", "languages/rust.png"
+    ),  # Filters out trust, etc.
+    Language("ruby", "Ruby", "💎", r"ruby", "languages/ruby.png"),
+    Language("java", "Java", "☕", r"java[^script]", "languages/java.png"),
+    Language("csharp", "C#", "♫", r"csharp|c#", "languages/csharp.png"),
+    Language("kotlin", "Kotlin", "🤖", r"kotlin", "languages/kotlin.png"),
+    Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
+    Language("scala", "Scala", "🧪", r"[^e]scala[^b]", "languages/scala.png"),
+    Language("golang", "Go", "🐹", r"golang", "languages/golang.png"),
+    Language("php", "PHP", "🐘", r"php", "languages/php.png"),
+    Language("linux", "Linux", "🐧", r"linux", "languages/linux.png"),
+    Language("haskell", "Haskell", "🦥", r"haskell", "languages/haskell.png"),
+    Language(
+        "nix", "Nix", "❄️", r"[^a-z:]nix", "languages/nix.png"
+    ),  # Filters out unix, linux, etc.
 ]
 
 
