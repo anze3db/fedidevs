@@ -1,0 +1,31 @@
+td {
+    min-width: 88px;
+}
+
+.avatar {
+    vertical-align: middle;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+}
+
+[data-tooltip]::before {
+    width: 90%;
+    overflow: visible;
+    white-space: normal;
+}
+
+.emojione {
+    font-size: inherit;
+    vertical-align: middle;
+    -o-object-fit: contain;
+    object-fit: contain;
+    margin: -.2ex 0.15em .2ex;
+    width: 16px;
+    height: 16px;
+}
