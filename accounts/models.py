@@ -96,7 +96,6 @@ class AccountLookup(models.Model):
         choices=[(lang.code, lang.name) for lang in LANGUAGES],
     )
 
-    class Meta:
-        indexes = [
-            models.Index(fields=["language"]),
-        ]
+
+class AccountLookupAny(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
