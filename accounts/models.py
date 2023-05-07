@@ -28,7 +28,7 @@ LANGUAGES = [
     Language("kotlin", "Kotlin", "🤖", r"kotlin", "languages/kotlin.png"),
     Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
     Language("scala", "Scala", "🧪", r"[^e]scala[^b]", "languages/scala.png"),
-    Language("golang", "Go", "🐹", r"golang", "languages/golang.png"),
+    Language("golang", "Golang", "🐹", r"golang", "languages/golang.png"),
     Language("php", "PHP", "🐘", r"php", "languages/php.png"),
     Language("linux", "Linux", "🐧", r"linux", "languages/linux.png"),
     Language("haskell", "Haskell", "🦥", r"haskell", "languages/haskell.png"),
