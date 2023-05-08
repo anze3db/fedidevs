@@ -10,6 +10,7 @@ from django_rich.management import RichCommand
 from accounts.models import Account
 
 INSTANCES = [
+    "c.im",
     "chaos.social",
     "cyberplace.social",
     "fosstodon.org",
@@ -17,16 +18,24 @@ INSTANCES = [
     "hachyderm.io",
     "infosec.exchange",
     "mas.to",
+    "masto.ai",
+    "mastodon.cloud",
     "mastodon.gamedev.place",
     "mastodon.online",
     "mastodon.social",
+    "mastodon.world",
+    "mastodonapp.uk",
     "mozilla.social",
+    "mstdn.party",
     "mstdn.social",
+    "ohai.social",
     "phpc.social",
     "ruby.social",
+    "sfba.social",
     "social.juanlu.space",
     "tech.lgbt",
     "techhub.social",
+    "universeodon.com",
     # "social.kernel.org",
 ]
 
