@@ -8,10 +8,10 @@ class Command(RichCommand):
     help = "Crawles the fosstodon.org API and saves all accounts to the database"
 
     def handle(self, *args, **options):
-        AccountLookupAny.objects.all().delete()
         any_lookup = set()
         for lang in LANGUAGES:
             self.console.print(f"Deleting {lang.code} index.")
+            old_count = AccountLookup.objects.filter(language=lang.code).count()
             AccountLookup.objects.filter(language=lang.code).delete()
             self.console.print(f"Fetching {lang.code} objects.")
             lookup_objects = [
@@ -23,9 +23,16 @@ class Command(RichCommand):
                 )
             ]
             any_lookup |= {lookup.account.id for lookup in lookup_objects}
-            self.console.print(f"Creating {lang.code} index.")
+            self.console.print(
+                f"Indexing {len(lookup_objects)} accounts for {lang.code}. Diff {len(lookup_objects) - old_count}."
+            )
             AccountLookup.objects.bulk_create(lookup_objects)
-        self.console.print("Creating any index.")
+
+        old_count = AccountLookupAny.objects.all().count()
+        AccountLookupAny.objects.all().delete()
+        self.console.print(
+            f"Creating any index for {len(any_lookup)} accounts. Diff {len(any_lookup) - old_count}."
+        )
         AccountLookupAny.objects.bulk_create(
             [AccountLookupAny(account_id=account_id) for account_id in any_lookup]
         )
