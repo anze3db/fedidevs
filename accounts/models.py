@@ -17,7 +17,11 @@ class Language:
 LANGUAGES = [
     Language("python", "Python", "🐍", r"python|psf", "languages/python.png"),
     Language(
-        "javascript", "JavaScript", "📜", r"javascript", "languages/javascript.png"
+        "javascript",
+        "JavaScript",
+        "📜",
+        r"javascript|js[^a-z:]|typescript",
+        "languages/javascript.png",
     ),
     Language(
         "rust", "Rust", "🦀", r"[^a-z:]rust", "languages/rust.png"
@@ -35,6 +39,21 @@ LANGUAGES = [
     Language(
         "nix", "Nix", "❄️", r"[^a-z:]nix", "languages/nix.png"
     ),  # Filters out unix, linux, etc.
+    Language(
+        "opensource",
+        "Open Source",
+        "📖",
+        r"open[- _]?source",
+        "languages/opensource.png",
+    ),
+    Language("gaming", "Gaming", "🎮", r"gaming|game", "languages/gaming.png"),
+    Language(
+        "security",
+        "Security",
+        "🔒",
+        r"security|infosec|appsec",
+        "languages/security.png",
+    ),
 ]
 
 
