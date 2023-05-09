@@ -201,7 +201,7 @@
       </footer>
     {% else %}
       <p style="text-align:center;">
-        No results, <a href="{% url "index" selected_lang.code %}">try clearing your search</a>!
+        No results, <a href="{% url "empty-index" %}">try clearing your search</a>!
       </p>
     {% endif %}
   </article>
