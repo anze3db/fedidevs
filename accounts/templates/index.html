@@ -72,7 +72,13 @@
         <div>
           <a style="cursor:pointer"
              data-target="modal-example"
-             onClick="toggleModal(event)">Select your Mastodon instance</a>  to make it easier to follow accounts below.
+             onClick="toggleModal(event)">
+            {% if selected_instance %}
+              {{ selected_instance }} selected
+            {% else %}
+              Select your Mastodon instance
+            {% endif %}
+          </a>  to make it easier to follow accounts below.
           <dialog id="modal-example">
             <article>
               <a href="#close"
