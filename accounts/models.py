@@ -69,15 +69,15 @@ class Account(models.Model):
     noindex = models.BooleanField(null=True, blank=True)
 
     created_at = models.DateTimeField()
-    last_status_at = models.DateTimeField(null=True, blank=True)
+    last_status_at = models.DateTimeField(null=True, blank=True, db_index=True)
     last_sync_at = models.DateTimeField()
 
-    followers_count = models.IntegerField()
+    followers_count = models.IntegerField(db_index=True)
     following_count = models.IntegerField()
-    statuses_count = models.IntegerField()
+    statuses_count = models.IntegerField(db_index=True)
 
     note = models.TextField()
-    url = models.URLField()
+    url = models.URLField(db_index=True)
     avatar = models.URLField()
     avatar_static = models.URLField()
     header = models.URLField()
