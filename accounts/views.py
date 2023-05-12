@@ -10,10 +10,9 @@ from .models import LANGUAGES, Account
 def index(request, lang: str | None = None):
     langs_map = {l.code: l for l in LANGUAGES}
     selected_lang = langs_map.get(lang)
+    search_query = Q()
     if selected_lang:
         search_query = Q(accountlookup__language=selected_lang.code)
-    else:
-        search_query = Q(accountlookupany__isnull=False)
 
     query = request.GET.get("q", "")
     order = request.GET.get("o", "-followers_count")

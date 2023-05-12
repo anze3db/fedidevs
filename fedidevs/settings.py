@@ -166,6 +166,8 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+DEBUG_TOOLBAR_CONFIG = {"RESULTS_CACHE_SIZE": 1000}
+
 
 if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
     sentry_sdk.init(

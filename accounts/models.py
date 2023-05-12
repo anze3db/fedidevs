@@ -114,7 +114,3 @@ class AccountLookup(models.Model):
         max_length=55,
         choices=[(lang.code, lang.name) for lang in LANGUAGES],
     )
-
-
-class AccountLookupAny(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)

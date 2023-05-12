@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django_rich.management import RichCommand
 
-from accounts.models import LANGUAGES, Account, AccountLookup, AccountLookupAny
+from accounts.models import LANGUAGES, Account, AccountLookup
 
 
 class Command(RichCommand):
@@ -28,11 +28,4 @@ class Command(RichCommand):
             )
             AccountLookup.objects.bulk_create(lookup_objects)
 
-        old_count = AccountLookupAny.objects.all().count()
-        AccountLookupAny.objects.all().delete()
-        self.console.print(
-            f"Creating any index for {len(any_lookup)} accounts. Diff {len(any_lookup) - old_count}."
-        )
-        AccountLookupAny.objects.bulk_create(
-            [AccountLookupAny(account_id=account_id) for account_id in any_lookup]
-        )
+        self.console.print("Done 🎉")
