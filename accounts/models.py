@@ -58,6 +58,9 @@ LANGUAGES = [
 
 
 class Account(models.Model):
+    account_id = models.TextField()
+    instance = models.TextField()
+
     username = models.TextField()
     acct = models.TextField()
     display_name = models.TextField()
@@ -86,6 +89,12 @@ class Account(models.Model):
     emojis = models.JSONField()
     roles = models.JSONField()
     fields = models.JSONField()
+
+    class Meta:
+        unique_together = (
+            "account_id",
+            "instance",
+        )
 
     def __str__(self):
         return self.username

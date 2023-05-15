@@ -13,9 +13,11 @@ INSTANCES = [
     "c.im",
     "chaos.social",
     "cyberplace.social",
+    "floss.social",
     "fosstodon.org",
     "functional.cafe",
     "hachyderm.io",
+    "indieweb.social",
     "infosec.exchange",
     "mas.to",
     "masto.ai",
@@ -71,7 +73,8 @@ class Command(RichCommand):
                         continue
                     fetched_accounts += [
                         Account(
-                            id=account["id"],
+                            account_id=account["id"],
+                            instance=account["url"].split("/")[2],
                             username=account["username"],
                             acct=account["acct"],
                             display_name=account["display_name"],
@@ -106,8 +109,8 @@ class Command(RichCommand):
 
                 await Account.objects.abulk_create(
                     fetched_accounts,
-                    unique_fields=["id"],
-                    update_conflicts=["id"],
+                    unique_fields=["account_id", "instance"],
+                    update_conflicts=["account_id", "instance"],
                     update_fields=[
                         "username",
                         "acct",
@@ -170,4 +173,4 @@ class Command(RichCommand):
             self.console.print(
                 f"[bold red]Error timeout[/bold red] for {instance} at offset {offset}"
             )
-            return [], instance
+            return instance, []
