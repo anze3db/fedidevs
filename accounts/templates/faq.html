@@ -1,26 +1,5 @@
 {% extends "layout.html" %}
 {% load static %}
-{% block page_title %}
-  {% if selected_lang %}
-    {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
-  {% else %}
-    👩‍💻 FediDevs 🧑‍💻
-  {% endif %}
-{% endblock %}
-{% block title %}
-  {% if selected_lang %}
-    {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
-  {% else %}
-    👩‍💻 FediDevs 🧑‍💻
-  {% endif %}
-{% endblock %}
-{% block twitter_title %}
-  {% if selected_lang %}
-    {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
-  {% else %}
-    👩‍💻 FediDevs 🧑‍💻
-  {% endif %}
-{% endblock %}
 {% block content %}
   <header style="text-align:center;">
     <h1>
@@ -64,10 +43,9 @@
         {% endfor %}
       </ul>
     </p>
-    <p>
-      If you did all the steps above and still don't see your account on FediDevs.com, <a href="mailto:hello@fedidevs.com">reach out</a> and we'll check!
-    </p>
-    <h4>3. Your instance must be indexed</h4>
+    <h4>3. Have at least one post/toot or one follower or follow a single other account</h4>
+    <p>Accounts with 0 posts, 0 followers, and 0 following are not indexed because they are usually spam accounts.</p>
+    <h4>4. Your instance must be indexed</h4>
     <p>We currently index the following instances:</p>
     <ul>
       {% for instance in instances %}
@@ -77,7 +55,7 @@
       {% endfor %}
     </ul>
     <p>
-      If you don't see your instance on the list, <a href="mailto:hello@fedidevs.com">please reach out</a> and we'll add it 🙏
+      If you did all the steps above and still don't see your account on FediDevs.com, <a href="mailto:hello@fedidevs.com">reach out</a> and we'll check!
     </p>
     <h2>How often is the data refreshed?</h2>
     <p>
