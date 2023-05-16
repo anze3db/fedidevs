@@ -31,6 +31,11 @@ urlpatterns = [
     path("robots.txt", robots_txt),
     path("faq/", views.faq, name="faq"),
     path("instance/", views.instance, name="instance"),
+    path(
+        "developers-on-mastodon/",
+        views.devs_on_mastodon,
+        name="developers-on-mastodon",
+    ),
     path("", views.index, name="empty-index"),
 ] + [
     path(f"{lang.code}/", views.index, name=lang.code, kwargs={"lang": lang.code})

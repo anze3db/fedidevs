@@ -1,5 +1,5 @@
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
@@ -66,6 +66,54 @@ def index(request, lang: str | None = None):
 
 def faq(request):
     return render(request, "faq.html", {"instances": INSTANCES, "languages": LANGUAGES})
+
+
+def devs_on_mastodon(request):
+    all_devs = (
+        Account.objects.values("instance")
+        .annotate(count=Count("instance"))
+        .filter(
+            accountlookup__language__in=["python", "javascript", "ruby", "php", "rust"]
+        )
+        .order_by("-count")[:10]
+    )
+    by_language_devs = (
+        Account.objects.values("instance", "accountlookup__language")
+        .filter(
+            accountlookup__language__in=["python", "javascript", "ruby", "php", "rust"]
+        )
+        .annotate(count=Count("instance"))
+        .order_by("-count")
+    )
+    by_python_devs = [
+        i for i in by_language_devs if i["accountlookup__language"] == "python"
+    ][:10]
+    by_javascript_devs = [
+        i for i in by_language_devs if i["accountlookup__language"] == "javascript"
+    ][:10]
+    by_ruby_devs = [
+        i for i in by_language_devs if i["accountlookup__language"] == "ruby"
+    ][:10]
+    by_php_devs = [
+        i for i in by_language_devs if i["accountlookup__language"] == "php"
+    ][:10]
+    by_rust_devs = [
+        i for i in by_language_devs if i["accountlookup__language"] == "rust"
+    ][:10]
+
+    return render(
+        request,
+        "devs_on_mastodon.html",
+        {
+            "all_devs": all_devs,
+            "python_devs": by_python_devs,
+            "ruby_devs": by_ruby_devs,
+            "php_devs": by_php_devs,
+            "rust_devs": by_rust_devs,
+            "javascript_devs": by_javascript_devs,
+            "page_title": "Software Developers on Mastodon | 👩‍💻 FediDevs 🧑‍💻",
+        },
+    )
 
 
 @require_http_methods(["POST"])
