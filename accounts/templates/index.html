@@ -1,27 +1,6 @@
 {% extends "layout.html" %}
 {% load account_extras %}
 {% load static %}
-{% block page_title %}
-  {% if selected_lang %}
-    {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
-  {% else %}
-    👩‍💻 FediDevs 🧑‍💻
-  {% endif %}
-{% endblock %}
-{% block title %}
-  {% if selected_lang %}
-    {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
-  {% else %}
-    👩‍💻 FediDevs 🧑‍💻
-  {% endif %}
-{% endblock %}
-{% block twitter_title %}
-  {% if selected_lang %}
-    {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
-  {% else %}
-    👩‍💻 FediDevs 🧑‍💻
-  {% endif %}
-{% endblock %}
 {% block content %}
   <header style="text-align:center;">
     <h1>👩‍💻 FediDevs 🧑‍💻</h1>
