@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import redirect, render
+from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_http_methods
 
 from .management.commands.crawler import INSTANCES
@@ -72,12 +73,11 @@ def faq(request):
     return render(request, "faq.html", {"instances": INSTANCES, "languages": LANGUAGES})
 
 
+@cache_page(60 * 60 * 24, cache="memory")
 def devs_on_mastodon(request):
     all_devs = (
-        Account.objects.values("instance").annotate(count=Count("instance"))
-        # .filter(
-        #     accountlookup__language__in=["python", "javascript", "ruby", "php", "rust"]
-        # )
+        Account.objects.values("instance")
+        .annotate(count=Count("instance"))
         .order_by("-count")[:10]
     )
     by_language_devs = (
