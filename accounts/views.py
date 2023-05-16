@@ -39,6 +39,10 @@ def index(request, lang: str | None = None):
             "selected_lang": selected_lang,
             "languages": LANGUAGES,
             "instances": INSTANCES,
+            "instances_count": len(INSTANCES),
+            "accounts_count": Account.objects.filter(
+                discoverable=True, noindex=False
+            ).count(),  # TODO might be slow
             "selected_instance": request.session.get("selected_instance"),
             "query": query,
             "order": order,
@@ -70,11 +74,10 @@ def faq(request):
 
 def devs_on_mastodon(request):
     all_devs = (
-        Account.objects.values("instance")
-        .annotate(count=Count("instance"))
-        .filter(
-            accountlookup__language__in=["python", "javascript", "ruby", "php", "rust"]
-        )
+        Account.objects.values("instance").annotate(count=Count("instance"))
+        # .filter(
+        #     accountlookup__language__in=["python", "javascript", "ruby", "php", "rust"]
+        # )
         .order_by("-count")[:10]
     )
     by_language_devs = (

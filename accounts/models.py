@@ -49,13 +49,13 @@ LANGUAGES = [
         "languages/opensource.png",
     ),
     # Language("gaming", "Gaming", "🎮", r"gaming|game", "languages/gaming.png"),
-    Language(
-        "security",
-        "Security",
-        "🔒",
-        r"security|infosec|appsec",
-        "languages/security.png",
-    ),
+    # Language(
+    #     "security",
+    #     "Security",
+    #     "🔒",
+    #     r"security|infosec|appsec",
+    #     "languages/security.png",
+    # ),
 ]
 
 
@@ -97,6 +97,9 @@ class Account(models.Model):
             "account_id",
             "instance",
         )
+        indexes = [
+            models.Index(fields=["noindex", "discoverable"]),
+        ]
 
     def __str__(self):
         return self.username
