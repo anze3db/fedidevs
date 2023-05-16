@@ -18,6 +18,7 @@ from django.http import HttpResponse
 from django.urls import include, path
 
 from accounts import views
+from accounts.models import LANGUAGES
 
 
 def robots_txt(request):
@@ -31,5 +32,7 @@ urlpatterns = [
     path("faq/", views.faq, name="faq"),
     path("instance/", views.instance, name="instance"),
     path("", views.index, name="empty-index"),
-    path("<str:lang>", views.index, name="index"),
+] + [
+    path(f"{lang.code}/", views.index, name=lang.code, kwargs={"lang": lang.code})
+    for lang in LANGUAGES
 ]

@@ -29,3 +29,11 @@ td {
     width: 16px;
     height: 16px;
 }
+
+.text-center {
+    text-align: center;
+}
+
+ul.no-bullets li {
+    list-style-type: none;
+}

@@ -37,7 +37,7 @@
       <ul style="flex-wrap: wrap; justify-content: center;">
         {% for language in languages %}
           <li>
-            <a href="{% if selected_lang.code != language.code %}{% url "index" language.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o={{ order }}"
+            <a href="{% if selected_lang.code != language.code %}{% url language.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o={{ order }}"
                class="{% if selected_lang.code != language.code %}outline{% endif %} "
                role="button">
               <img src="{% static language.image %}"
@@ -51,7 +51,7 @@
       </ul>
     </nav>
     <form method="GET"
-          action="{% if selected_lang %}{% url 'index' selected_lang.code %}{% else %}{% url 'empty-index' %}{% endif %}">
+          action="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url 'empty-index' %}{% endif %}">
       <div>
         <div style="display:flex; gap: 16px;">
           <input type="text"
@@ -66,149 +66,150 @@
         </div>
       </div>
     </form>
-    {% if accounts %}
-      <form method="POST" action="{% url 'instance' %}">
-        {% csrf_token %}
-        <div>
-          <a style="cursor:pointer"
-             data-target="modal-example"
-             onClick="toggleModal(event)">
-            {% if selected_instance %}
-              {{ selected_instance }} selected
-            {% else %}
-              Select your Mastodon instance
-            {% endif %}
-          </a>  to make it easier to follow accounts below.
-          <dialog id="modal-example">
-            <article>
-              <a href="#close"
-                 aria-label="Close"
-                 class="close"
-                 data-target="modal-example"
-                 onClick="toggleModal(event)"></a>
-              <h3>Select your Mastodon instance</h3>
-              <p>
-                Account links will use your instance making it easier to follow accounts that you open. This way you'll avoid the Follow Dialog for people on different instances.
-              </p>
-              <p>
-                <select id="instance" name="instance">
-                  <option value="">
-                    -- Select an instance --
+    <form method="POST" action="{% url 'instance' %}">
+      {% csrf_token %}
+      <div>
+        <a style="cursor:pointer"
+           data-target="modal-example"
+           onClick="toggleModal(event)">
+          {% if selected_instance %}
+            {{ selected_instance }} selected
+          {% else %}
+            Select your Mastodon instance
+          {% endif %}
+        </a>  to make it easier to follow accounts below.
+        <dialog id="modal-example">
+          <article>
+            <a href="#close"
+               aria-label="Close"
+               class="close"
+               data-target="modal-example"
+               onClick="toggleModal(event)"></a>
+            <h3>Select your Mastodon instance</h3>
+            <p>
+              Account links will use your instance making it easier to follow accounts that you open. This way you'll avoid the Follow Dialog for people on different instances.
+            </p>
+            <p>
+              <select id="instance" name="instance">
+                <option value="">
+                  -- Select an instance --
+                </option>
+                {% for instance in instances %}
+                  <option value="{{ instance }}"
+                          {% if instance == selected_instance %}selected{% endif %}>
+                    {{ instance }}
                   </option>
-                  {% for instance in instances %}
-                    <option value="{{ instance }}"
-                            {% if instance == selected_instance %}selected{% endif %}>
-                      {{ instance }}
-                    </option>
-                  {% endfor %}
-                </select>
-              </p>
-              <footer>
-                <a href="#cancel"
-                   role="button"
-                   class="secondary"
-                   data-target="modal-example"
-                   onClick="toggleModal(event)">Cancel</a>
-                <a href="#confirm"
-                   role="button"
-                   data-target="modal-example"
-                   onClick="closest('form').submit()">Confirm</a>
-              </footer>
-            </article>
-          </dialog>
-        </div>
-      </form>
-      <figure>
-        <table role="grid">
-          <thead>
+                {% endfor %}
+              </select>
+            </p>
+            <footer>
+              <a href="#cancel"
+                 role="button"
+                 class="secondary"
+                 data-target="modal-example"
+                 onClick="toggleModal(event)">Cancel</a>
+              <a href="#confirm"
+                 role="button"
+                 data-target="modal-example"
+                 onClick="closest('form').submit()">Confirm</a>
+            </footer>
+          </article>
+        </dialog>
+      </div>
+    </form>
+    <figure>
+      <table role="grid">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Note</th>
+            <th>
+              <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=-last_status_at">
+                {% if order == '-last_status_at' %}
+                  <strong>&#9660;&nbsp;Last Status</strong>
+                {% else %}
+                  Last Status
+                {% endif %}
+              </a>
+            </th>
+            <th>
+              <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=-statuses_count">
+                {% if order == '-statuses_count' %}
+                  <strong>&#9660;&nbsp;Statuses Count</strong>
+                {% else %}
+                  Statuses Count
+                {% endif %}
+              </a>
+            </th>
+            <th>
+              <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=-followers_count">
+                {% if order == '-followers_count' %}
+                  <strong>&#9660;&nbsp;Followers Count</strong>
+                {% else %}
+                  Followers Count
+                {% endif %}
+              </a>
+            </th>
+            <th>
+              <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=url">
+                {% if order == 'url' %}
+                  <strong>&#9660;&nbsp;Source</strong>
+                {% else %}
+                  Source
+                {% endif %}
+              </a>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for account in accounts %}
             <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Note</th>
-              <th>
-                <a href="{% if selected_lang %}{% url "index" selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=-last_status_at">
-                  {% if order == '-last_status_at' %}
-                    <strong>&#9660;&nbsp;Last Status</strong>
-                  {% else %}
-                    Last Status
-                  {% endif %}
-                </a>
-              </th>
-              <th>
-                <a href="{% if selected_lang %}{% url "index" selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=-statuses_count">
-                  {% if order == '-statuses_count' %}
-                    <strong>&#9660;&nbsp;Statuses Count</strong>
-                  {% else %}
-                    Statuses Count
-                  {% endif %}
-                </a>
-              </th>
-              <th>
-                <a href="{% if selected_lang %}{% url "index" selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=-followers_count">
-                  {% if order == '-followers_count' %}
-                    <strong>&#9660;&nbsp;Followers Count</strong>
-                  {% else %}
-                    Followers Count
-                  {% endif %}
-                </a>
-              </th>
-              <th>
-                <a href="{% if selected_lang %}{% url "index" selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=url">
-                  {% if order == 'url' %}
-                    <strong>&#9660;&nbsp;Source</strong>
-                  {% else %}
-                    Source
-                  {% endif %}
-                </a>
-              </th>
+              <td>
+                <img class="avatar"
+                     src="{{ account.avatar }}"
+                     alt="{{ account.login }}"
+                     width="50"
+                     height="50"/>
+              </td>
+              <td>
+                <a href="https://{% firstof selected_instance account.source %}/@{{ account.username }}@{{ account.source }}"
+                   target="_blank">{% render_emojis account.display_name account.emojis %}</a>
+              </td>
+              <td>{% render_emojis account.note account.emojis %}</td>
+              <td>{{ account.last_status_at_cached }}</td>
+              <td>{{ account.statuses_count }}</td>
+              <td>{{ account.followers_count }}</td>
+              <td>
+                <a href="https://{{ account.source }}">{{ account.source }}</a>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {% for account in accounts %}
-              <tr>
-                <td>
-                  <img class="avatar"
-                       src="{{ account.avatar }}"
-                       alt="{{ account.login }}"
-                       width="50"
-                       height="50"/>
-                </td>
-                <td>
-                  <a href="https://{% firstof selected_instance account.source %}/@{{ account.username }}@{{ account.source }}"
-                     target="_blank">{% render_emojis account.display_name account.emojis %}</a>
-                </td>
-                <td>{% render_emojis account.note account.emojis %}</td>
-                <td>{{ account.last_status_at_cached }}</td>
-                <td>{{ account.statuses_count }}</td>
-                <td>{{ account.followers_count }}</td>
-                <td>
-                  <a href="https://{{ account.source }}">{{ account.source }}</a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </figure>
-      <footer>
-        <div class="pagination">
-          <span class="step-links">
-            {% if accounts.has_previous %}
-              <a href="?page={{ accounts.previous_page_number }}&q={{ query }}&o={{ order }}">&laquo; previous</a>
-            {% endif %}
-            <span class="current">Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}</span>
-            {% if accounts.has_next %}
-              <a href="?page={{ accounts.next_page_number }}&q={{ query }}&o={{ order }}">next &raquo;</a>
-            {% endif %}
-          </span>
-        </div>
-        <p style="text-align:center">
-          <small>Don't see yourself on the list? Read through <a href="{% url 'faq' %}">the FAQ</a> to make sure you're eligible to be listed.</small>
-        </p>
-      </footer>
-    {% else %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </figure>
+    {% if not accounts %}
       <p style="text-align:center;">
         No results, <a href="{% url "empty-index" %}">try clearing your search</a>!
       </p>
     {% endif %}
+    <footer>
+      <div class="pagination">
+        <span class="step-links">
+          {% if accounts.has_previous %}
+            <a href="?page={{ accounts.previous_page_number }}&q={{ query }}&o={{ order }}">&laquo; previous</a>
+          {% endif %}
+          {% if accounts %}
+            <span class="current">Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}</span>
+          {% endif %}
+          {% if accounts.has_next %}
+            <a href="?page={{ accounts.next_page_number }}&q={{ query }}&o={{ order }}">next &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+      <p style="text-align:center">
+        <small>Don't see yourself on the list? Read through <a href="{% url 'faq' %}">the FAQ</a> to make sure you're eligible to be listed.</small>
+      </p>
+    </footer>
   </article>
 {% endblock %}
