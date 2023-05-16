@@ -48,7 +48,7 @@ LANGUAGES = [
         r"open[- _]?source|free[- _]?software|libre[- _]?software",
         "languages/opensource.png",
     ),
-    Language("gaming", "Gaming", "🎮", r"gaming|game", "languages/gaming.png"),
+    # Language("gaming", "Gaming", "🎮", r"gaming|game", "languages/gaming.png"),
     Language(
         "security",
         "Security",
