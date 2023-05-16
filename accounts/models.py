@@ -20,11 +20,11 @@ LANGUAGES = [
         "javascript",
         "JavaScript",
         "📜",
-        r"javascript|js[^a-z:]|typescript",
+        r"javascript|[^a-z]js[^a-z:]|typescript",
         "languages/javascript.png",
     ),
     Language(
-        "rust", "Rust", "🦀", r"[^a-z:]rust", "languages/rust.png"
+        "rust", "Rust", "🦀", r"[^a-z:]rust[^a-z]|rustlang", "languages/rust.png"
     ),  # Filters out trust, etc.
     Language("ruby", "Ruby", "💎", r"ruby", "languages/ruby.png"),
     Language("java", "Java", "☕", r"java[^script]", "languages/java.png"),
@@ -33,7 +33,9 @@ LANGUAGES = [
     Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
     Language("scala", "Scala", "🧪", r"[^e]scala[^b]", "languages/scala.png"),
     Language("golang", "Golang", "🐹", r"golang", "languages/golang.png"),
-    Language("php", "PHP", "🐘", r"php", "languages/php.png"),
+    Language(
+        "php", "PHP", "🐘", r"[^\.]php", "languages/php.png"
+    ),  # Filters out index.php? and others
     Language("linux", "Linux", "🐧", r"linux", "languages/linux.png"),
     Language("haskell", "Haskell", "🦥", r"haskell", "languages/haskell.png"),
     Language(
