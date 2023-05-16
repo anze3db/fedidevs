@@ -20,7 +20,7 @@ class Command(RichCommand):
                     (Q(note__iregex=lang.regex) | Q(display_name__iregex=lang.regex)),
                     discoverable=True,
                     noindex=False,
-                )
+                ).exclude(followers_count=0, statuses_count=0, following_count=0)
             ]
             any_lookup |= {lookup.account.id for lookup in lookup_objects}
             self.console.print(
