@@ -69,6 +69,7 @@ def index(request, lang: str | None = None):
     )
 
 
+@cache_page(60 * 60 * 24, cache="memory")
 def faq(request):
     return render(request, "faq.html", {"instances": INSTANCES, "languages": LANGUAGES})
 
