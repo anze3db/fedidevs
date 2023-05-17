@@ -6,9 +6,9 @@
     <h1>
       <a href="{% url "empty-index" %}">👩‍💻 FediDevs 🧑‍💻</a>
     </h1>
+    <h2>Mastodon Instances with Software Developers</h2>
   </header>
   <article>
-    <h2>Software Developers on Mastodon</h2>
     <p>
       Mastodon is a social network similar to Twitter, but with the key difference that there is no single entity running it. Instead, Mastodon is comprised of thousands of instances. According to <a href="https://mastodon.help">mastodon.help</a> the total number of instances is currently <strong>12.206</strong>.
     </p>
@@ -65,23 +65,15 @@
     <p>
       <a href="https://techhub.social">techhub.social</a> is primarily for passionate technologists, but according to the instance description everyone is welcome.
     </p>
-    <h3>
-      Mastodon instances with most Python developers
-    </h3>
+    <h3>Mastodon instances with most Python developers</h3>
     <table style="width:20%;">
-      <tr >
-        <th style="text-align:right">
-          Count
-        </th>
-        <th>
-          Instance
-        </th>
+      <tr>
+        <th style="text-align:right">Count</th>
+        <th>Instance</th>
       </tr>
       {% for instance in python_devs %}
         <tr>
-          <td style="text-align:right">
-            {{ instance.count }}
-          </td>
+          <td style="text-align:right">{{ instance.count }}</td>
           <td>
             <a href="https://{{ instance.instance }}">{{ instance.instance }}</a>
           </td>
@@ -94,23 +86,15 @@
     <p>
       Besides the two largest instances most Python developers seem to hang out on <a href="https://fosstodon.org/">fosstodon.org</a>. This is where some of the largest Python-related accounts live, including the <a href="https://fosstodon.org/@ThePSF@fosstodon.org">official account</a> for the Python Software Foundation, <a href="https://fosstodon.org/@mkennedy@fosstodon.org">Michael Kennedy</a>, <a href="https://fosstodon.org/@brettcannon@fosstodon.org">Brett Cannon</a>, and others.
     </p>
-    <h3>
-      Mastodon instances with most JavaScript developers
-    </h3>
+    <h3>Mastodon instances with most JavaScript developers</h3>
     <table style="width:20%;">
-      <tr >
-        <th style="text-align:right">
-          Count
-        </th>
-        <th>
-          Instance
-        </th>
+      <tr>
+        <th style="text-align:right">Count</th>
+        <th>Instance</th>
       </tr>
       {% for instance in javascript_devs %}
         <tr>
-          <td style="text-align:right">
-            {{ instance.count }}
-          </td>
+          <td style="text-align:right">{{ instance.count }}</td>
           <td>
             <a href="https://{{ instance.instance }}">{{ instance.instance }}</a>
           </td>
@@ -120,23 +104,15 @@
     <p>
       The top two largest instances for JavaScript developers are the same as the Python ones, but fosstodon.org isn't as popular with JavaScript developers as it is with Python developers.
     </p>
-    <h3>
-      Mastodon instances with most Rust developers
-    </h3>
+    <h3>Mastodon instances with most Rust developers</h3>
     <table style="width:20%;">
-      <tr >
-        <th style="text-align:right">
-          Count
-        </th>
-        <th>
-          Instance
-        </th>
+      <tr>
+        <th style="text-align:right">Count</th>
+        <th>Instance</th>
       </tr>
       {% for instance in rust_devs %}
         <tr>
-          <td style="text-align:right">
-            {{ instance.count }}
-          </td>
+          <td style="text-align:right">{{ instance.count }}</td>
           <td>
             <a href="https://{{ instance.instance }}">{{ instance.instance }}</a>
           </td>
@@ -146,23 +122,15 @@
     <p>
       Rust developers seem to prefer <a href="https://hachyderm.io">hachyderm.io</a> over <a href="https://mastodon.social">mastodon.social</a> and it seems to be the only programming language with these instances switched.
     </p>
-    <h3>
-      Mastodon instances with most Ruby developers
-    </h3>
+    <h3>Mastodon instances with most Ruby developers</h3>
     <table style="width:20%;">
-      <tr >
-        <th style="text-align:right">
-          Count
-        </th>
-        <th>
-          Instance
-        </th>
+      <tr>
+        <th style="text-align:right">Count</th>
+        <th>Instance</th>
       </tr>
       {% for instance in ruby_devs %}
         <tr>
-          <td style="text-align:right">
-            {{ instance.count }}
-          </td>
+          <td style="text-align:right">{{ instance.count }}</td>
           <td>
             <a href="https://{{ instance.instance }}">{{ instance.instance }}</a>
           </td>
@@ -172,23 +140,15 @@
     <p>
       No surprise that Ruby developers prefer the ruby Mastodon instance - <a href="https://ruby.social">ruby.social</a>.
     </p>
-    <h3>
-      Mastodon instances with most PHP developers
-    </h3>
+    <h3>Mastodon instances with most PHP developers</h3>
     <table style="width:20%;">
-      <tr >
-        <th style="text-align:right">
-          Count
-        </th>
-        <th>
-          Instance
-        </th>
+      <tr>
+        <th style="text-align:right">Count</th>
+        <th>Instance</th>
       </tr>
       {% for instance in php_devs %}
         <tr>
-          <td style="text-align:right">
-            {{ instance.count }}
-          </td>
+          <td style="text-align:right">{{ instance.count }}</td>
           <td>
             <a href="https://{{ instance.instance }}">{{ instance.instance }}</a>
           </td>
@@ -198,9 +158,7 @@
     <p>
       Similar to Ruby developers PHP developers also have their instance <a href="phpc.social">phpc.social</a>. Unlike the Ruby community, it seems like the PHP community is more spread out and the official PHP instance takes up a smaller percentage of users than the ruby.social instance in the Ruby community.
     </p>
-    <h3>
-      Other popular languages
-    </h3>
+    <h3>Other popular languages</h3>
     <p>
       <a href="{% url "empty-index" %}">Fedidevs</a> also allows filtering by <a href="{% url 'java' %}">Java</a>, <a href="{% url 'csharp' %}">C#</a>, <a href="{% url 'golang' %}">Golang</a>, and others. But the amount of accounts isn't as high as the ones listed in this article so I've omitted it for brevity. Let me know if you would still want to see the statistics for these.
     </p>

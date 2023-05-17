@@ -4,10 +4,10 @@
 {% block content %}
   <header style="text-align:center;">
     <h1>👩‍💻 FediDevs 🧑‍💻</h1>
-    <h3>Discover {{ adjectives|random }} devs from across the fediverse 🌐</h3>
-    <h4>
+    <h2>Discover {{ adjectives|random }} devs on Mastodon 🌐</h2>
+    <h3>
       <mark>{{ accounts_count }}</mark> accounts listed from <mark>{{ instances_count }}</mark> Mastodon instances.
-    </h4>
+    </h3>
     <p>
       Read <a href="{% url 'faq' %}">the FAQ</a> to see how to get listed. <a target="_blank" href="https://anze3db.ck.page/76db70f6e0 ">Subscribe to the newsletter</a> for updates. Suggest new features on <a href="https://fosstodon.org/@anze3db">Mastodon</a> or <a href="mailto:hello@fedidevs.com">Email</a>!
     </p>
@@ -24,7 +24,7 @@
                    alt="{{ language.code }}"
                    class="emojione"
                    height="16"
-                   width="16"/>
+                   width="16" />
             {{ language.name }}</a>
           </li>
         {% endfor %}
@@ -37,7 +37,7 @@
           <input type="text"
                  name="q"
                  placeholder="Filter by name, bio, or instance..."
-                 value="{{ query }}"/>
+                 value="{{ query }}" />
           <input type="hidden" name="o" value="{{ order }}" />
           {% if query or selected_lang %}
             <a style="margin: 16px 0px;" href="{% url 'empty-index' %}">Clear</a>
@@ -71,14 +71,10 @@
             </p>
             <p>
               <select id="instance" name="instance">
-                <option value="">
-                  -- Select an instance --
-                </option>
+                <option value="">-- Select an instance --</option>
                 {% for instance in instances %}
                   <option value="{{ instance }}"
-                          {% if instance == selected_instance %}selected{% endif %}>
-                    {{ instance }}
-                  </option>
+                          {% if instance == selected_instance %}selected{% endif %}>{{ instance }}</option>
                 {% endfor %}
               </select>
             </p>
@@ -150,7 +146,7 @@
                      src="{{ account.avatar }}"
                      alt="{{ account.login }}"
                      width="50"
-                     height="50"/>
+                     height="50" />
               </td>
               <td>
                 <a href="https://{% firstof selected_instance account.source %}/@{{ account.username }}@{{ account.source }}"

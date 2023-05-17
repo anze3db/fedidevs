@@ -36,6 +36,13 @@ def index(request, lang: str | None = None):
         request,
         "index.html",
         {
+            "page_title": "👩‍💻 FediDevs 🧑‍💻 List of software developers on Mastodon"
+            if not selected_lang
+            else f"👩‍💻 FediDevs 🧑‍💻 List of {selected_lang.name} developers on Mastodon",
+            "page_description": "Discover amazing developers from across the fediverse."
+            if not selected_lang
+            else f"Discover amazing {selected_lang.name} developers from across the fediverse.",
+            "page_image": "og.png",
             "accounts": page_obj,
             "selected_lang": selected_lang,
             "languages": LANGUAGES,
@@ -71,7 +78,17 @@ def index(request, lang: str | None = None):
 
 @cache_page(60 * 60 * 24, cache="memory")
 def faq(request):
-    return render(request, "faq.html", {"instances": INSTANCES, "languages": LANGUAGES})
+    return render(
+        request,
+        "faq.html",
+        {
+            "page_title": "👩‍💻 FediDevs 🧑‍💻 | FAQ",
+            "page_description": "Frequently Asked Questions",
+            "page_image": "faq.png",
+            "instances": INSTANCES,
+            "languages": LANGUAGES,
+        },
+    )
 
 
 @cache_page(60 * 60 * 24, cache="memory")
@@ -109,13 +126,15 @@ def devs_on_mastodon(request):
         request,
         "devs_on_mastodon.html",
         {
+            "page_title": "👩‍💻 FediDevs 🧑‍💻 | Mastodon instances with software developers",
+            "page_description": "Which Mastodon instances have the most software developer accounts.",
+            "page_image": "devs-on-mastodon.png",
             "all_devs": all_devs,
             "python_devs": by_python_devs,
             "ruby_devs": by_ruby_devs,
             "php_devs": by_php_devs,
             "rust_devs": by_rust_devs,
             "javascript_devs": by_javascript_devs,
-            "page_title": "Software Developers on Mastodon | 👩‍💻 FediDevs 🧑‍💻",
         },
     )
 
@@ -123,4 +142,5 @@ def devs_on_mastodon(request):
 @require_http_methods(["POST"])
 def instance(request):
     request.session["selected_instance"] = request.POST.get("instance")
+    return redirect("empty-index")
     return redirect("empty-index")

@@ -1,42 +1,30 @@
 {% load static %}
 {% load humanize %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
       <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link rel="stylesheet" href="{% static 'pico.min.css' %}">
             <link rel="stylesheet" href="{% static 'site.css' %}">
-            <title>
-                  {% if page_title %}
-                        {{ page_title }}
-                  {% elif selected_lang %}
-                        {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻
-                  {% else %}
-                        👩‍💻 FediDevs 🧑‍💻
-                  {% endif %}
-            </title>
+            <title>{{ page_title }}</title>
             <meta name="description"
-                  content="Discover amazing developers from across the fediverse.">
+                  content="{% if page_description %}{{ page_description }}{{ else }}Discover amazing developers from across the fediverse.{% endif %}">
             <!-- Facebook Meta Tags -->
             <meta property="og:url" content="https://fedidevs.com">
             <meta property="og:type" content="website">
-            <meta property="og:title"
-                  content="{% if page_title %} {{ page_title }} {% elif selected_lang %} {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻 {% else %} 👩‍💻 FediDevs 🧑‍💻 {% endif %}">
-            <meta property="og:description"
-                  content="Discover amazing developers from across the fediverse.">
+            <meta property="og:title" content="{{ page_title }}">
+            <meta property="og:description" content="{{ page_description }}">
             <meta property="og:image"
-                  content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static 'og.png' %}">
+                  content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static page_image %}">
             <!-- Twitter Meta Tags -->
             <meta name="twitter:card" content="summary_large_image">
             <meta property="twitter:domain" content="fedidevs.com">
             <meta property="twitter:url" content="https://fedidevs.com">
-            <meta name="twitter:title"
-                  content="{% if page_title %} {{ page_title }} {% elif selected_lang %} {{ selected_lang.emoji }} {{ selected_lang.name }} developers | 👩‍💻 FediDevs 🧑‍💻 {% else %} 👩‍💻 FediDevs 🧑‍💻 {% endif %}">
-            <meta name="twitter:description"
-                  content="Discover amazing developers from across the fediverse.">
+            <meta name="twitter:title" content="{{ page_title }}">
+            <meta name="twitter:description" content="{{ page_description }}">
             <meta name="twitter:image"
-                  content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static 'og.png' %}">
+                  content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static page_image %}">
       </head>
       <body>
             <main class="container">
