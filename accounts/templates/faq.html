@@ -46,7 +46,7 @@
     <h4>3. Have at least one post/toot or one follower or follow a single other account</h4>
     <p>Accounts with 0 posts, 0 followers, and 0 following are not indexed because they are usually spam accounts.</p>
     <h4>4. Your instance must be indexed</h4>
-    <p>We currently index the following instances:</p>
+    <p>FediDevs currently indexes the following instances:</p>
     <ul>
       {% for instance in instances %}
         <li>
@@ -63,14 +63,14 @@
     </p>
     <h2>How to get removed from FediDevs.com?</h2>
     <p>
-      The easiest way is to mark your account as not discoverable in the Mastodon profile settings. Uncheck the checkbox that says "Suggest account to others" at <code>{your_instance}/settings/profile</code>. This will remove your account the next time we sync.
+      The easiest way is to mark your account as not discoverable in the Mastodon profile settings. Uncheck the checkbox that says "Suggest account to others" at <code>{your_instance}/settings/profile</code>. This will remove your account on next sync (in about 1 week).
     </p>
     <p>
       If you don't want to wait until the next sync <a href="mailto:hello@fedidevs.com">please reach out</a> and we'll remove you immediately.
     </p>
     <h2>How to get your instance removed from FediDevs.com?</h2>
     <p>
-      If you are an admin of an instance that is listed above, but don't want us from indexing it anymore, please send us <a href="mailto:hello@fedidevs.com">an email</a>. Once we confirm your identity we will remove all your instance accounts from the index and never index your instance again.
+      If you are an admin of an instance that is listed above, but don't want us from indexing it anymore, please send us <a href="mailto:hello@fedidevs.com">an email</a>. Once I confirm your identity I will remove all accounts from your instance and never index your instance again.
     </p>
   </article>
 {% endblock %}

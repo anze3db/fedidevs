@@ -142,7 +142,7 @@ class Command(RichCommand):
                 )
                 offset += 1
             self.console.print("Disabling accounts that are not discoverable anymore")
-            # TODO: Maybe we should fetch the most recent data from the instances instead?
+            # TODO: Maybe I should fetch the most recent data from the instances instead?
             # Account.objects.filter(last_sync_at__lt=start_time).update(
             #     discoverable=False
             # )
