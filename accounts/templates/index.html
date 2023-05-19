@@ -153,8 +153,13 @@
                        height="50" />
                 </td>
                 <td>
-                  <a href="https://{% firstof selected_instance account.source %}/@{{ account.username }}@{{ account.source }}"
-                     target="_blank">{% render_emojis account.display_name account.emojis %}</a>
+                  {% if selected_instance and selected_instance != account.source %}
+                    <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}"
+                       target="_blank">{% render_emojis account.display_name account.emojis %}</a>
+                  {% else %}
+                    <a href="https://{{ account.source }}/@{{ account.username }}"
+                       target="_blank">{% render_emojis account.display_name account.emojis %}</a>
+                  {% endif %}
                 </td>
                 <td>{% render_emojis account.note account.emojis %}</td>
                 <td>{{ account.last_status_at_cached }}</td>
