@@ -17,7 +17,11 @@ class Command(RichCommand):
             lookup_objects = [
                 AccountLookup(account=account, language=lang.code)
                 for account in Account.objects.filter(
-                    (Q(note__iregex=lang.regex) | Q(display_name__iregex=lang.regex)),
+                    (
+                        Q(note__iregex=lang.regex)
+                        | Q(display_name__iregex=lang.regex)
+                        | Q(fields__iregex=lang.regex)
+                    ),
                     discoverable=True,
                     noindex=False,
                 ).exclude(followers_count=0, statuses_count=0, following_count=0)
