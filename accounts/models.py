@@ -27,12 +27,13 @@ LANGUAGES = [
         "rust", "Rust", "🦀", r"[^a-z:]rust[^a-z]|rustlang", "languages/rust.png"
     ),  # Filters out trust, etc.
     Language("ruby", "Ruby", "💎", r"ruby", "languages/ruby.png"),
-    Language("java", "Java", "☕", r"java[^script]", "languages/java.png"),
-    Language("csharp", "C#", "♫", r"csharp|c#", "languages/csharp.png"),
-    Language("kotlin", "Kotlin", "🤖", r"kotlin", "languages/kotlin.png"),
-    Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
-    Language("scala", "Scala", "🧪", r"[^e]scala[^b]", "languages/scala.png"),
     Language("golang", "Golang", "🐹", r"golang", "languages/golang.png"),
+    Language("java", "Java", "☕", r"java[^script]", "languages/java.png"),
+    Language("kotlin", "Kotlin", "🤖", r"kotlin", "languages/kotlin.png"),
+    Language("scala", "Scala", "🧪", r"[^e]scala[^b]", "languages/scala.png"),
+    Language("csharp", "C#", "♫", r"csharp|c#", "languages/csharp.png"),
+    Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
+    Language("dotnet", ".NET", "🌐", r" .net|dotnet", "languages/dotnet.png"),
     Language(
         "php", "PHP", "🐘", r"[^\.]php", "languages/php.png"
     ),  # Filters out index.php? and others

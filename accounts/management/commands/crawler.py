@@ -13,6 +13,7 @@ INSTANCES = [
     "c.im",
     "chaos.social",
     "cyberplace.social",
+    "dotnet.social",
     "floss.social",
     "fosstodon.org",
     "functional.cafe",
@@ -31,6 +32,7 @@ INSTANCES = [
     "mstdn.party",
     "mstdn.social",
     "ohai.social",
+    "oldbytes.space",
     "phpc.social",
     "ruby.social",
     "sfba.social",
@@ -38,6 +40,7 @@ INSTANCES = [
     "tech.lgbt",
     "techhub.social",
     "universeodon.com",
+    # "masto.ai"
     # "social.kernel.org",
 ]
 
