@@ -3,7 +3,10 @@
 {% load static %}
 {% block content %}
   <header style="text-align:center;">
-    <h1>👩‍💻 FediDevs 🧑‍💻</h1>
+    <h1 class="logo">
+      <img src="{% static 'logo.png' %}" alt="logo">
+      FEDIDEVS
+    </h1>
     <h2>Discover {{ adjectives|random }} devs on Mastodon 🌐</h2>
     <h3>
       <mark>{{ accounts_count }}</mark> accounts listed from <mark>{{ instances_count }}</mark> Mastodon instances.

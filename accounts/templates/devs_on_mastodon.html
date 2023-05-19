@@ -3,8 +3,9 @@
 {% load static %}
 {% block content %}
   <header style="text-align:center;">
-    <h1>
-      <a href="{% url "empty-index" %}">👩‍💻 FediDevs 🧑‍💻</a>
+    <h1 class="logo">
+      <img src="{% static 'logo.png' %}" alt="logo">
+      FEDIDEVS
     </h1>
     <h2>Mastodon Instances with Software Developers</h2>
   </header>

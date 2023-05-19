@@ -36,9 +36,9 @@ def index(request, lang: str | None = None):
         request,
         "index.html",
         {
-            "page_title": "👩‍💻 FediDevs 🧑‍💻 List of software developers on Mastodon"
+            "page_title": "FediDevs | List of software developers on Mastodon"
             if not selected_lang
-            else f"👩‍💻 FediDevs 🧑‍💻 List of {selected_lang.name} developers on Mastodon",
+            else f"FediDevs | List of {selected_lang.name} developers on Mastodon",
             "page_description": "Discover amazing developers from across the fediverse."
             if not selected_lang
             else f"Discover amazing {selected_lang.name} developers from across the fediverse.",
@@ -82,7 +82,7 @@ def faq(request):
         request,
         "faq.html",
         {
-            "page_title": "👩‍💻 FediDevs 🧑‍💻 | FAQ",
+            "page_title": "FediDevs | FAQ",
             "page_description": "Frequently Asked Questions",
             "page_image": "faq.png",
             "instances": INSTANCES,
@@ -126,7 +126,7 @@ def devs_on_mastodon(request):
         request,
         "devs_on_mastodon.html",
         {
-            "page_title": "👩‍💻 FediDevs 🧑‍💻 | Mastodon instances with software developers",
+            "page_title": "FediDevs | Mastodon instances with software developers",
             "page_description": "Which Mastodon instances have the most software developer accounts.",
             "page_image": "devs-on-mastodon.png",
             "all_devs": all_devs,
@@ -142,5 +142,4 @@ def devs_on_mastodon(request):
 @require_http_methods(["POST"])
 def instance(request):
     request.session["selected_instance"] = request.POST.get("instance")
-    return redirect("empty-index")
     return redirect("empty-index")

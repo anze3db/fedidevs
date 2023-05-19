@@ -1,3 +1,12 @@
+.logo img {
+    height: 72px;
+    margin-top: -6px;
+}
+
+.logo {
+    letter-spacing: 3px;
+}
+
 td {
     min-width: 88px;
 }
