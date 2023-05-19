@@ -93,82 +93,84 @@
         </dialog>
       </div>
     </form>
-    <figure>
-      <table role="grid">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Note</th>
-            <th>
-              <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=-last_status_at">
-                {% if order == '-last_status_at' %}
-                  <strong>&#9660;&nbsp;Last Status</strong>
-                {% else %}
-                  Last Status
-                {% endif %}
-              </a>
-            </th>
-            <th>
-              <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=-statuses_count">
-                {% if order == '-statuses_count' %}
-                  <strong>&#9660;&nbsp;Statuses Count</strong>
-                {% else %}
-                  Statuses Count
-                {% endif %}
-              </a>
-            </th>
-            <th>
-              <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=-followers_count">
-                {% if order == '-followers_count' %}
-                  <strong>&#9660;&nbsp;Followers Count</strong>
-                {% else %}
-                  Followers Count
-                {% endif %}
-              </a>
-            </th>
-            <th>
-              <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=url">
-                {% if order == 'url' %}
-                  <strong>&#9660;&nbsp;Source</strong>
-                {% else %}
-                  Source
-                {% endif %}
-              </a>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for account in accounts %}
+    <section data-nosnippet>
+      <figure>
+        <table role="grid">
+          <thead>
             <tr>
-              <td>
-                <img class="avatar"
-                     src="{{ account.avatar }}"
-                     alt="{{ account.login }}"
-                     width="50"
-                     height="50" />
-              </td>
-              <td>
-                <a href="https://{% firstof selected_instance account.source %}/@{{ account.username }}@{{ account.source }}"
-                   target="_blank">{% render_emojis account.display_name account.emojis %}</a>
-              </td>
-              <td>{% render_emojis account.note account.emojis %}</td>
-              <td>{{ account.last_status_at_cached }}</td>
-              <td>{{ account.statuses_count }}</td>
-              <td>{{ account.followers_count }}</td>
-              <td>
-                <a href="https://{{ account.source }}">{{ account.source }}</a>
-              </td>
+              <th></th>
+              <th>Name</th>
+              <th>Note</th>
+              <th>
+                <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=-last_status_at">
+                  {% if order == '-last_status_at' %}
+                    <strong>&#9660;&nbsp;Last Status</strong>
+                  {% else %}
+                    Last Status
+                  {% endif %}
+                </a>
+              </th>
+              <th>
+                <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=-statuses_count">
+                  {% if order == '-statuses_count' %}
+                    <strong>&#9660;&nbsp;Statuses Count</strong>
+                  {% else %}
+                    Statuses Count
+                  {% endif %}
+                </a>
+              </th>
+              <th>
+                <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=-followers_count">
+                  {% if order == '-followers_count' %}
+                    <strong>&#9660;&nbsp;Followers Count</strong>
+                  {% else %}
+                    Followers Count
+                  {% endif %}
+                </a>
+              </th>
+              <th>
+                <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "empty-index" %}{% endif %}?q={{ query }}&o=url">
+                  {% if order == 'url' %}
+                    <strong>&#9660;&nbsp;Source</strong>
+                  {% else %}
+                    Source
+                  {% endif %}
+                </a>
+              </th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </figure>
-    {% if not accounts %}
-      <p style="text-align:center;">
-        No results, <a href="{% url "empty-index" %}">try clearing your search</a>!
-      </p>
-    {% endif %}
+          </thead>
+          <tbody>
+            {% for account in accounts %}
+              <tr>
+                <td>
+                  <img class="avatar"
+                       src="{{ account.avatar }}"
+                       alt="{{ account.login }}"
+                       width="50"
+                       height="50" />
+                </td>
+                <td>
+                  <a href="https://{% firstof selected_instance account.source %}/@{{ account.username }}@{{ account.source }}"
+                     target="_blank">{% render_emojis account.display_name account.emojis %}</a>
+                </td>
+                <td>{% render_emojis account.note account.emojis %}</td>
+                <td>{{ account.last_status_at_cached }}</td>
+                <td>{{ account.statuses_count }}</td>
+                <td>{{ account.followers_count }}</td>
+                <td>
+                  <a href="https://{{ account.source }}">{{ account.source }}</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </figure>
+      {% if not accounts %}
+        <p style="text-align:center;">
+          No results, <a href="{% url "empty-index" %}">try clearing your search</a>!
+        </p>
+      {% endif %}
+    </section>
     <footer>
       <div class="pagination">
         <span class="step-links">
