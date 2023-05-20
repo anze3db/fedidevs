@@ -49,8 +49,7 @@
         </div>
       </div>
     </form>
-    <form method="POST" action="{% url 'instance' %}">
-      {% csrf_token %}
+    <form method="GET" action="{% url 'empty-index' %}">
       <div>
         <a style="cursor:pointer"
            data-target="modal-example"
@@ -76,8 +75,8 @@
               <input type="text"
                      list="instances"
                      value="{% if selected_instance %}{{ selected_instance }}{% endif %}"
-                     id="instance"
-                     name="instance" />
+                     id="selected_instance"
+                     name="selected_instance" />
               <datalist id="instances">
                 {% for instance in instances %}<option value="{{ instance }}">{{ instance }}</option>{% endfor %}
               </datalist>

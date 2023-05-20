@@ -144,12 +144,6 @@ def devs_on_mastodon(request):
     )
 
 
-@require_http_methods(["POST"])
-def instance(request):
-    request.session["selected_instance"] = parse_instance(request.POST.get("instance"))
-    return redirect("empty-index")
-
-
 def parse_instance(instance: str | None):
     if not instance:
         return None

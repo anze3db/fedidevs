@@ -30,7 +30,6 @@ urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path("robots.txt", robots_txt),
     path("faq/", views.faq, name="faq"),
-    path("instance/", views.instance, name="instance"),
     path(
         "developers-on-mastodon/",
         views.devs_on_mastodon,
