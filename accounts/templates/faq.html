@@ -38,7 +38,7 @@
       <ul>
         {% for language in languages %}
           <li>
-            <code>{{ language.code }}</code> for {{ language.emoji }} {{ language.name }}
+            <code data-tooltip="The regex used for the filter {% if language.regex != language.code %}is a bit more complex{% endif %}: r'{{ language.regex }}'">{{ language.code }}</code> for {{ language.emoji }} {{ language.name }}
           </li>
         {% endfor %}
       </ul>
