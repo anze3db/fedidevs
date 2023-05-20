@@ -9,6 +9,11 @@ from .models import LANGUAGES, Account
 
 
 def index(request, lang: str | None = None):
+    if "selected_instance" in request.GET:
+        request.session["selected_instance"] = parse_instance(
+            request.GET.get("selected_instance")
+        )
+
     langs_map = {l.code: l for l in LANGUAGES}
     selected_lang = langs_map.get(lang)
     search_query = Q()
@@ -141,5 +146,13 @@ def devs_on_mastodon(request):
 
 @require_http_methods(["POST"])
 def instance(request):
-    request.session["selected_instance"] = request.POST.get("instance")
+    request.session["selected_instance"] = parse_instance(request.POST.get("instance"))
     return redirect("empty-index")
+
+
+def parse_instance(instance: str | None):
+    if not instance:
+        return None
+    if "." not in instance:
+        return None
+    return instance.replace("https://", "").replace("http://", "").replace("/", "")
