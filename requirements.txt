@@ -59,6 +59,8 @@ idna==3.4
     # via
     #   anyio
     #   httpx
+iniconfig==2.0.0
+    # via pytest
 jsbeautifier==1.14.7
     # via
     #   cssbeautifier
@@ -79,6 +81,7 @@ packaging==23.1
     # via
     #   black
     #   build
+    #   pytest
 pathspec==0.11.1
     # via
     #   black
@@ -87,10 +90,16 @@ pip-tools==6.13.0
     # via -r requirements.in
 platformdirs==3.5.1
     # via black
+pluggy==1.0.0
+    # via pytest
 pygments==2.15.1
     # via rich
 pyproject-hooks==1.0.0
     # via build
+pytest==7.3.1
+    # via pytest-django
+pytest-django==4.5.2
+    # via -r requirements.in
 pyyaml==6.0
     # via djlint
 regex==2023.5.5

@@ -6,11 +6,12 @@ httpx
 sentry-sdk
 whitenoise
 # Dev
+black
 django-debug-toolbar
 django-rich
 djlint
-black
 mypy
+pip-tools
+pytest-django
 rich
 ruff
-pip-tools
