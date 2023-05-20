@@ -23,12 +23,6 @@ td {
     justify-content: center;
 }
 
-[data-tooltip]::before {
-    width: 90%;
-    overflow: visible;
-    white-space: normal;
-}
-
 .emojione {
     font-size: inherit;
     vertical-align: middle;
