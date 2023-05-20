@@ -73,13 +73,14 @@
               Account links will use your instance making it easier to follow accounts that you open. This way you'll avoid the Follow Dialog for people on different instances.
             </p>
             <p>
-              <select id="instance" name="instance">
-                <option value="">-- Select an instance --</option>
-                {% for instance in instances %}
-                  <option value="{{ instance }}"
-                          {% if instance == selected_instance %}selected{% endif %}>{{ instance }}</option>
-                {% endfor %}
-              </select>
+              <input type="text"
+                     list="instances"
+                     value="{% if selected_instance %}{{ selected_instance }}{% endif %}"
+                     id="instance"
+                     name="instance" />
+              <datalist id="instances">
+                {% for instance in instances %}<option value="{{ instance }}">{{ instance }}</option>{% endfor %}
+              </datalist>
             </p>
             <footer>
               <a href="#cancel"
