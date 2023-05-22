@@ -35,7 +35,7 @@ urlpatterns = [
         views.devs_on_mastodon,
         name="developers-on-mastodon",
     ),
-    path("", views.index, name="empty-index"),
+    path("", views.index, name="index"),
 ] + [
     path(f"{lang.code}/", views.index, name=lang.code, kwargs={"lang": lang.code})
     for lang in LANGUAGES
