@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% load account_extras %}
 {% load static %}
+{% block head %}
+  {% if accounts.has_previous %}<meta name="robots" content="none">{% endif %}
+{% endblock %}
 {% block content %}
   <header style="text-align:center;">
     <h1 class="logo">
