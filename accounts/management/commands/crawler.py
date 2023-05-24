@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import httpx
 from asgiref.sync import async_to_sync
@@ -139,16 +139,25 @@ class Command(RichCommand):
                         "fields",
                     ],
                 )
-
+                max_last_status_at = max(
+                    account.last_status_at
+                    for account in fetched_accounts
+                    if account.last_status_at
+                )
+                if datetime.now(tz=timezone.utc) - max_last_status_at > timedelta(
+                    days=90
+                ):
+                    self.console.print(
+                        "Skipping accounts that haven't posted in more than 90 days"
+                    )
+                    break
                 self.console.print(
-                    f"Inserted {len(fetched_accounts)}. Current offset {offset}. Started {naturaltime(start_time)}"
+                    f"Inserted {len(fetched_accounts)}. Current offset {offset}. Max last_status_at {naturaltime(max(account.last_status_at for account in fetched_accounts if account.last_status_at))}"
                 )
                 offset += 1
-            self.console.print("Disabling accounts that are not discoverable anymore")
-            # TODO: Maybe I should fetch the most recent data from the instances instead?
-            # Account.objects.filter(last_sync_at__lt=start_time).update(
-            #     discoverable=False
-            # )
+            self.console.print(
+                f"Done. Started at {start_time}. Ended at {datetime.now(tz=timezone.utc)}, duration {datetime.now(tz=timezone.utc) - start_time}"
+            )
 
     async def fetch(self, client, offset, instance):
         try:
