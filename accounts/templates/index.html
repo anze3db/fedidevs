@@ -158,10 +158,14 @@
                 <td>
                   {% if selected_instance and selected_instance != account.source %}
                     <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}"
-                       target="_blank">{% render_emojis account.display_name account.emojis %}</a>
+                       target="_blank"
+                       style="display:inline-block;
+                              white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
                   {% else %}
                     <a href="https://{{ account.source }}/@{{ account.username }}"
-                       target="_blank">{% render_emojis account.display_name account.emojis %}</a>
+                       target="_blank"
+                       style="display:inline-block;
+                              white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
                   {% endif %}
                 </td>
                 <td>
@@ -169,7 +173,9 @@
                   <hr>
                   <p>
                     {% for language in account.languages %}
-                      <a href="{% url language.code %}?q={{ query }}&o={{ order }}">
+                      <a href="{% url language.code %}?q={{ query }}&o={{ order }}"
+                         style="display:inline-block;
+                                white-space: nowrap">
                         <img src="{% static language.image %}"
                              alt="{{ language.code }}"
                              class="emojione"
