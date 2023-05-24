@@ -164,7 +164,22 @@
                        target="_blank">{% render_emojis account.display_name account.emojis %}</a>
                   {% endif %}
                 </td>
-                <td>{% render_emojis account.note account.emojis %}</td>
+                <td>
+                  {% render_emojis account.note account.emojis %}
+                  <hr>
+                  <p>
+                    {% for language in account.languages %}
+                      <a href="{% url language.code %}?q={{ query }}&o={{ order }}">
+                        <img src="{% static language.image %}"
+                             alt="{{ language.code }}"
+                             class="emojione"
+                             height="8"
+                             width="8" />
+                        <small>{{ language.name }}</small>
+                      </a>
+                    {% endfor %}
+                  </p>
+                </td>
                 <td>{{ account.last_status_at_cached }}</td>
                 <td>{{ account.statuses_count }}</td>
                 <td>{{ account.followers_count }}</td>

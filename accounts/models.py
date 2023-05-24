@@ -122,6 +122,11 @@ class Account(models.Model):
         # use natural time to display last status
         return naturaltime(self.last_status_at)
 
+    @property
+    def languages(self):
+        lang_lookup = {lang.code: lang for lang in LANGUAGES}
+        return [lang_lookup[lang.language] for lang in self.accountlookup_set.all()]
+
 
 class AccountLookup(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)

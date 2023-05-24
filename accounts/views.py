@@ -31,7 +31,11 @@ def index(request, lang: str | None = None):
             | Q(url__icontains=query)
         )
 
-    accounts = Account.objects.filter(search_query).order_by(order)
+    accounts = (
+        Account.objects.filter(search_query)
+        .prefetch_related("accountlookup_set")
+        .order_by(order)
+    )
     paginator = Paginator(accounts, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
