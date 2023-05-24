@@ -1,3 +1,4 @@
+from django.db import connection
 from django_rich.management import RichCommand
 
 from accounts.models import Account, AccountLookup
@@ -11,3 +12,6 @@ class Command(RichCommand):
         total = Account.objects.exclude(id__in=ids).count()
         self.console.print(f"Deleting {total}")
         Account.objects.exclude(id__in=ids).delete()
+        with connection.cursor() as cursor:
+            cursor.execute("VACUUM FULL")
+        self.console.print(f"Done")
