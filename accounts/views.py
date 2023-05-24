@@ -1,8 +1,7 @@
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.views.decorators.cache import cache_page
-from django.views.decorators.http import require_http_methods
 
 from .management.commands.crawler import INSTANCES
 from .models import LANGUAGES, Account
