@@ -34,6 +34,7 @@ LANGUAGES = [
     Language("csharp", "C#", "♫", r"csharp|c#", "languages/csharp.png"),
     Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
     Language("dotnet", ".NET", "🌐", r" \.net|dotnet", "languages/dotnet.png"),
+    Language("cpp", "C++", "🐯", r"c\+\+|cpp", "languages/cpp.png"),
     Language(
         "php", "PHP", "🐘", r"[^\.]php", "languages/php.png"
     ),  # Filters out index.php? and others
