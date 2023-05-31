@@ -31,6 +31,7 @@ LANGUAGES = [
     Language("java", "Java", "☕", r"java[^script]", "languages/java.png"),
     Language("kotlin", "Kotlin", "🤖", r"kotlin", "languages/kotlin.png"),
     Language("scala", "Scala", "🧪", r"[^e]scala[^b]", "languages/scala.png"),
+    Language("swift", "Swift", "🐦", r"swift", "languages/swift.png"),
     Language("csharp", "C#", "♫", r"csharp|c#", "languages/csharp.png"),
     Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
     Language("dotnet", ".NET", "🌐", r" \.net|dotnet", "languages/dotnet.png"),
