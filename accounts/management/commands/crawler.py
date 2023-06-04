@@ -51,12 +51,19 @@ class Command(RichCommand):
     def add_arguments(self, parser):
         parser.add_argument("--offset", type=int, nargs="?", default=0)
         parser.add_argument("--instances", type=str, nargs="?", default=None)
+        parser.add_argument("--skip-inactive-for", type=int, nargs="?", default=90)
 
-    def handle(self, *args, offset=0, instances=None, **options):
-        self.main(offset=offset, instances=instances)
+    def handle(
+        self, *args, offset=0, instances=None, skip_inactive_for: int = 0, **options
+    ):
+        self.main(
+            offset=offset, instances=instances, skip_inactive_for=skip_inactive_for
+        )
 
     @async_to_sync
-    async def main(self, offset: int, instances: str | None):
+    async def main(
+        self, offset: int, instances: str | None, skip_inactive_for: int = 0
+    ):
         async with httpx.AsyncClient() as client:
             start_time = datetime.now(tz=timezone.utc)
             if instances:
@@ -66,7 +73,10 @@ class Command(RichCommand):
             while to_index:
                 now = datetime.now(tz=timezone.utc)
                 results = await asyncio.gather(
-                    *[self.fetch(client, offset, instance) for instance in to_index]
+                    *[
+                        self.fetch(client, offset, instance, skip_inactive_for)
+                        for instance in to_index
+                    ]
                 )
                 fetched_accounts = []
                 for instance, response in results:
@@ -139,18 +149,6 @@ class Command(RichCommand):
                         "fields",
                     ],
                 )
-                max_last_status_at = max(
-                    account.last_status_at
-                    for account in fetched_accounts
-                    if account.last_status_at
-                )
-                if datetime.now(tz=timezone.utc) - max_last_status_at > timedelta(
-                    days=90
-                ):
-                    self.console.print(
-                        "Skipping accounts that haven't posted in more than 90 days"
-                    )
-                    break
                 self.console.print(
                     f"Inserted {len(fetched_accounts)}. Current offset {offset}. Max last_status_at {naturaltime(max(account.last_status_at for account in fetched_accounts if account.last_status_at))}"
                 )
@@ -159,7 +157,7 @@ class Command(RichCommand):
                 f"Done. Started at {start_time}. Ended at {datetime.now(tz=timezone.utc)}, duration {datetime.now(tz=timezone.utc) - start_time}"
             )
 
-    async def fetch(self, client, offset, instance):
+    async def fetch(self, client, offset, instance, skip_inactive_for: int):
         try:
             response = await client.get(
                 f"https://{instance}/api/v1/directory",
@@ -176,7 +174,32 @@ class Command(RichCommand):
                     f"[bold red]Error status code[/bold red] for {instance} at offset {offset}. {response.status_code}"
                 )
                 return instance, []
-            return instance, response.json()
+            results = response.json()
+
+            # Don't skip inactive accounts if skip_inactive_for is None or 0
+            if not skip_inactive_for:
+                return instance, results
+
+            def is_recently_updated(account) -> bool:
+                if not account.get("last_status_at"):
+                    return False
+                last_status_at = make_aware(
+                    datetime.fromisoformat(account["last_status_at"])
+                )
+                if (datetime.now(tz=timezone.utc) - last_status_at) > timedelta(
+                    days=skip_inactive_for
+                ):
+                    return False
+                return True
+
+            before = len(results)
+            results = [r for r in results if is_recently_updated(r)]
+            after = len(results)
+            if before != after:
+                self.console.print(
+                    f"[bold yellow]Filtered out {before - after} accounts[/bold yellow] for {instance} at offset {offset}"
+                )
+            return instance, results
         except (
             httpx.ReadTimeout,
             httpx.ConnectTimeout,
