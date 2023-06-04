@@ -149,9 +149,10 @@ class Command(RichCommand):
                         "fields",
                     ],
                 )
-                self.console.print(
-                    f"Inserted {len(fetched_accounts)}. Current offset {offset}. Max last_status_at {naturaltime(max(account.last_status_at for account in fetched_accounts if account.last_status_at))}"
-                )
+                if fetched_accounts:
+                    self.console.print(
+                        f"Inserted {len(fetched_accounts)}. Current offset {offset}. Max last_status_at {naturaltime(max(account.last_status_at for account in fetched_accounts if account.last_status_at))}"
+                    )
                 offset += 1
             self.console.print(
                 f"Done. Started at {start_time}. Ended at {datetime.now(tz=timezone.utc)}, duration {datetime.now(tz=timezone.utc) - start_time}"
