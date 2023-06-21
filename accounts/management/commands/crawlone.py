@@ -1,5 +1,4 @@
-import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 import httpx
 from asgiref.sync import async_to_sync
@@ -15,14 +14,17 @@ class Command(RichCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--user", type=str, nargs="?", default=0)
+        parser.add_argument("--make-visible", action="store_true", default=False)
 
-    def handle(self, *args, user=None, **options):
-        self.main(user=user)
-
-    @async_to_sync
-    async def main(self, user: str | None):
+    def handle(
+        self, *args, user: str | None = None, make_visible: bool = False, **options
+    ):
         if not user:
             return
+        self.main(user=user, make_visible=make_visible)
+
+    @async_to_sync
+    async def main(self, user: str, make_visible: bool = False):
         async with httpx.AsyncClient() as client:
             user, instance = user.split("@")
             user_id = await self.fetch_id(client, instance, user)
@@ -39,9 +41,11 @@ class Command(RichCommand):
                 display_name=account["display_name"],
                 locked=account["locked"],
                 bot=account["bot"],
-                discoverable=account.get("discoverable", False),
+                discoverable=account.get("discoverable", False)
+                if not make_visible
+                else True,
                 group=account.get("group", False),
-                noindex=account.get("noindex", None),
+                noindex=account.get("noindex", None) if not make_visible else False,
                 created_at=(datetime.fromisoformat(account["created_at"])),
                 last_status_at=make_aware(
                     datetime.fromisoformat(account["last_status_at"])
@@ -68,6 +72,11 @@ class Command(RichCommand):
                 defaults=defaults,
             )
             self.console.print(f"Done, created={created}. Don't forget to run indexer")
+            self.console.print(
+                f"Last status: {naturaltime(defaults['last_status_at'])}, discoverable={defaults['discoverable']}, noindex={defaults['noindex']}"
+            )
+            if make_visible:
+                self.console.print("User is now visible")
 
     async def fetch_id(self, client, instance: str, user: str) -> str:
         try:
