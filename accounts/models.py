@@ -15,7 +15,7 @@ class Language:
 
 
 LANGUAGES = [
-    Language("python", "Python", "🐍", r"python|psf", "languages/python.png"),
+    Language("python", "Python", "🐍", r"python|psf|django", "languages/python.png"),
     Language(
         "javascript",
         "JavaScript",
