@@ -19,7 +19,7 @@ def index(request, lang: str | None = None):
     if selected_lang:
         search_query = Q(accountlookup__language=selected_lang.code)
 
-    query = request.GET.get("q", "")
+    query = request.GET.get("q", "").strip()
     order = request.GET.get("o", "-followers_count")
     if order not in ("-followers_count", "url", "-last_status_at", "-statuses_count"):
         order = "-followers_count"
@@ -153,3 +153,25 @@ def parse_instance(instance: str | None):
     if "." not in instance:
         return None
     return instance.replace("https://", "").replace("http://", "").replace("/", "")
+
+
+def markdown(request):
+    from django.conf import settings
+    from django.http import HttpResponse
+    from django.template import RequestContext, Template
+    from markdown import markdown
+
+    res = markdown(settings.BASE_DIR.joinpath("markdown.md").read_text())
+    html = Template(res).render(
+        context=RequestContext(
+            request,
+            {
+                "page_title": "Markdown",
+                "languages": [
+                    "en",
+                    "fr",
+                ],
+            },
+        )
+    )
+    return HttpResponse(html)
