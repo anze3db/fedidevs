@@ -32,22 +32,34 @@
              style="" />
       </a>
     </p>
-    <h4>2. Your bio has to have at least one of the filter keywords</h4>
+    <h4>2. Your display name, bio, or profile metadata has to have at least one of the filter keywords</h4>
     <p>
-      The keywords are case-insensitive and can be anywhere in your bio. Valid keywords are:
-      <ul>
+      The keywords are case-insensitive and can be anywhere in your display name, bio, or profile metadata. You can also use custom emojis like <code>:python:</code>. The table below shows more information about all the filters:
+      <table>
+        <tr>
+          <th>Filter</th>
+          <th>Recommended keyword</th>
+          <th>Regex used by the filter</th>
+        </tr>
         {% for language in languages %}
-          <li>
-            <code data-tooltip="The regex used for the filter {% if language.regex != language.code %}is a bit more complex{% endif %}: r'{{ language.regex }}'">{{ language.code }}</code> for
-            <img src="{% static language.image %}"
-                 alt="{{ language.code }}"
-                 class="emojione"
-                 height="16"
-                 width="16" />
-            {{ language.name }}
-          </li>
+          <tr>
+            <td>
+              <img src="{% static language.image %}"
+                   alt="{{ language.code }}"
+                   class="emojione"
+                   height="16"
+                   width="16" />
+              {{ language.name }}
+            </td>
+            <td>
+              <code>{{ language.code }}</code>
+            </td>
+            <td>
+              <code>{{ language.regex }}</code>
+            </td>
+          </tr>
         {% endfor %}
-      </ul>
+      </table>
     </p>
     <h4>3. Have at least one post/toot or one follower or follow a single other account</h4>
     <p>Accounts with 0 posts, 0 followers, and 0 following are not indexed because they are usually spam accounts.</p>
