@@ -17,5 +17,7 @@ jobs:
         python-version: '3.11'
     - name: Install Dependencies
       run: pip install -r requirements.txt
+    - name: Collect static files
+      run: python manage.py collectstatic
     - name: Run Tests
       run: python manage.py test
