@@ -11,6 +11,7 @@ from accounts.models import Account
 
 INSTANCES = [
     "awscommunity.social",
+    "aus.social",
     "c.im",
     "chaos.social",
     "cloud-native.social",
