@@ -153,25 +153,3 @@ def parse_instance(instance: str | None):
     if "." not in instance:
         return None
     return instance.replace("https://", "").replace("http://", "").replace("/", "")
-
-
-def markdown(request):
-    from django.conf import settings
-    from django.http import HttpResponse
-    from django.template import RequestContext, Template
-    from markdown import markdown
-
-    res = markdown(settings.BASE_DIR.joinpath("markdown.md").read_text())
-    html = Template(res).render(
-        context=RequestContext(
-            request,
-            {
-                "page_title": "Markdown",
-                "languages": [
-                    "en",
-                    "fr",
-                ],
-            },
-        )
-    )
-    return HttpResponse(html)
