@@ -77,6 +77,18 @@ class Command(RichCommand):
             )
             if make_visible:
                 self.console.print("User is now visible")
+                if account["noindex"] and account["discoverable"]:
+                    self.console.print(
+                        "\n\nHey! Looks like you’ve opted-out of search engine indexing and that's why you aren't showing up 😔 See the FAQ for instructions on how to fix it: http://fedidevs.com/faq/\n\nI did a manual override so that you show up now, but this is a temporary fix."
+                    )
+                if not account["noindex"] and not account["discoverable"]:
+                    self.console.print(
+                        "\n\nHey! Looks like your account is not discoverable and that's why you aren't showing up 😔 See the FAQ for instructions on how to fix it: http://fedidevs.com/faq/\n\nI did a manual override so that you show up now, but this is a temporary fix."
+                    )
+                if account["noindex"] and not account["discoverable"]:
+                    self.console.print(
+                        "\n\nHey! Looks like your account is not discoverable and you've opted-out of search engine indexing. That's why you aren't showing up 😔 See the FAQ for instructions on how to fix it: http://fedidevs.com/faq/\n\nI did a manual override so that you show up now, but this is a temporary fix."
+                    )
 
     async def fetch_id(self, client, instance: str, user: str) -> str:
         try:
