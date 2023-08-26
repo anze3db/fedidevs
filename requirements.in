@@ -3,7 +3,6 @@ django
 django-environ
 gunicorn
 httpx
-markdown
 sentry-sdk
 whitenoise
 # Dev
