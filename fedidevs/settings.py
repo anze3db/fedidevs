@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "debug_toolbar",
+    "django_tui",
     "accounts",
 ]
 

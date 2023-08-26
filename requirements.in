@@ -3,12 +3,14 @@ django
 django-environ
 gunicorn
 httpx
+markdown
 sentry-sdk
 whitenoise
 # Dev
 black
 django-debug-toolbar
 django-rich
+django-tui
 djlint
 mypy
 pip-tools

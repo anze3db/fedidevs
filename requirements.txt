@@ -22,6 +22,7 @@ click==8.1.3
     #   black
     #   djlint
     #   pip-tools
+    #   trogon
 colorama==0.4.6
     # via djlint
 cssbeautifier==1.14.7
@@ -31,11 +32,14 @@ django==4.2.1
     #   -r requirements.in
     #   django-debug-toolbar
     #   django-rich
+    #   django-tui
 django-debug-toolbar==4.1.0
     # via -r requirements.in
 django-environ==0.10.0
     # via -r requirements.in
 django-rich==1.5.0
+    # via -r requirements.in
+django-tui==23.4
     # via -r requirements.in
 djlint==1.27.2
     # via -r requirements.in
@@ -59,6 +63,8 @@ idna==3.4
     # via
     #   anyio
     #   httpx
+importlib-metadata==6.8.0
+    # via textual
 iniconfig==2.0.0
     # via pytest
 jsbeautifier==1.14.7
@@ -67,8 +73,17 @@ jsbeautifier==1.14.7
     #   djlint
 json5==0.9.14
     # via djlint
-markdown-it-py==2.2.0
-    # via rich
+linkify-it-py==2.0.2
+    # via markdown-it-py
+markdown==3.4.3
+    # via -r requirements.in
+markdown-it-py[linkify,plugins]==2.2.0
+    # via
+    #   mdit-py-plugins
+    #   rich
+    #   textual
+mdit-py-plugins==0.4.0
+    # via markdown-it-py
 mdurl==0.1.2
     # via markdown-it-py
 mypy==1.3.0
@@ -108,6 +123,7 @@ rich==13.3.5
     # via
     #   -r requirements.in
     #   django-rich
+    #   textual
 ruff==0.0.267
     # via -r requirements.in
 sentry-sdk==1.23.1
@@ -125,16 +141,28 @@ sqlparse==0.4.4
     # via
     #   django
     #   django-debug-toolbar
+textual==0.34.0
+    # via
+    #   django-tui
+    #   trogon
 tqdm==4.65.0
     # via djlint
+trogon==0.5.0
+    # via django-tui
 typing-extensions==4.5.0
-    # via mypy
+    # via
+    #   mypy
+    #   textual
+uc-micro-py==1.0.2
+    # via linkify-it-py
 urllib3==1.26.15
     # via sentry-sdk
 wheel==0.40.0
     # via pip-tools
 whitenoise==6.4.0
     # via -r requirements.in
+zipp==3.16.2
+    # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
