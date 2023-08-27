@@ -41,3 +41,7 @@ kill_timeout = "5s"
 [[statics]]
   guest_path = "/app/public"
   url_prefix = "/static/"
+
+[mounts]
+  source="fedidevsdb"
+  destination="/data"
