@@ -1,3 +1,5 @@
+import json
+import re
 from dataclasses import dataclass
 from datetime import timedelta
 
@@ -128,6 +130,24 @@ class Account(models.Model):
     def languages(self):
         lang_lookup = {lang.code: lang for lang in LANGUAGES}
         return [lang_lookup[lang.language] for lang in self.accountlookup_set.all()]
+
+    def should_index(self):
+        if self.noindex and not self.discoverable:
+            return False
+
+        if (
+            self.followers_count == 0
+            and self.statuses_count == 0
+            and self.following_count == 0
+        ):
+            return False
+
+        for lang in LANGUAGES:
+            for field in (self.note, self.display_name, json.dumps(self.fields)):
+                if re.match(lang.regex, field, re.IGNORECASE):
+                    return True
+
+        return False
 
 
 class AccountLookup(models.Model):

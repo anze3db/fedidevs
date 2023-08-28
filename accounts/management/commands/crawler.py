@@ -24,7 +24,7 @@ INSTANCES = [
     "fosstodon.org",
     "functional.cafe",
     "furry.engineer",
-    "g33ks.coffee",
+    # "g33ks.coffee",
     "graphics.social",
     "hachyderm.io",
     "hometech.social",
@@ -70,17 +70,35 @@ class Command(RichCommand):
         parser.add_argument("--offset", type=int, nargs="?", default=0)
         parser.add_argument("--instances", type=str, nargs="?", default=None)
         parser.add_argument("--skip-inactive-for", type=int, nargs="?", default=90)
+        parser.add_argument(
+            "--pre-filter",
+            action="store_true",
+            help="Don't insert accounts that would be deleted by optimizer",
+        )
 
     def handle(
-        self, *args, offset=0, instances=None, skip_inactive_for: int = 0, **options
+        self,
+        *args,
+        offset=0,
+        instances=None,
+        skip_inactive_for: int = 0,
+        pre_filter: bool = False,
+        **options,
     ):
         self.main(
-            offset=offset, instances=instances, skip_inactive_for=skip_inactive_for
+            offset=offset,
+            instances=instances,
+            skip_inactive_for=skip_inactive_for,
+            pre_filter=pre_filter,
         )
 
     @async_to_sync
     async def main(
-        self, offset: int, instances: str | None, skip_inactive_for: int = 0
+        self,
+        offset: int,
+        instances: str | None,
+        skip_inactive_for: int = 0,
+        pre_filter: bool = False,
     ):
         async with httpx.AsyncClient() as client:
             start_time = datetime.now(tz=timezone.utc)
@@ -137,9 +155,17 @@ class Command(RichCommand):
                         for account in response
                         if account.get("id")
                     ]
+                if pre_filter:
+                    inserted_accounts = [
+                        account
+                        for account in fetched_accounts
+                        if account.should_index()
+                    ]
+                else:
+                    inserted_accounts = fetched_accounts
 
                 await Account.objects.abulk_create(
-                    fetched_accounts,
+                    inserted_accounts,
                     unique_fields=["account_id", "instance"],
                     update_conflicts=["account_id", "instance"],
                     update_fields=[
@@ -169,7 +195,7 @@ class Command(RichCommand):
                 )
                 if fetched_accounts:
                     self.console.print(
-                        f"Inserted {len(fetched_accounts)}. Current offset {offset}. Max last_status_at {naturaltime(max(account.last_status_at for account in fetched_accounts if account.last_status_at))}"
+                        f"Fetched {len(fetched_accounts)}, inserted {len(inserted_accounts)}. Current offset {offset}. Max last_status_at {naturaltime(max(account.last_status_at for account in fetched_accounts if account.last_status_at))}"
                     )
                 offset += 1
             self.console.print(
