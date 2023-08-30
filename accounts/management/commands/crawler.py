@@ -32,6 +32,7 @@ INSTANCES = [
     "infosec.exchange",
     "jvm.social",
     "k8s.social",
+    "kolektiva.social",
     "mas.to",
     "masto.ai",
     "mastodon.cloud",
