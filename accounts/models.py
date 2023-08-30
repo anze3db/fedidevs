@@ -36,6 +36,7 @@ LANGUAGES = [
     Language("swift", "Swift", "🐦", r"swift", "languages/swift.png"),
     Language("csharp", "C#", "♫", r"csharp|c#", "languages/csharp.png"),
     Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
+    Language("ocaml", "OCaml", "🐫", r"ocaml", "languages/ocaml.png"),
     Language("dotnet", ".NET", "🌐", r" \.net|dotnet", "languages/dotnet.png"),
     Language("cpp", "C++", "🐯", r"c\+\+|cpp", "languages/cpp.png"),
     Language(
