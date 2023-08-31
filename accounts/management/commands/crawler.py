@@ -10,8 +10,8 @@ from django_rich.management import RichCommand
 from accounts.models import Account
 
 INSTANCES = [
-    "awscommunity.social",
     "aus.social",
+    "awscommunity.social",
     "c.im",
     "chaos.social",
     "cloud-native.social",
@@ -24,7 +24,6 @@ INSTANCES = [
     "fosstodon.org",
     "functional.cafe",
     "furry.engineer",
-    # "g33ks.coffee",
     "graphics.social",
     "hachyderm.io",
     "hometech.social",
@@ -32,6 +31,7 @@ INSTANCES = [
     "infosec.exchange",
     "jvm.social",
     "k8s.social",
+    "kolektiva.social",
     "mas.to",
     "masto.ai",
     "mastodon.cloud",
@@ -59,6 +59,7 @@ INSTANCES = [
     "toot.works",
     "universeodon.com",
     "vmst.io",
+    # "g33ks.coffee",
     # "social.kernel.org",
 ]
 
