@@ -43,6 +43,7 @@ LANGUAGES = [
     ),  # Filters out index.php? and others
     Language("linux", "Linux", "🐧", r"linux", "languages/linux.png"),
     Language("haskell", "Haskell", "🦥", r"haskell", "languages/haskell.png"),
+    Language("ocaml", "OCaml", "🐫", r"ocaml", "languages/ocaml.png"),
     Language(
         "nix", "Nix", "❄️", r"[^a-z:]nix", "languages/nix.png"
     ),  # Filters out unix, linux, etc.
