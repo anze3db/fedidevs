@@ -3,6 +3,7 @@ django
 django-environ
 gunicorn
 httpx
+schedule
 sentry-sdk
 whitenoise
 # Dev
