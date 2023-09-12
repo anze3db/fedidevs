@@ -43,3 +43,6 @@ class Daily(models.Model):
     nix_accounts = models.IntegerField()
     opensource_accounts = models.IntegerField()
     php_accounts = models.IntegerField()
+
+    def __str__(self):
+        return self.date.strftime("%Y-%m-%d")
