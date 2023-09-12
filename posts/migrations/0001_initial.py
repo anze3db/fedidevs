@@ -5,15 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ("posts", "0001_initial"),
-        ("posts", "0002_alter_post_unique_together_alter_post_senstive"),
-        ("posts", "0003_alter_post_card"),
-        ("posts", "0004_alter_post_reblog"),
-        ("posts", "0005_alter_post_language"),
-        ("posts", "0006_alter_post_application"),
-    ]
-
     dependencies = [
         ("accounts", "0012_alter_accountlookup_language"),
     ]
