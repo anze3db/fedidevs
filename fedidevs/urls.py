@@ -19,24 +19,38 @@ from django.urls import include, path
 
 from accounts import views
 from accounts.models import LANGUAGES
+from posts import views as post_views
 
 
 def robots_txt(request):
     return HttpResponse("User-agent: *\nDisallow:", content_type="text/plain")
 
 
-urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("__debug__/", include("debug_toolbar.urls")),
-    path("robots.txt", robots_txt),
-    path("faq/", views.faq, name="faq"),
-    path(
-        "developers-on-mastodon/",
-        views.devs_on_mastodon,
-        name="developers-on-mastodon",
-    ),
-    path("", views.index, name="index"),
-] + [
-    path(f"{lang.code}/", views.index, name=lang.code, kwargs={"lang": lang.code})
-    for lang in LANGUAGES
-]
+urlpatterns = (
+    [
+        path("admin/", admin.site.urls),
+        path("__debug__/", include("debug_toolbar.urls")),
+        path("robots.txt", robots_txt),
+        path("faq/", views.faq, name="faq"),
+        path(
+            "developers-on-mastodon/",
+            views.devs_on_mastodon,
+            name="developers-on-mastodon",
+        ),
+        path("", views.index, name="index"),
+        path("posts/", post_views.index, name="posts"),
+    ]
+    + [
+        path(f"{lang.code}/", views.index, name=lang.code, kwargs={"lang": lang.code})
+        for lang in LANGUAGES
+    ]
+    + [
+        path(
+            f"posts/{lang.code}/",
+            post_views.index,
+            name=f"{lang.code}-posts",
+            kwargs={"lang": lang.code},
+        )
+        for lang in LANGUAGES
+    ]
+)

@@ -15,6 +15,9 @@ class Language:
     regex: str
     image: str
 
+    def post_code(self):
+        return f"{self.code}-posts"
+
 
 LANGUAGES = [
     Language("python", "Python", "🐍", r"python|psf|django", "languages/python.png"),

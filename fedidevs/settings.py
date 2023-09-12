@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django_tui",
     "accounts",
+    "posts",
     "stats",
 ]
 
