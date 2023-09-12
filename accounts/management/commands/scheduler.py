@@ -19,6 +19,8 @@ class Command(RichCommand):
         management.call_command("optimizer")
         self.console.print("Running storing stats")
         store_daily_stats()
+        self.console.print("Running statuser")
+        management.call_command("statuser")
 
     def handle(self, *args, **options):
         self.console.print("Starting scheduler 🕐")
