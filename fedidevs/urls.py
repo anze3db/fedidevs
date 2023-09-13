@@ -13,9 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import datetime as dt
+
 from django.contrib import admin
 from django.http import HttpResponse
-from django.urls import include, path
+from django.urls import include, path, register_converter
 
 from accounts import views
 from accounts.models import LANGUAGES
@@ -25,6 +27,18 @@ from posts import views as post_views
 def robots_txt(request):
     return HttpResponse("User-agent: *\nDisallow:", content_type="text/plain")
 
+
+class DateConverter:
+    regex = r"\d{4}-\d{1,2}-\d{1,2}"
+
+    def to_python(self, value):
+        return dt.datetime.strptime(value, "%Y-%m-%d").date()
+
+    def to_url(self, value):
+        return value.strftime("%Y-%m-%d")
+
+
+register_converter(DateConverter, "date")
 
 urlpatterns = (
     [
@@ -38,10 +52,18 @@ urlpatterns = (
             name="developers-on-mastodon",
         ),
         path("", views.index, name="index"),
-        path("posts/", post_views.index, name="posts"),
     ]
     + [
         path(f"{lang.code}/", views.index, name=lang.code, kwargs={"lang": lang.code})
+        for lang in LANGUAGES
+    ]
+    + [
+        path(
+            f"posts/{lang.code}/<date:date>",
+            post_views.index,
+            name=f"{lang.code}-posts",
+            kwargs={"lang": lang.code},
+        )
         for lang in LANGUAGES
     ]
     + [
@@ -52,5 +74,9 @@ urlpatterns = (
             kwargs={"lang": lang.code},
         )
         for lang in LANGUAGES
+    ]
+    + [
+        path("posts/", post_views.index, name="posts"),
+        path("posts/<date:date>/", post_views.index, name="posts"),
     ]
 )

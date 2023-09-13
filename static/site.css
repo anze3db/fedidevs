@@ -40,3 +40,22 @@ td {
 ul.no-bullets li {
     list-style-type: none;
 }
+
+article.card {
+    margin: 40px 0;
+    padding: 0;
+}
+
+.card footer {
+    margin: 0;
+    padding: 10px 20px;
+}
+
+.card h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.card>a>small {
+    color: hsl(205deg, 25%, 23%);
+}

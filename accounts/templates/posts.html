@@ -8,38 +8,64 @@
   <header style="text-align:center;">
     <h1 class="logo">
       <img src="{% static 'logo.png' %}" alt="logo">
-      FEDIDEVS
+      FEDIDEVS POSTS
     </h1>
-    <h2>Discover {{ adjectives|random }} posts on Mastodon 🌐</h2>
-    <p>
-      Read <a href="{% url 'faq' %}">the FAQ</a> to see how to get listed. <a target="_blank" href="https://anze3db.ck.page/76db70f6e0 ">Subscribe to the newsletter</a> for updates. Suggest new features on <a href="https://fosstodon.org/@anze3db">Mastodon</a> or <a href="mailto:hello@fedidevs.com">Email</a>!
-    </p>
   </header>
   <article>
-    <nav>
-      <ul style="flex-wrap: wrap; justify-content: center;">
-        {% for language in languages %}
-          <li>
-            <a href="{% if selected_lang.code != language.code %}{% url language.post_code %}{% else %}{% url "posts" %}{% endif %}?q={{ query }}&o={{ order }}"
-               class="{% if selected_lang.code != language.code %}outline{% endif %} "
-               role="button">
-              <img src="{% static language.image %}"
-                   alt="{{ language.code }}"
-                   class="emojione"
-                   height="16"
-                   width="16" />
-            {{ language.name }}</a>
-          </li>
-        {% endfor %}
-      </ul>
-    </nav>
+    <header>
+      <h3>Most favourited posts from {{ posts_date }}</h3>
+      <p>
+        Posts are from the people listed
+        {% if selected_lang %}
+          <a href="{% url selected_lang.code %}">here</a>.
+        {% else %}
+          <a href="{% url 'index' %}">here</a>.
+        {% endif %}
+        Check out the <a href="{% url "faq" %}">FAQ</a> to learn how to add yourlsef to the list.
+      </p>
+      <p>
+        Use the filters below to narrow down content from a particular community. Please note that while you can select a specific community, the posts may encompass a wide range of topics of interest to members of the chosen community.
+      </p>
+      <p>The page refreshes once a day at around 01:00 UTC.</p>
+      <nav>
+        <ul style="flex-wrap: wrap; justify-content: center;">
+          {% for language in languages %}
+            <li>
+              <a href="{% if selected_lang.code != language.code %}{% url language.post_code %}{% else %}{% url "posts" %}{% endif %}?q={{ query }}&o={{ order }}"
+                 class="{% if selected_lang.code != language.code %}outline{% endif %} "
+                 role="button">
+                <img src="{% static language.image %}"
+                     alt="{{ language.code }}"
+                     class="emojione"
+                     height="16"
+                     width="16" />
+              {{ language.name }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </header>
     <section data-nosnippet>
       {% for post in posts %}
-        {{ post.content|safe }}
-        ❤️ {{ post.favourites_count }} | 🔄 {{ post.reblogs_count }} | 🗨️ {{ post.replies_count }}
-        <a href="{{ post.uri }}">link</a>
-        <span>{{ post.created_at }}</span>
-        <p>
+        <div style="padding: 20px 0px;">
+          <img class="avatar"
+               src="{{ post.account.avatar }}"
+               alt="{{ post.account.login }}"
+               width="100"
+               height="100" />
+          {% if selected_instance and selected_instance != post.account.source %}
+            <a href="https://{% firstof selected_instance %}/@{{ post.account.username }}@{{ post.account.source }}"
+               target="_blank"
+               style="display:inline-block;
+                      white-space: nowrap">{% render_emojis post.account.display_name post.account.emojis %}</a>
+          {% else %}
+            <a href="https://{{ post.account.source }}/@{{ post.account.username }}"
+               target="_blank"
+               style="display:inline-block;
+                      white-space: nowrap">{% render_emojis post.account.display_name post.account.emojis %}</a>
+          {% endif %}
+          @ <a href="https://{{ post.account.source }}">{{ post.account.source }}</a>
+          |
           {% for language in post.account.languages %}
             <a href="{% url language.post_code %}?q={{ query }}&o={{ order }}"
                style="display:inline-block;
@@ -52,12 +78,66 @@
               <small>{{ language.name }}</small>
             </a>
           {% endfor %}
-        </p>
+        </div>
+        {% if post.sensitive %}
+          <div>{{ post.spoiler_text }}</div>
+        {% else %}
+          {{ post.content|safe }}
+          {% if post.media_attachments %}
+            <div class="grid" style="height: 300px;">
+              {% for media in post.media_attachments %}
+                {% if media.type == "image" %}
+                  <img src="{{ media.preview_url }}"
+                       alt="{{ media.description }}"
+                       style="max-height: 300px" />
+                {% endif %}
+                {% if media.type == "video" %}
+                  <video controls style="max-height: 300px">
+                    <source src="{{ media.url }}" type="{{ media.meta.mime_type }}">
+                    Your browser does not support the video tag.
+                  </video>
+                {% endif %}
+                {% if media.type == "gifv" %}
+                  <video autoplay loop muted style="max-height: 300px">
+                    <source src="{{ media.url }}" type="{{ media.meta.mime_type }}">
+                    Your browser does not support the video tag.
+                  </video>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+          {% if not post.media_attachments and post.card %}
+            <article class="card">
+              <a href="{{ post.card.url }}" target="_blank">
+                {% if post.card.image %}
+                  <img src="{{ post.card.image }}"
+                       alt="{{ post.card.title }}"
+                       width="100%"
+                       height="auto" />
+                {% endif %}
+              </a>
+              <footer>
+                <h3>
+                  <a href="{{ post.card.url }}" target="_blank">{{ post.card.title }}</a>
+                </h3>
+                <small>{{ post.card.description }}</small>
+              </footer>
+            </article>
+          {% endif %}
+        {% endif %}
+        <div>
+          <small>
+            ⭐️ {{ post.favourites_count }} | 🔄 {{ post.reblogs_count }} | 🗨️ {{ post.replies_count }} |
+            <a href="{{ post.uri }}">
+              <span>{{ post.created_at }}</span>
+            </a>
+          </small>
+        </div>
         <hr>
       {% endfor %}
       {% if not posts %}
         <p style="text-align:center;">
-          No results, <a href="{% url "index" %}">try clearing your search</a>!
+          No results, <a href="{% url "posts" %}">go to today</a>!
         </p>
       {% endif %}
     </section>
@@ -76,7 +156,7 @@
         </span>
       </div>
       <p style="text-align:center">
-        <small>Don't see yourself on the list? Read through <a href="{% url 'faq' %}">the FAQ</a> to make sure you're eligible to be listed.</small>
+        <small>Are you looking for ranked posts of your own timeline? Check out our friends @ <a href="https://fediview.com">fediview.com</a>!</small>
       </p>
     </footer>
   </article>

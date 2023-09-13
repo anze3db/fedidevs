@@ -1,51 +1,54 @@
 import datetime as dt
 
 from django.db.models import Q
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from accounts.models import LANGUAGES
 from posts.models import Post
 
 
 # Create your views here.
-def index(request, lang: str | None = None):
+def index(
+    request,
+    lang: str | None = None,
+    date: dt.date | None = None,
+):
     langs_map = {l.code: l for l in LANGUAGES}
     selected_lang = langs_map.get(lang)
-    search_query = Q(created_at__gte=dt.date.today() - dt.timedelta(days=1))
+    if not date:
+        date = dt.date.today() - dt.timedelta(days=1)
+        if lang:
+            return redirect(f"{selected_lang.code}-posts", date=date)
+        else:
+            return redirect("posts", date=date)
+
+    search_query = Q(
+        created_at__gte=date,
+        created_at__lt=date + dt.timedelta(days=1),
+        visibility="public",
+        favourites_count__gt=0,
+    )
     if selected_lang:
         search_query &= Q(account__accountlookup__language=selected_lang.code)
-    posts = Post.objects.filter(search_query).order_by("-favourites_count")[:100]
+    posts = (
+        Post.objects.filter(search_query)
+        .order_by("-favourites_count")
+        .prefetch_related("account", "account__accountlookup_set")[:20]
+    )
     return render(
         request,
         "posts.html",
         {
-            "page_title": "FediDevs | List of software developers on Mastodon"
+            "page_title": "FediDevs POSTS | Daily Most Favourited Mastodon Posts"
             if not selected_lang
-            else f"FediDevs | List of {selected_lang.name} developers on Mastodon",
-            "page_description": "Discover amazing developers from across the fediverse."
+            else f"FediDevs POSTS | Daily Most Favourited Mastodon Posts in {selected_lang.name}",
+            "page_description": "Discover amazing posts from across the fediverse. Updated daily."
             if not selected_lang
-            else f"Discover amazing {selected_lang.name} developers from across the fediverse.",
-            "page_image": "og.png",
+            else f"Discover amazing {selected_lang.name} posts from across the fediverse. Updated daily.",
+            "page_image": "og-posts.png",
             "posts": posts,
             "selected_lang": selected_lang,
             "languages": LANGUAGES,
-            "adjectives": [
-                "great",
-                "awesome",
-                "marvelous",
-                "wonderful",
-                "fantastic",
-                "amazing",
-                "incredible",
-                "superb",
-                "spectacular",
-                "stupendous",
-                "fabulous",
-                "brilliant",
-                "magnificent",
-                "excellent",
-                "outstanding",
-                "terrific",
-            ],
+            "posts_date": date,
         },
     )
