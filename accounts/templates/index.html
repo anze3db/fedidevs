@@ -14,91 +14,96 @@
     <h3>
       <mark>{{ accounts_count }}</mark> accounts listed from <mark>{{ instances_count }}</mark> Mastodon instances.
     </h3>
+    <h4>
+      Now also listing <a href="{% url 'posts' %}">most favourited posts</a>!
+    </h4>
     <p>
       Read <a href="{% url 'faq' %}">the FAQ</a> to see how to get listed. <a target="_blank" href="https://anze3db.ck.page/76db70f6e0 ">Subscribe to the newsletter</a> for updates. Suggest new features on <a href="https://fosstodon.org/@anze3db">Mastodon</a> or <a href="mailto:hello@fedidevs.com">Email</a>!
     </p>
   </header>
   <article>
-    <nav>
-      <ul style="flex-wrap: wrap; justify-content: center;">
-        {% for language in languages %}
-          <li>
-            <a href="{% if selected_lang.code != language.code %}{% url language.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
-               class="{% if selected_lang.code != language.code %}outline{% endif %} "
-               role="button">
-              <img src="{% static language.image %}"
-                   alt="{{ language.code }}"
-                   class="emojione"
-                   height="16"
-                   width="16" />
-            {{ language.name }}</a>
-          </li>
-        {% endfor %}
-      </ul>
-    </nav>
-    <form method="GET"
-          action="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url 'index' %}{% endif %}">
-      <div>
-        <div style="display:flex; gap: 16px;">
-          <input type="text"
-                 name="q"
-                 placeholder="Filter by name, bio, or instance..."
-                 value="{{ query }}" />
-          <input type="hidden" name="o" value="{{ order }}" />
-          {% if query or selected_lang %}
-            <a style="margin: 16px 0px;" href="{% url 'index' %}">Clear</a>
-          {% endif %}
-          <input style="width:120px;" type="submit" value="Search" />
+    <header>
+      <nav>
+        <ul style="flex-wrap: wrap; justify-content: center;">
+          {% for language in languages %}
+            <li>
+              <a href="{% if selected_lang.code != language.code %}{% url language.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
+                 class="{% if selected_lang.code != language.code %}outline{% endif %} "
+                 role="button">
+                <img src="{% static language.image %}"
+                     alt="{{ language.code }}"
+                     class="emojione"
+                     height="16"
+                     width="16" />
+              {{ language.name }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+      <form method="GET"
+            action="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url 'index' %}{% endif %}">
+        <div>
+          <div style="display:flex; gap: 16px;">
+            <input type="text"
+                   name="q"
+                   placeholder="Filter by name, bio, or instance..."
+                   value="{{ query }}" />
+            <input type="hidden" name="o" value="{{ order }}" />
+            {% if query or selected_lang %}
+              <a style="margin: 16px 0px;" href="{% url 'index' %}">Clear</a>
+            {% endif %}
+            <input style="width:120px;" type="submit" value="Search" />
+          </div>
         </div>
-      </div>
-    </form>
-    <form method="GET" action="{% url 'index' %}">
-      <div>
-        <a style="cursor:pointer"
-           data-target="modal-example"
-           onClick="toggleModal(event)">
-          {% if selected_instance %}
-            {{ selected_instance }} selected
-          {% else %}
-            Select your Mastodon instance
-          {% endif %}
-        </a>  to make it easier to follow accounts below.
-        <dialog id="modal-example">
-          <article>
-            <a href="#close"
-               aria-label="Close"
-               class="close"
-               data-target="modal-example"
-               onClick="toggleModal(event)"></a>
-            <h3>Select your Mastodon instance</h3>
-            <p>
-              Account links will use your instance making it easier to follow accounts that you open. This way you'll avoid the Follow Dialog for people on different instances.
-            </p>
-            <p>
-              <input type="text"
-                     list="instances"
-                     value="{% if selected_instance %}{{ selected_instance }}{% endif %}"
-                     id="selected_instance"
-                     name="selected_instance" />
-              <datalist id="instances">
-                {% for instance in instances %}<option value="{{ instance }}">{{ instance }}</option>{% endfor %}
-              </datalist>
-            </p>
-            <footer>
-              <a href="#cancel"
-                 role="button"
-                 class="secondary"
+      </form>
+      <form method="GET" action="{% url 'index' %}">
+        <div>
+          <a style="cursor:pointer"
+             data-target="modal-example"
+             onClick="toggleModal(event)">
+            {% if selected_instance %}
+              {{ selected_instance }} selected
+            {% else %}
+              Select your Mastodon instance
+            {% endif %}
+          </a>  to make it easier to follow accounts below.
+          <dialog id="modal-example">
+            <article>
+              <a href="#close"
+                 aria-label="Close"
+                 class="close"
                  data-target="modal-example"
-                 onClick="toggleModal(event)">Cancel</a>
-              <a href="#confirm"
-                 role="button"
-                 data-target="modal-example"
-                 onClick="closest('form').submit()">Confirm</a>
-            </footer>
-          </article>
-        </dialog>
-      </div>
-    </form>
+                 onClick="toggleModal(event)"></a>
+              <h3>Select your Mastodon instance</h3>
+              <p>
+                Account links will use your instance making it easier to follow accounts that you open. This way you'll avoid the Follow Dialog for people on different instances.
+              </p>
+              <p>
+                <input type="text"
+                       list="instances"
+                       value="{% if selected_instance %}{{ selected_instance }}{% endif %}"
+                       id="selected_instance"
+                       name="selected_instance" />
+                <datalist id="instances">
+                  {% for instance in instances %}<option value="{{ instance }}">{{ instance }}</option>{% endfor %}
+                </datalist>
+              </p>
+              <footer>
+                <a href="#cancel"
+                   role="button"
+                   class="secondary"
+                   data-target="modal-example"
+                   onClick="toggleModal(event)">Cancel</a>
+                <a href="#confirm"
+                   role="button"
+                   data-target="modal-example"
+                   onClick="closest('form').submit()">Confirm</a>
+              </footer>
+            </article>
+          </dialog>
+        </div>
+      </form>
+    </header>
     <section data-nosnippet>
       <figure>
         <table role="grid">
