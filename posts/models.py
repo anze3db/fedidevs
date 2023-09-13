@@ -11,7 +11,7 @@ class Post(models.Model):
     in_reply_to_id = models.TextField(null=True, blank=True)
     in_reply_to_account_id = models.TextField(null=True, blank=True)
 
-    senstive = models.BooleanField(null=True, blank=True)
+    sensitive = models.BooleanField(null=True, blank=True)
     spoiler_text = models.TextField(null=True, blank=True)
     visibility = models.TextField()
     language = models.TextField(null=True, blank=True)

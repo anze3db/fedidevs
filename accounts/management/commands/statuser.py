@@ -44,7 +44,7 @@ class Command(RichCommand):
                                 "in_reply_to_account_id": result[
                                     "in_reply_to_account_id"
                                 ],
-                                "senstive": result.get("senstive", None),
+                                "sensitive": result.get("sensitive", None),
                                 "spoiler_text": result["spoiler_text"],
                                 "visibility": result["visibility"],
                                 "language": result["language"],
