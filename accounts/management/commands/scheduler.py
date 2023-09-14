@@ -3,6 +3,7 @@ import time
 import schedule
 from django.core import management
 from django_rich.management import RichCommand
+from sentry_sdk.crons import monitor
 
 from stats.models import store_daily_stats
 
@@ -10,6 +11,7 @@ from stats.models import store_daily_stats
 class Command(RichCommand):
     help = "Starts the scheduler"
 
+    @monitor(monitor_slug="daily-sync")
     def job(self):
         self.console.print("Running crawler")
         management.call_command("crawler", skip_inactive_for=3, pre_filter=True)
