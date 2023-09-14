@@ -84,7 +84,7 @@
         {% else %}
           {{ post.content|safe }}
           {% if post.media_attachments %}
-            <div class="grid" style="height: 300px;">
+            <div>
               {% for media in post.media_attachments %}
                 {% if media.type == "image" %}
                   <img src="{{ media.preview_url }}"
