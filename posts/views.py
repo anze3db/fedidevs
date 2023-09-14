@@ -35,6 +35,12 @@ def index(
         .order_by("-favourites_count")
         .prefetch_related("account", "account__accountlookup_set")[:20]
     )
+    # List of date objects. The first one is the date 2023-09-12 and then one item for every day until the current date
+    dates = [
+        dt.date.today() - dt.timedelta(days=i)
+        for i in range(1, (dt.date.today() - dt.date(2023, 9, 11)).days)
+    ]
+    dates = [{"value": date.strftime("%Y-%m-%d"), "display": date} for date in dates]
     return render(
         request,
         "posts.html",
@@ -50,5 +56,6 @@ def index(
             "selected_lang": selected_lang,
             "languages": LANGUAGES,
             "posts_date": date,
+            "dates": dates,
         },
     )

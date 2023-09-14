@@ -59,7 +59,7 @@ urlpatterns = (
     ]
     + [
         path(
-            f"posts/{lang.code}/<date:date>",
+            f"posts/<date:date>/{lang.code}/",
             post_views.index,
             name=f"{lang.code}-posts",
             kwargs={"lang": lang.code},
@@ -76,7 +76,7 @@ urlpatterns = (
         for lang in LANGUAGES
     ]
     + [
-        path("posts/", post_views.index, name="posts"),
         path("posts/<date:date>/", post_views.index, name="posts"),
+        path("posts/", post_views.index, name="posts"),
     ]
 )

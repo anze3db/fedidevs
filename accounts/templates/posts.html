@@ -13,7 +13,21 @@
   </header>
   <article>
     <header>
-      <h3>Most favourited posts from {{ posts_date }}</h3>
+      <script>
+        function change_date(element) {
+          var date = element.value;
+          window.location.href = "/posts/" + date {% if selected_lang %} + "/{{ selected_lang.code }}"{% endif %};
+        }
+      </script>
+      <h3>
+        Most favourited posts on
+        <select style="width: 250px; display: inline;" onchange="change_date(this)">
+          {% for date in dates %}
+            <option value="{{ date.value }}"
+                    {% if posts_date == date.display %}selected{% endif %}>{{ date.display }}</option>
+          {% endfor %}
+        </select>
+      </h3>
       <p>
         Posts are from the people listed
         {% if selected_lang %}
@@ -31,7 +45,7 @@
         <ul style="flex-wrap: wrap; justify-content: center;">
           {% for language in languages %}
             <li>
-              <a href="{% if selected_lang.code != language.code %}{% url language.post_code %}{% else %}{% url "posts" %}{% endif %}?q={{ query }}&o={{ order }}"
+              <a href="{% if selected_lang.code != language.code %}{% url language.post_code posts_date %}{% else %}{% url "posts" posts_date %}{% endif %}?q={{ query }}&o={{ order }}"
                  class="{% if selected_lang.code != language.code %}outline{% endif %} "
                  role="button">
                 <img src="{% static language.image %}"
