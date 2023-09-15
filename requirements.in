@@ -5,6 +5,7 @@ gunicorn
 httpx
 schedule
 sentry-sdk
+setproctitle
 whitenoise
 # Dev
 black
