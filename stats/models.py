@@ -1,13 +1,14 @@
 import datetime as dt
 
 from django.db import models
+from django.utils import timezone
 
 from accounts.models import LANGUAGES, Account, AccountLookup
 from posts.models import Post
 
 
 def store_daily_stats():
-    today = dt.date.today()
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     yesterday = today - dt.timedelta(days=1)
 
     account_defaults = {
@@ -31,7 +32,7 @@ def store_daily_stats():
     ).count()
 
     Daily.objects.update_or_create(date=today, defaults=account_defaults)
-    Daily.objects.update_or_create(date=yesterday, defaults=post_defaults)
+    Daily.objects.filter(date=yesterday).update(**post_defaults)
 
 
 # Create your models here.
