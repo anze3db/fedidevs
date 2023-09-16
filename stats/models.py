@@ -9,18 +9,15 @@ from posts.models import Post
 def store_daily_stats():
     today = dt.date.today()
     yesterday = today - dt.timedelta(days=1)
-    defaults = {
-        "total_accounts": Account.objects.count(),
-        "total_posts": Post.objects.filter(
-            created_at__gte=yesterday, created_at__lt=today
-        ).count(),
-    }
+
     account_defaults = {
         f"{lang.code}_accounts": AccountLookup.objects.filter(
             language=lang.code
         ).count()
         for lang in LANGUAGES
     }
+    account_defaults["total_accounts"] = Account.objects.count()
+
     post_defaults = {
         f"{lang.code}_posts": Post.objects.filter(
             created_at__gte=yesterday,
@@ -29,9 +26,12 @@ def store_daily_stats():
         ).count()
         for lang in LANGUAGES
     }
-    Daily.objects.update_or_create(
-        date=dt.date.today(), defaults=defaults | account_defaults | post_defaults
+    post_defaults["total_posts"] = (
+        Post.objects.filter(created_at__gte=yesterday, created_at__lt=today).count(),
     )
+
+    Daily.objects.update_or_create(date=today, defaults=account_defaults)
+    Daily.objects.update_or_create(date=yesterday, defaults=post_defaults)
 
 
 # Create your models here.
