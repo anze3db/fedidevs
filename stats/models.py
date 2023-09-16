@@ -3,20 +3,34 @@ import datetime as dt
 from django.db import models
 
 from accounts.models import LANGUAGES, Account, AccountLookup
+from posts.models import Post
 
 
 def store_daily_stats():
+    today = dt.date.today()
+    yesterday = today - dt.timedelta(days=1)
     defaults = {
         "total_accounts": Account.objects.count(),
+        "total_posts": Post.objects.filter(
+            created_at__gte=yesterday, created_at__lt=today
+        ).count(),
     }
-    lang_defaults = {
+    account_defaults = {
         f"{lang.code}_accounts": AccountLookup.objects.filter(
             language=lang.code
         ).count()
         for lang in LANGUAGES
     }
+    post_defaults = {
+        f"{lang.code}_posts": Post.objects.filter(
+            created_at__gte=yesterday,
+            created_at__lt=today,
+            account__accountlookup__language=lang.code,
+        ).count()
+        for lang in LANGUAGES
+    }
     Daily.objects.update_or_create(
-        date=dt.date.today(), defaults=defaults | lang_defaults
+        date=dt.date.today(), defaults=defaults | account_defaults | post_defaults
     )
 
 
@@ -43,6 +57,27 @@ class Daily(models.Model):
     nix_accounts = models.IntegerField()
     opensource_accounts = models.IntegerField()
     php_accounts = models.IntegerField()
+
+    total_posts = models.IntegerField(default=0)
+    python_posts = models.IntegerField(default=0)
+    javascript_posts = models.IntegerField(default=0)
+    rust_posts = models.IntegerField(default=0)
+    ruby_posts = models.IntegerField(default=0)
+    golang_posts = models.IntegerField(default=0)
+    java_posts = models.IntegerField(default=0)
+    kotlin_posts = models.IntegerField(default=0)
+    scala_posts = models.IntegerField(default=0)
+    swift_posts = models.IntegerField(default=0)
+    csharp_posts = models.IntegerField(default=0)
+    fsharp_posts = models.IntegerField(default=0)
+    dotnet_posts = models.IntegerField(default=0)
+    cpp_posts = models.IntegerField(default=0)
+    linux_posts = models.IntegerField(default=0)
+    haskell_posts = models.IntegerField(default=0)
+    ocaml_posts = models.IntegerField(default=0)
+    nix_posts = models.IntegerField(default=0)
+    opensource_posts = models.IntegerField(default=0)
+    php_posts = models.IntegerField(default=0)
 
     def __str__(self):
         return self.date.strftime("%Y-%m-%d")
