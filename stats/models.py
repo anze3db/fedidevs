@@ -26,9 +26,9 @@ def store_daily_stats():
         ).count()
         for lang in LANGUAGES
     }
-    post_defaults["total_posts"] = (
-        Post.objects.filter(created_at__gte=yesterday, created_at__lt=today).count(),
-    )
+    post_defaults["total_posts"] = Post.objects.filter(
+        created_at__gte=yesterday, created_at__lt=today
+    ).count()
 
     Daily.objects.update_or_create(date=today, defaults=account_defaults)
     Daily.objects.update_or_create(date=yesterday, defaults=post_defaults)
