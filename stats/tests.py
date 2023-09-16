@@ -150,9 +150,14 @@ class TestStats(TestCase):
             tags=[],
         )
         store_daily_stats()
+
+        # make sure this doesn't change
         yesterday_stats.refresh_from_db()
-        self.assertEqual(yesterday_stats.total_posts, 1)
-        self.assertEqual(yesterday_stats.python_posts, 1)
-        self.assertEqual(
-            yesterday_stats.total_accounts, 2
-        )  # make sure this doesn't change
+        self.assertEqual(yesterday_stats.total_posts, 0)
+        self.assertEqual(yesterday_stats.python_posts, 0)
+        self.assertEqual(yesterday_stats.total_accounts, 2)
+
+        today_stats = Daily.objects.get(date=today.date())
+        self.assertEqual(today_stats.total_posts, 2)
+        self.assertEqual(today_stats.python_posts, 2)
+        self.assertEqual(today_stats.total_accounts, 1)
