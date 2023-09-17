@@ -10,6 +10,7 @@ setproctitle
 whitenoise
 # Dev
 black
+django-browser-reload
 django-debug-toolbar
 django-rich
 django-tui

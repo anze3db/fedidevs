@@ -123,8 +123,8 @@ class Account(models.Model):
         if self.last_status_at is None:
             return "Never posted"
 
-        if timezone.now() - self.last_status_at < timedelta(days=7):
-            return "Less than a week ago"
+        if timezone.now() - self.last_status_at < timedelta(days=1):
+            return "Less than a day ago"
 
         # use natural time to display last status
         return naturaltime(self.last_status_at)

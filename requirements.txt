@@ -30,10 +30,13 @@ cssbeautifier==1.14.9
 django==4.2.5
     # via
     #   -r requirements.in
+    #   django-browser-reload
     #   django-debug-toolbar
     #   django-rich
     #   django-tui
     #   heroicons
+django-browser-reload==1.11.0
+    # via -r requirements.in
 django-debug-toolbar==4.2.0
     # via -r requirements.in
 django-environ==0.11.2
