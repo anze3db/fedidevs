@@ -1,3 +1,7 @@
+main.container {
+    padding: 0;
+}
+
 .logo img {
     height: 72px;
     margin-top: -6px;
@@ -5,6 +9,11 @@
 
 .logo {
     letter-spacing: 3px;
+}
+
+.logo a {
+    color: var(--pico-h1-color);
+    text-decoration: none;
 }
 
 td {
@@ -58,4 +67,34 @@ article.card {
 
 .card>a>small {
     color: hsl(205deg, 25%, 23%);
+}
+
+
+.tabs {
+    margin-top: calc((var(--pico-block-spacing-vertical) * -0.6));
+    margin-left: calc(var(--pico-block-spacing-horizontal) * -1);
+    margin-right: calc(var(--pico-block-spacing-horizontal) * -1);
+    margin-bottom: 40px;
+
+}
+
+.tabs>ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    text-align: center;
+    margin: 0 !important;
+    width: 100%;
+}
+
+.tabs li {
+    cursor: pointer;
+    flex: 1 1 0;
+    border-bottom: 3px solid var(--pico-card-border-color);
+    background-color: var(--pico-card-background-color);
+}
+
+.tabs li.active {
+    border-bottom: 3px solid color(srgb 0.1594 0.666 0.9605);
+    background-color: var(--pico-card-sectionning-background-color);
 }

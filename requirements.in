@@ -2,6 +2,7 @@
 django
 django-environ
 gunicorn
+heroicons[django]
 httpx
 schedule
 sentry-sdk

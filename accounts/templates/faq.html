@@ -1,94 +1,89 @@
 {% extends "layout.html" %}
 {% load static %}
 {% block content %}
-  <header style="text-align:center;">
-    <h1 class="logo">
-      <img src="{% static 'logo.png' %}" alt="logo">
-      FEDIDEVS
-    </h1>
-    <h2>Frequently Asked Questions</h2>
-  </header>
-  <article>
-    <h2>How to get listed?</h2>
-    <p>There are a few prerequisites for your account to be listed on FediDevs.com</p>
-    <h4>1. Your account must be discoverable and not opt-out of search engine indexing</h4>
-    Your account must be <b>discoverable</b>. Check the checkbox that says "Suggest account to others" at <code>{your_instance}/settings/profile</code>.
-    <p style="text-align:center; margin: 20px;">
-      <a href="{% static 'faq-discoverable.png' %}">
-        <img width="80%"
-             height="80%"
-             alt="Screenshot of the Mastodon Edit profile page showing the Suggest account to others checkbox"
-             src="{% static 'faq-discoverable.png' %}"
-             style="" />
-      </a>
-    </p>
-    Opt-out of search engine indexing checkbox must <b>NOT</b> be checked. The checkbox is on the <code>{your_instance}/preferences/other</code> page:
-    <p style="text-align:center; margin: 20px;">
-      <a href="{% static 'faq-opt-out.png' %}">
-        <img width="80%"
-             height="80%"
-             alt="Screenshot of the Mastodon Preferences page showing the Opt-out of search engine indexing checkbox"
-             src="{% static 'faq-opt-out.png' %}"
-             style="" />
-      </a>
-    </p>
-    <h4>2. Your display name, bio, or profile metadata has to have at least one of the filter keywords</h4>
-    <p>
-      The keywords are case-insensitive and can be anywhere in your display name, bio, or profile metadata. You can also use custom emojis like <code>:python:</code>. The table below shows more information about all the filters:
-      <table>
-        <tr>
-          <th>Filter</th>
-          <th>Recommended keyword</th>
-          <th>Regex used by the filter</th>
-        </tr>
-        {% for language in languages %}
+  <main class="container">
+    <article>
+      <h2>How to get listed?</h2>
+      <p>There are a few prerequisites for your account to be listed on FediDevs.com</p>
+      <h4>1. Your account must be discoverable and not opt-out of search engine indexing</h4>
+      Your account must be <b>discoverable</b>. Check the checkbox that says "Suggest account to others" at <code>{your_instance}/settings/profile</code>.
+      <p style="text-align:center; margin: 20px;">
+        <a href="{% static 'faq-discoverable.png' %}">
+          <img width="80%"
+               height="80%"
+               alt="Screenshot of the Mastodon Edit profile page showing the Suggest account to others checkbox"
+               src="{% static 'faq-discoverable.png' %}"
+               style="" />
+        </a>
+      </p>
+      Opt-out of search engine indexing checkbox must <b>NOT</b> be checked. The checkbox is on the <code>{your_instance}/preferences/other</code> page:
+      <p style="text-align:center; margin: 20px;">
+        <a href="{% static 'faq-opt-out.png' %}">
+          <img width="80%"
+               height="80%"
+               alt="Screenshot of the Mastodon Preferences page showing the Opt-out of search engine indexing checkbox"
+               src="{% static 'faq-opt-out.png' %}"
+               style="" />
+        </a>
+      </p>
+      <h4>2. Your display name, bio, or profile metadata has to have at least one of the filter keywords</h4>
+      <p>
+        The keywords are case-insensitive and can be anywhere in your display name, bio, or profile metadata. You can also use custom emojis like <code>:python:</code>. The table below shows more information about all the filters:
+        <table>
           <tr>
-            <td>
-              <img src="{% static language.image %}"
-                   alt="{{ language.code }}"
-                   class="emojione"
-                   height="16"
-                   width="16" />
-              {{ language.name }}
-            </td>
-            <td>
-              <code>{{ language.code }}</code>
-            </td>
-            <td>
-              <code>{{ language.regex }}</code>
-            </td>
+            <th>Filter</th>
+            <th>Recommended keyword</th>
+            <th>Regex used by the filter</th>
           </tr>
+          {% for language in languages %}
+            <tr>
+              <td>
+                <img src="{% static language.image %}"
+                     alt="{{ language.code }}"
+                     class="emojione"
+                     height="16"
+                     width="16" />
+                {{ language.name }}
+              </td>
+              <td>
+                <code>{{ language.code }}</code>
+              </td>
+              <td>
+                <code>{{ language.regex }}</code>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </p>
+      <h4>3. Have at least one post/toot or one follower or follow a single other account</h4>
+      <p>Accounts with 0 posts, 0 followers, and 0 following are not indexed because they are usually spam accounts.</p>
+      <h4>4. Your instance must be indexed</h4>
+      <p>FediDevs currently indexes the following instances:</p>
+      <ul>
+        {% for instance in instances %}
+          <li>
+            <a href="https://{{ instance }}/">{{ instance }}</a>
+          </li>
         {% endfor %}
-      </table>
-    </p>
-    <h4>3. Have at least one post/toot or one follower or follow a single other account</h4>
-    <p>Accounts with 0 posts, 0 followers, and 0 following are not indexed because they are usually spam accounts.</p>
-    <h4>4. Your instance must be indexed</h4>
-    <p>FediDevs currently indexes the following instances:</p>
-    <ul>
-      {% for instance in instances %}
-        <li>
-          <a href="https://{{ instance }}/">{{ instance }}</a>
-        </li>
-      {% endfor %}
-    </ul>
-    <p>
-      If you did all the steps above and still don't see your account on FediDevs.com, <a href="mailto:hello@fedidevs.com">reach out</a> and I'll check!
-    </p>
-    <h2>How often is the data refreshed?</h2>
-    <p>
-      The data is refreshed about <b>once per week</b>, but if you want your profile on FediDevs.com updated sooner, <a href="mailto:hello@fedidevs.com">send me an email</a> and I'll update it manually.
-    </p>
-    <h2>How to get your account removed from FediDevs.com?</h2>
-    <p>
-      The easiest way is to Opt-out of search engine indexing in your Mastodon profile settings. Uncheck the checkbox that says "Opt-out of search engine indexing" at <code>{your_instance}/preferences/other</code>. This will remove your account on next sync (in about 1 week).
-    </p>
-    <p>
-      If you don't want to wait until the next sync <a href="mailto:hello@fedidevs.com">please reach out</a> and I'll remove you immediately.
-    </p>
-    <h2>How to get your instance removed from FediDevs.com?</h2>
-    <p>
-      If you are an admin of an instance that is listed above, but don't want me indexing it anymore, please send <a href="mailto:hello@fedidevs.com">an email</a>. Once I confirm your identity I will remove all accounts from your instance and never index your instance again.
-    </p>
-  </article>
+      </ul>
+      <p>
+        If you did all the steps above and still don't see your account on FediDevs.com, <a href="mailto:hello@fedidevs.com">reach out</a> and I'll check!
+      </p>
+      <h2>How often is the data refreshed?</h2>
+      <p>
+        The data is refreshed about <b>once per week</b>, but if you want your profile on FediDevs.com updated sooner, <a href="mailto:hello@fedidevs.com">send me an email</a> and I'll update it manually.
+      </p>
+      <h2>How to get your account removed from FediDevs.com?</h2>
+      <p>
+        The easiest way is to Opt-out of search engine indexing in your Mastodon profile settings. Uncheck the checkbox that says "Opt-out of search engine indexing" at <code>{your_instance}/preferences/other</code>. This will remove your account on next sync (in about 1 week).
+      </p>
+      <p>
+        If you don't want to wait until the next sync <a href="mailto:hello@fedidevs.com">please reach out</a> and I'll remove you immediately.
+      </p>
+      <h2>How to get your instance removed from FediDevs.com?</h2>
+      <p>
+        If you are an admin of an instance that is listed above, but don't want me indexing it anymore, please send <a href="mailto:hello@fedidevs.com">an email</a>. Once I confirm your identity I will remove all accounts from your instance and never index your instance again.
+      </p>
+    </article>
+  </main>
 {% endblock %}

@@ -48,6 +48,7 @@ def index(
             "page_title": "FediDevs POSTS | Daily Most Favourited Mastodon Posts"
             if not selected_lang
             else f"FediDevs POSTS | Daily Most Favourited Mastodon Posts in {selected_lang.name}",
+            "page_header": "FEDIDEVS POSTS",
             "page_description": "Discover amazing posts from across the fediverse. Updated daily."
             if not selected_lang
             else f"Discover amazing {selected_lang.name} posts from across the fediverse. Updated daily.",

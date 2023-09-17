@@ -37,31 +37,37 @@
             {% block head %}{% endblock %}
       </head>
       <body>
-            <main class="container">
-                  {% block content %}{% endblock %}
-                  <footer class="text-center">
-                        <ul class="no-bullets">
-                              <li>
-                                    <a href="{% url 'faq' %}">FAQ</a>
-                              </li>
-                              <li>
-                                    <a href="{% url 'developers-on-mastodon' %}">Mastodon instances</a>
-                              </li>
-                              <li>
-                                    <a href="https://github.com/anze3db/fedidevs">Source Code</a>
-                              </li>
-                              <li>
-                                    <a href="https://fosstodon.org/@anze3db">fosstodon.org/@anze3db</a>
-                              </li>
-                              <li>
-                                    <a target="_blank" href="https://anze3db.ck.page/76db70f6e0 ">Newsletter</a>
-                              </li>
-                              <li>
-                                    <a href="mailto:hello@fedidevs.com">Email</a>
-                              </li>
-                        </ul>
-                  </footer>
-            </main>
+            <header style="text-align:center;">
+                  <h1 class="logo">
+                        <a href="{% url 'index' %}">
+                              <img src="{% static 'logo.png' %}" alt="logo">
+                              {{ page_header }}
+                        </a>
+                  </h1>
+            </header>
+            {% block content %}{% endblock %}
+            <footer class="text-center">
+                  <ul class="no-bullets">
+                        <li>
+                              <a href="{% url 'faq' %}">FAQ</a>
+                        </li>
+                        <li>
+                              <a href="{% url 'developers-on-mastodon' %}">Mastodon instances</a>
+                        </li>
+                        <li>
+                              <a href="https://github.com/anze3db/fedidevs">Source Code</a>
+                        </li>
+                        <li>
+                              <a href="https://fosstodon.org/@anze3db">fosstodon.org/@anze3db</a>
+                        </li>
+                        <li>
+                              <a target="_blank" href="https://anze3db.ck.page/76db70f6e0 ">Newsletter</a>
+                        </li>
+                        <li>
+                              <a href="mailto:hello@fedidevs.com">Email</a>
+                        </li>
+                  </ul>
+            </footer>
       </body>
       <script src="{% static "modal.js" %}"></script>
       <script data-goatcounter="https://fedidevs.goatcounter.com/count"
