@@ -39,6 +39,7 @@ def index(request, lang: str | None = None):
     paginator = Paginator(accounts, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
+    accounts_count = Account.objects.filter(discoverable=True, noindex=False).count()
 
     return render(
         request,
@@ -48,7 +49,8 @@ def index(request, lang: str | None = None):
             if not selected_lang
             else f"FediDevs | List of {selected_lang.name} developers on Mastodon",
             "page_header": "FEDIDEVS",
-            "page_description": "Discover amazing developers from across the fediverse."
+            "page_subheader": f'Discover <mark>{accounts_count}</mark> superb devs from across the <a style="color: var(--pico-h1-color);" href="#" data-tooltip="{len(INSTANCES)} Mastodon instances indexed">Fediverse</a>',
+            "page_description": "Discover amazing developers from across the Fediverse."
             if not selected_lang
             else f"Discover amazing {selected_lang.name} developers from across the fediverse.",
             "page_image": "og.png",
@@ -57,9 +59,7 @@ def index(request, lang: str | None = None):
             "languages": LANGUAGES,
             "instances": INSTANCES,
             "instances_count": len(INSTANCES),
-            "accounts_count": Account.objects.filter(
-                discoverable=True, noindex=False
-            ).count(),  # TODO might be slow
+            "accounts_count": accounts_count,  # TODO might be slow
             "selected_instance": request.session.get("selected_instance"),
             "query": query,
             "order": order,

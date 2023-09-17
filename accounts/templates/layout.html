@@ -44,6 +44,7 @@
                               {{ page_header }}
                         </a>
                   </h1>
+                  {% if page_subheader %}<h2>{{ page_subheader | safe }}</h2>{% endif %}
             </header>
             {% block content %}{% endblock %}
             <footer class="text-center">
