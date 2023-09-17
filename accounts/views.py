@@ -49,7 +49,7 @@ def index(request, lang: str | None = None):
             if not selected_lang
             else f"FediDevs | List of {selected_lang.name} developers on Mastodon",
             "page_header": "FEDIDEVS",
-            "page_subheader": f'Discover <mark>{accounts_count}</mark> superb devs from across the <a style="color: var(--pico-h1-color);" href="#" data-tooltip="{len(INSTANCES)} Mastodon instances indexed">Fediverse</a>',
+            "page_subheader": f'Discover <mark>{accounts_count}</mark> superb devs from across the <a style="color: var(--pico-h1-color);" href="/developers-on-mastodon/" data-tooltip="{len(INSTANCES)} Mastodon instances indexed">Fediverse</a>',
             "page_description": "Discover amazing developers from across the Fediverse."
             if not selected_lang
             else f"Discover amazing {selected_lang.name} developers from across the fediverse.",
