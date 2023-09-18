@@ -107,7 +107,7 @@
             </div>
           {% endif %}
           {% if not post.media_attachments and post.card %}
-            <article class="card">
+            <article class="card" style="max-width: 350px">
               <a href="{{ post.card.url }}" target="_blank">
                 {% if post.card.image %}
                   <img src="{{ post.card.image }}"
@@ -127,7 +127,7 @@
         {% endif %}
         <div>
           <small>
-            ⭐️ {{ post.favourites_count }} | 🔄 {{ post.reblogs_count }} | 🗨️ {{ post.replies_count }} |
+            {% heroicon_outline 'star' %} {{ post.favourites_count }} | {% heroicon_outline 'arrow-path-rounded-square' %} {{ post.reblogs_count }} | {% heroicon_outline 'chat-bubble-bottom-center' %} {{ post.replies_count }} |
             <a href="{{ post.uri }}">
               <span>{{ post.created_at }}</span>
             </a>
@@ -168,8 +168,8 @@
         Use the filters below to narrow down content from a particular community. Please note that while you can select a specific community, the posts may encompass a wide range of topics of interest to members of the chosen community.
       </p>
       <p>The page refreshes once a day at around 01:00 UTC.</p>
-      <p style="text-align:center">
-        <small>Are you looking for ranked posts of your own timeline? Check out our friends @ <a href="https://fediview.com">fediview.com</a>!</small>
+      <p>
+        Are you looking for ranked posts of your own timeline? Check out our friends @ <a href="https://fediview.com">fediview.com</a>!
       </p>
     </footer>
   </article>
