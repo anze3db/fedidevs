@@ -135,11 +135,7 @@
         </div>
         <hr>
       {% endfor %}
-      {% if not posts %}
-        <p style="text-align:center;">
-          No results, <a href="{% url "posts" %}">go to today</a>!
-        </p>
-      {% endif %}
+      {% if not posts %}<p style="text-align:center;">No results, please check back later!</p>{% endif %}
     </section>
     <footer>
       <div class="pagination">
