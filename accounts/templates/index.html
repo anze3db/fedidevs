@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% load account_extras %}
 {% load static %}
+{% load humanize %}
 {% block head %}
   {% if accounts.has_previous %}<meta name="robots" content="none">{% endif %}
 {% endblock %}
@@ -40,6 +41,47 @@
                  value="{{ query }}"
                  style="min-width: 200px" />
           <input type="hidden" name="o" value="{{ order }}" />
+          <details class="dropdown">
+            <summary style="min-width: 200px; border-radius: 0; border-left: 0;">Order by</summary>
+            <ul>
+              <li>
+                <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-followers_count">
+                  {% if order == '-followers_count' %}
+                    <strong>&#9660;&nbsp;Followers Count</strong>
+                  {% else %}
+                    Followers Count
+                  {% endif %}
+                </a>
+              </li>
+              <li>
+                <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-last_status_at">
+                  {% if order == '-last_status_at' %}
+                    <strong>&#9660;&nbsp;Post Status</strong>
+                  {% else %}
+                    Last Post
+                  {% endif %}
+                </a>
+              </li>
+              <li>
+                <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-statuses_count">
+                  {% if order == '-statuses_count' %}
+                    <strong>&#9660;&nbsp;Post Count</strong>
+                  {% else %}
+                    Post Count
+                  {% endif %}
+                </a>
+              </li>
+              <li>
+                <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=url">
+                  {% if order == 'url' %}
+                    <strong>&#9660;&nbsp;Source Instance</strong>
+                  {% else %}
+                    Source Instance
+                  {% endif %}
+                </a>
+              </li>
+            </ul>
+          </details>
           <input type="submit" value="Search" />
         </form>
         <form method="GET" action="{% url 'index' %}">
@@ -91,127 +133,78 @@
         </form>
       </header>
       <section data-nosnippet>
-        <figure>
-          <table role="grid">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Note</th>
-                <th>
-                  <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-last_status_at">
-                    {% if order == '-last_status_at' %}
-                      <strong>&#9660;&nbsp;Last Status</strong>
-                    {% else %}
-                      Last Status
-                    {% endif %}
-                  </a>
-                </th>
-                <th>
-                  <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-statuses_count">
-                    {% if order == '-statuses_count' %}
-                      <strong>&#9660;&nbsp;Statuses Count</strong>
-                    {% else %}
-                      Statuses Count
-                    {% endif %}
-                  </a>
-                </th>
-                <th>
-                  <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-followers_count">
-                    {% if order == '-followers_count' %}
-                      <strong>&#9660;&nbsp;Followers Count</strong>
-                    {% else %}
-                      Followers Count
-                    {% endif %}
-                  </a>
-                </th>
-                <th>
-                  <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=url">
-                    {% if order == 'url' %}
-                      <strong>&#9660;&nbsp;Source</strong>
-                    {% else %}
-                      Source
-                    {% endif %}
-                  </a>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for account in accounts %}
-                <tr>
-                  <td>
-                    <img class="avatar"
-                         src="{{ account.avatar }}"
-                         alt="{{ account.login }}"
-                         width="50"
-                         height="50" />
-                  </td>
-                  <td>
-                    {% if selected_instance and selected_instance != account.source %}
-                      <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}"
-                         target="_blank"
-                         style="display:inline-block;
-                                white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
-                    {% else %}
-                      <a href="https://{{ account.source }}/@{{ account.username }}"
-                         target="_blank"
-                         style="display:inline-block;
-                                white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% render_emojis account.note account.emojis %}
-                    <hr>
-                    <p>
-                      {% for language in account.languages %}
-                        <a href="{% url language.code %}?q={{ query }}&o={{ order }}"
-                           style="display:inline-block;
-                                  white-space: nowrap">
-                          <img src="{% static language.image %}"
-                               alt="{{ language.code }}"
-                               class="emojione"
-                               height="8"
-                               width="8" />
-                          <small>{{ language.name }}</small>
-                        </a>
-                      {% endfor %}
-                    </p>
-                  </td>
-                  <td>{{ account.last_status_at_cached }}</td>
-                  <td>{{ account.statuses_count }}</td>
-                  <td>{{ account.followers_count }}</td>
-                  <td>
-                    <a href="https://{{ account.source }}">{{ account.source }}</a>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </figure>
-        {% if not accounts %}
-          <p style="text-align:center;">
-            No results, <a href="{% url "index" %}">try clearing your search</a>!
-          </p>
-        {% endif %}
-      </section>
-      <footer>
-        <div class="pagination">
-          <span class="step-links">
-            {% if accounts.has_previous %}
-              <a href="?page={{ accounts.previous_page_number }}&q={{ query }}&o={{ order }}">&laquo; previous</a>
-            {% endif %}
-            {% if accounts %}
-              <span class="current">Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}</span>
-            {% endif %}
-            {% if accounts.has_next %}
-              <a href="?page={{ accounts.next_page_number }}&q={{ query }}&o={{ order }}">next &raquo;</a>
-            {% endif %}
-          </span>
+        <div class="grid-container">
+          {% for account in accounts %}
+            <article class="grid-item" style="padding-bottom: 20px;">
+              <div class="header-img-container">
+                <img src="{{ account.header }}" class="header" />
+              </div>
+              <img class="avatar"
+                   src="{{ account.avatar }}"
+                   alt="{{ account.login }}"
+                   width="150"
+                   height="150" />
+              {% if selected_instance and selected_instance != account.source %}
+                <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}"
+                   target="_blank"
+                   style="display:inline-block;
+                          white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
+              {% else %}
+                <a href="https://{{ account.source }}/@{{ account.username }}"
+                   target="_blank"
+                   style="display:inline-block;
+                          white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
+              {% endif %}
+              <div style="padding-top: 10px;">{% render_emojis account.note account.emojis %}</div>
+              <p>
+                <small>
+                  {% for language in account.languages %}
+                    <a href="{% url language.code %}?q={{ query }}&o={{ order }}"
+                       style="display:inline-block;
+                              white-space: nowrap">
+                      <img src="{% static language.image %}"
+                           alt="{{ language.code }}"
+                           class="emojione"
+                           height="8"
+                           width="8" />
+                      <small>{{ language.name }}</small>
+                    </a>
+                  {% endfor %}
+                </small>
+              </p>
+              <p>
+                <small>
+                  {% heroicon_outline 'chat-bubble-left' %} {{ account.statuses_count | intcomma }} {% heroicon_outline 'user' %} {{ account.followers_count | intcomma }} {% heroicon_outline 'clock' %} {{ account.last_status_at_cached }}
+                </small>
+              </p>
+            </article>
+          {% endfor %}
         </div>
-        <p style="text-align:center">
-          <small>Don't see yourself on the list? Read through <a href="{% url 'faq' %}">the FAQ</a> to make sure you're eligible to be listed.</small>
+      </figure>
+      {% if not accounts %}
+        <p style="text-align:center;">
+          No results, <a href="{% url "index" %}">try clearing your search</a>!
         </p>
-      </footer>
-    </article>
-  </main>
+      {% endif %}
+    </section>
+    <footer>
+      <div class="pagination">
+        <span class="step-links">
+          {% if accounts.has_previous %}
+            <a href="?page={{ accounts.previous_page_number }}&q={{ query }}&o={{ order }}">&laquo; previous</a>
+          {% endif %}
+          {% if accounts %}
+            <span class="current">Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}</span>
+          {% endif %}
+          {% if accounts.has_next %}
+            <a href="?page={{ accounts.next_page_number }}&q={{ query }}&o={{ order }}">next &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+      <p style="text-align:center">
+        <small>Don't see yourself on the list? Read through <a href="{% url 'faq' %}">the FAQ</a> to make sure you're eligible to be listed.</small>
+      </p>
+    </footer>
+  </article>
+</main>
 {% endblock %}

@@ -50,6 +50,24 @@ ul.no-bullets li {
     list-style-type: none;
 }
 
+img.header {
+    object-fit: cover;
+    display: block;
+    width: 100%;
+    height: 245px;
+    margin: 0;
+    border-radius: var(--pico-border-radius) var(--pico-border-radius) 0 0;
+}
+
+.header-img-container {
+    margin-top: calc((var(--pico-block-spacing-vertical) * -1));
+    margin-left: calc(var(--pico-block-spacing-horizontal) * -1);
+    margin-right: calc(var(--pico-block-spacing-horizontal) * -1);
+
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
 article.card {
     margin: 40px 0;
     padding: 0;
@@ -98,3 +116,28 @@ article.card {
     border-bottom: 3px solid color(srgb 0.1594 0.666 0.9605);
     background-color: var(--pico-card-sectionning-background-color);
 }
+
+
+.grid-container {
+    /**
+   * User input values.
+   */
+    --grid-layout-gap: 20px;
+    --grid-column-count: 3;
+    --grid-item--min-width: 390px;
+
+    /**
+   * Calculated values.
+   */
+    --gap-count: calc(var(--grid-column-count) - 1);
+    --total-gap-width: calc(var(--gap-count) * var(--grid-layout-gap));
+    --grid-item--max-width: calc((100% - var(--total-gap-width)) / var(--grid-column-count));
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(max(var(--grid-item--min-width), var(--grid-item--max-width)), 1fr));
+    grid-gap: var(--grid-layout-gap);
+
+    align-items: flex-start
+}
+
+.grid-item {}
