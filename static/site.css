@@ -124,7 +124,7 @@ article.card {
    */
     --grid-layout-gap: 20px;
     --grid-column-count: 3;
-    --grid-item--min-width: 390px;
+    --grid-item--min-width: 290px;
 
     /**
    * Calculated values.

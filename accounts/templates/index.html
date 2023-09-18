@@ -39,10 +39,10 @@
                  name="q"
                  placeholder="Filter by name, bio, or instance..."
                  value="{{ query }}"
-                 style="min-width: 200px" />
+                 style="min-width: 100px" />
           <input type="hidden" name="o" value="{{ order }}" />
           <details class="dropdown">
-            <summary style="min-width: 200px; border-radius: 0; border-left: 0;">Order by</summary>
+            <summary style="min-width: 160px; border-radius: 0; border-left: 0;">Order by</summary>
             <ul>
               <li>
                 <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-followers_count">
@@ -82,7 +82,7 @@
               </li>
             </ul>
           </details>
-          <input type="submit" value="Search" />
+          <button type="submit">{% heroicon_outline 'magnifying-glass' %}</button>
         </form>
         <form method="GET" action="{% url 'index' %}">
           <div>
