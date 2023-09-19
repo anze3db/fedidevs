@@ -6,6 +6,10 @@ ignore = ["E501"]
 # pyproject.toml
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q"
+addopts = "-ra --cov=. --cov-report term-missing:skip-covered"
 python_files = "tests.py"
 DJANGO_SETTINGS_MODULE = "fedidevs.settings"
+
+[tool.coverage.run]
+plugins = ["django_coverage_plugin"]
+omit = [".venv/*", "staticfiles/*", "manage.py", "requirements.txt", "fedidevs/wsgi.py", "fedidevs/asgi.py"]

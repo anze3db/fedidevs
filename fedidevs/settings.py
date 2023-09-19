@@ -107,6 +107,7 @@ TEMPLATES = [
             "builtins": [
                 "heroicons.templatetags.heroicons",
             ],
+            "debug": DEBUG,
         },
     },
 ]

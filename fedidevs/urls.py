@@ -18,6 +18,7 @@ import datetime as dt
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import include, path, register_converter
+from django.utils import dateparse, timezone
 
 from accounts import views
 from accounts.models import LANGUAGES
@@ -31,8 +32,8 @@ def robots_txt(request):
 class DateConverter:
     regex = r"\d{4}-\d{1,2}-\d{1,2}"
 
-    def to_python(self, value):
-        return dt.datetime.strptime(value, "%Y-%m-%d").date()
+    def to_python(self, value: str):
+        return timezone.make_aware(dateparse.parse_datetime(value))
 
     def to_url(self, value):
         return value.strftime("%Y-%m-%d")

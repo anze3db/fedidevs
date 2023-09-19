@@ -2,6 +2,7 @@ import datetime as dt
 
 from django.db.models import Q
 from django.shortcuts import redirect, render
+from django.utils import timezone
 
 from accounts.models import LANGUAGES
 from posts.models import Post
@@ -16,7 +17,7 @@ def index(
     langs_map = {l.code: l for l in LANGUAGES}
     selected_lang = langs_map.get(lang)
     if not date:
-        date = dt.date.today() - dt.timedelta(days=1)
+        date = timezone.now().date() - dt.timedelta(days=1)
         if lang:
             return redirect(f"{selected_lang.code}-posts", date=date)
         else:

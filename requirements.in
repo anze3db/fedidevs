@@ -11,12 +11,14 @@ whitenoise
 # Dev
 black
 django-browser-reload
+django-coverage-plugin
 django-debug-toolbar
 django-rich
 django-tui
 djlint
 mypy
 pip-tools
+pytest-cov
 pytest-django
 rich
 ruff
