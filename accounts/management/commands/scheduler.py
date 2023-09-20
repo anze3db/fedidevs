@@ -11,8 +11,7 @@ class Command(RichCommand):
 
     @monitor(monitor_slug="daily-sync")
     def job(self):
-        with monitor(monitor_slug="daily-sync-2"):
-            self.console.print("Starting daily job")
+        self.console.print("Starting daily job")
         self.console.print("Running crawler")
         management.call_command("crawler", skip_inactive_for=3, pre_filter=True)
         self.console.print("Running indexer")
@@ -23,8 +22,7 @@ class Command(RichCommand):
         management.call_command("statuser")
         self.console.print("Running dailystats")
         management.call_command("dailystats")
-        with monitor(monitor_slug="daily-sync-3"):
-            self.console.print("All done! 🎉")
+        self.console.print("All done! 🎉")
 
     def handle(self, *args, **options):
         self.console.print("Starting scheduler 🕐")
