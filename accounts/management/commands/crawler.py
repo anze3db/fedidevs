@@ -56,6 +56,7 @@ INSTANCES = [
     "techhub.social",
     "technews.social",
     "techtoots.com",
+    "toot.cafe",
     "toot.works",
     "universeodon.com",
     "vmst.io",
