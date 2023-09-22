@@ -129,7 +129,6 @@ STORAGES = {
 WHITENOISE_ROOT = BASE_DIR / "static_nonversioned"
 
 WSGI_APPLICATION = "fedidevs.wsgi.application"
-WSGI_APPLICATION = "fedidevs.wsgi.application"
 
 
 # Database
