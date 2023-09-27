@@ -74,14 +74,16 @@ class Command(RichCommand):
 
     async def fetch(self, client, account: Account):
         try:
-            response = await client.get(
-                f"https://{account.instance}/api/v1/accounts/{account.account_id}/statuses",
-                params={
-                    "q": "python",
-                    "type": "statuses",
-                    "account_id": account.account_id,
-                },
-                timeout=30,
+            response = (
+                await client.get(
+                    f"https://{account.instance}/api/v1/accounts/{account.account_id}/statuses",
+                    params={
+                        "q": "python",
+                        "type": "statuses",
+                        "account_id": account.account_id,
+                    },
+                    timeout=30,
+                )
             )
             if response.status_code == 429:
                 self.console.print("Rate limited, sleeping for 5 minutes")
@@ -93,10 +95,6 @@ class Command(RichCommand):
                 )
                 return account, []
             return account, response.json()
-        except (
-            httpx.ReadTimeout,
-            httpx.ConnectTimeout,
-            httpx.RemoteProtocolError,
-        ):
+        except httpx.HTTPError:
             self.console.print(f"[bold red]Error timeout[/bold red] for {account}")
             return account, []
