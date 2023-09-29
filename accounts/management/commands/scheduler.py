@@ -29,7 +29,22 @@ class Command(RichCommand):
             management.call_command("dailystats")
         self.console.print("All done! 🎉")
 
-    def handle(self, *args, **options):
+    def add_arguments(self, parser):
+        parser.add_argument("--offset", type=int, nargs="?", default=0)
+        parser.add_argument("--instances", type=str, nargs="?", default=None)
+        parser.add_argument("--skip-inactive-for", type=int, nargs="?", default=90)
+        parser.add_argument(
+            "--run-now",
+            action="store_true",
+            help="Run the scheduled job(s) once and then exit",
+        )
+
+    def handle(self, *args, run_now=False, **options):
+        if run_now:
+            self.console.print("Running job(s) now 🏃‍♂️")
+            self.job()
+            return
+
         self.console.print("Starting scheduler 🕐")
         schedule.every().day.at("01:00").do(self.job)
 
