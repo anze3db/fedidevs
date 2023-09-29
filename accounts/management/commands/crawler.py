@@ -247,11 +247,7 @@ class Command(RichCommand):
                     f"[bold yellow]Filtered out {before - after} accounts[/bold yellow] for {instance} at offset {offset}"
                 )
             return instance, results
-        except (
-            httpx.ReadTimeout,
-            httpx.ConnectTimeout,
-            httpx.RemoteProtocolError,
-        ):
+        except httpx.HTTPError:
             self.console.print(
                 f"[bold red]Error timeout[/bold red] for {instance} at offset {offset}"
             )
