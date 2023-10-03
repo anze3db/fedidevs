@@ -107,8 +107,7 @@ class Command(RichCommand):
             if instances:
                 to_index = instances.split(",")
             else:
-                to_index = INSTANCES
-            self.console.print(f"Instances to index: {to_index}")
+                to_index = INSTANCES.copy()
             while to_index:
                 now = datetime.now(tz=timezone.utc)
                 results = await asyncio.gather(
