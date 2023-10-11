@@ -1,8 +1,7 @@
-import asyncio
+import time
 from datetime import datetime, timedelta, timezone
 
 import httpx
-from asgiref.sync import async_to_sync
 from django_rich.management import RichCommand
 
 from accounts.models import Account
@@ -22,17 +21,16 @@ class Command(RichCommand):
         )
         self.main(list(accounts))
 
-    @async_to_sync
-    async def main(self, accounts: list[Account]):
-        async with httpx.AsyncClient() as client:
+    def main(self, accounts: list[Account]):
+        with httpx.Client() as client:
             # batch by 100 requests
             for i in range(0, len(accounts), 100):
-                results = await asyncio.gather(
-                    *[self.fetch(client, account) for account in accounts[i : i + 100]]
-                )
+                results = [
+                    self.fetch(client, account) for account in accounts[i : i + 100]
+                ]
                 for account, posts in results:
                     for result in posts:
-                        await Post.objects.aupdate_or_create(
+                        Post.objects.update_or_create(
                             post_id=result["id"],
                             account=account,
                             defaults={
@@ -68,27 +66,25 @@ class Command(RichCommand):
                             },
                         )
                 self.console.print(f"Batch {i//100} done, sleeping for 90s")
-                await asyncio.sleep(
+                time.sleep(
                     90
                 )  # 300 requests per 5 minute is the default rate limit for Mastodon
 
-    async def fetch(self, client, account: Account):
+    def fetch(self, client, account: Account):
         try:
-            response = (
-                await client.get(
-                    f"https://{account.instance}/api/v1/accounts/{account.account_id}/statuses",
-                    params={
-                        "q": "python",
-                        "type": "statuses",
-                        "account_id": account.account_id,
-                    },
-                    timeout=30,
-                )
+            response = client.get(
+                f"https://{account.instance}/api/v1/accounts/{account.account_id}/statuses",
+                params={
+                    "q": "python",
+                    "type": "statuses",
+                    "account_id": account.account_id,
+                },
+                timeout=30,
             )
             if response.status_code == 429:
                 self.console.print("Rate limited, sleeping for 5 minutes")
-                await asyncio.sleep(60 * 5)
-                return await self.fetch(client, account)
+                time.sleep(60 * 5)
+                return self.fetch(client, account)
             if response.status_code != 200:
                 self.console.print(
                     f"[bold red]Error status code[/bold red] for {account}. {response.status_code}"
