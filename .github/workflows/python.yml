@@ -20,6 +20,8 @@ jobs:
     - name: Collect static files
       run: python manage.py collectstatic
     - name: Run Tests
+      env:
+        FLAKYTEST_SECRET_TOKEN: ${{ secrets.FLAKYTEST_SECRET_TOKEN }}
       run: python manage.py test
   deploy:
     runs-on: ubuntu-latest

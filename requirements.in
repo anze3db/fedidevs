@@ -16,6 +16,7 @@ django-debug-toolbar
 django-rich
 django-tui
 djlint
+flakytest
 mypy
 pip-tools
 pytest-cov
