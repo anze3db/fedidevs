@@ -41,6 +41,19 @@
                 {{ language.name }}</a>
               </li>
             {% endfor %}
+            <li>
+              <a href="{% url 'djangoconus' %}"
+                 class="outline"
+                 style="border-color: yellow;
+                        color: yellow"
+                 role="button">
+                <img src="{% static language.image %}"
+                     alt="{{ language.code }}"
+                     class="emojione"
+                     height="16"
+                     width="16" />
+              #djangocon US 2023 🐂</a>
+            </li>
           </ul>
         </nav>
       </div>
