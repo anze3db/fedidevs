@@ -96,38 +96,39 @@ class Command(RichCommand):
     async def fetch(self, client, instance: str):
         results = []
         try:
-            max_id = "999999999999999999"
-            while True:
-                self.console.print(f"Fetching {instance} {max_id}")
-                response = await client.get(
-                    f"https://{instance}/api/v1/timelines/tag/djangocon",
-                    params={
-                        "q": "",
-                        "type": "statuses",
-                        "limit": 40,
-                        "max_id": max_id,
-                    },
-                    timeout=30,
-                )
-                if response.status_code == 429:
-                    self.console.print(
-                        f"Rate limited, sleeping for 5 minutes {instance}"
+            for tag in ["djangocon", "djangoconus"]:
+                max_id = "999999999999999999"
+                while True:
+                    self.console.print(f"Fetching {instance} {max_id}")
+                    response = await client.get(
+                        f"https://{instance}/api/v1/timelines/tag/{tag}",
+                        params={
+                            "q": "",
+                            "type": "statuses",
+                            "limit": 40,
+                            "max_id": max_id,
+                        },
+                        timeout=30,
                     )
-                    await asyncio.sleep(60 * 5)
-                    continue
-                if response.status_code != 200:
-                    self.console.print(
-                        f"[bold red]Error status code[/bold red] for {instance}. {response.status_code}"
-                    )
-                    return instance, results
-                res = response.json()
-                if not res:
-                    break
-                results += res
-                if res[-1]["created_at"] < "2023-01-01 00:00:00.000":
-                    break
-                max_id = res[-1]["id"]
-                await asyncio.sleep(5)
+                    if response.status_code == 429:
+                        self.console.print(
+                            f"Rate limited, sleeping for 5 minutes {instance}"
+                        )
+                        await asyncio.sleep(60 * 5)
+                        continue
+                    if response.status_code != 200:
+                        self.console.print(
+                            f"[bold red]Error status code[/bold red] for {instance}. {response.status_code}"
+                        )
+                        return instance, results
+                    res = response.json()
+                    if not res:
+                        break
+                    results += res
+                    if res[-1]["created_at"] < "2023-01-01 00:00:00.000":
+                        break
+                    max_id = res[-1]["id"]
+                    await asyncio.sleep(5)
         except httpx.HTTPError:
             self.console.print(f"[bold red]Error timeout[/bold red] for {instance}")
             return instance, results
