@@ -28,8 +28,6 @@ class Command(RichCommand):
             for instance, posts in results:
                 for result in posts:
                     account = result["account"]
-                    if account["url"].split("/")[2] != instance:
-                        continue
 
                     await DjangoConUS23Post.objects.aupdate_or_create(
                         post_id=result["id"],
