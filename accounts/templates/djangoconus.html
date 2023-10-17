@@ -1,0 +1,150 @@
+{% extends "layout.html" %}
+{% load account_extras %}
+{% load static %}
+{% block head %}
+  {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
+{% endblock %}
+{% block content %}
+  <main class="container">
+    <article>
+      <header>
+        <nav class="tabs">
+          <ul>
+            <li onclick="window.location.href='{% url 'index' %}'">Developers</li>
+            <li class="active">Posts</li>
+          </ul>
+        </nav>
+        <div role="group" class="grid">
+          <script>
+            function change_date(element) {
+              var date = element.value;
+              if (date) {
+                  window.location.href = "/posts/" + date + "/djangoconus23" ;
+              } else {
+                  window.location.href = "/posts/djangoconus23" ;
+              }
+            }
+          </script>
+          <select onchange="change_date(this)" id="day_filter">
+            {% if posts_date is not None %}
+              <option value="">Clear Day Filter</option>
+            {% else %}
+              <option value="" disabled selected>Filter by Day</option>
+            {% endif %}
+            {% for date in dates %}
+              <option value="{{ date.value }}"
+                      {% if posts_date == date.display %}selected{% endif %}>
+                {{ date.pre_display }}{{ date.display }}
+              </option>
+            {% endfor %}
+          </select>
+          <script>
+            function change_sort(element) {
+              var date = document.getElementById("day_filter").value;
+              if (date) {
+                  window.location.href = "/posts/" + date + "/djangoconus23?order=" + element.value ;
+              } else {
+                  window.location.href = "/posts/djangoconus23?order=" + element.value ;
+              }
+            }
+          </script>
+          <select onchange="change_sort(this)">
+            <option value="" disabled>Sort By</option>
+            <option value="-favourites_count"
+                    {% if order == "-favourites_count" %}selected{% endif %}>Sort by Number Favourites</option>
+            <option value="-created_at"
+                    {% if order == "-created_at" %}selected{% endif %}>Sort by Latest Posts</option>
+          </select>
+        </div>
+      </div>
+    </header>
+    <section data-nosnippet>
+      {% for post in posts %}
+        <div style="padding: 20px 0px;">
+          <img class="avatar"
+               src="{{ post.account.avatar }}"
+               alt="{{ post.account.login }}"
+               width="100"
+               height="100" />
+          <a href="{{ post.account.url }}"
+             target="_blank"
+             style="display:inline-block;
+                    white-space: nowrap">{% render_emojis post.account.display_name post.account.emojis %}</a>
+        </div>
+        {% if post.sensitive %}
+          <div>{{ post.spoiler_text }}</div>
+        {% else %}
+          {{ post.content|safe }}
+          {% if post.media_attachments %}
+            <div>
+              {% for media in post.media_attachments %}
+                {% if media.type == "image" %}
+                  <img src="{{ media.preview_url }}"
+                       alt="{{ media.description }}"
+                       style="max-height: 300px" />
+                {% endif %}
+                {% if media.type == "video" %}
+                  <video controls style="max-height: 300px">
+                    <source src="{{ media.url }}" type="{{ media.meta.mime_type }}">
+                    Your browser does not support the video tag.
+                  </video>
+                {% endif %}
+                {% if media.type == "gifv" %}
+                  <video autoplay loop muted style="max-height: 300px">
+                    <source src="{{ media.url }}" type="{{ media.meta.mime_type }}">
+                    Your browser does not support the video tag.
+                  </video>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+          {% if not post.media_attachments and post.card %}
+            <article class="card" style="max-width: 350px">
+              <a href="{{ post.card.url }}" target="_blank">
+                {% if post.card.image %}
+                  <img src="{{ post.card.image }}"
+                       alt="{{ post.card.title }}"
+                       width="100%"
+                       height="auto" />
+                {% endif %}
+              </a>
+              <footer>
+                <h3>
+                  <a href="{{ post.card.url }}" target="_blank">{{ post.card.title }}</a>
+                </h3>
+                <small>{{ post.card.description }}</small>
+              </footer>
+            </article>
+          {% endif %}
+        {% endif %}
+        <div>
+          <small>
+            {% heroicon_outline 'star' %} {{ post.favourites_count }} | {% heroicon_outline 'arrow-path-rounded-square' %} {{ post.reblogs_count }} | {% heroicon_outline 'chat-bubble-bottom-center' %} {{ post.replies_count }} |
+            <a href="{{ post.uri }}">
+              <span>{{ post.created_at }}</span>
+            </a>
+          </small>
+        </div>
+        <hr>
+      {% endfor %}
+      {% if not posts %}<p style="text-align:center;">No results, please check back later!</p>{% endif %}
+    </section>
+    <footer>
+      <div class="pagination">
+        <span class="step-links">
+          {% if posts.has_previous %}
+            <a href="?page={{ posts.previous_page_number }}&q={{ query }}&o={{ order }}">&laquo; previous</a>
+          {% endif %}
+          {% if posts %}<span class="current">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>{% endif %}
+          {% if posts.has_next %}
+            <a href="?page={{ posts.next_page_number }}&q={{ query }}&o={{ order }}">next &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+      <p>
+        Check out the <a href="{% url "faq" %}">FAQ</a> to learn how to add yourlsef to the list.
+      </p>
+    </footer>
+  </article>
+</main>
+{% endblock %}

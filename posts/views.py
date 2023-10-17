@@ -1,11 +1,12 @@
 import datetime as dt
 
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
 from accounts.models import LANGUAGES
-from posts.models import Post
+from posts.models import DjangoConUS23Post, Post
 
 
 # Create your views here.
@@ -59,5 +60,63 @@ def index(
             "languages": LANGUAGES,
             "posts_date": date,
             "dates": dates,
+        },
+    )
+
+
+def djangoconus(request, date: dt.date | None = None):
+    search_query = Q(
+        visibility="public",
+        content__icontains="djangocon",
+    )
+    order = request.GET.get("order")
+    if order not in ("-favourites_count", "-created_at"):
+        order = "-favourites_count"
+    if date:
+        date = date.date()
+        search_query &= Q(
+            created_at__gte=date, created_at__lt=date + dt.timedelta(days=1)
+        )
+    else:
+        search_query &= Q(
+            created_at__lte=dt.date(2023, 10, 20),
+            created_at__gte=dt.date(2023, 10, 16),
+        )
+
+    posts = DjangoConUS23Post.objects.filter(search_query).order_by(order)
+    # List of date objects. The first one is the date 2023-09-12 and then one item for every day until the current date
+    dates = [
+        dt.date(2023, 10, 16),
+        dt.date(2023, 10, 17),
+        dt.date(2023, 10, 18),
+        dt.date(2023, 10, 19),
+        dt.date(2023, 10, 20),
+    ]
+
+    dates = [
+        {
+            "value": date.strftime("%Y-%m-%d"),
+            "pre_display": f"Day {i+1}: ",
+            "display": date,
+        }
+        for i, date in enumerate(dates)
+        if date <= dt.date.today()
+    ]
+    paginator = Paginator(posts, 20)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(
+        request,
+        "djangoconus.html",
+        {
+            "page_title": "FediDevs POSTS on DjangoCon US | Most Favourited Mastodon Posts about DjangoCon US",
+            "page_header": "FEDIDEVS POSTS",
+            "page_subheader": "DjangoCon US",
+            "page_description": "Most Favourited Mastodon Posts about DjangoCon US. Updated daily.",
+            "page_image": "og-posts.png",
+            "posts": page_obj,
+            "posts_date": date,
+            "dates": dates,
+            "order": order,
         },
     )

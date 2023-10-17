@@ -29,6 +29,10 @@ class Command(RichCommand):
             management.call_command("dailystats")
         self.console.print("All done! 🎉")
 
+    def djangocon_job(self):
+        self.console.print("Running djangocon job")
+        management.call_command("stattag")
+
     def add_arguments(self, parser):
         parser.add_argument("--offset", type=int, nargs="?", default=0)
         parser.add_argument("--instances", type=str, nargs="?", default=None)
@@ -47,6 +51,7 @@ class Command(RichCommand):
 
         self.console.print("Starting scheduler 🕐")
         schedule.every().day.at("01:00").do(self.job)
+        schedule.every(30).minutes.do(self.djangocon_job)
 
         while True:
             schedule.run_pending()

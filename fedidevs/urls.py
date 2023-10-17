@@ -70,6 +70,14 @@ urlpatterns = (
     ]
     + [
         path(
+            "posts/<date:date>/djangoconus23",
+            post_views.djangoconus,
+            name="djangoconus",
+        ),
+        path("posts/djangoconus23", post_views.djangoconus, name="djangoconus"),
+    ]
+    + [
+        path(
             f"posts/{lang.code}/",
             post_views.index,
             name=f"{lang.code}-posts",
