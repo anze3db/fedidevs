@@ -7,8 +7,6 @@ from django_rich.management import RichCommand
 
 from posts.models import DjangoConUS23Post
 
-from .crawler import INSTANCES
-
 
 class Command(RichCommand):
     help = "Crawles the instance API and saves tag statuses"
@@ -22,8 +20,12 @@ class Command(RichCommand):
     @async_to_sync
     async def main(self):
         async with httpx.AsyncClient() as client:
+            instances = [
+                "mastodon.social",
+                "fosstodon.org",
+            ]
             results = await asyncio.gather(
-                *[self.fetch(client, instance) for instance in INSTANCES]
+                *[self.fetch(client, instance) for instance in instances]
             )
             for instance, posts in results:
                 for result in posts:
