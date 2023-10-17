@@ -23,6 +23,33 @@ class Command(RichCommand):
             instances = [
                 "mastodon.social",
                 "fosstodon.org",
+                "bolha.us",
+                "chaos.social",
+                "fedi.aeracode.org",
+                "fedi.simonwillison.net",
+                "fosstodon.org",
+                "freeradical.zone",
+                "hachyderm.io",
+                "indieweb.social",
+                "masto.gregnewman.io",
+                "mastodon.cloud",
+                "mastodon.online",
+                "mastodon.social",
+                "phildini.the.galaxybrain.co",
+                "pleroma.site",
+                "qoto.org",
+                "sixfeetup.social",
+                "social.coop",
+                "social.jacklinke.com",
+                "social.jacobian.org",
+                "social.joshthomas.dev",
+                "social.juanlu.space",
+                "techhub.social",
+                "terere.social",
+                "tooot.im",
+                "wandering.shop",
+                "xoxo.zone",
+                "zirk.us",
             ]
             results = await asyncio.gather(
                 *[self.fetch(client, instance) for instance in instances]
@@ -30,6 +57,9 @@ class Command(RichCommand):
             for instance, posts in results:
                 for result in posts:
                     account = result["account"]
+
+                    if account["url"].split("/")[2] != instance:
+                        continue
 
                     await DjangoConUS23Post.objects.aupdate_or_create(
                         post_id=result["id"],
