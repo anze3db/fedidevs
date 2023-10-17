@@ -27,7 +27,7 @@
           </script>
           <select onchange="change_date(this)" id="day_filter">
             {% if posts_date is not None %}
-              <option value="">Clear Day Filter</option>
+              <option value="">All Days</option>
             {% else %}
               <option value="" disabled selected>Filter by Day</option>
             {% endif %}
@@ -51,9 +51,9 @@
           <select onchange="change_sort(this)">
             <option value="" disabled>Sort By</option>
             <option value="-favourites_count"
-                    {% if order == "-favourites_count" %}selected{% endif %}>Sort by Number Favourites</option>
+                    {% if order == "-favourites_count" %}selected{% endif %}>Sort by Number of Favourites</option>
             <option value="-created_at"
-                    {% if order == "-created_at" %}selected{% endif %}>Sort by Latest Posts</option>
+                    {% if order == "-created_at" %}selected{% endif %}>Sort by Created Date</option>
           </select>
         </div>
       </div>
@@ -133,11 +133,11 @@
       <div class="pagination">
         <span class="step-links">
           {% if posts.has_previous %}
-            <a href="?page={{ posts.previous_page_number }}&q={{ query }}&o={{ order }}">&laquo; previous</a>
+            <a href="?page={{ posts.previous_page_number }}&q={{ query }}&order={{ order }}">&laquo; previous</a>
           {% endif %}
           {% if posts %}<span class="current">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>{% endif %}
           {% if posts.has_next %}
-            <a href="?page={{ posts.next_page_number }}&q={{ query }}&o={{ order }}">next &raquo;</a>
+            <a href="?page={{ posts.next_page_number }}&q={{ query }}&order={{ order }}">next &raquo;</a>
           {% endif %}
         </span>
       </div>
