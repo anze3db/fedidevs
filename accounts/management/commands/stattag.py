@@ -37,7 +37,7 @@ class Command(RichCommand):
                 "mastodon.social",
                 "phildini.the.galaxybrain.co",
                 "pleroma.site",
-                "qoto.org",
+                # "qoto.org",
                 "sixfeetup.social",
                 "social.coop",
                 "social.jacklinke.com",
@@ -79,7 +79,7 @@ class Command(RichCommand):
                             "reblogs_count": result["reblogs_count"],
                             "favourites_count": result["favourites_count"],
                             "edited_at": datetime.fromisoformat(result["edited_at"])
-                            if result["edited_at"]
+                            if result.get("edited_at")
                             else None,
                             "content": result["content"],
                             "reblog": result["reblog"],
