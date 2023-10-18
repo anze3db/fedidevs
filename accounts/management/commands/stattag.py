@@ -21,10 +21,9 @@ class Command(RichCommand):
     async def main(self):
         async with httpx.AsyncClient() as client:
             instances = [
-                "mastodon.social",
-                "fosstodon.org",
                 "bolha.us",
                 "chaos.social",
+                "cloudisland.nz",
                 "fedi.aeracode.org",
                 "fedi.simonwillison.net",
                 "fosstodon.org",
@@ -37,7 +36,6 @@ class Command(RichCommand):
                 "mastodon.social",
                 "phildini.the.galaxybrain.co",
                 "pleroma.site",
-                # "qoto.org",
                 "sixfeetup.social",
                 "social.coop",
                 "social.jacklinke.com",
@@ -50,6 +48,7 @@ class Command(RichCommand):
                 "wandering.shop",
                 "xoxo.zone",
                 "zirk.us",
+                # "qoto.org",
             ]
             results = await asyncio.gather(
                 *[self.fetch(client, instance) for instance in instances]
