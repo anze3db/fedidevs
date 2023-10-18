@@ -33,7 +33,7 @@
             <li>
               <script>
             function change_sort(element) {
-              var date = document.getElementById("day_filter").value;
+              var date = {% if posts_date %}"{{ posts_date|date:"Y-m-d" }}"{% else %}null{% endif %};
               if (date) {
                   window.location.href = "/posts/" + date + "/djangoconus23?order=" + element.value ;
               } else {
