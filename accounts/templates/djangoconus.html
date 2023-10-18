@@ -8,37 +8,30 @@
   <main class="container">
     <article>
       <header>
-        <nav class="tabs">
-          <ul>
-            <li onclick="window.location.href='{% url 'index' %}'">Developers</li>
-            <li class="active">Posts</li>
-          </ul>
-        </nav>
-        <div role="group" class="grid">
-          <script>
-            function change_date(element) {
-              var date = element.value;
-              if (date) {
-                  window.location.href = "/posts/" + date + "/djangoconus23" ;
-              } else {
-                  window.location.href = "/posts/djangoconus23" ;
-              }
-            }
-          </script>
-          <select onchange="change_date(this)" id="day_filter">
-            {% if posts_date is not None %}
-              <option value="">All Days</option>
-            {% else %}
-              <option value="" disabled selected>Filter by Day</option>
-            {% endif %}
+        <p>
+          <a href="https://2023.djangocon.us">2023 DjangoCon US 🐂</a> is taking place on October 16-20, 2023 in Durham Convention Center in Durham, NC. See the <a href="https://2023.djangocon.us/schedule/">Schedule</a>.
+        </p>
+        <p>
+          There have been <mark>{{ total_posts }} posts</mark> and <mark>{{ total_favourites }} favourites</mark> with the hashtags <a href="https://fosstodon.org/tags/DjangoCon">#djangocon</a> or <a href="https://fosstodon.org/tags/DjangoConUS">#djangoconus</a> on <a href="https://joinmastodon.org">Mastodon</a> during the conference. Add to the conversation by posting those hashtags on Mastodon!
+        </p>
+        <nav>
+          <ul style="flex-wrap: wrap; justify-content: center;">
+            <li>
+              <a href="{% url 'djangoconus' %}"
+                 {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
+                 role="button">All Days ({{ total_posts }})</a>
+            </li>
             {% for date in dates %}
-              <option value="{{ date.value }}"
-                      {% if posts_date == date.display %}selected{% endif %}>
-                {{ date.pre_display }}{{ date.display }}
-              </option>
+              <li>
+                <a href="{% url 'djangoconus' date.value %}"
+                   {% if posts_date != date.value %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
+                   role="button">{{ date.pre_display }} ({{ date.count }})</a>
+              </li>
             {% endfor %}
-          </select>
-          <script>
+          </ul>
+          <ul>
+            <li>
+              <script>
             function change_sort(element) {
               var date = document.getElementById("day_filter").value;
               if (date) {
@@ -47,15 +40,17 @@
                   window.location.href = "/posts/djangoconus23?order=" + element.value ;
               }
             }
-          </script>
-          <select onchange="change_sort(this)">
-            <option value="" disabled>Sort By</option>
-            <option value="-favourites_count"
-                    {% if order == "-favourites_count" %}selected{% endif %}>Sort by Number of Favourites</option>
-            <option value="-created_at"
-                    {% if order == "-created_at" %}selected{% endif %}>Sort by Created Date</option>
-          </select>
-        </div>
+              </script>
+              <select onchange="change_sort(this)">
+                <option value="" disabled>Sort By</option>
+                <option value="-favourites_count"
+                        {% if order == "-favourites_count" %}selected{% endif %}>Sort by Number of Favourites</option>
+                <option value="-created_at"
+                        {% if order == "-created_at" %}selected{% endif %}>Sort by Created Date</option>
+              </select>
+            </li>
+          </ul>
+        </nav>
       </div>
     </header>
     <section data-nosnippet>

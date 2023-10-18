@@ -1,7 +1,7 @@
 import datetime as dt
 
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Count, Q, Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
@@ -67,7 +67,6 @@ def index(
 def djangoconus(request, date: dt.date | None = None):
     search_query = Q(
         visibility="public",
-        content__icontains="djangocon",
     )
     order = request.GET.get("order")
     if order not in ("-favourites_count", "-created_at"):
@@ -95,9 +94,14 @@ def djangoconus(request, date: dt.date | None = None):
 
     dates = [
         {
-            "value": date.strftime("%Y-%m-%d"),
-            "pre_display": f"Day {i+1}: ",
+            "value": date,
+            "pre_display": f"Day {i+1}",
             "display": date,
+            "count": DjangoConUS23Post.objects.filter(
+                visibility="public",
+                created_at__gte=date,
+                created_at__lt=date + dt.timedelta(days=1),
+            ).count(),
         }
         for i, date in enumerate(dates)
         if date <= dt.date.today()
@@ -105,16 +109,27 @@ def djangoconus(request, date: dt.date | None = None):
     paginator = Paginator(posts, 20)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
+
+    stats = DjangoConUS23Post.objects.filter(
+        visibility="public",
+        created_at__lte=dt.date(2023, 10, 20),
+        created_at__gte=dt.date(2023, 10, 16),
+    ).aggregate(
+        total_posts=Count("id"),
+        total_favourites=Sum("favourites_count"),
+    )
     return render(
         request,
         "djangoconus.html",
         {
             "page_title": "FediDevs POSTS on DjangoCon US | Most Favourited Mastodon Posts about DjangoCon US",
-            "page_header": "FEDIDEVS POSTS",
-            "page_subheader": "DjangoCon US",
+            "page_header": "FEDIDEVS",
+            "page_subheader": "DjangoCon US 2023 🐂",
             "page_description": "Most Favourited Mastodon Posts about DjangoCon US. Updated daily.",
             "page_image": "og-posts.png",
             "posts": page_obj,
+            "total_posts": stats["total_posts"],
+            "total_favourites": stats["total_favourites"],
             "posts_date": date,
             "dates": dates,
             "order": order,
