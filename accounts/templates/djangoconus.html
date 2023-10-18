@@ -65,6 +65,7 @@
              target="_blank"
              style="display:inline-block;
                     white-space: nowrap">{% render_emojis post.account.display_name post.account.emojis %}</a>
+          <small style="opacity: 0.5">{% render_username_at_instance post.account.url %}</small>
         </div>
         {% if post.sensitive %}
           <div>{{ post.spoiler_text }}</div>
