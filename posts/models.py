@@ -36,6 +36,9 @@ class Post(models.Model):
             "post_id",
             "account",
         )
+        indexes = [
+            models.Index(fields=["created_at"]),
+        ]
 
 
 class DjangoConUS23Post(models.Model):
