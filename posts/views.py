@@ -126,7 +126,7 @@ def djangoconus(request, date: dt.date | None = None):
             "page_header": "FEDIDEVS",
             "page_subheader": "DjangoCon US 2023 🐂",
             "page_description": "Most Favourited Mastodon Posts about DjangoCon US. Updated daily.",
-            "page_image": "og-posts.png",
+            "page_image": "og-djangoconus23.png",
             "posts": page_obj,
             "total_posts": stats["total_posts"],
             "total_favourites": stats["total_favourites"],
