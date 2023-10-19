@@ -95,7 +95,7 @@ def djangoconus(request, date: dt.date | None = None):
     dates = [
         {
             "value": date,
-            "pre_display": f"Day {i+1}",
+            "pre_display": f"Talks: Day {i+1}" if i < 3 else f"Sprints: Day {i-2}",
             "display": date,
             "count": DjangoConUS23Post.objects.filter(
                 visibility="public",
