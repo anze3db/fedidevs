@@ -45,6 +45,7 @@ INSTANCES = [
     "mstdn.party",
     "mstdn.social",
     "noc.social",
+    "novaloop.social",
     "ohai.social",
     "oldbytes.space",
     "phpc.social",
