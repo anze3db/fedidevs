@@ -1,9 +1,7 @@
-import datetime as dt
-
 from django.db import models
 from django.utils import timezone
 
-from accounts.models import LANGUAGES, Account, AccountLookup
+from accounts.models import FRAMEWORKS, LANGUAGES, Account, AccountLookup
 from posts.models import Post
 
 
@@ -14,7 +12,7 @@ def store_daily_stats():
         f"{lang.code}_accounts": AccountLookup.objects.filter(
             language=lang.code
         ).count()
-        for lang in LANGUAGES
+        for lang in LANGUAGES + FRAMEWORKS
     }
     account_defaults["total_accounts"] = Account.objects.count()
 
@@ -22,7 +20,7 @@ def store_daily_stats():
         f"{lang.code}_posts": Post.objects.filter(
             account__accountlookup__language=lang.code,
         ).count()
-        for lang in LANGUAGES
+        for lang in LANGUAGES + FRAMEWORKS
     }
     post_defaults["total_posts"] = Post.objects.filter().count()
 
@@ -46,7 +44,6 @@ class Daily(models.Model):
     swift_accounts = models.IntegerField()
     csharp_accounts = models.IntegerField()
     fsharp_accounts = models.IntegerField()
-    dotnet_accounts = models.IntegerField()
     cpp_accounts = models.IntegerField()
     linux_accounts = models.IntegerField()
     haskell_accounts = models.IntegerField()
@@ -54,6 +51,23 @@ class Daily(models.Model):
     nix_accounts = models.IntegerField()
     opensource_accounts = models.IntegerField()
     php_accounts = models.IntegerField()
+
+    dotnet_accounts = models.IntegerField()
+    django_accounts = models.IntegerField(default=0)
+    flask_accounts = models.IntegerField(default=0)
+    fastapi_accounts = models.IntegerField(default=0)
+    rails_accounts = models.IntegerField(default=0)
+    laravel_accounts = models.IntegerField(default=0)
+    symfony_accounts = models.IntegerField(default=0)
+    spring_accounts = models.IntegerField(default=0)
+    htmx_accounts = models.IntegerField(default=0)
+    react_accounts = models.IntegerField(default=0)
+    vue_accounts = models.IntegerField(default=0)
+    angular_accounts = models.IntegerField(default=0)
+    nextjs_accounts = models.IntegerField(default=0)
+    svelte_accounts = models.IntegerField(default=0)
+    tailwind_accounts = models.IntegerField(default=0)
+    bootstrap_accounts = models.IntegerField(default=0)
 
     total_posts = models.IntegerField(default=0)
     python_posts = models.IntegerField(default=0)
@@ -75,6 +89,22 @@ class Daily(models.Model):
     nix_posts = models.IntegerField(default=0)
     opensource_posts = models.IntegerField(default=0)
     php_posts = models.IntegerField(default=0)
+
+    django_posts = models.IntegerField(default=0)
+    flask_posts = models.IntegerField(default=0)
+    fastapi_posts = models.IntegerField(default=0)
+    rails_posts = models.IntegerField(default=0)
+    laravel_posts = models.IntegerField(default=0)
+    symfony_posts = models.IntegerField(default=0)
+    spring_posts = models.IntegerField(default=0)
+    htmx_posts = models.IntegerField(default=0)
+    react_posts = models.IntegerField(default=0)
+    vue_posts = models.IntegerField(default=0)
+    angular_posts = models.IntegerField(default=0)
+    nextjs_posts = models.IntegerField(default=0)
+    svelte_posts = models.IntegerField(default=0)
+    tailwind_posts = models.IntegerField(default=0)
+    bootstrap_posts = models.IntegerField(default=0)
 
     def __str__(self):
         return self.date.strftime("%Y-%m-%d")
