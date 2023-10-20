@@ -5,7 +5,7 @@ from django.db.models import Count, Q, Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
-from accounts.models import LANGUAGES
+from accounts.models import FRAMEWORKS, LANGUAGES
 from posts.models import DjangoConUS23Post, Post
 
 
@@ -16,7 +16,9 @@ def index(
     date: dt.date | None = None,
 ):
     langs_map = {l.code: l for l in LANGUAGES}
+    frameworks_map = {f.code: f for f in FRAMEWORKS}
     selected_lang = langs_map.get(lang)
+    selected_framework = frameworks_map.get(lang)
     if not date:
         date = timezone.now().date() - dt.timedelta(days=1)
         if lang:
@@ -32,6 +34,9 @@ def index(
     )
     if selected_lang:
         search_query &= Q(account__accountlookup__language=selected_lang.code)
+    if selected_framework:
+        search_query &= Q(account__accountlookup__language=selected_framework.code)
+
     posts = (
         Post.objects.filter(search_query)
         .order_by("-favourites_count")
@@ -57,8 +62,11 @@ def index(
             "page_image": "og-posts.png",
             "posts": posts,
             "selected_lang": selected_lang,
+            "selected_framework": selected_framework,
+            "selected_lang_or_framework": selected_lang or selected_framework,
             "languages": LANGUAGES,
-            "posts_date": date,
+            "frameworks": FRAMEWORKS,
+            "posts_date": date.date(),
             "dates": dates,
         },
     )

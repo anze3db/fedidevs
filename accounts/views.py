@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 
 from .management.commands.crawler import INSTANCES
-from .models import LANGUAGES, Account
+from .models import FRAMEWORKS, LANGUAGES, Account
 
 
 def index(request, lang: str | None = None):
@@ -14,10 +14,14 @@ def index(request, lang: str | None = None):
         )
 
     langs_map = {l.code: l for l in LANGUAGES}
+    frameworks_map = {f.code: f for f in FRAMEWORKS}
     selected_lang = langs_map.get(lang)
+    selected_framework = frameworks_map.get(lang)
     search_query = Q()
     if selected_lang:
-        search_query = Q(accountlookup__language=selected_lang.code)
+        search_query &= Q(accountlookup__language=selected_lang.code)
+    if selected_framework:
+        search_query &= Q(accountlookup__language=selected_framework.code)
 
     query = request.GET.get("q", "").strip()
     order = request.GET.get("o", "-followers_count")
@@ -56,7 +60,10 @@ def index(request, lang: str | None = None):
             "page_image": "og.png",
             "accounts": page_obj,
             "selected_lang": selected_lang,
+            "selected_framework": selected_framework,
+            "selected_lang_or_framework": selected_lang or selected_framework,
             "languages": LANGUAGES,
+            "frameworks": FRAMEWORKS,
             "instances": INSTANCES,
             "instances_count": len(INSTANCES),
             "accounts_count": accounts_count,  # TODO might be slow

@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django_rich.management import RichCommand
 
-from accounts.models import LANGUAGES, Account, AccountLookup
+from accounts.models import FRAMEWORKS, LANGUAGES, Account, AccountLookup
 
 
 class Command(RichCommand):
@@ -9,7 +9,7 @@ class Command(RichCommand):
 
     def handle(self, *args, **options):
         any_lookup = set()
-        for lang in LANGUAGES:
+        for lang in LANGUAGES + FRAMEWORKS:
             self.console.print(f"Deleting {lang.code} index.")
             old_count = AccountLookup.objects.filter(language=lang.code).count()
             AccountLookup.objects.filter(language=lang.code).delete()

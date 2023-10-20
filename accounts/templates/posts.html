@@ -17,7 +17,7 @@
         <script>
         function change_date(element) {
           var date = element.value;
-          window.location.href = "/posts/" + date {% if selected_lang %} + "/{{ selected_lang.code }}"{% endif %};
+          window.location.href = "/posts/" + date {% if selected_lang_or_framework %} + "/{{ selected_lang_or_framework.code }}"{% endif %};
         }
         </script>
         <select style="" onchange="change_date(this)">
@@ -41,15 +41,35 @@
                 {{ language.name }}</a>
               </li>
             {% endfor %}
-            <li>
-              <a href="{% url 'djangoconus' %}"
-                 class="outline"
-                 style="border-color: rgb(231, 75, 26);
-                        color: rgb(231, 75, 26)"
-                 role="button">#djangocon US 2023 🐂</a>
-            </li>
           </ul>
         </nav>
+        <details {% if selected_framework %}open{% endif %}>
+          <summary role="button" class="outline secondary">Frameworks, Libraries, and others</summary>
+          <nav>
+            <ul style="flex-wrap: wrap; justify-content: center;">
+              {% for framework in frameworks %}
+                <li>
+                  <a href="{% if selected_framework.code != framework.code %}{% url framework.post_code posts_date %}{% else %}{% url "posts" posts_date %}{% endif %}"
+                     class="{% if selected_framework.code != framework.code %}outline{% endif %} "
+                     role="button">
+                    <img src="{% static framework.image %}"
+                         alt="{{ framework.code }}"
+                         class="emojione"
+                         height="16"
+                         width="16" />
+                  {{ framework.name }}</a>
+                </li>
+              {% endfor %}
+              <li>
+                <a href="{% url 'djangoconus' %}"
+                   class="outline"
+                   style="border-color: rgb(231, 75, 26);
+                          color: rgb(231, 75, 26)"
+                   role="button">#djangocon US 2023 🐂</a>
+              </li>
+            </ul>
+          </nav>
+        </details>
       </header>
       <section data-nosnippet>
         {% for post in posts %}
@@ -159,8 +179,8 @@
         </div>
         <p>
           Posts are from the people listed
-          {% if selected_lang %}
-            <a href="{% url selected_lang.code %}">here</a>.
+          {% if selected_lang_or_framework %}
+            <a href="{% url selected_lang_or_framework.code %}">here</a>.
           {% else %}
             <a href="{% url 'index' %}">here</a>.
           {% endif %}

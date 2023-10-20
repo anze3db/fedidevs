@@ -30,7 +30,26 @@
                 {{ language.name }}</a>
               </li>
             {% endfor %}
-            <li>
+          </ul>
+        </nav>
+        <details {% if selected_framework %}open{% endif %}>
+          <summary role="button" class="outline secondary">Frameworks, Libraries, and others</summary>
+          <nav>
+            <ul style="flex-wrap: wrap; justify-content: center;">
+              {% for framework in frameworks %}
+                <li>
+                  <a href="{% if selected_framework.code != framework.code %}{% url framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
+                     class="{% if selected_framework.code != framework.code %}outline{% endif %} "
+                     role="button">
+                    <img src="{% static framework.image %}"
+                         alt="{{ framework.code }}"
+                         class="emojione"
+                         height="16"
+                         width="16" />
+                  {{ framework.name }}</a>
+                </li>
+              {% endfor %}
+              <li>
               <a href="{% url 'djangoconus' %}"
                  class="outline"
                  style="border-color: rgb(231, 75, 26);
@@ -39,9 +58,10 @@
             </li>
           </ul>
         </nav>
+      </details>
         <form method="GET"
               role="group"
-              action="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url 'index' %}{% endif %}">
+              action="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}">
           <input type="text"
                  name="q"
                  placeholder="Filter by name, bio, or instance..."
@@ -52,7 +72,7 @@
             <summary style="min-width: 160px; border-radius: 0; border-left: 0;">Order by</summary>
             <ul>
               <li>
-                <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-followers_count">
+                <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-followers_count">
                   {% if order == '-followers_count' %}
                     <strong>&#9660;&nbsp;Followers Count</strong>
                   {% else %}
@@ -61,7 +81,7 @@
                 </a>
               </li>
               <li>
-                <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-last_status_at">
+                <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-last_status_at">
                   {% if order == '-last_status_at' %}
                     <strong>&#9660;&nbsp;Post Status</strong>
                   {% else %}
@@ -70,7 +90,7 @@
                 </a>
               </li>
               <li>
-                <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-statuses_count">
+                <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-statuses_count">
                   {% if order == '-statuses_count' %}
                     <strong>&#9660;&nbsp;Post Count</strong>
                   {% else %}
@@ -79,7 +99,7 @@
                 </a>
               </li>
               <li>
-                <a href="{% if selected_lang %}{% url selected_lang.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=url">
+                <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=url">
                   {% if order == 'url' %}
                     <strong>&#9660;&nbsp;Source Instance</strong>
                   {% else %}

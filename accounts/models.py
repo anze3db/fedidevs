@@ -20,6 +20,44 @@ class Language:
         return f"{self.code}-posts"
 
 
+@dataclass
+class Framework:
+    code: str
+    name: str
+    emoji: str
+    regex: str
+    image: str
+
+    def post_code(self):
+        return f"{self.code}-posts"
+
+
+FRAMEWORKS = [
+    Framework("django", "Django", "🐍", r"django", "frameworks/django.svg"),
+    Framework("flask", "Flask", "🍶", r"flask", "frameworks/flask.png"),
+    Framework("fastapi", "FastAPI", "🚀", r"fastapi", "frameworks/fastapi.svg"),
+    Framework("rails", "Rails", "🛤️", r"rails", "frameworks/rails.png"),
+    Framework("laravel", "Laravel", "🎣", r"laravel", "frameworks/laravel.png"),
+    Framework("symfony", "Symfony", "🎻", r"symfony", "frameworks/symfony.png"),
+    Framework("spring", "Spring", "🌱", r"spring", "frameworks/spring.png"),
+    Framework("htmx", "HTMX", "🧬", r"htmx", "frameworks/htmx.png"),
+    Framework("react", "React", "⚛️", r"react", "frameworks/react.png"),
+    Framework("vue", "Vue", "🎨", r"[^a-z:]vue", "frameworks/vue.png"),
+    Framework("angular", "Angular", "🅰️", r"angular", "frameworks/angular.png"),
+    Framework("nextjs", "Next.js", "🖖", r"nextjs", "frameworks/nextjs.svg"),
+    Framework("svelte", "Svelte", "🎬", r"svelte", "frameworks/svelte.png"),
+    Framework("tailwind", "Tailwind", "🐱", r"tailwind", "frameworks/tailwind.svg"),
+    Framework("bootstrap", "Bootstrap", "🥾", r"bootstrap", "frameworks/bootstrap.png"),
+    Framework("dotnet", ".NET", "🌐", r" \.net|dotnet", "frameworks/dotnet.png"),
+    Language(
+        "opensource",
+        "Open Source",
+        "📖",
+        r"open[- _]?source|free[- _]?software|libre[- _]?software|foss[^i]",
+        "languages/opensource.png",
+    ),
+]
+
 LANGUAGES = [
     Language("python", "Python", "🐍", r"python|psf|django", "languages/python.png"),
     Language(
@@ -40,7 +78,6 @@ LANGUAGES = [
     Language("swift", "Swift", "🐦", r"swift", "languages/swift.png"),
     Language("csharp", "C#", "♫", r"csharp|c#", "languages/csharp.png"),
     Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
-    Language("dotnet", ".NET", "🌐", r" \.net|dotnet", "languages/dotnet.png"),
     Language("cpp", "C++", "🐯", r"c\+\+|cpp", "languages/cpp.png"),
     Language(
         "php", "PHP", "🐘", r"[^\.]php", "languages/php.png"
@@ -51,13 +88,6 @@ LANGUAGES = [
     Language(
         "nix", "Nix", "❄️", r"[^a-z:]nix", "languages/nix.png"
     ),  # Filters out unix, linux, etc.
-    Language(
-        "opensource",
-        "Open Source",
-        "📖",
-        r"open[- _]?source|free[- _]?software|libre[- _]?software|foss[^i]",
-        "languages/opensource.png",
-    ),
     # Language("gaming", "Gaming", "🎮", r"gaming|game", "languages/gaming.png"),
     # Language(
     #     "security",
@@ -131,7 +161,7 @@ class Account(models.Model):
 
     @property
     def languages(self):
-        lang_lookup = {lang.code: lang for lang in LANGUAGES}
+        lang_lookup = {lang.code: lang for lang in LANGUAGES + FRAMEWORKS}
         return [lang_lookup[lang.language] for lang in self.accountlookup_set.all()]
 
     def should_index(self):
@@ -145,7 +175,7 @@ class Account(models.Model):
         ):
             return False
 
-        for lang in LANGUAGES:
+        for lang in LANGUAGES + FRAMEWORKS:
             for field in (self.note, self.display_name, json.dumps(self.fields)):
                 if re.search(lang.regex, field, re.IGNORECASE):
                     return True

@@ -21,7 +21,7 @@ from django.urls import include, path, register_converter
 from django.utils import dateparse, timezone
 
 from accounts import views
-from accounts.models import LANGUAGES
+from accounts.models import FRAMEWORKS, LANGUAGES
 from posts import views as post_views
 
 
@@ -41,6 +41,8 @@ class DateConverter:
 
 register_converter(DateConverter, "date")
 
+LANG_OR_FRAMEWORK = LANGUAGES + FRAMEWORKS
+
 urlpatterns = (
     [
         path("admin/", admin.site.urls),
@@ -57,7 +59,7 @@ urlpatterns = (
     ]
     + [
         path(f"{lang.code}/", views.index, name=lang.code, kwargs={"lang": lang.code})
-        for lang in LANGUAGES
+        for lang in LANG_OR_FRAMEWORK
     ]
     + [
         path(
@@ -66,7 +68,7 @@ urlpatterns = (
             name=f"{lang.code}-posts",
             kwargs={"lang": lang.code},
         )
-        for lang in LANGUAGES
+        for lang in LANG_OR_FRAMEWORK
     ]
     + [
         path(
@@ -83,7 +85,7 @@ urlpatterns = (
             name=f"{lang.code}-posts",
             kwargs={"lang": lang.code},
         )
-        for lang in LANGUAGES
+        for lang in LANG_OR_FRAMEWORK
     ]
     + [
         path("posts/<date:date>/", post_views.index, name="posts"),
