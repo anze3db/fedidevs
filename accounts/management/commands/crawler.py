@@ -22,6 +22,7 @@ INSTANCES = [
     "emacs.ch",
     "floss.social",
     "fosstodon.org",
+    "front-end.social",
     "functional.cafe",
     "furry.engineer",
     "graphics.social",
