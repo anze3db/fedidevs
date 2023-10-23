@@ -56,6 +56,12 @@ urlpatterns = (
             name="developers-on-mastodon",
         ),
         path("", views.index, name="index"),
+        path("posts/subscribe", post_views.subscribe, name="posts_subscribe"),
+        path(
+            "posts/subscribe/success",
+            post_views.subscribe_success,
+            name="posts_subscribe_success",
+        ),
     ]
     + [
         path(f"{lang.code}/", views.index, name=lang.code, kwargs={"lang": lang.code})

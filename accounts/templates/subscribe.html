@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% load account_extras %}
+{% load static %}
+{% block content %}
+    <main class="container">
+        <article>
+            <form action="/posts/subscribe" method="post">
+                {% csrf_token %}
+                {{ form }}
+                <input type="submit" value="Submit">
+            </form>
+        </article>
+    </main>
+{% endblock %}

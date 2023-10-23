@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from posts.models import DjangoConUS23Post
+from posts.models import DjangoConUS23Post, PostSubscription
 
 
 # Register your models here.
@@ -21,3 +21,15 @@ class DjangoConUS23PostAdmin(admin.ModelAdmin):
     )
     list_filter = ("instance", "visibility", "language")
     search_fields = ("content",)
+
+
+@admin.register(PostSubscription)
+class PostSubscriptionsAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "email",
+        "framework_or_lang",
+        "subscribed_at",
+    )
+    list_filter = ("subscribed_at",)
+    search_fields = ("email",)

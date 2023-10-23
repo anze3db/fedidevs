@@ -2,7 +2,7 @@
 {% load account_extras %}
 {% load static %}
 {% block head %}
-  {% if accounts.has_previous %}<meta name="robots" content="none">{% endif %}
+  {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
 {% endblock %}
 {% block content %}
   <main class="container">
@@ -163,20 +163,28 @@
         {% endfor %}
         {% if not posts %}<p style="text-align:center;">No results, please check back later!</p>{% endif %}
       </section>
+      <div class="pagination" style="padding-bottom: 20px;">
+        <span class="step-links">
+          {% if posts.has_previous %}
+            <a href="?page={{ posts.previous_page_number }}&q={{ query }}&o={{ order }}">&laquo; previous</a>
+          {% endif %}
+          {% if posts %}<span class="current">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>{% endif %}
+          {% if posts.has_next %}
+            <a href="?page={{ posts.next_page_number }}&q={{ query }}&o={{ order }}">next &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+      <p>
+        Would you like to get the best fediverse posts
+        {% if selected_lang_or_framework %}about <b>{{ selected_lang_or_framework.name }}</b>{% endif %}
+        in your inbox every day?
+        <form method="post" action="/posts/subscribe">
+          <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+          {{ subscribe_form }}
+          <input type="submit" value="Subscribe">
+        </form>
+      </p>
       <footer>
-        <div class="pagination">
-          <span class="step-links">
-            {% if accounts.has_previous %}
-              <a href="?page={{ accounts.previous_page_number }}&q={{ query }}&o={{ order }}">&laquo; previous</a>
-            {% endif %}
-            {% if accounts %}
-              <span class="current">Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}</span>
-            {% endif %}
-            {% if accounts.has_next %}
-              <a href="?page={{ accounts.next_page_number }}&q={{ query }}&o={{ order }}">next &raquo;</a>
-            {% endif %}
-          </span>
-        </div>
         <p>
           Posts are from the people listed
           {% if selected_lang_or_framework %}
@@ -186,10 +194,7 @@
           {% endif %}
           Check out the <a href="{% url "faq" %}">FAQ</a> to learn how to add yourlsef to the list.
         </p>
-        <p>
-          Use the filters below to narrow down content from a particular community. Please note that while you can select a specific community, the posts may encompass a wide range of topics of interest to members of the chosen community.
-        </p>
-        <p>The page refreshes once a day at around 01:00 UTC.</p>
+        <p>The page refreshes once a day at around 02:00 UTC.</p>
         <p>
           Are you looking for ranked posts of your own timeline? Check out our friends @ <a href="https://fediview.com">fediview.com</a>!
         </p>

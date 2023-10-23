@@ -72,3 +72,9 @@ class DjangoConUS23Post(models.Model):
 
     class Meta:
         unique_together = ("post_id", "instance")
+
+
+class PostSubscription(models.Model):
+    email = models.EmailField()
+    framework_or_lang = models.TextField(null=True, blank=True)
+    subscribed_at = models.DateTimeField(auto_now_add=True)

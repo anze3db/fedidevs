@@ -1,12 +1,15 @@
 import datetime as dt
+from textwrap import dedent
 
+from django import forms
+from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Count, Q, Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
 from accounts.models import FRAMEWORKS, LANGUAGES
-from posts.models import DjangoConUS23Post, Post
+from posts.models import DjangoConUS23Post, Post, PostSubscription
 
 
 # Create your views here.
@@ -42,12 +45,16 @@ def index(
         .order_by("-favourites_count")
         .prefetch_related("account", "account__accountlookup_set")[:20]
     )
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     # List of date objects. The first one is the date 2023-09-12 and then one item for every day until the current date
     dates = [
         dt.date.today() - dt.timedelta(days=i)
         for i in range(1, (dt.date.today() - dt.date(2023, 9, 11)).days)
     ]
     dates = [{"value": date.strftime("%Y-%m-%d"), "display": date} for date in dates]
+    selected_framework_or_lang = selected_lang or selected_framework
     return render(
         request,
         "posts.html",
@@ -60,14 +67,19 @@ def index(
             if not selected_lang
             else f"Discover amazing {selected_lang.name} posts from across the fediverse. Updated daily.",
             "page_image": "og-posts.png",
-            "posts": posts,
+            "posts": page_obj,
             "selected_lang": selected_lang,
             "selected_framework": selected_framework,
-            "selected_lang_or_framework": selected_lang or selected_framework,
+            "selected_lang_or_framework": selected_framework_or_lang,
             "languages": LANGUAGES,
             "frameworks": FRAMEWORKS,
             "posts_date": date.date(),
             "dates": dates,
+            "subscribe_form": SubscribeForm(
+                initial=dict(framework_or_lang=selected_framework_or_lang.code)
+            )
+            if selected_framework_or_lang
+            else SubscribeForm(),
         },
     )
 
@@ -141,5 +153,63 @@ def djangoconus(request, date: dt.date | None = None):
             "posts_date": date,
             "dates": dates,
             "order": order,
+        },
+    )
+
+
+class SubscribeForm(forms.ModelForm):
+    framework_or_lang = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    class Meta:
+        model = PostSubscription
+        fields = ["email", "framework_or_lang"]
+
+
+def subscribe(request):
+    if request.method == "POST":
+        form = SubscribeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            send_mail(
+                f"Fedidevs new subscriber!",
+                dedent(
+                    f"""
+                    New subscriber with email {form.cleaned_data["email"]}.
+                    Framework or lang: {form.cleaned_data["framework_or_lang"]}
+                """
+                ),
+                "anze@fedidevs.com",
+                ["anze@pecar.me"],
+                fail_silently=True,
+            )
+            return redirect("posts_subscribe_success")
+        else:
+            return render(request, "subscribe.html", {"form": form})
+    return render(
+        request,
+        "subscribe.html",
+        {
+            "form": SubscribeForm(),
+            "page_title": "Fedidevs Subscribe to Daily Posts",
+            "page_header": "FEDIDEVS",
+            "page_subheader": "Subscribe to Daily Posts"
+            + (
+                " on " + request.POST.get("framework_or_lang")
+                if request.POST.get("framework_or_lang")
+                else ""
+            ),
+        },
+    )
+
+
+def subscribe_success(request):
+    return render(
+        request,
+        "subscribe_success.html",
+        {
+            "form": SubscribeForm(),
+            "page_title": "Subscribed 🎉",
+            "page_header": "FEDIDEVS",
+            "page_subheader": "",
         },
     )
