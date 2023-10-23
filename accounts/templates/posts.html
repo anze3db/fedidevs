@@ -175,9 +175,9 @@
         </span>
       </div>
       <p>
-        Would you like to get the best fediverse posts
+        Would you like to get the best Fediverse posts
         {% if selected_lang_or_framework %}about <b>{{ selected_lang_or_framework.name }}</b>{% endif %}
-        in your inbox every day?
+        in your inbox every day? If so, you can subscribe with your email below.
         <form method="post" action="/posts/subscribe">
           <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
           {{ subscribe_form }}
