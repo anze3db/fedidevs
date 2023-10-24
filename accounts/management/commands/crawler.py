@@ -53,6 +53,7 @@ INSTANCES = [
     "ruby.social",
     "seocommunity.social",
     "sfba.social",
+    "social.jacklinke.com",
     "social.juanlu.space",
     "tech.lgbt",
     "techhub.social",
