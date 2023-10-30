@@ -24,8 +24,10 @@ def index(
     selected_framework = frameworks_map.get(lang)
     if not date:
         date = timezone.now().date() - dt.timedelta(days=1)
-        if lang:
+        if selected_lang:
             return redirect(f"{selected_lang.code}-posts", date=date)
+        elif selected_framework:
+            return redirect(f"{selected_framework.code}-posts", date=date)
         else:
             return redirect("posts", date=date)
 
