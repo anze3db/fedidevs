@@ -114,16 +114,23 @@ def djangoconus(request, date: dt.date | None = None):
         dt.date(2023, 10, 20),
     ]
 
+    counts = (
+        DjangoConUS23Post.objects.filter(
+            visibility="public",
+            created_at__gte=min(dates),
+            created_at__lt=max(dates) + dt.timedelta(days=1),
+        )
+        .values("created_at__date")
+        .annotate(count=Count("id"))
+    )
+    counts_dict = {c["created_at__date"]: c["count"] for c in counts}
+
     dates = [
         {
             "value": date,
             "pre_display": f"Talks: Day {i+1}" if i < 3 else f"Sprints: Day {i-2}",
             "display": date,
-            "count": DjangoConUS23Post.objects.filter(
-                visibility="public",
-                created_at__gte=date,
-                created_at__lt=date + dt.timedelta(days=1),
-            ).count(),
+            "count": counts_dict.get(date, 0),
         }
         for i, date in enumerate(dates)
         if date <= dt.date.today()
