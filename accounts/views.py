@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 
 from .management.commands.crawler import INSTANCES
-from .models import FRAMEWORKS, LANGUAGES, Account
+from .models import FRAMEWORKS, LANGUAGES, Account, AccountLookup
 
 
 def index(request, lang: str | None = None):
@@ -15,6 +15,43 @@ def index(request, lang: str | None = None):
 
     langs_map = {l.code: l for l in LANGUAGES}
     frameworks_map = {f.code: f for f in FRAMEWORKS}
+
+    # Get a dict of languages and their counts
+    language_count_dict = {
+        al["language"]: al["count"]
+        for al in AccountLookup.objects.values("language")
+        .annotate(count=Count("language"))
+        .order_by("-count")
+    }
+
+    languages = (
+        {
+            "code": l.code,
+            "name": l.name,
+            "emoji": l.emoji,
+            "regex": l.regex,
+            "image": l.image,
+            "post_code": l.post_code,
+            "count": language_count_dict[l.code],
+        }
+        for l in LANGUAGES
+    )
+    languages = sorted(languages, key=lambda l: l["count"], reverse=True)
+
+    frameworks = sorted(
+        {
+            "code": l.code,
+            "name": l.name,
+            "emoji": l.emoji,
+            "regex": l.regex,
+            "image": l.image,
+            "post_code": l.post_code,
+            "count": language_count_dict[l.code],
+        }
+        for l in FRAMEWORKS
+    )
+    frameworks = sorted(frameworks, key=lambda l: l["count"], reverse=True)
+
     selected_lang = langs_map.get(lang)
     selected_framework = frameworks_map.get(lang)
     search_query = Q()
@@ -62,8 +99,8 @@ def index(request, lang: str | None = None):
             "selected_lang": selected_lang,
             "selected_framework": selected_framework,
             "selected_lang_or_framework": selected_lang or selected_framework,
-            "languages": LANGUAGES,
-            "frameworks": FRAMEWORKS,
+            "languages": languages,
+            "frameworks": frameworks,
             "instances": INSTANCES,
             "instances_count": len(INSTANCES),
             "accounts_count": accounts_count,  # TODO might be slow

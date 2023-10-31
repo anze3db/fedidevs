@@ -27,7 +27,7 @@
                        class="emojione"
                        height="16"
                        width="16" />
-                {{ language.name }}</a>
+                {{ language.name }} ({{ language.count }})</a>
               </li>
             {% endfor %}
           </ul>
@@ -46,19 +46,19 @@
                          class="emojione"
                          height="16"
                          width="16" />
-                  {{ framework.name }}</a>
+                  {{ framework.name }}  ({{ framework.count }})</a>
                 </li>
               {% endfor %}
               <li>
-              <a href="{% url 'djangoconus' %}"
-                 class="outline"
-                 style="border-color: rgb(231, 75, 26);
-                        color: rgb(231, 75, 26)"
-                 role="button">#djangocon US 2023 🐂</a>
-            </li>
-          </ul>
-        </nav>
-      </details>
+                <a href="{% url 'djangoconus' %}"
+                   class="outline"
+                   style="border-color: rgb(231, 75, 26);
+                          color: rgb(231, 75, 26)"
+                   role="button">#djangocon US 2023 🐂</a>
+              </li>
+            </ul>
+          </nav>
+        </details>
         <form method="GET"
               role="group"
               action="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}">
