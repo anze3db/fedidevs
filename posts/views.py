@@ -37,6 +37,43 @@ def index(
         visibility="public",
         favourites_count__gt=0,
     )
+
+    language_count_dict = {
+        al["account__accountlookup__language"]: al["count"]
+        for al in Post.objects.values("account__accountlookup__language")
+        .filter(search_query)
+        .annotate(count=Count("account__accountlookup__language"))
+        .order_by("-count")
+    }
+
+    languages = (
+        {
+            "code": l.code,
+            "name": l.name,
+            "emoji": l.emoji,
+            "regex": l.regex,
+            "image": l.image,
+            "post_code": l.post_code,
+            "count": language_count_dict.get(l.code, 0),
+        }
+        for l in LANGUAGES
+    )
+    languages = sorted(languages, key=lambda l: l["count"], reverse=True)
+
+    frameworks = (
+        {
+            "code": l.code,
+            "name": l.name,
+            "emoji": l.emoji,
+            "regex": l.regex,
+            "image": l.image,
+            "post_code": l.post_code,
+            "count": language_count_dict.get(l.code, 0),
+        }
+        for l in FRAMEWORKS
+    )
+    frameworks = sorted(frameworks, key=lambda l: l["count"], reverse=True)
+
     if selected_lang:
         search_query &= Q(account__accountlookup__language=selected_lang.code)
     if selected_framework:
@@ -73,8 +110,8 @@ def index(
             "selected_lang": selected_lang,
             "selected_framework": selected_framework,
             "selected_lang_or_framework": selected_framework_or_lang,
-            "languages": LANGUAGES,
-            "frameworks": FRAMEWORKS,
+            "languages": languages,
+            "frameworks": frameworks,
             "posts_date": date.date(),
             "dates": dates,
             "subscribe_form": SubscribeForm(

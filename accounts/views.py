@@ -38,7 +38,7 @@ def index(request, lang: str | None = None):
     )
     languages = sorted(languages, key=lambda l: l["count"], reverse=True)
 
-    frameworks = sorted(
+    frameworks = (
         {
             "code": l.code,
             "name": l.name,
