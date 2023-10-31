@@ -45,7 +45,7 @@ def index(
     posts = (
         Post.objects.filter(search_query)
         .order_by("-favourites_count")
-        .prefetch_related("account", "account__accountlookup_set")[:20]
+        .prefetch_related("account", "account__accountlookup_set")
     )
     paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
