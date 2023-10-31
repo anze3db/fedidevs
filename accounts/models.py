@@ -49,13 +49,14 @@ FRAMEWORKS = [
     Framework("tailwind", "Tailwind", "🐱", r"tailwind", "frameworks/tailwind.svg"),
     Framework("bootstrap", "Bootstrap", "🥾", r"bootstrap", "frameworks/bootstrap.png"),
     Framework("dotnet", ".NET", "🌐", r" \.net|dotnet", "frameworks/dotnet.png"),
-    Language(
+    Framework(
         "opensource",
         "Open Source",
         "📖",
         r"open[- _]?source|free[- _]?software|libre[- _]?software|foss[^i]",
         "languages/opensource.png",
     ),
+    Framework("linux", "Linux", "🐧", r"linux", "languages/linux.png"),
 ]
 
 LANGUAGES = [
@@ -82,7 +83,6 @@ LANGUAGES = [
     Language(
         "php", "PHP", "🐘", r"[^\.]php", "languages/php.png"
     ),  # Filters out index.php? and others
-    Language("linux", "Linux", "🐧", r"linux", "languages/linux.png"),
     Language("haskell", "Haskell", "🦥", r"haskell", "languages/haskell.png"),
     Language("ocaml", "OCaml", "🐫", r"ocaml", "languages/ocaml.png"),
     Language(
