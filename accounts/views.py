@@ -32,7 +32,7 @@ def index(request, lang: str | None = None):
             "regex": l.regex,
             "image": l.image,
             "post_code": l.post_code,
-            "count": language_count_dict[l.code],
+            "count": language_count_dict.get(l.code, 0),
         }
         for l in LANGUAGES
     )
@@ -46,7 +46,7 @@ def index(request, lang: str | None = None):
             "regex": l.regex,
             "image": l.image,
             "post_code": l.post_code,
-            "count": language_count_dict[l.code],
+            "count": language_count_dict.get(l.code, 0),
         }
         for l in FRAMEWORKS
     )
