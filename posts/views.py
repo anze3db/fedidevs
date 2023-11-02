@@ -89,8 +89,8 @@ def index(
     page_obj = paginator.get_page(page_number)
     # List of date objects. The first one is the date 2023-09-12 and then one item for every day until the current date
     dates = [
-        timezone.now().date.today() - dt.timedelta(days=i)
-        for i in range(1, (timezone.now().date.today() - dt.date(2023, 9, 11)).days)
+        timezone.now().date() - dt.timedelta(days=i)
+        for i in range(1, (timezone.now().date() - dt.date(2023, 9, 11)).days)
     ]
     dates = [{"value": date.strftime("%Y-%m-%d"), "display": date} for date in dates]
     selected_framework_or_lang = selected_lang or selected_framework

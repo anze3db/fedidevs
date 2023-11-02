@@ -10,7 +10,7 @@ from posts.models import Post
 # Create your tests here.
 class TestPostView(TestCase):
     def test_post_view_redirect(self):
-        yesterday = timezone.now().date.today() - dt.timedelta(days=1)
+        yesterday = timezone.now().date() - dt.timedelta(days=1)
         result = self.client.get("/posts/")
         self.assertRedirects(result, f"/posts/{yesterday.isoformat()}/")
 
