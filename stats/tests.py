@@ -19,7 +19,7 @@ class TestStats(TestCase):
 
     def test_store_daily_stats(self):
         store_daily_stats()
-        daily = Daily.objects.get(date=dt.date.today())
+        daily = Daily.objects.get(date=timezone.now().date())
 
         self.assertEqual(daily.total_accounts, 0)
         self.assertEqual(daily.python_accounts, 0)
@@ -54,7 +54,7 @@ class TestStats(TestCase):
         AccountLookup.objects.create(account=account, language="python")
 
         store_daily_stats()
-        daily = Daily.objects.get(date=dt.date.today())
+        daily = Daily.objects.get(date=timezone.now().date())
 
         self.assertEqual(daily.total_accounts, 1)
         self.assertEqual(daily.python_accounts, 1)

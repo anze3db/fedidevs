@@ -18,7 +18,7 @@ def index(
     lang: str | None = None,
     date: dt.date | None = None,
 ):
-    langs_map = {l.code: l for l in LANGUAGES}
+    langs_map = {lng.code: lng for lng in LANGUAGES}
     frameworks_map = {f.code: f for f in FRAMEWORKS}
     selected_lang = langs_map.get(lang)
     selected_framework = frameworks_map.get(lang)
@@ -48,31 +48,31 @@ def index(
 
     languages = (
         {
-            "code": l.code,
-            "name": l.name,
-            "emoji": l.emoji,
-            "regex": l.regex,
-            "image": l.image,
-            "post_code": l.post_code,
-            "count": language_count_dict.get(l.code, 0),
+            "code": lng.code,
+            "name": lng.name,
+            "emoji": lng.emoji,
+            "regex": lng.regex,
+            "image": lng.image,
+            "post_code": lng.post_code,
+            "count": language_count_dict.get(lng.code, 0),
         }
-        for l in LANGUAGES
+        for lng in LANGUAGES
     )
-    languages = sorted(languages, key=lambda l: l["count"], reverse=True)
+    languages = sorted(languages, key=lambda lng: lng["count"], reverse=True)
 
     frameworks = (
         {
-            "code": l.code,
-            "name": l.name,
-            "emoji": l.emoji,
-            "regex": l.regex,
-            "image": l.image,
-            "post_code": l.post_code,
-            "count": language_count_dict.get(l.code, 0),
+            "code": framework.code,
+            "name": framework.name,
+            "emoji": framework.emoji,
+            "regex": framework.regex,
+            "image": framework.image,
+            "post_code": framework.post_code,
+            "count": language_count_dict.get(framework.code, 0),
         }
-        for l in FRAMEWORKS
+        for framework in FRAMEWORKS
     )
-    frameworks = sorted(frameworks, key=lambda l: l["count"], reverse=True)
+    frameworks = sorted(frameworks, key=lambda framework: framework["count"], reverse=True)
 
     if selected_lang:
         search_query &= Q(account__accountlookup__language=selected_lang.code)
@@ -89,8 +89,8 @@ def index(
     page_obj = paginator.get_page(page_number)
     # List of date objects. The first one is the date 2023-09-12 and then one item for every day until the current date
     dates = [
-        dt.date.today() - dt.timedelta(days=i)
-        for i in range(1, (dt.date.today() - dt.date(2023, 9, 11)).days)
+        timezone.now().date.today() - dt.timedelta(days=i)
+        for i in range(1, (timezone.now().date.today() - dt.date(2023, 9, 11)).days)
     ]
     dates = [{"value": date.strftime("%Y-%m-%d"), "display": date} for date in dates]
     selected_framework_or_lang = selected_lang or selected_framework
@@ -114,9 +114,7 @@ def index(
             "frameworks": frameworks,
             "posts_date": date.date(),
             "dates": dates,
-            "subscribe_form": SubscribeForm(
-                initial=dict(framework_or_lang=selected_framework_or_lang.code)
-            )
+            "subscribe_form": SubscribeForm(initial={"framework_or_lang": selected_framework_or_lang.code})
             if selected_framework_or_lang
             else SubscribeForm(),
         },
@@ -132,9 +130,7 @@ def djangoconus(request, date: dt.date | None = None):
         order = "-favourites_count"
     if date:
         date = date.date()
-        search_query &= Q(
-            created_at__gte=date, created_at__lt=date + dt.timedelta(days=1)
-        )
+        search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
     else:
         search_query &= Q(
             created_at__lte=dt.date(2023, 10, 20),
@@ -170,7 +166,7 @@ def djangoconus(request, date: dt.date | None = None):
             "count": counts_dict.get(date, 0),
         }
         for i, date in enumerate(dates)
-        if date <= dt.date.today()
+        if date <= timezone.now().date()
     ]
     paginator = Paginator(posts, 20)
     page_number = request.GET.get("page")
@@ -217,7 +213,7 @@ def subscribe(request):
         if form.is_valid():
             form.save()
             send_mail(
-                f"Fedidevs new subscriber!",
+                "Fedidevs new subscriber!",
                 dedent(
                     f"""
                     New subscriber with email {form.cleaned_data["email"]}.
@@ -239,11 +235,7 @@ def subscribe(request):
             "page_title": "Fedidevs Subscribe to Daily Posts",
             "page_header": "FEDIDEVS",
             "page_subheader": "Subscribe to Daily Posts"
-            + (
-                " on " + request.POST.get("framework_or_lang")
-                if request.POST.get("framework_or_lang")
-                else ""
-            ),
+            + (" on " + request.POST.get("framework_or_lang") if request.POST.get("framework_or_lang") else ""),
         },
     )
 

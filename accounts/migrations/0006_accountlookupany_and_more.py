@@ -54,8 +54,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="accountlookupany",
             name="account",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="accounts.account"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="accounts.account"),
         ),
     ]

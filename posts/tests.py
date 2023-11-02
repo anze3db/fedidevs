@@ -1,6 +1,7 @@
 import datetime as dt
 
 from django.test import TestCase
+from django.utils import timezone
 
 from accounts.models import Account
 from posts.models import Post
@@ -9,7 +10,7 @@ from posts.models import Post
 # Create your tests here.
 class TestPostView(TestCase):
     def test_post_view_redirect(self):
-        yesterday = dt.date.today() - dt.timedelta(days=1)
+        yesterday = timezone.now().date.today() - dt.timedelta(days=1)
         result = self.client.get("/posts/")
         self.assertRedirects(result, f"/posts/{yesterday.isoformat()}/")
 

@@ -11,7 +11,7 @@ def render_emojis(msg: str, emoji_list: list[str]):
             f":{emoji['shortcode']}:",
             f"<img src='{emoji['url']}' class='emojione' alt='{emoji['shortcode']}' title='{emoji['shortcode']}' />",
         )
-    return mark_safe(msg)
+    return mark_safe(msg)  # noqa: S308
 
 
 @register.simple_tag

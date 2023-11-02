@@ -9,48 +9,44 @@ from .models import FRAMEWORKS, LANGUAGES, Account, AccountLookup
 
 def index(request, lang: str | None = None):
     if "selected_instance" in request.GET:
-        request.session["selected_instance"] = parse_instance(
-            request.GET.get("selected_instance")
-        )
+        request.session["selected_instance"] = parse_instance(request.GET.get("selected_instance"))
 
-    langs_map = {l.code: l for l in LANGUAGES}
+    langs_map = {lng.code: lng for lng in LANGUAGES}
     frameworks_map = {f.code: f for f in FRAMEWORKS}
 
     # Get a dict of languages and their counts
     language_count_dict = {
         al["language"]: al["count"]
-        for al in AccountLookup.objects.values("language")
-        .annotate(count=Count("language"))
-        .order_by("-count")
+        for al in AccountLookup.objects.values("language").annotate(count=Count("language")).order_by("-count")
     }
 
     languages = (
         {
-            "code": l.code,
-            "name": l.name,
-            "emoji": l.emoji,
-            "regex": l.regex,
-            "image": l.image,
-            "post_code": l.post_code,
-            "count": language_count_dict.get(l.code, 0),
+            "code": lng.code,
+            "name": lng.name,
+            "emoji": lng.emoji,
+            "regex": lng.regex,
+            "image": lng.image,
+            "post_code": lng.post_code,
+            "count": language_count_dict.get(lng.code, 0),
         }
-        for l in LANGUAGES
+        for lng in LANGUAGES
     )
-    languages = sorted(languages, key=lambda l: l["count"], reverse=True)
+    languages = sorted(languages, key=lambda lng: lng["count"], reverse=True)
 
     frameworks = (
         {
-            "code": l.code,
-            "name": l.name,
-            "emoji": l.emoji,
-            "regex": l.regex,
-            "image": l.image,
-            "post_code": l.post_code,
-            "count": language_count_dict.get(l.code, 0),
+            "code": framework.code,
+            "name": framework.name,
+            "emoji": framework.emoji,
+            "regex": framework.regex,
+            "image": framework.image,
+            "post_code": framework.post_code,
+            "count": language_count_dict.get(framework.code, 0),
         }
-        for l in FRAMEWORKS
+        for framework in FRAMEWORKS
     )
-    frameworks = sorted(frameworks, key=lambda l: l["count"], reverse=True)
+    frameworks = sorted(frameworks, key=lambda framework: framework["count"], reverse=True)
 
     selected_lang = langs_map.get(lang)
     selected_framework = frameworks_map.get(lang)
@@ -72,11 +68,7 @@ def index(request, lang: str | None = None):
             | Q(url__icontains=query)
         )
 
-    accounts = (
-        Account.objects.filter(search_query)
-        .prefetch_related("accountlookup_set")
-        .order_by(order)
-    )
+    accounts = Account.objects.filter(search_query).prefetch_related("accountlookup_set").order_by(order)
     paginator = Paginator(accounts, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -147,34 +139,18 @@ def faq(request):
 
 @cache_page(60 * 60 * 24, cache="memory")
 def devs_on_mastodon(request):
-    all_devs = (
-        Account.objects.values("instance")
-        .annotate(count=Count("instance"))
-        .order_by("-count")[:10]
-    )
+    all_devs = Account.objects.values("instance").annotate(count=Count("instance")).order_by("-count")[:10]
     by_language_devs = (
         Account.objects.values("instance", "accountlookup__language")
-        .filter(
-            accountlookup__language__in=["python", "javascript", "ruby", "php", "rust"]
-        )
+        .filter(accountlookup__language__in=["python", "javascript", "ruby", "php", "rust"])
         .annotate(count=Count("instance"))
         .order_by("-count")
     )
-    by_python_devs = [
-        i for i in by_language_devs if i["accountlookup__language"] == "python"
-    ][:10]
-    by_javascript_devs = [
-        i for i in by_language_devs if i["accountlookup__language"] == "javascript"
-    ][:10]
-    by_ruby_devs = [
-        i for i in by_language_devs if i["accountlookup__language"] == "ruby"
-    ][:10]
-    by_php_devs = [
-        i for i in by_language_devs if i["accountlookup__language"] == "php"
-    ][:10]
-    by_rust_devs = [
-        i for i in by_language_devs if i["accountlookup__language"] == "rust"
-    ][:10]
+    by_python_devs = [i for i in by_language_devs if i["accountlookup__language"] == "python"][:10]
+    by_javascript_devs = [i for i in by_language_devs if i["accountlookup__language"] == "javascript"][:10]
+    by_ruby_devs = [i for i in by_language_devs if i["accountlookup__language"] == "ruby"][:10]
+    by_php_devs = [i for i in by_language_devs if i["accountlookup__language"] == "php"][:10]
+    by_rust_devs = [i for i in by_language_devs if i["accountlookup__language"] == "rust"][:10]
 
     return render(
         request,

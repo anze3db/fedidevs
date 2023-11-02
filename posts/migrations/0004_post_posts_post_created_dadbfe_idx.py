@@ -11,8 +11,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddIndex(
             model_name="post",
-            index=models.Index(
-                fields=["created_at"], name="posts_post_created_dadbfe_idx"
-            ),
+            index=models.Index(fields=["created_at"], name="posts_post_created_dadbfe_idx"),
         ),
     ]

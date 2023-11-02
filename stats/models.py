@@ -9,9 +9,7 @@ def store_daily_stats():
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
     account_defaults = {
-        f"{lang.code}_accounts": AccountLookup.objects.filter(
-            language=lang.code
-        ).count()
+        f"{lang.code}_accounts": AccountLookup.objects.filter(language=lang.code).count()
         for lang in LANGUAGES + FRAMEWORKS
     }
     account_defaults["total_accounts"] = Account.objects.count()
@@ -24,9 +22,7 @@ def store_daily_stats():
     }
     post_defaults["total_posts"] = Post.objects.filter().count()
 
-    Daily.objects.update_or_create(
-        date=today, defaults=account_defaults | post_defaults
-    )
+    Daily.objects.update_or_create(date=today, defaults=account_defaults | post_defaults)
 
 
 # Create your models here.

@@ -14,4 +14,4 @@ class Command(RichCommand):
         Account.objects.exclude(id__in=ids).delete()
         with connection.cursor() as cursor:
             cursor.execute("VACUUM")
-        self.console.print(f"Done")
+        self.console.print("Done")

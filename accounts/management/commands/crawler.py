@@ -114,10 +114,7 @@ class Command(RichCommand):
             while to_index:
                 now = datetime.now(tz=timezone.utc)
                 results = await asyncio.gather(
-                    *[
-                        self.fetch(client, offset, instance, skip_inactive_for)
-                        for instance in to_index
-                    ]
+                    *[self.fetch(client, offset, instance, skip_inactive_for) for instance in to_index]
                 )
                 fetched_accounts = []
                 for instance, response in results:
@@ -138,9 +135,7 @@ class Command(RichCommand):
                             group=account.get("group", False),
                             noindex=account.get("noindex", None),
                             created_at=(datetime.fromisoformat(account["created_at"])),
-                            last_status_at=make_aware(
-                                datetime.fromisoformat(account["last_status_at"])
-                            )
+                            last_status_at=make_aware(datetime.fromisoformat(account["last_status_at"]))
                             if account["last_status_at"]
                             else None,
                             last_sync_at=now,
@@ -161,11 +156,7 @@ class Command(RichCommand):
                         if account.get("id")
                     ]
                 if pre_filter:
-                    inserted_accounts = [
-                        account
-                        for account in fetched_accounts
-                        if account.should_index()
-                    ]
+                    inserted_accounts = [account for account in fetched_accounts if account.should_index()]
                 else:
                     inserted_accounts = fetched_accounts
 
@@ -233,12 +224,8 @@ class Command(RichCommand):
             def is_recently_updated(account) -> bool:
                 if not account.get("last_status_at"):
                     return False
-                last_status_at = make_aware(
-                    datetime.fromisoformat(account["last_status_at"])
-                )
-                if (datetime.now(tz=timezone.utc) - last_status_at) > timedelta(
-                    days=skip_inactive_for
-                ):
+                last_status_at = make_aware(datetime.fromisoformat(account["last_status_at"]))
+                if (datetime.now(tz=timezone.utc) - last_status_at) > timedelta(days=skip_inactive_for):
                     return False
                 return True
 
@@ -251,7 +238,5 @@ class Command(RichCommand):
                 )
             return instance, results
         except httpx.HTTPError:
-            self.console.print(
-                f"[bold red]Error timeout[/bold red] for {instance} at offset {offset}"
-            )
+            self.console.print(f"[bold red]Error timeout[/bold red] for {instance} at offset {offset}")
             return instance, []

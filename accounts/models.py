@@ -68,9 +68,7 @@ LANGUAGES = [
         r"javascript|[^a-z]js[^a-z:]|typescript",
         "languages/javascript.png",
     ),
-    Language(
-        "rust", "Rust", "🦀", r"[^a-z:]rust[^a-z]|rustlang", "languages/rust.png"
-    ),  # Filters out trust, etc.
+    Language("rust", "Rust", "🦀", r"[^a-z:]rust[^a-z]|rustlang", "languages/rust.png"),  # Filters out trust, etc.
     Language("ruby", "Ruby", "💎", r"ruby", "languages/ruby.png"),
     Language("golang", "Golang", "🐹", r"golang", "languages/golang.png"),
     Language("java", "Java", "☕", r"java[^script]", "languages/java.png"),
@@ -80,14 +78,10 @@ LANGUAGES = [
     Language("csharp", "C#", "♫", r"csharp|c#", "languages/csharp.png"),
     Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
     Language("cpp", "C++", "🐯", r"c\+\+|cpp", "languages/cpp.png"),
-    Language(
-        "php", "PHP", "🐘", r"[^\.]php", "languages/php.png"
-    ),  # Filters out index.php? and others
+    Language("php", "PHP", "🐘", r"[^\.]php", "languages/php.png"),  # Filters out index.php? and others
     Language("haskell", "Haskell", "🦥", r"haskell", "languages/haskell.png"),
     Language("ocaml", "OCaml", "🐫", r"ocaml", "languages/ocaml.png"),
-    Language(
-        "nix", "Nix", "❄️", r"[^a-z:]nix", "languages/nix.png"
-    ),  # Filters out unix, linux, etc.
+    Language("nix", "Nix", "❄️", r"[^a-z:]nix", "languages/nix.png"),  # Filters out unix, linux, etc.
     # Language("gaming", "Gaming", "🎮", r"gaming|game", "languages/gaming.png"),
     # Language(
     #     "security",
@@ -168,11 +162,7 @@ class Account(models.Model):
         if self.noindex or not self.discoverable:
             return False
 
-        if (
-            self.followers_count == 0
-            and self.statuses_count == 0
-            and self.following_count == 0
-        ):
+        if self.followers_count == 0 and self.statuses_count == 0 and self.following_count == 0:
             return False
 
         for lang in LANGUAGES + FRAMEWORKS:

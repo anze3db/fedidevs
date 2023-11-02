@@ -11,8 +11,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddIndex(
             model_name="accountlookup",
-            index=models.Index(
-                fields=["language"], name="accounts_ac_languag_951751_idx"
-            ),
+            index=models.Index(fields=["language"], name="accounts_ac_languag_951751_idx"),
         ),
     ]

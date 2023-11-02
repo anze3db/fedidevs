@@ -23,7 +23,7 @@ from accounts.models import FRAMEWORKS, LANGUAGES
 from posts import views as post_views
 
 
-def robots_txt(request):
+def robots_txt(_):
     return HttpResponse("User-agent: *\nDisallow:", content_type="text/plain")
 
 
@@ -63,10 +63,7 @@ urlpatterns = (
             name="posts_subscribe_success",
         ),
     ]
-    + [
-        path(f"{lang.code}/", views.index, name=lang.code, kwargs={"lang": lang.code})
-        for lang in LANG_OR_FRAMEWORK
-    ]
+    + [path(f"{lang.code}/", views.index, name=lang.code, kwargs={"lang": lang.code}) for lang in LANG_OR_FRAMEWORK]
     + [
         path(
             f"posts/<date:date>/{lang.code}/",

@@ -50,9 +50,7 @@ class Command(RichCommand):
                 "zirk.us",
                 # "qoto.org",
             ]
-            results = await asyncio.gather(
-                *[self.fetch(client, instance) for instance in instances]
-            )
+            results = await asyncio.gather(*[self.fetch(client, instance) for instance in instances])
             for instance, posts in results:
                 for result in posts:
                     account = result["account"]
@@ -110,9 +108,7 @@ class Command(RichCommand):
                         timeout=30,
                     )
                     if response.status_code == 429:
-                        self.console.print(
-                            f"Rate limited, sleeping for 5 minutes {instance}"
-                        )
+                        self.console.print(f"Rate limited, sleeping for 5 minutes {instance}")
                         await asyncio.sleep(60 * 5)
                         continue
                     if response.status_code != 200:

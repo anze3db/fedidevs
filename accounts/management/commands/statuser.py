@@ -17,9 +17,7 @@ class Command(RichCommand):
 
     def handle(self, *args, offset=0, instances=None, **options):
         min_stat = datetime.now(tz=timezone.utc) - timedelta(days=2)
-        accounts = Account.objects.filter(last_status_at__gte=min_stat).order_by(
-            "-followers_count"
-        )
+        accounts = Account.objects.filter(last_status_at__gte=min_stat).order_by("-followers_count")
         self.main(list(accounts))
 
     @async_to_sync
@@ -27,13 +25,9 @@ class Command(RichCommand):
         async with httpx.AsyncClient() as client:
             # batch by 100 requests
             for i in range(0, len(accounts), 100):
-                await asyncio.gather(
-                    *[self.fetch(client, account) for account in accounts[i : i + 100]]
-                )
+                await asyncio.gather(*[self.fetch(client, account) for account in accounts[i : i + 100]])
                 self.console.print(f"Batch {i//100} done, sleeping for 90s")
-                await asyncio.sleep(
-                    90
-                )  # 300 requests per 5 minute is the default rate limit for Mastodon
+                await asyncio.sleep(90)  # 300 requests per 5 minute is the default rate limit for Mastodon
 
     async def fetch(self, client, account: Account):
         try:
@@ -52,9 +46,7 @@ class Command(RichCommand):
                 await self.fetch(client, account)
                 return
             if response.status_code != 200:
-                self.console.print(
-                    f"[bold red]Error status code[/bold red] for {account}. {response.status_code}"
-                )
+                self.console.print(f"[bold red]Error status code[/bold red] for {account}. {response.status_code}")
                 return
             posts = (
                 Post(
@@ -73,9 +65,7 @@ class Command(RichCommand):
                     replies_count=result["replies_count"],
                     reblogs_count=result["reblogs_count"],
                     favourites_count=result["favourites_count"],
-                    edited_at=datetime.fromisoformat(result["edited_at"])
-                    if result["edited_at"]
-                    else None,
+                    edited_at=datetime.fromisoformat(result["edited_at"]) if result["edited_at"] else None,
                     content=result["content"],
                     reblog=result["reblog"],
                     application=result.get("application", None),
