@@ -9,7 +9,6 @@ sentry-sdk
 setproctitle
 whitenoise
 # Dev
-black
 django-browser-reload
 django-coverage-plugin
 django-debug-toolbar
