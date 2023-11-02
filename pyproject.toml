@@ -3,6 +3,9 @@
 select = ["E", "F", "I", "N", "UP", "PL", "RUF"]
 ignore = ["E501"]
 
+[tool.djlint]
+ignore = "H006,H021"
+
 # pyproject.toml
 [tool.pytest.ini_options]
 minversion = "6.0"

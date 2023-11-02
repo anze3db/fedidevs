@@ -31,7 +31,9 @@ class DateConverter:
     regex = r"\d{4}-\d{1,2}-\d{1,2}"
 
     def to_python(self, value: str):
-        return timezone.make_aware(dateparse.parse_datetime(value))
+        if dt := dateparse.parse_datetime(value):
+            return timezone.make_aware(dt)
+        return None
 
     def to_url(self, value):
         return value.strftime("%Y-%m-%d")

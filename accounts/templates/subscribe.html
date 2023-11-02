@@ -4,11 +4,11 @@
 {% block content %}
     <main class="container">
         <article>
-            <form action="/posts/subscribe" method="post">
+            <form action="{% url 'posts_subscribe' %}" method="post">
                 {% csrf_token %}
                 {{ form }}
                 <input type="submit" value="Submit">
             </form>
         </article>
     </main>
-{% endblock %}
+{% endblock content %}

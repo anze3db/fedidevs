@@ -2,83 +2,87 @@
 {% load humanize %}
 <!DOCTYPE html>
 <html lang="en">
-      <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="stylesheet" href="{% static 'pico.min.css' %}">
-            <link rel="stylesheet" href="{% static 'site.css' %}">
-            <title>{{ page_title }}</title>
-            <meta name="description"
-                  content="{% if page_description %}{{ page_description }}{{ else }}Discover amazing developers from across the fediverse.{% endif %}">
-            <!-- Facebook Meta Tags -->
-            <meta property="og:url" content="https://fedidevs.com">
-            <meta property="og:type" content="website">
-            <meta property="og:title" content="{{ page_title }}">
-            <meta property="og:description" content="{{ page_description }}">
-            {% if page_image %}
-                  <meta property="og:image"
-                        content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static page_image %}">
-            {% endif %}
-            <!-- Twitter Meta Tags -->
-            <meta name="twitter:card" content="summary_large_image">
-            <meta property="twitter:domain" content="fedidevs.com">
-            <meta property="twitter:url" content="https://fedidevs.com">
-            <meta name="twitter:title" content="{{ page_title }}">
-            <meta name="twitter:description" content="{{ page_description }}">
-            {% if page_image %}
-                  <meta name="twitter:image"
-                        content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static page_image %}">
-            {% endif %}
-            <!-- Favicon -->
-            <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-            <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-            <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-            <link rel="manifest" href="/site.webmanifest">
-            <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-            <meta name="msapplication-TileColor" content="#2d89ef">
-            <meta name="theme-color" content="#ffffff">
-            <!-- Page specific head -->
-            {% block head %}{% endblock %}
-      </head>
-      <body>
-            <header style="text-align:center;">
-                  <h1 class="logo">
-                        <a href="{% url 'index' %}">
-                              <img src="{% static 'logo.png' %}" alt="logo">
-                              {{ page_header }}
-                        </a>
-                  </h1>
-                  {% if page_subheader %}<h2>{{ page_subheader | safe }}</h2>{% endif %}
-            </header>
-            {% block content %}{% endblock %}
-            <footer class="text-center">
-                  <ul class="no-bullets">
-                        <li>
-                              <a href="{% url 'faq' %}">FAQ</a>
-                        </li>
-                        <li>
-                              <a href="{% url 'developers-on-mastodon' %}">Mastodon instances</a>
-                        </li>
-                        <li>
-                              <a href="https://github.com/anze3db/fedidevs">Source Code</a>
-                        </li>
-                        <li>
-                              <a rel="me" href="https://fosstodon.org/@fedidevs">fosstodon.org/@fedidevs</a>
-                        </li>
-                        <li>
-                              <a target="_blank" href="https://anze3db.ck.page/76db70f6e0 ">Newsletter</a>
-                        </li>
-                        <li>
-                              <a href="mailto:hello@fedidevs.com">Email</a>
-                        </li>
-                        <li>
-                              Created by <a href="https://fosstodon.org/@anze3db">Anže</a>
-                        </li>
-                  </ul>
-            </footer>
-      </body>
-      <script src="{% static "modal.js" %}"></script>
-      <script data-goatcounter="https://fedidevs.goatcounter.com/count"
-              async
-              src="//gc.zgo.at/count.js"></script>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="keywords"
+              content="fedidevs,mastodon,developers,developer,fediverse,discover,discover developers" />
+        <link rel="stylesheet" href="{% static 'pico.min.css' %}">
+        <link rel="stylesheet" href="{% static 'site.css' %}">
+        <title>{{ page_title }}</title>
+        <meta name="description"
+              content="{% if page_description %}{{ page_description }}{{ else }}Discover amazing developers from across the fediverse.{% endif %}">
+        <!-- Facebook Meta Tags -->
+        <meta property="og:url" content="https://fedidevs.com">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="{{ page_title }}">
+        <meta property="og:description" content="{{ page_description }}">
+        {% if page_image %}
+            <meta property="og:image"
+                  content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static page_image %}">
+        {% endif %}
+        <!-- Twitter Meta Tags -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta property="twitter:domain" content="fedidevs.com">
+        <meta property="twitter:url" content="https://fedidevs.com">
+        <meta name="twitter:title" content="{{ page_title }}">
+        <meta name="twitter:description" content="{{ page_description }}">
+        {% if page_image %}
+            <meta name="twitter:image"
+                  content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static page_image %}">
+        {% endif %}
+        <!-- Favicon -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#2d89ef">
+        <meta name="theme-color" content="#ffffff">
+        <!-- Page specific head -->
+        {% block head %}
+        {% endblock head %}
+    </head>
+    <body>
+        <header style="text-align:center;">
+            <h1 class="logo">
+                <a href="{% url 'index' %}">
+                    <img src="{% static 'logo.png' %}" alt="logo">
+                    {{ page_header }}
+                </a>
+            </h1>
+            {% if page_subheader %}<h2>{{ page_subheader | safe }}</h2>{% endif %}
+        </header>
+        {% block content %}
+        {% endblock content %}
+        <footer class="text-center">
+            <ul class="no-bullets">
+                <li>
+                    <a href="{% url 'faq' %}">FAQ</a>
+                </li>
+                <li>
+                    <a href="{% url 'developers-on-mastodon' %}">Mastodon instances</a>
+                </li>
+                <li>
+                    <a href="https://github.com/anze3db/fedidevs">Source Code</a>
+                </li>
+                <li>
+                    <a rel="me" href="https://fosstodon.org/@fedidevs">fosstodon.org/@fedidevs</a>
+                </li>
+                <li>
+                    <a target="_blank" href="https://anze3db.ck.page/76db70f6e0 ">Newsletter</a>
+                </li>
+                <li>
+                    <a href="mailto:hello@fedidevs.com">Email</a>
+                </li>
+                <li>
+                    Created by <a href="https://fosstodon.org/@anze3db">Anže</a>
+                </li>
+            </ul>
+        </footer>
+    </body>
+    <script src="{% static "modal.js" %}"></script>
+    <script data-goatcounter="https://fedidevs.goatcounter.com/count"
+            async
+            src="//gc.zgo.at/count.js"></script>
 </html>

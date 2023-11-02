@@ -2,79 +2,82 @@
 {% load account_extras %}
 {% load static %}
 {% block head %}
-  {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
-{% endblock %}
+    {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
+{% endblock head %}
 {% block content %}
-  <main class="container">
-    <article>
-      <header>
-        <p>
-          <a href="https://2023.djangocon.us">2023 DjangoCon US 🐂</a> took place on October 16-20, 2023 in Durham Convention Center in Durham, NC. See the <a href="https://2023.djangocon.us/schedule/">Schedule</a>.
-        </p>
-        <p>
-          There have been <mark>{{ total_posts }} posts</mark> and <mark>{{ total_favourites }} favourites</mark> with the hashtags <a href="https://fosstodon.org/tags/DjangoCon">#djangocon</a> or <a href="https://fosstodon.org/tags/DjangoConUS">#djangoconus</a> on <a href="https://joinmastodon.org">Mastodon</a> during the conference.
-        </p>
-        <nav>
-          <ul style="flex-wrap: wrap; justify-content: center;">
-            <li>
-              <a href="{% url 'djangoconus' %}"
-                 {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
-                 role="button">All Days ({{ total_posts }})</a>
-            </li>
-            {% for date in dates %}
-              <li>
-                <a href="{% url 'djangoconus' date.value %}"
-                   {% if posts_date != date.value %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
-                   role="button">{{ date.pre_display }} ({{ date.count }})</a>
-              </li>
-            {% endfor %}
-          </ul>
-          <ul>
-            <li>
-              <script>
-            function change_sort(element) {
-              var date = {% if posts_date %}"{{ posts_date|date:"Y-m-d" }}"{% else %}null{% endif %};
-              if (date) {
-                  window.location.href = "/posts/" + date + "/djangoconus23?order=" + element.value ;
-              } else {
-                  window.location.href = "/posts/djangoconus23?order=" + element.value ;
-              }
-            }
-              </script>
-              <select onchange="change_sort(this)">
-                <option value="" disabled>Sort By</option>
-                <option value="-favourites_count"
-                        {% if order == "-favourites_count" %}selected{% endif %}>Sort by Number of Favourites</option>
-                <option value="-created_at"
-                        {% if order == "-created_at" %}selected{% endif %}>Sort by Created Date</option>
-              </select>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-    <section data-nosnippet>
-      {% for post in posts %}
-        {% include 'post.html' %}
-      {% endfor %}
-      {% if not posts %}<p style="text-align:center;">No results, please check back later!</p>{% endif %}
-    </section>
-    <footer>
-      <div class="pagination">
-        <span class="step-links">
-          {% if posts.has_previous %}
-            <a href="?page={{ posts.previous_page_number }}&q={{ query }}&order={{ order }}">&laquo; previous</a>
-          {% endif %}
-          {% if posts %}<span class="current">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>{% endif %}
-          {% if posts.has_next %}
-            <a href="?page={{ posts.next_page_number }}&q={{ query }}&order={{ order }}">next &raquo;</a>
-          {% endif %}
-        </span>
-      </div>
-      <p>
-        Check out the <a href="{% url "faq" %}">FAQ</a> to learn how to add yourlsef to the list.
-      </p>
-    </footer>
-  </article>
-</main>
-{% endblock %}
+    <main class="container">
+        <article>
+            <header>
+                <p>
+                    <a href="https://2023.djangocon.us">2023 DjangoCon US 🐂</a> took place on October 16-20, 2023 in Durham Convention Center in Durham, NC. See the <a href="https://2023.djangocon.us/schedule/">Schedule</a>.
+                </p>
+                <p>
+                    There have been <mark>{{ total_posts }} posts</mark> and <mark>{{ total_favourites }} favourites</mark> with the hashtags <a href="https://fosstodon.org/tags/DjangoCon">#djangocon</a> or <a href="https://fosstodon.org/tags/DjangoConUS">#djangoconus</a> on <a href="https://joinmastodon.org">Mastodon</a> during the conference.
+                </p>
+                <nav>
+                    <ul style="flex-wrap: wrap; justify-content: center;">
+                        <li>
+                            <a href="{% url 'djangoconus' %}"
+                               {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
+                               role="button">All Days ({{ total_posts }})</a>
+                        </li>
+                        {% for date in dates %}
+                            <li>
+                                <a href="{% url 'djangoconus' date.value %}"
+                                   {% if posts_date != date.value %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
+                                   role="button">{{ date.pre_display }} ({{ date.count }})</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <ul>
+                        <li>
+                            <script>
+                                function change_sort(element) {
+                                var date = {% if posts_date %}"{{ posts_date|date:"Y-m-d" }}"{% else %}null{% endif %};
+                                if (date) {
+                                    window.location.href = "/posts/" + date + "/djangoconus23?order=" + element.value ;
+                                } else {
+                                    window.location.href = "/posts/djangoconus23?order=" + element.value ;
+                                }
+                                }
+                            </script>
+                            <select onchange="change_sort(this)">
+                                <option value="" disabled>Sort By</option>
+                                <option value="-favourites_count"
+                                        {% if order == "-favourites_count" %}selected{% endif %}>
+                                    Sort by Number of Favourites
+                                </option>
+                                <option value="-created_at"
+                                        {% if order == "-created_at" %}selected{% endif %}>
+                                    Sort by Created Date
+                                </option>
+                            </select>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
+            <section data-nosnippet>
+                {% for post in posts %}
+                    {% include "post.html" %}
+                {% endfor %}
+                {% if not posts %}<p style="text-align:center;">No results, please check back later!</p>{% endif %}
+            </section>
+            <footer>
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if posts.has_previous %}
+                            <a href="?page={{ posts.previous_page_number }}&q={{ query }}&order={{ order }}">previous</a>
+                        {% endif %}
+                        {% if posts %}<span class="current">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>{% endif %}
+                        {% if posts.has_next %}
+                            <a href="?page={{ posts.next_page_number }}&q={{ query }}&order={{ order }}">next</a>
+                        {% endif %}
+                    </span>
+                </div>
+                <p>
+                    Check out the <a href="{% url "faq" %}">FAQ</a> to learn how to add yourlsef to the list.
+                </p>
+            </footer>
+        </article>
+    </main>
+{% endblock content %}
