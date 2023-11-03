@@ -18,9 +18,10 @@ class Command(RichCommand):
         self.console.print("Running indexer")
         with monitor(monitor_slug="daily-sync-indexer"):
             management.call_command("indexer")
-        self.console.print("Running optimizer")
-        with monitor(monitor_slug="daily-sync-optimizer"):
-            management.call_command("optimizer")
+        # TODO: Optimizer should no longer be needed because crawler is pre-filtering
+        # self.console.print("Running optimizer")
+        # with monitor(monitor_slug="daily-sync-optimizer"):
+        #     management.call_command("optimizer")
         self.console.print("Running statuser")
         with monitor(monitor_slug="daily-sync-statuser"):
             management.call_command("statuser")

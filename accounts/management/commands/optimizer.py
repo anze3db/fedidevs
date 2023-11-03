@@ -13,5 +13,5 @@ class Command(RichCommand):
         self.console.print(f"Deleting {total}")
         Account.objects.exclude(id__in=ids).delete()
         with connection.cursor() as cursor:
-            cursor.execute("VACUUM")
+            cursor.execute("VACUUM")  # TODO: This makes the wal file large. Might be unecessary
         self.console.print("Done")
