@@ -133,6 +133,7 @@ def faq(request):
             "page_image": "faq.png",
             "instances": INSTANCES,
             "languages": LANGUAGES,
+            "frameworks": FRAMEWORKS,
         },
     )
 

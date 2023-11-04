@@ -6,26 +6,48 @@
             <h2>How to get listed?</h2>
             <p>There are a few prerequisites for your account to be listed on FediDevs.com</p>
             <h4>1. Your account must be discoverable and not opt-out of search engine indexing</h4>
-            Your account must be <b>discoverable</b>. Check the checkbox that says "Suggest account to others" at <code>{your_instance}/settings/profile</code>.
-            <p style="text-align:center; margin: 20px;">
-                <a href="{% static 'faq-discoverable.png' %}">
-                    <img width="80%"
-                         height="80%"
-                         alt="Screenshot of the Mastodon Edit profile page showing the Suggest account to others checkbox"
-                         src="{% static 'faq-discoverable.png' %}"
-                         style="" />
-                </a>
+            <p>
+                Go to <kbd>Preferences</kbd> - <kbd>Public profile</kbd> - <kbd>Privacy and reach</kbd> tab (<code>{your_instance}/settings/privacy</code>) and check the following checkboxes:
             </p>
-            Opt-out of search engine indexing checkbox must <b>NOT</b> be checked. The checkbox is on the <code>{your_instance}/preferences/other</code> page:
+            <ol>
+                <li>Feature profile and posts in discovery algorithms</li>
+                <li>Include profile page in search engines</li>
+            </ol>
             <p style="text-align:center; margin: 20px;">
-                <a href="{% static 'faq-opt-out.png' %}">
-                    <img width="80%"
-                         height="80%"
-                         alt="Screenshot of the Mastodon Preferences page showing the Opt-out of search engine indexing checkbox"
-                         src="{% static 'faq-opt-out.png' %}"
-                         style="" />
-                </a>
+                <img src="{% static 'faq-checkboxes.png' %}"
+                     width="80%"
+                     height="80%"
+                     alt="Screenshot of the Mastodon Profile page, Privacy and reach tab, showing which checkboxes are required to get listed" />
             </p>
+            <details>
+                <summary role="button" class="outline">
+                    Older versions of Mastodon have a different preferences page layout. See here.
+                </summary>
+                <p>
+                    Go to <kbd>Preferences</kbd> - <kbd>Public</kbd> - <kbd>Appearance</kbd> (<code>{your_instance}/settings/profile</code>) and check the Suggest account to others checkbox:
+                </p>
+                <p style="text-align:center; margin: 20px;">
+                    <a href="{% static 'faq-discoverable.png' %}">
+                        <img width="80%"
+                             height="80%"
+                             alt="Screenshot of the Mastodon Edit profile page showing the Suggest account to others checkbox"
+                             src="{% static 'faq-discoverable.png' %}"
+                             style="" />
+                    </a>
+                </p>
+                <p>
+                    Then go to <kbd>Preferences</kbd> - <kbd>Other</kbd> (<code>{your_instance}//preferences/other</code>) and <b>UNCHECK</b> the Opt-out of search engine indexing checkbox:
+                </p>
+                <p style="text-align:center; margin: 20px;">
+                    <a href="{% static 'faq-opt-out.png' %}">
+                        <img width="80%"
+                             height="80%"
+                             alt="Screenshot of the Mastodon Preferences page showing the Opt-out of search engine indexing checkbox"
+                             src="{% static 'faq-opt-out.png' %}"
+                             style="" />
+                    </a>
+                </p>
+            </details>
             <h4>2. Your display name, bio, or profile metadata has to have at least one of the filter keywords</h4>
             <p>
                 The keywords are case-insensitive and can be anywhere in your display name, bio, or profile metadata. You can also use custom emojis like <code>:python:</code>. The table below shows more information about all the filters:
@@ -53,6 +75,24 @@
                             </td>
                         </tr>
                     {% endfor %}
+                    {% for framework in frameworks %}
+                        <tr>
+                            <td>
+                                <img src="{% static framework.image %}"
+                                     alt="{{ framework.code }}"
+                                     class="emojione"
+                                     height="16"
+                                     width="16" />
+                                {{ framework.name }}
+                            </td>
+                            <td>
+                                <code>{{ framework.code }}</code>
+                            </td>
+                            <td>
+                                <code>{{ framework.regex }}</code>
+                            </td>
+                        </tr>
+                    {% endfor %}
                 </table>
             </p>
             <h4>3. Have at least one post/toot or one follower or follow a single other account</h4>
@@ -71,11 +111,11 @@
             </p>
             <h2>How often is the data refreshed?</h2>
             <p>
-                The data is refreshed about <b>once per week</b>, but if you want your profile on FediDevs.com updated sooner, <a href="mailto:hello@fedidevs.com">send me an email</a> and I'll update it manually.
+                The data is refreshed about <b>once per day</b>, but if you want your profile on FediDevs.com updated sooner, <a href="mailto:hello@fedidevs.com">send me an email</a> and I'll update it manually.
             </p>
             <h2>How to get your account removed from FediDevs.com?</h2>
             <p>
-                The easiest way is to Opt-out of search engine indexing in your Mastodon profile settings. Uncheck the checkbox that says "Opt-out of search engine indexing" at <code>{your_instance}/preferences/other</code>. This will remove your account on next sync (in about 1 week).
+                The easiest way is to Opt-out of search engine indexing in your Mastodon Privacy and reach page. Uncheck the checkbox that says "Feature profile and posts in discovery algorithms" or "Include profile page in search engines" at <code>{your_instance}/settings/privacy</code>. This will remove your account on next sync (in about 1 day).
             </p>
             <p>
                 If you don't want to wait until the next sync <a href="mailto:hello@fedidevs.com">please reach out</a> and I'll remove you immediately.
