@@ -5,9 +5,7 @@
     {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
 {% endblock head %}
 {% block header %}
-    <h1 class="logo">
-        <a href="{% url 'index' %}">{{ page_header }}</a>
-    </h1>
+    <h1 class="logo">{{ page_header }}</h1>
     {% if page_subheader %}<h2>{{ page_subheader | safe }}</h2>{% endif %}
 {% endblock header %}
 {% block content %}
