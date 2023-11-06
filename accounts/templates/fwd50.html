@@ -23,7 +23,7 @@
                         <li>
                             <a href="{% url 'fwd50' %}"
                                {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
-                               role="button">All Days ({{ total_posts }})</a>
+                               role="button">All ({{ total_posts }})</a>
                         </li>
                         {% for date in dates %}
                             <li>
