@@ -21,13 +21,13 @@
                 <nav>
                     <ul style="flex-wrap: wrap; justify-content: center;">
                         <li>
-                            <a href="{% url 'fwd50' %}"
+                            <a href="{% url 'fwd50' %}?order={{ order }}&account={{ account_id }}"
                                {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
                                role="button">All ({{ total_posts }})</a>
                         </li>
                         {% for date in dates %}
                             <li>
-                                <a href="{% url 'fwd50' date.value %}"
+                                <a href="{% url 'fwd50' date.value %}?order={{ order }}&account={{ account_id }}"
                                    {% if posts_date != date.value %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
                                    role="button">{{ date.pre_display }} ({{ date.count }})</a>
                             </li>
@@ -37,12 +37,21 @@
                         <li>
                             <script>
                                 function change_sort(element) {
-                                var date = {% if posts_date %}"{{ posts_date|date:"Y-m-d" }}"{% else %}null{% endif %};
-                                if (date) {
-                                    window.location.href = "/fwd50/" + date + "/?order=" + element.value ;
-                                } else {
-                                    window.location.href = "/fwd50/?order=" + element.value ;
-                                }
+                                    let url = '/fwd50/';
+
+                                    const date = {% if posts_date %}"{{ posts_date|date:"Y-m-d" }}"{% else %}null{% endif %};
+                                    if (date) {
+                                        url += date + "/?order=" + element.value ;
+                                    } else {
+                                        url += "?order=" + element.value ;
+                                    }
+
+                                    const account_id = {% if account_id %}"{{ account_id }}"{% else %}null{% endif %};
+                                    if (account_id) {
+                                        url += "&account=" + account_id;
+                                    }
+
+                                    window.location.href = url;
                                 }
                             </script>
                             <select onchange="change_sort(this)">
@@ -59,6 +68,30 @@
                         </li>
                     </ul>
                 </nav>
+                <p>
+                    <ul style="padding:0;">
+                        <li style="display: inline-block;">
+                            <a href="{% if posts_date %}{% url 'fwd50' posts_date %}{% else %}{% url 'fwd50' %}{% endif %}"
+                               role="button"
+                               class="{% if account_id is not None %}outline{% endif %} no-wrap"
+                               style="padding: 5px">All Accounts</a>
+                        </li>
+                        {% for account in users_with_most_posts %}
+                            <li style="display: inline-block;">
+                                <a href="{% if posts_date %}{% url 'fwd50' posts_date %}?account={{ account.id }}{% else %}{% url 'fwd50' %}?account={{ account.id }}{% endif %}"
+                                   role="button"
+                                   class="{% if account.id != account_id %}outline{% endif %} no-wrap"
+                                   style="padding: 5px">
+                                    <img class="small-avatar"
+                                         src="{{ account.avatar }}"
+                                         alt="{{ account.login }}"
+                                         width="50"
+                                         height="50" />
+                                {% render_emojis account.display_name account.emojis %} ({{ account.count }})</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </p>
             </header>
             <section data-nosnippet>
                 {% for post in posts %}

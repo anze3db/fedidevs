@@ -26,6 +26,12 @@ td {
     height: 50px;
     border-radius: 50%;
 }
+.small-avatar {
+    vertical-align: middle;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+}
 
 .pagination {
     display: flex;
@@ -140,4 +146,8 @@ article.card {
     align-items: flex-start
 }
 
-.grid-item {}
+.no-wrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -8,7 +8,7 @@ from django.db.models import Count, Q, Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
-from confs.models import Fwd50Post
+from confs.models import Fwd50Account, Fwd50Post
 from posts.models import PostSubscription
 
 
@@ -20,11 +20,19 @@ def fwd50(request, date: dt.date | None = None):
     order = request.GET.get("order")
     if order not in ("-favourites_count", "-created_at"):
         order = "-favourites_count"
+
     if date:
         date = date.date()
         search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
     else:
         search_query &= Q()
+
+    try:
+        account_id = int(request.GET.get("account"))
+    except (ValueError, TypeError):
+        account_id = None
+    if account_id:
+        search_query &= Q(account_id=account_id)
 
     posts = Fwd50Post.objects.filter(search_query).order_by(order)
     # List of date objects. The first one is the date 2023-09-12 and then one item for every day until the current date
@@ -33,6 +41,8 @@ def fwd50(request, date: dt.date | None = None):
         dt.date(2023, 11, 7),
         dt.date(2023, 11, 8),
     ]
+
+    users_with_most_posts = Fwd50Account.objects.filter().annotate(count=Count("posts")).order_by("-count")[:10]
 
     counts = (
         Fwd50Post.objects.filter(
@@ -77,10 +87,12 @@ def fwd50(request, date: dt.date | None = None):
             "page_description": "Most Favourited Mastodon Posts about FWD50",
             "page_image": "og-fwd50.png",
             "posts": page_obj,
+            "users_with_most_posts": users_with_most_posts,
             "total_posts": stats["total_posts"],
             "total_favourites": stats["total_favourites"],
             "posts_date": date,
             "dates": dates,
+            "account_id": account_id,
             "order": order,
         },
     )

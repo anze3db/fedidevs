@@ -56,7 +56,7 @@ class Fwd50Account(models.Model):
 
 class Fwd50Post(models.Model):
     post_id = models.TextField()
-    account = models.ForeignKey(Fwd50Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Fwd50Account, on_delete=models.CASCADE, related_name="posts")
     instance = models.TextField()
 
     created_at = models.DateTimeField()
