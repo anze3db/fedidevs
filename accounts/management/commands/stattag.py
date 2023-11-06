@@ -6,7 +6,7 @@ from asgiref.sync import async_to_sync
 from django.utils.timezone import make_aware
 from django_rich.management import RichCommand
 
-from confs.models import Fwd50Account, Fwd50Post
+from confs.models import DjangoConAfricaAccount, DjangoConAfricaPost, Fwd50Account, Fwd50Post
 
 
 class Command(RichCommand):
@@ -23,6 +23,12 @@ class Command(RichCommand):
     async def main(self, tags: str, instances: str):
         tags_lst = tags.split(",")
         instances_lst = instances.split(",")
+        if "djangoconafrica" in tags_lst[0]:
+            posts_model = DjangoConAfricaPost
+            accounts_model = DjangoConAfricaAccount
+        else:
+            posts_model = Fwd50Post
+            accounts_model = Fwd50Account
         async with httpx.AsyncClient() as client:
             for inst in instances_lst:
                 instance, posts = await self.fetch(client, tags_lst, inst)
@@ -58,12 +64,12 @@ class Command(RichCommand):
                         "roles": account.get("roles", []),
                         "fields": account["fields"],
                     }
-                    account_obj, _ = await Fwd50Account.objects.aupdate_or_create(
+                    account_obj, _ = await accounts_model.objects.aupdate_or_create(
                         url=account["url"],
                         defaults=defaults,
                     )
 
-                    post, created = await Fwd50Post.objects.aget_or_create(
+                    post, created = await posts_model.objects.aget_or_create(
                         url=result["url"],
                         defaults={
                             "post_id": result["id"],

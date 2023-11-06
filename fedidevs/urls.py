@@ -102,5 +102,11 @@ urlpatterns = (
             confs_views.fwd50,
             name="fwd50",
         ),
+        path("djangoconafrica/", confs_views.djangoconafrica, name="djangoconafrica"),
+        path(
+            "djangoconafrica/<date:date>/",
+            confs_views.djangoconafrica,
+            name="djangoconafrica",
+        ),
     ]
 )

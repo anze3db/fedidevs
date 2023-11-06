@@ -44,6 +44,15 @@ class Command(RichCommand):
         )
         self.console.print("Finished fwd50 job")
 
+    def djangoconafrica_job(self):
+        self.console.print("Running djangoconafrica job")
+        management.call_command(
+            "stattag",
+            tags="djangoconafrica",
+            instances="fosstodon.org,mastodon.social",
+        )
+        self.console.print("Finished djangoconafrica job")
+
     def add_arguments(self, parser):
         parser.add_argument("--offset", type=int, nargs="?", default=0)
         parser.add_argument("--instances", type=str, nargs="?", default=None)
@@ -57,12 +66,14 @@ class Command(RichCommand):
     def handle(self, *args, run_now=False, **options):
         if run_now:
             self.console.print("Running job(s) now 🏃‍♂️")
+            self.djangoconafrica_job()
             self.fwd50_job()
             return
 
         self.console.print("Starting scheduler 🕐")
         schedule.every().day.at("01:00").do(self.job)
         schedule.every(30).minutes.do(self.fwd50_job)
+        schedule.every(30).minutes.do(self.djangoconafrica_job)
 
         while True:
             schedule.run_pending()
