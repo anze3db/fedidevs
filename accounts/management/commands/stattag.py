@@ -29,7 +29,11 @@ class Command(RichCommand):
                 for result in posts:
                     account = result["account"]
 
-                    if account["url"].split("/")[2] != instance and account["url"].split("/")[2] != "mstdn.ca":
+                    if (
+                        account["url"].split("/")[2] != instance
+                        and account["url"].split("/")[2] != "mstdn.ca"
+                        and instance == "mastodon.social"
+                    ):
                         continue
 
                     defaults = {
