@@ -45,13 +45,15 @@
     </head>
     <body>
         <header style="text-align:center;">
-            <h1 class="logo">
-                <a href="{% url 'index' %}">
-                    <img src="{% static 'logo.png' %}" alt="logo">
-                    {{ page_header }}
-                </a>
-            </h1>
-            {% if page_subheader %}<h2>{{ page_subheader | safe }}</h2>{% endif %}
+            {% block header %}
+                <h1 class="logo">
+                    <a href="{% url 'index' %}">
+                        <img src="{% static 'logo.png' %}" alt="logo">
+                        {{ page_header }}
+                    </a>
+                </h1>
+                {% if page_subheader %}<h2>{{ page_subheader | safe }}</h2>{% endif %}
+            {% endblock header %}
         </header>
         {% block content %}
         {% endblock content %}

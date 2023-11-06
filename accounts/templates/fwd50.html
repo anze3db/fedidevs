@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+{% load account_extras %}
+{% load static %}
+{% block head %}
+    {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
+{% endblock head %}
+{% block header %}
+    <h1 class="logo">
+        <a href="{% url 'index' %}">{{ page_header }}</a>
+    </h1>
+    {% if page_subheader %}<h2>{{ page_subheader | safe }}</h2>{% endif %}
+{% endblock header %}
+{% block content %}
+    <main class="container">
+        <article>
+            <header>
+                <p>
+                    <a href="https://www.fwd50.com">FWD50</a> is taking place on November 6-8, 2023 in Ottawa's Lansdowne Park. See the <a href="https://www.fwd50.com/agenda?t=false">Agenda</a>.
+                </p>
+                <p>
+                    There have been <mark>{{ total_posts }} posts</mark> and <mark>{{ total_favourites }} favourites</mark> with the hashtag <a href="https://mastodon.social/tags/fwd50">#fwd50</a> on <a href="https://joinmastodon.org">Mastodon</a>.
+                </p>
+                <nav>
+                    <ul style="flex-wrap: wrap; justify-content: center;">
+                        <li>
+                            <a href="{% url 'fwd50' %}"
+                               {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
+                               role="button">All Days ({{ total_posts }})</a>
+                        </li>
+                        {% for date in dates %}
+                            <li>
+                                <a href="{% url 'fwd50' date.value %}"
+                                   {% if posts_date != date.value %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
+                                   role="button">{{ date.pre_display }} ({{ date.count }})</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <ul>
+                        <li>
+                            <script>
+                                function change_sort(element) {
+                                var date = {% if posts_date %}"{{ posts_date|date:"Y-m-d" }}"{% else %}null{% endif %};
+                                if (date) {
+                                    window.location.href = "/posts/" + date + "/fwd50?order=" + element.value ;
+                                } else {
+                                    window.location.href = "/posts/fwd50?order=" + element.value ;
+                                }
+                                }
+                            </script>
+                            <select onchange="change_sort(this)">
+                                <option value="" disabled>Sort By</option>
+                                <option value="-favourites_count"
+                                        {% if order == "-favourites_count" %}selected{% endif %}>
+                                    Sort by Number of Favourites
+                                </option>
+                                <option value="-created_at"
+                                        {% if order == "-created_at" %}selected{% endif %}>
+                                    Sort by Created Date
+                                </option>
+                            </select>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
+            <section data-nosnippet>
+                {% for post in posts %}
+                    {% include "post.html" %}
+                {% endfor %}
+                {% if not posts %}<p style="text-align:center;">No results, please check back later!</p>{% endif %}
+            </section>
+            <footer>
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if posts.has_previous %}
+                            <a href="?page={{ posts.previous_page_number }}&q={{ query }}&order={{ order }}">previous</a>
+                        {% endif %}
+                        {% if posts %}<span class="current">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>{% endif %}
+                        {% if posts.has_next %}
+                            <a href="?page={{ posts.next_page_number }}&q={{ query }}&order={{ order }}">next</a>
+                        {% endif %}
+                    </span>
+                </div>
+                <p>
+                    Check out the <a href="{% url "faq" %}">FAQ</a> to learn how to add yourlsef to the list.
+                </p>
+            </footer>
+        </article>
+    </main>
+{% endblock content %}

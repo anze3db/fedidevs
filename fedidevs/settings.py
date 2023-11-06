@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "accounts",
     "posts",
     "stats",
+    "confs",
 ]
 
 MIDDLEWARE = [

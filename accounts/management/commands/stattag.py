@@ -1,68 +1,75 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 
 import httpx
 from asgiref.sync import async_to_sync
+from django.utils.timezone import make_aware
 from django_rich.management import RichCommand
 
-from posts.models import DjangoConUS23Post
+from confs.models import Fwd50Account, Fwd50Post
 
 
 class Command(RichCommand):
     help = "Crawles the instance API and saves tag statuses"
 
     def add_arguments(self, parser):
-        ...
+        parser.add_argument("--tags", type=str, nargs="?", default="")
+        parser.add_argument("--instances", type=str, nargs="?", default="")
 
-    def handle(self, *args, offset=0, instances=None, **options):
-        self.main()
+    def handle(self, *args, tags: str, instances: str, **options):
+        self.main(tags=tags, instances=instances)
 
     @async_to_sync
-    async def main(self):
+    async def main(self, tags: str, instances: str):
+        tags_lst = tags.split(",")
+        instances_lst = instances.split(",")
         async with httpx.AsyncClient() as client:
-            instances = [
-                "bolha.us",
-                "chaos.social",
-                "cloudisland.nz",
-                "fedi.aeracode.org",
-                "fedi.simonwillison.net",
-                "fosstodon.org",
-                "freeradical.zone",
-                "hachyderm.io",
-                "indieweb.social",
-                "masto.gregnewman.io",
-                "mastodon.cloud",
-                "mastodon.online",
-                "mastodon.social",
-                "phildini.the.galaxybrain.co",
-                "pleroma.site",
-                "sixfeetup.social",
-                "social.coop",
-                "social.jacklinke.com",
-                "social.jacobian.org",
-                "social.joshthomas.dev",
-                "social.juanlu.space",
-                "techhub.social",
-                "terere.social",
-                "tooot.im",
-                "wandering.shop",
-                "xoxo.zone",
-                "zirk.us",
-                # "qoto.org",
-            ]
-            results = await asyncio.gather(*[self.fetch(client, instance) for instance in instances])
-            for instance, posts in results:
+            for inst in instances_lst:
+                instance, posts = await self.fetch(client, tags_lst, inst)
                 for result in posts:
                     account = result["account"]
 
                     if account["url"].split("/")[2] != instance:
                         continue
 
-                    await DjangoConUS23Post.objects.aupdate_or_create(
+                    defaults = {
+                        "username": account["username"],
+                        "acct": account["acct"],
+                        "display_name": account["display_name"],
+                        "locked": account["locked"],
+                        "bot": account["bot"],
+                        "discoverable": account.get("discoverable", False),
+                        "group": account.get("group", False),
+                        "noindex": account.get("noindex", None),
+                        "created_at": (datetime.fromisoformat(account["created_at"])),
+                        "last_status_at": make_aware(datetime.fromisoformat(account["last_status_at"]))
+                        if account["last_status_at"]
+                        else None,
+                        "last_sync_at": datetime.now(tz=timezone.utc),
+                        "followers_count": account["followers_count"],
+                        "following_count": account["following_count"],
+                        "statuses_count": account["statuses_count"],
+                        "note": account["note"],
+                        "url": account["url"],
+                        "avatar": account["avatar"],
+                        "avatar_static": account["avatar_static"],
+                        "header": account["header"],
+                        "header_static": account["header_static"],
+                        "emojis": account["emojis"],
+                        "roles": account.get("roles", []),
+                        "fields": account["fields"],
+                    }
+                    account_obj, created = await Fwd50Account.objects.aupdate_or_create(
+                        account_id=account["id"],
+                        instance=account["url"].split("/")[2],
+                        defaults=defaults,
+                    )
+
+                    await Fwd50Post.objects.aupdate_or_create(
                         post_id=result["id"],
                         instance=account["url"].split("/")[2],
                         defaults={
-                            "account": account,
+                            "account": account_obj,
                             "created_at": datetime.fromisoformat(result["created_at"]),
                             "in_reply_to_id": result["in_reply_to_id"],
                             "in_reply_to_account_id": result["in_reply_to_account_id"],
@@ -90,10 +97,10 @@ class Command(RichCommand):
                         },
                     )
 
-    async def fetch(self, client, instance: str):
+    async def fetch(self, client, tags: list[str], instance: str):
         results = []
         try:
-            for tag in ["djangocon", "djangoconus"]:
+            for tag in tags:
                 max_id = "999999999999999999"
                 while True:
                     self.console.print(f"Fetching {instance} {max_id}")

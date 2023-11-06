@@ -35,6 +35,15 @@ class Command(RichCommand):
         management.call_command("stattag")
         self.console.print("Finished djangocon job")
 
+    def fwd50_job(self):
+        self.console.print("Running fwd50 job")
+        management.call_command(
+            "stattag",
+            tags="fwd50",
+            instances="mastodon.social,mstdn.ca,mastodon.sboots.ca,mastodon.me.uk,mstdn.ca,cosocial.ca",
+        )
+        self.console.print("Finished fwd50 job")
+
     def add_arguments(self, parser):
         parser.add_argument("--offset", type=int, nargs="?", default=0)
         parser.add_argument("--instances", type=str, nargs="?", default=None)
@@ -48,12 +57,12 @@ class Command(RichCommand):
     def handle(self, *args, run_now=False, **options):
         if run_now:
             self.console.print("Running job(s) now 🏃‍♂️")
-            self.job()
+            self.fwd50_job()
             return
 
         self.console.print("Starting scheduler 🕐")
         schedule.every().day.at("01:00").do(self.job)
-        # schedule.every(30).minutes.do(self.djangocon_job)
+        schedule.every(30).minutes.do(self.fwd50_job)
 
         while True:
             schedule.run_pending()

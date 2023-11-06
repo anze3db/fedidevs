@@ -20,6 +20,7 @@ from django.utils import dateparse, timezone
 
 from accounts import views
 from accounts.models import FRAMEWORKS, LANGUAGES
+from confs import views as confs_views
 from posts import views as post_views
 
 
@@ -93,5 +94,13 @@ urlpatterns = (
     + [
         path("posts/<date:date>/", post_views.index, name="posts"),
         path("posts/", post_views.index, name="posts"),
+    ]
+    + [
+        path("fwd50/", confs_views.fwd50, name="fwd50"),
+        path(
+            "fwd50/<date:date>/",
+            confs_views.fwd50,
+            name="fwd50",
+        ),
     ]
 )
