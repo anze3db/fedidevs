@@ -39,9 +39,9 @@
                                 function change_sort(element) {
                                 var date = {% if posts_date %}"{{ posts_date|date:"Y-m-d" }}"{% else %}null{% endif %};
                                 if (date) {
-                                    window.location.href = "/posts/" + date + "/fwd50?order=" + element.value ;
+                                    window.location.href = "/fwd50/" + date + "/?order=" + element.value ;
                                 } else {
-                                    window.location.href = "/posts/fwd50?order=" + element.value ;
+                                    window.location.href = "/fwd50/?order=" + element.value ;
                                 }
                                 }
                             </script>
