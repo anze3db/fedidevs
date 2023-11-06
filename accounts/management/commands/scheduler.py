@@ -40,7 +40,7 @@ class Command(RichCommand):
         management.call_command(
             "stattag",
             tags="fwd50",
-            instances="mastodon.social,mstdn.ca,mastodon.sboots.ca,mastodon.me.uk,mstdn.ca,cosocial.ca",
+            instances="mastodon.social,mastodon.sboots.ca,mastodon.me.uk,mstdn.ca,cosocial.ca",
         )
         self.console.print("Finished fwd50 job")
 

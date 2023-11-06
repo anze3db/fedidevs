@@ -29,9 +29,6 @@ class Command(RichCommand):
                 for result in posts:
                     account = result["account"]
 
-                    if account["url"].split("/")[2] != instance:
-                        continue
-
                     defaults = {
                         "account_id": account["id"],
                         "instance": account["url"].split("/")[2],
@@ -61,12 +58,12 @@ class Command(RichCommand):
                         "roles": account.get("roles", []),
                         "fields": account["fields"],
                     }
-                    account_obj, created = await Fwd50Account.objects.aupdate_or_create(
+                    account_obj, _ = await Fwd50Account.objects.aupdate_or_create(
                         url=account["url"],
                         defaults=defaults,
                     )
 
-                    await Fwd50Post.objects.aupdate_or_create(
+                    post, created = await Fwd50Post.objects.aget_or_create(
                         url=result["url"],
                         defaults={
                             "post_id": result["id"],
@@ -98,6 +95,15 @@ class Command(RichCommand):
                             "poll": result["poll"],
                         },
                     )
+                    if not created and (
+                        post.replies_count < result["replies_count"]
+                        or post.favourites_count < result["favourites_count"]
+                        or post.reblogs_count < result["reblogs_count"]
+                    ):
+                        post.replies_count = result["replies_count"]
+                        post.favourites_count = result["favourites_count"]
+                        post.reblogs_count = result["reblogs_count"]
+                        await post.asave(update_fields=["replies_count", "favourites_count", "reblogs_count"])
 
     async def fetch(self, client, tags: list[str], instance: str):
         results = []
