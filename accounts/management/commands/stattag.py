@@ -29,14 +29,12 @@ class Command(RichCommand):
                 for result in posts:
                     account = result["account"]
 
-                    if (
-                        account["url"].split("/")[2] != instance
-                        and account["url"].split("/")[2] != "mstdn.ca"
-                        and instance == "mastodon.social"
-                    ):
+                    if account["url"].split("/")[2] != instance:
                         continue
 
                     defaults = {
+                        "account_id": account["id"],
+                        "instance": account["url"].split("/")[2],
                         "username": account["username"],
                         "acct": account["acct"],
                         "display_name": account["display_name"],
@@ -64,15 +62,15 @@ class Command(RichCommand):
                         "fields": account["fields"],
                     }
                     account_obj, created = await Fwd50Account.objects.aupdate_or_create(
-                        account_id=account["id"],
-                        instance=account["url"].split("/")[2],
+                        url=account["url"],
                         defaults=defaults,
                     )
 
                     await Fwd50Post.objects.aupdate_or_create(
-                        post_id=result["id"],
-                        instance=account["url"].split("/")[2],
+                        url=result["url"],
                         defaults={
+                            "post_id": result["id"],
+                            "instance": account["url"].split("/")[2],
                             "account": account_obj,
                             "created_at": datetime.fromisoformat(result["created_at"]),
                             "in_reply_to_id": result["in_reply_to_id"],

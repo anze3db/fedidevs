@@ -41,6 +41,7 @@ class Fwd50Account(models.Model):
             "account_id",
             "instance",
         )
+        constraints = [models.UniqueConstraint(fields=["url"], name="unique_account_url")]
         indexes = [
             models.Index(fields=["noindex", "discoverable"]),
         ]
@@ -84,3 +85,4 @@ class Fwd50Post(models.Model):
 
     class Meta:
         unique_together = ("post_id", "instance")
+        constraints = [models.UniqueConstraint(fields=["url"], name="unique_post_url")]
