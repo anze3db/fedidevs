@@ -43,7 +43,7 @@ class Command(RichCommand):
                         "display_name": account["display_name"],
                         "locked": account["locked"],
                         "bot": account["bot"],
-                        "discoverable": account.get("discoverable", False),
+                        "discoverable": account.get("discoverable", False) or False,
                         "group": account.get("group", False),
                         "noindex": account.get("noindex", None),
                         "created_at": (datetime.fromisoformat(account["created_at"])),
