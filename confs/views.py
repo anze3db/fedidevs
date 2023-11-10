@@ -129,6 +129,18 @@ def djangoconafrica(request, date: dt.date | None = None):
         DjangoConAfricaAccount.objects.filter().annotate(count=Count("posts")).order_by("-count")[:10]
     )
 
+    # Tags is a JSON field with name and url, how to create a query to get all
+    # distinct tag names from the posts table?
+    tags = DjangoConAfricaPost.objects.filter().values("tags")
+    # Flatten nested list of tags:
+    tags = {tag["name"] for tags in tags for tag in tags["tags"]}
+
+    selected_tag = request.GET.get("tag")
+    if selected_tag in tags:
+        search_query &= Q(tags__icontains=selected_tag)
+    else:
+        selected_tag = None
+
     counts = (
         DjangoConAfricaPost.objects.filter(
             visibility="public",
@@ -161,6 +173,7 @@ def djangoconafrica(request, date: dt.date | None = None):
     ).aggregate(
         total_posts=Count("id"),
         total_favourites=Sum("favourites_count"),
+        total_reblogs=Sum("reblogs_count"),
     )
     return render(
         request,
@@ -173,11 +186,12 @@ def djangoconafrica(request, date: dt.date | None = None):
             "page_image": "og-djangoconafrica.png",
             "posts": page_obj,
             "users_with_most_posts": users_with_most_posts,
-            "total_posts": stats["total_posts"],
-            "total_favourites": stats["total_favourites"],
+            "stats": stats,
             "posts_date": date,
             "dates": dates,
             "account_id": account_id,
             "order": order,
+            "tags": tags,
+            "selected_tag": selected_tag,
         },
     )

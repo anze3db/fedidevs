@@ -16,18 +16,18 @@
                     <a href="https://2023.djangocon.africa">DjangoCon Africa</a> took place on November 6 - 11, 2023 in Zanzibra, Tanzania. See the <a href="https://2023.djangocon.africa/schedules/">Schedule</a>.
                 </p>
                 <p>
-                    There have been <mark>{{ total_posts }} posts</mark> and <mark>{{ total_favourites }} favourites</mark> with the hashtag <a href="https://mastodon.social/tags/djangoconafrica">#djangoconafrica</a> on <a href="https://joinmastodon.org">Mastodon</a>.
+                    There have been <mark>{{ stats.total_posts }} posts</mark>, <mark>{{ stats.total_favourites }} favourites</mark>, and <mark>{{ stats.total_reblogs }} boosts</mark> with the hashtag <a href="https://mastodon.social/tags/djangoconafrica">#djangoconafrica</a> on <a href="https://joinmastodon.org">Mastodon</a>.
                 </p>
                 <nav>
                     <ul style="flex-wrap: wrap; justify-content: center;">
                         <li>
-                            <a href="{% url 'djangoconafrica' %}?order={{ order }}&account={{ account_id }}"
+                            <a href="{% url 'djangoconafrica' %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
                                {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
-                               role="button">All ({{ total_posts }})</a>
+                               role="button">All ({{ stats.total_posts }})</a>
                         </li>
                         {% for date in dates %}
                             <li>
-                                <a href="{% url 'djangoconafrica' date.value %}?order={{ order }}&account={{ account_id }}"
+                                <a href="{% url 'djangoconafrica' date.value %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
                                    {% if posts_date != date.value %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
                                    role="button">{{ date.pre_display }} ({{ date.count }})</a>
                             </li>
@@ -49,6 +49,11 @@
                                     const account_id = {% if account_id %}"{{ account_id }}"{% else %}null{% endif %};
                                     if (account_id) {
                                         url += "&account=" + account_id;
+                                    }
+
+                                    const selected_tag = {% if selected_tag %}"{{ selected_tag }}"{% else %}null{% endif %};
+                                    if (selected_tag) {
+                                        url += "&tag=" + selected_tag;
                                     }
 
                                     window.location.href = url;
@@ -79,14 +84,14 @@
                 <p>
                     <ul style="padding:0;">
                         <li style="display: inline-block;">
-                            <a href="{% if posts_date %}{% url 'djangoconafrica' posts_date %}{% else %}{% url 'djangoconafrica' %}{% endif %}"
+                            <a href="{% if posts_date %}{% url 'djangoconafrica' posts_date %}{% else %}{% url 'djangoconafrica' %}{% endif %}?tag={{ selected_tag }}"
                                role="button"
                                class="{% if account_id is not None %}outline{% endif %} no-wrap"
                                style="padding: 5px">All Accounts</a>
                         </li>
                         {% for account in users_with_most_posts %}
                             <li style="display: inline-block;">
-                                <a href="{% if posts_date %}{% url 'djangoconafrica' posts_date %}?account={{ account.id }}{% else %}{% url 'djangoconafrica' %}?account={{ account.id }}{% endif %}"
+                                <a href="{% if posts_date %}{% url 'djangoconafrica' posts_date %}?account={{ account.id }}&tag={{ selected_tag }}{% else %}{% url 'djangoconafrica' %}?account={{ account.id }}&tag={{ selected_tag }}{% endif %}"
                                    role="button"
                                    class="{% if account.id != account_id %}outline{% endif %} no-wrap"
                                    style="padding: 5px">
@@ -96,6 +101,24 @@
                                          width="50"
                                          height="50" />
                                 {% render_emojis account.display_name account.emojis %} ({{ account.count }})</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </p>
+                <p>
+                    <ul style="padding:0;">
+                        <li style="display: inline-block;">
+                            <a href="{% if posts_date %}{% url 'djangoconafrica' posts_date %}{% else %}{% url 'djangoconafrica' %}{% endif %}?account={{ account_id }}"
+                               role="button"
+                               class="{% if selected_tag is not None %}outline{% endif %} no-wrap"
+                               style="padding: 5px">All Tags</a>
+                        </li>
+                        {% for tag in tags %}
+                            <li style="display: inline-block;">
+                                <a href="{% if posts_date %}{% url 'djangoconafrica' posts_date %}?account={{ account_id }}&tag={{ tag }}{% else %}{% url 'djangoconafrica' %}?account={{ account_id }}&tag={{ tag }}{% endif %}"
+                                   role="button"
+                                   class="{% if selected_tag != tag %}outline{% endif %} no-wrap"
+                                   style="padding: 5px">#{{ tag }}</a>
                             </li>
                         {% endfor %}
                     </ul>
