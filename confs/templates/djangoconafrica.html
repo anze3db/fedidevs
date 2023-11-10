@@ -60,6 +60,14 @@
                                         {% if order == "-favourites_count" %}selected{% endif %}>
                                     Sort by Number of Favourites
                                 </option>
+                                <option value="-reblogs_count"
+                                        {% if order == "-reblogs_count" %}selected{% endif %}>
+                                    Sort by Number of Boosts
+                                </option>
+                                <option value="-replies_count"
+                                        {% if order == "-replies_count" %}selected{% endif %}>
+                                    Sort by Number of Replies
+                                </option>
                                 <option value="-created_at"
                                         {% if order == "-created_at" %}selected{% endif %}>
                                     Sort by Created Date

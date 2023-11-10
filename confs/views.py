@@ -14,7 +14,7 @@ def fwd50(request, date: dt.date | None = None):
         visibility="public",
     )
     order = request.GET.get("order")
-    if order not in ("-favourites_count", "-created_at"):
+    if order not in ("-favourites_count", "-reblogs_count", "-replies_count", "-created_at"):
         order = "-favourites_count"
 
     if date:
@@ -99,7 +99,7 @@ def djangoconafrica(request, date: dt.date | None = None):
         visibility="public",
     )
     order = request.GET.get("order")
-    if order not in ("-favourites_count", "-created_at"):
+    if order not in ("-favourites_count", "-reblogs_count", "-replies_count", "-created_at"):
         order = "-favourites_count"
 
     if date:
