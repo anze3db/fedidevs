@@ -121,6 +121,8 @@ def djangoconafrica(request, date: dt.date | None = None):
         dt.date(2023, 11, 7),
         dt.date(2023, 11, 8),
         dt.date(2023, 11, 9),
+        dt.date(2023, 11, 10),
+        dt.date(2023, 11, 11),
     ]
 
     users_with_most_posts = (
