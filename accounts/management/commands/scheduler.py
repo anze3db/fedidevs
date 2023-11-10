@@ -73,7 +73,7 @@ class Command(RichCommand):
 
         self.console.print("Starting scheduler 🕐")
         schedule.every().day.at("01:00").do(self.job)
-        # schedule.every(30).minutes.do(self.fwd50_job)
+        schedule.every().day.at("00:00").do(self.fwd50_job)
         schedule.every(30).minutes.do(self.djangoconafrica_job)
 
         while True:
