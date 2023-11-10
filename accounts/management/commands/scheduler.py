@@ -66,7 +66,7 @@ class Command(RichCommand):
     def handle(self, *args, run_now=False, **options):
         if run_now:
             self.console.print("Running job(s) now 🏃‍♂️")
-            # self.djangoconafrica_job()
+            self.djangoconafrica_job()
             # self.fwd50_job()
             self.job()
             return
@@ -74,7 +74,7 @@ class Command(RichCommand):
         self.console.print("Starting scheduler 🕐")
         schedule.every().day.at("01:00").do(self.job)
         # schedule.every(30).minutes.do(self.fwd50_job)
-        # schedule.every(30).minutes.do(self.djangoconafrica_job)
+        schedule.every(30).minutes.do(self.djangoconafrica_job)
 
         while True:
             schedule.run_pending()
