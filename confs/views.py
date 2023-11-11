@@ -188,7 +188,7 @@ def djangoconafrica(request, date: dt.date | None = None):
             "dates": dates,
             "account_id": account_id,
             "order": order,
-            "tags": tags,
+            "tags": sorted(tags),
             "selected_tag": selected_tag,
         },
     )
