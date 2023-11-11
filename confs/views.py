@@ -115,6 +115,15 @@ def djangoconafrica(request, date: dt.date | None = None):
     if account_id:
         search_query &= Q(account_id=account_id)
 
+    tags = DjangoConAfricaPost.objects.filter().values("tags")
+    tags = {tag["name"] for tags in tags for tag in tags["tags"]}
+
+    selected_tag = request.GET.get("tag")
+    if selected_tag in tags:
+        search_query &= Q(tags__icontains=selected_tag)
+    else:
+        selected_tag = None
+
     posts = DjangoConAfricaPost.objects.filter(search_query).order_by(order)
     # List of date objects. The first one is the date 2023-09-12 and then one item for every day until the current date
     dates = [
@@ -128,18 +137,6 @@ def djangoconafrica(request, date: dt.date | None = None):
     users_with_most_posts = (
         DjangoConAfricaAccount.objects.filter().annotate(count=Count("posts")).order_by("-count")[:10]
     )
-
-    # Tags is a JSON field with name and url, how to create a query to get all
-    # distinct tag names from the posts table?
-    tags = DjangoConAfricaPost.objects.filter().values("tags")
-    # Flatten nested list of tags:
-    tags = {tag["name"] for tags in tags for tag in tags["tags"]}
-
-    selected_tag = request.GET.get("tag")
-    if selected_tag in tags:
-        search_query &= Q(tags__icontains=selected_tag)
-    else:
-        selected_tag = None
 
     counts = (
         DjangoConAfricaPost.objects.filter(
