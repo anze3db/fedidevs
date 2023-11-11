@@ -120,7 +120,7 @@ def djangoconafrica(request, date: dt.date | None = None):
 
     selected_tag = request.GET.get("tag")
     if selected_tag in tags:
-        search_query &= Q(tags__icontains=selected_tag)
+        search_query &= Q(tags__icontains=f'"name": "{selected_tag}"')
     else:
         selected_tag = None
 
