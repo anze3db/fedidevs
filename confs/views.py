@@ -124,7 +124,7 @@ def djangoconafrica(request, date: dt.date | None = None):
     else:
         selected_tag = None
 
-    posts = DjangoConAfricaPost.objects.filter(search_query).order_by(order)
+    posts = DjangoConAfricaPost.objects.filter(search_query).prefetch_related("account").order_by(order)
     # List of date objects. The first one is the date 2023-09-12 and then one item for every day until the current date
     dates = [
         dt.date(2023, 11, 7),
