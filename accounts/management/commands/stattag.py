@@ -6,7 +6,14 @@ from asgiref.sync import async_to_sync
 from django.utils.timezone import make_aware
 from django_rich.management import RichCommand
 
-from confs.models import DjangoConAfricaAccount, DjangoConAfricaPost, Fwd50Account, Fwd50Post
+from confs.models import (
+    DjangoConAfricaAccount,
+    DjangoConAfricaPost,
+    DotNetConfAccount,
+    DotNetConfPost,
+    Fwd50Account,
+    Fwd50Post,
+)
 
 
 class Command(RichCommand):
@@ -26,6 +33,9 @@ class Command(RichCommand):
         if "djangoconafrica" in tags_lst[0]:
             posts_model = DjangoConAfricaPost
             accounts_model = DjangoConAfricaAccount
+        if "dotnetconf" in tags_lst[0]:
+            posts_model = DotNetConfPost
+            accounts_model = DotNetConfAccount
         else:
             posts_model = Fwd50Post
             accounts_model = Fwd50Account

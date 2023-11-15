@@ -108,5 +108,11 @@ urlpatterns = (
             confs_views.djangoconafrica,
             name="djangoconafrica",
         ),
+        path("dotnetconf/", confs_views.dotnetconf, name="dotnetconf"),
+        path(
+            "dotnetconf/<date:date>/",
+            confs_views.dotnetconf,
+            name="dotnetconf",
+        ),
     ]
 )

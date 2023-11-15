@@ -53,6 +53,15 @@ class Command(RichCommand):
         )
         self.console.print("Finished djangoconafrica job")
 
+    def dotnetconf_job(self):
+        self.console.print("Running dotnetconf job")
+        management.call_command(
+            "stattag",
+            tags="dotnetconf",
+            instances="fosstodon.org,mastodon.social,indieweb.social,toot.community,dotnet.social",
+        )
+        self.console.print("Finished dotnetconf job")
+
     def add_arguments(self, parser):
         parser.add_argument("--offset", type=int, nargs="?", default=0)
         parser.add_argument("--instances", type=str, nargs="?", default=None)
@@ -66,15 +75,17 @@ class Command(RichCommand):
     def handle(self, *args, run_now=False, **options):
         if run_now:
             self.console.print("Running job(s) now 🏃‍♂️")
-            self.djangoconafrica_job()
+            # self.djangoconafrica_job()
             # self.fwd50_job()
-            self.job()
+            self.dotnetconf_job()
+            # self.job()
             return
 
         self.console.print("Starting scheduler 🕐")
         schedule.every().day.at("01:00").do(self.job)
         # schedule.every().day.at("00:00").do(self.fwd50_job)
         # schedule.every(30).minutes.do(self.djangoconafrica_job)
+        schedule.every(30).minutes.do(self.dotnetconf_job)
 
         while True:
             schedule.run_pending()
