@@ -213,7 +213,9 @@ def dotnetconf(request, date: dt.date | None = None):
         date = date.date()
         search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
     else:
-        search_query &= Q()
+        search_query &= Q(
+            created_at__gte=dt.date(2023, 11, 1),
+        )
 
     try:
         account_id = int(request.GET.get("account"))
@@ -239,7 +241,11 @@ def dotnetconf(request, date: dt.date | None = None):
         dt.date(2023, 11, 16),
     ]
 
-    users_with_most_posts = DotNetConfAccount.objects.filter().annotate(count=Count("posts")).order_by("-count")[:10]
+    users_with_most_posts = (
+        DotNetConfAccount.objects.filter(posts__created_at__gte=dt.date(2023, 11, 1))
+        .annotate(count=Count("posts"))
+        .order_by("-count")[:10]
+    )
 
     counts = (
         DotNetConfPost.objects.filter(
@@ -269,7 +275,7 @@ def dotnetconf(request, date: dt.date | None = None):
     stats = DotNetConfPost.objects.filter(
         visibility="public",
         # created_at__lte=dt.date(2023, 10, 20),
-        # created_at__gte=dt.date(2023, 11, 10),
+        created_at__gte=dt.date(2023, 11, 1),
     ).aggregate(
         total_posts=Count("id"),
         total_favourites=Sum("favourites_count"),
