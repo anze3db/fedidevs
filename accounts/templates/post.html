@@ -34,10 +34,7 @@
 </div>
 {% if post.sensitive %}
     <details>
-        <summary>
-            {{ post.spoiler_text }}
-            <span role="button" class="outline" style="padding: 5px; margin: 0;">Show More</span>
-        </summary>
+        <summary role="button" class="outline secondary">{{ post.spoiler_text }}</summary>
         {{ post.content|safe }}
     </details>
 {% else %}
