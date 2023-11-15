@@ -33,7 +33,13 @@
     {% endfor %}
 </div>
 {% if post.sensitive %}
-    <div>{{ post.spoiler_text }}</div>
+    <details>
+        <summary>
+            {{ post.spoiler_text }}
+            <span role="button" class="outline" style="padding: 5px; margin: 0;">Show More</span>
+        </summary>
+        {{ post.content|safe }}
+    </details>
 {% else %}
     {{ post.content|safe }}
     {% if post.media_attachments %}
