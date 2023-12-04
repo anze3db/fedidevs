@@ -4,6 +4,7 @@ django-environ
 gunicorn
 heroicons[django]
 httpx
+psycopg2-binary
 schedule
 sentry-sdk
 setproctitle
