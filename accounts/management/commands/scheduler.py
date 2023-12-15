@@ -19,8 +19,9 @@ class Command(RichCommand):
         with monitor(monitor_slug="daily-sync-indexer"):
             management.call_command("indexer")
         # TODO: Optimizer should no longer be needed because crawler is pre-filtering
-        # self.console.print("Running optimizer")
-        # with monitor(monitor_slug="daily-sync-optimizer"):
+        self.console.print("Running optimizer")
+        with monitor(monitor_slug="daily-sync-optimizer"):
+            pass  # Enabling the monitor just to test out if the Sentry issue was resolved
         #     management.call_command("optimizer")
         self.console.print("Running statuser")
         with monitor(monitor_slug="daily-sync-statuser"):
