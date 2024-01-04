@@ -5,6 +5,7 @@ from django.db.models import Count, Q, Sum
 from django.shortcuts import render
 from django.utils import timezone
 
+from accounts.models import LANGUAGES
 from confs.models import (
     DjangoConAfricaAccount,
     DjangoConAfricaPost,
@@ -13,6 +14,32 @@ from confs.models import (
     Fwd50Account,
     Fwd50Post,
 )
+
+
+def conferences(request):
+    languages = (
+        {
+            "code": lng.code,
+            "name": lng.name,
+            "emoji": lng.emoji,
+            "regex": lng.regex,
+            "image": lng.image,
+            "post_code": lng.post_code,
+        }
+        for lng in LANGUAGES
+    )
+    return render(
+        request,
+        "conferences.html",
+        {
+            "page_title": "Conferences | Fediverse Developers",
+            "page_header": "FEDIDEVS CONFERENCES",
+            "page_subheader": "",
+            "page_description": "",
+            "page_image": "og-conferences.png",
+            "languages": languages,
+        },
+    )
 
 
 # Create your views here.

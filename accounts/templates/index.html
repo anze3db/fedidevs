@@ -13,6 +13,7 @@
                     <ul>
                         <li class="active">Developers</li>
                         <li onclick="window.location.href='{% url 'posts' %}'">Posts</li>
+                        <li onclick="window.location.href='{% url 'conferences' %}'">Conferences</li>
                     </ul>
                 </nav>
                 <nav>
@@ -49,27 +50,6 @@
                                     {{ framework.name }}  ({{ framework.count }})</a>
                                 </li>
                             {% endfor %}
-                            <li>
-                                <a href="{% url 'djangoconus' %}"
-                                   class="outline"
-                                   style="border-color: rgb(231, 75, 26);
-                                          color: rgb(231, 75, 26)"
-                                   role="button">#djangocon US 2023 🐂</a>
-                            </li>
-                            <li>
-                                <a href="{% url 'djangoconafrica' %}"
-                                   class="outline"
-                                   style="border-color: rgb(231, 75, 26);
-                                          color: rgb(231, 75, 26)"
-                                   role="button">#djangocon Africa 2023</a>
-                            </li>
-                            <li>
-                                <a href="{% url 'fwd50' %}"
-                                   class="outline"
-                                   style="border-color: rgb(231, 75, 26);
-                                          color: rgb(231, 75, 26)"
-                                   role="button">#fwd50 2023</a>
-                            </li>
                         </ul>
                     </nav>
                 </details>

@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% load account_extras %}
+{% load static %}
+{% block head %}
+    {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
+{% endblock head %}
+{% block content %}
+    <main class="container">
+        <article>
+            <header style="padding-bottom: 0;">
+                <nav class="tabs">
+                    <ul>
+                        <li onclick="window.location.href='{% url 'index' %}'">Developers</li>
+                        <li onclick="window.location.href='{% url 'posts' %}'">Posts</li>
+                        <li class="active">Conferences</li>
+                    </ul>
+                </nav>
+            </header>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Conference</th>
+                        <th>Location</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>
+                        <a href="{% url 'djangoconus' %}">#djangocon US 2023 🐂</a>
+                    </td>
+                    <td>Durham, NC</td>
+                    <td>October 16-20, 2023</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="{% url 'djangoconafrica' %}">#djangocon Africa 2023</a>
+                    </td>
+                    <td>Zanzibar, Tanzania</td>
+                    <td>Nov 6 - 11, 2023</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="{% url 'fwd50' %}">#fwd50 2023</a>
+                    </td>
+                    <td>Ottawa, Canada</td>
+                    <td>November 6-8, 2023</td>
+                </tr>
+            </table>
+            <footer>
+                <p>
+                    Missing a conference? <a href="mailto:hello@fedidevs.com">Let us know</a>.
+                </p>
+            </footer>
+        </article>
+    </main>
+{% endblock content %}

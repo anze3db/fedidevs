@@ -56,6 +56,7 @@ urlpatterns = (
             views.devs_on_mastodon,
             name="developers-on-mastodon",
         ),
+        path("conferences/", confs_views.conferences, name="conferences"),
         path("", views.index, name="index"),
         path("posts/subscribe", post_views.subscribe, name="posts_subscribe"),
         path(

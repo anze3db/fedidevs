@@ -12,12 +12,13 @@
                     <ul>
                         <li onclick="window.location.href='{% url 'index' %}'">Developers</li>
                         <li class="active">Posts</li>
+                        <li onclick="window.location.href='{% url 'conferences' %}'">Conferences</li>
                     </ul>
                 </nav>
                 <script>
         function change_date(element) {
           var date = element.value;
-          window.location.href = "/posts/" + date {% if selected_lang_or_framework %} + "/{{ selected_lang_or_framework.code }}"{% endif %};
+          window.location.href = "/posts/" + date {% if selected_lang_or_framework %}+ "/{{ selected_lang_or_framework.code }}"{% endif %};
         }
                 </script>
                 <select style="" onchange="change_date(this)">
@@ -60,27 +61,6 @@
                                     {{ framework.name }} ({{ framework.count }})</a>
                                 </li>
                             {% endfor %}
-                            <li>
-                                <a href="{% url 'djangoconus' %}"
-                                   class="outline"
-                                   style="border-color: rgb(231, 75, 26);
-                                          color: rgb(231, 75, 26)"
-                                   role="button">#djangocon US 2023 🐂</a>
-                            </li>
-                            <li>
-                                <a href="{% url 'djangoconafrica' %}"
-                                   class="outline"
-                                   style="border-color: rgb(231, 75, 26);
-                                          color: rgb(231, 75, 26)"
-                                   role="button">#djangocon Africa 2023</a>
-                            </li>
-                            <li>
-                                <a href="{% url 'fwd50' %}"
-                                   class="outline"
-                                   style="border-color: rgb(231, 75, 26);
-                                          color: rgb(231, 75, 26)"
-                                   role="button">#fwd50 2023</a>
-                            </li>
                         </ul>
                     </nav>
                 </details>

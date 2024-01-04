@@ -99,7 +99,6 @@ article.card {
     margin-left: calc(var(--pico-block-spacing-horizontal) * -1);
     margin-right: calc(var(--pico-block-spacing-horizontal) * -1);
     margin-bottom: 40px;
-
 }
 
 .tabs>ul {
@@ -116,6 +115,7 @@ article.card {
     flex: 1 1 0;
     border-bottom: 3px solid var(--pico-card-border-color);
     background-color: var(--pico-card-background-color);
+    margin: 0 4px;
 }
 
 .tabs li.active {
