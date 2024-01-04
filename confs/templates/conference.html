@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% load account_extras %}
+{% load static %}
+{% block head %}
+    {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
+{% endblock head %}
+{% block content %}
+    <main class="container">
+        <article>
+            <header style="padding-bottom: 0;">
+                <nav class="tabs">
+                    <ul>
+                        <li onclick="window.location.href='{% url 'index' %}'">Developers</li>
+                        <li onclick="window.location.href='{% url 'posts' %}'">Posts</li>
+                        <li onclick="window.location.href='{% url 'conferences' %}'"
+                            class="active">Conferences</li>
+                    </ul>
+                </nav>
+            </header>
+            {{ conference.description | safe }}
+        </article>
+    </main>
+{% endblock content %}

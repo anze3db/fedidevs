@@ -116,4 +116,7 @@ urlpatterns = (
             name="dotnetconf",
         ),
     ]
+    + [
+        path("<str:slug>", confs_views.conference, name="conference"),
+    ]
 )

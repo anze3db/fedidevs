@@ -5,8 +5,8 @@ from django.db.models import Count, Q, Sum
 from django.shortcuts import render
 from django.utils import timezone
 
-from accounts.models import LANGUAGES
 from confs.models import (
+    Conference,
     DjangoConAfricaAccount,
     DjangoConAfricaPost,
     DotNetConfAccount,
@@ -17,17 +17,7 @@ from confs.models import (
 
 
 def conferences(request):
-    languages = (
-        {
-            "code": lng.code,
-            "name": lng.name,
-            "emoji": lng.emoji,
-            "regex": lng.regex,
-            "image": lng.image,
-            "post_code": lng.post_code,
-        }
-        for lng in LANGUAGES
-    )
+    conferences = Conference.objects.all().order_by("-start_date")
     return render(
         request,
         "conferences.html",
@@ -37,7 +27,23 @@ def conferences(request):
             "page_subheader": "",
             "page_description": "",
             "page_image": "og-conferences.png",
-            "languages": languages,
+            "conferences": conferences,
+        },
+    )
+
+
+def conference(request, slug: str):
+    conference = Conference.objects.get(slug=slug)
+    return render(
+        request,
+        "conference.html",
+        {
+            "page_title": f"{conference.name} | Fediverse Developers",
+            "page_header": conference.name,
+            "page_subheader": f"{conference.start_date.strftime('%b %d')} - {conference.end_date.strftime('%b %d, %Y')}",
+            "page_description": conference.description,
+            "page_image": "og-conferences.png",
+            "conference": conference,
         },
     )
 

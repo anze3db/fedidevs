@@ -3,6 +3,15 @@ from django.db import models
 # Create your models here.
 
 
+class Conference(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True)
+    location = models.CharField(max_length=255)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    description = models.TextField()
+
+
 class Fwd50Account(models.Model):
     account_id = models.TextField()
     instance = models.TextField()

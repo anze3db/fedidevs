@@ -24,6 +24,15 @@
                         <th>Date</th>
                     </tr>
                 </thead>
+                {% for conf in conferences %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
+                        </td>
+                        <td>{{ conf.location }}</td>
+                        <td>{{ conf.start_date | date:"M. j" }} - {{ conf.end_date }}</td>
+                    </tr>
+                {% endfor %}
                 <tr>
                     <td>
                         <a href="{% url 'djangoconus' %}">#djangocon US 2023 🐂</a>
@@ -48,7 +57,7 @@
             </table>
             <footer>
                 <p>
-                    Missing a conference? <a href="mailto:hello@fedidevs.com">Let us know</a>.
+                    Missing a conference? <a href="mailto:hello@fedidevs.com">Let me know</a> and I'll add it asap.
                 </p>
             </footer>
         </article>
