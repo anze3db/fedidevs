@@ -9,7 +9,20 @@ class Conference(models.Model):
     location = models.CharField(max_length=255)
     start_date = models.DateField()
     end_date = models.DateField()
+
+    website = models.URLField(default="")
+    mastodon = models.URLField(default="")
+
     description = models.TextField()
+
+    posts_after = models.DateField(null=True, blank=True)
+    instances = models.TextField(default="")
+    tags = models.TextField(default="")
+
+    min_id = models.CharField(default="0", max_length=255)
+
+    accounts = models.ManyToManyField("accounts.Account", blank=True)
+    posts = models.ManyToManyField("posts.Post", blank=True)
 
 
 class Fwd50Account(models.Model):

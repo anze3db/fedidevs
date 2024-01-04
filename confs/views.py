@@ -18,6 +18,7 @@ from confs.models import (
 
 def conferences(request):
     conferences = Conference.objects.all().order_by("-start_date")
+
     return render(
         request,
         "conferences.html",
@@ -34,6 +35,17 @@ def conferences(request):
 
 def conference(request, slug: str):
     conference = Conference.objects.get(slug=slug)
+    search_query = Q()
+    posts = (
+        conference.posts.filter(search_query)
+        .order_by("-favourites_count")
+        .prefetch_related("account", "account__accountlookup_set")
+    )
+    accounts = conference.accounts.all().order_by("-followers_count")[:10]
+
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     return render(
         request,
         "conference.html",
@@ -44,6 +56,8 @@ def conference(request, slug: str):
             "page_description": conference.description,
             "page_image": "og-conferences.png",
             "conference": conference,
+            "posts": page_obj,
+            "accounts": accounts,
         },
     )
 

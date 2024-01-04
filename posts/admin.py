@@ -1,6 +1,25 @@
 from django.contrib import admin
 
-from posts.models import DjangoConUS23Post, PostSubscription
+from posts.models import DjangoConUS23Post, Post, PostSubscription
+
+
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    list_display = (
+        "post_id",
+        "instance",
+        "created_at",
+        "visibility",
+        "language",
+        "uri",
+        "url",
+        "replies_count",
+        "reblogs_count",
+        "favourites_count",
+        "content",
+    )
+    list_filter = ("instance", "visibility", "language")
+    search_fields = ("content",)
 
 
 # Register your models here.

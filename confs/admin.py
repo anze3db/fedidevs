@@ -7,6 +7,7 @@ from confs.models import Conference
 class ConferenceAdmin(admin.ModelAdmin):
     list_display = ("name", "slug", "start_date", "end_date")
     prepopulated_fields = {"slug": ("name",)}
+    autocomplete_fields = ("accounts", "posts")
 
 
 admin.site.register(Conference, ConferenceAdmin)
