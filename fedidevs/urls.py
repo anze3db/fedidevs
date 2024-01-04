@@ -117,6 +117,6 @@ urlpatterns = (
         ),
     ]
     + [
-        path("<str:slug>", confs_views.conference, name="conference"),
+        # path("<str:slug>", confs_views.conference, name="conference"),
     ]
 )
