@@ -6,157 +6,184 @@ from asgiref.sync import async_to_sync
 from django.utils.timezone import make_aware
 from django_rich.management import RichCommand
 
-from confs.models import (
-    DjangoConAfricaAccount,
-    DjangoConAfricaPost,
-    DotNetConfAccount,
-    DotNetConfPost,
-    Fwd50Account,
-    Fwd50Post,
-)
+from accounts.models import Account
+from confs.models import Conference
+from posts.models import Post
 
 
 class Command(RichCommand):
     help = "Crawles the instance API and saves tag statuses"
 
     def add_arguments(self, parser):
-        parser.add_argument("--tags", type=str, nargs="?", default="")
-        parser.add_argument("--instances", type=str, nargs="?", default="")
+        parser.add_argument("--slug", type=str, nargs="?", default="")
 
-    def handle(self, *args, tags: str, instances: str, **options):
-        self.main(tags=tags, instances=instances)
+    def handle(self, *args, slug: str, **options):
+        self.main(slug=slug)
 
     @async_to_sync
-    async def main(self, tags: str, instances: str):
-        tags_lst = tags.split(",")
-        instances_lst = instances.split(",")
-        if "djangoconafrica" in tags_lst[0]:
-            posts_model = DjangoConAfricaPost
-            accounts_model = DjangoConAfricaAccount
-        if "dotnetconf" in tags_lst[0]:
-            posts_model = DotNetConfPost
-            accounts_model = DotNetConfAccount
-        else:
-            posts_model = Fwd50Post
-            accounts_model = Fwd50Account
+    async def main(self, slug: str):
+        conferences = [c async for c in Conference.objects.all()]
+        instances_lst = {
+            instance.strip()
+            for conference in conferences
+            for instance in conference.instances.split(",")
+            if conference.instances
+        }
+        await asyncio.gather(
+            *[
+                self.handle_instance(instance, [c for c in conferences if instance in c.instances])
+                for instance in instances_lst
+            ]
+        )
+
+    async def handle_instance(self, instance, conferences):
+        tags = list(
+            {
+                tag.strip().replace("#", "")
+                for conference in conferences
+                for tag in conference.tags.split(",")
+                if conference.tags
+            }
+        )
+        min_id = min(conf.min_id for conf in conferences)
         async with httpx.AsyncClient() as client:
-            for inst in instances_lst:
-                instance, posts = await self.fetch(client, tags_lst, inst)
-                for result in posts:
-                    account = result["account"]
+            while True:
+                posts = await self.fetch_and_handle_fail(client, instance, tags, min_id)
+                if not posts:
+                    self.console.print(f"Finishing fetching {instance}")
+                    break
+                min_id = posts[-1]["id"]
+                await self.process_posts(posts, conferences)
 
-                    defaults = {
-                        "account_id": account["id"],
-                        "instance": account["url"].split("/")[2],
-                        "username": account["username"],
-                        "acct": account["acct"],
-                        "display_name": account["display_name"],
-                        "locked": account["locked"],
-                        "bot": account["bot"],
-                        "discoverable": account.get("discoverable", False) or False,
-                        "group": account.get("group", False),
-                        "noindex": account.get("noindex", None),
-                        "created_at": (datetime.fromisoformat(account["created_at"])),
-                        "last_status_at": make_aware(datetime.fromisoformat(account["last_status_at"]))
-                        if account["last_status_at"]
-                        else None,
-                        "last_sync_at": datetime.now(tz=timezone.utc),
-                        "followers_count": account["followers_count"],
-                        "following_count": account["following_count"],
-                        "statuses_count": account["statuses_count"],
-                        "note": account["note"],
-                        "url": account["url"],
-                        "avatar": account["avatar"],
-                        "avatar_static": account["avatar_static"],
-                        "header": account["header"],
-                        "header_static": account["header_static"],
-                        "emojis": account["emojis"],
-                        "roles": account.get("roles", []),
-                        "fields": account["fields"],
-                    }
-                    account_obj, _ = await accounts_model.objects.aupdate_or_create(
-                        url=account["url"],
-                        defaults=defaults,
-                    )
+        for conf in conferences:
+            conf.min_id = min_id
+        await Conference.objects.abulk_update(conferences, ["min_id"])
 
-                    post, created = await posts_model.objects.aget_or_create(
-                        url=result["url"],
-                        defaults={
-                            "post_id": result["id"],
-                            "instance": account["url"].split("/")[2],
-                            "account": account_obj,
-                            "created_at": datetime.fromisoformat(result["created_at"]),
-                            "in_reply_to_id": result["in_reply_to_id"],
-                            "in_reply_to_account_id": result["in_reply_to_account_id"],
-                            "sensitive": result.get("sensitive", None),
-                            "spoiler_text": result["spoiler_text"],
-                            "visibility": result["visibility"],
-                            "language": result["language"],
-                            "uri": result["uri"],
-                            "url": result["url"],
-                            "replies_count": result["replies_count"],
-                            "reblogs_count": result["reblogs_count"],
-                            "favourites_count": result["favourites_count"],
-                            "edited_at": datetime.fromisoformat(result["edited_at"])
-                            if result.get("edited_at")
-                            else None,
-                            "content": result["content"],
-                            "reblog": result["reblog"],
-                            "application": result.get("application", None),
-                            "media_attachments": result["media_attachments"],
-                            "mentions": result["mentions"],
-                            "tags": result["tags"],
-                            "emojis": result["emojis"],
-                            "card": result["card"],
-                            "poll": result["poll"],
-                        },
-                    )
-                    if not created and (
-                        post.replies_count < result["replies_count"]
-                        or post.favourites_count < result["favourites_count"]
-                        or post.reblogs_count < result["reblogs_count"]
-                    ):
-                        post.replies_count = result["replies_count"]
-                        post.favourites_count = result["favourites_count"]
-                        post.reblogs_count = result["reblogs_count"]
-                        await post.asave(update_fields=["replies_count", "favourites_count", "reblogs_count"])
-
-    async def fetch(self, client, tags: list[str], instance: str):
-        results = []
+    async def fetch_and_handle_fail(self, client, instance: str, tags: list[str], min_id: str):
         try:
-            for tag in tags:
-                max_id = "999999999999999999"
-                while True:
-                    self.console.print(f"Fetching {instance} {max_id}")
-                    response = await client.get(
-                        f"https://{instance}/api/v1/timelines/tag/{tag}",
-                        params={
-                            "q": "",
-                            "type": "statuses",
-                            "limit": 40,
-                            "max_id": max_id,
-                        },
-                        timeout=30,
-                    )
-                    if response.status_code == 429:
-                        self.console.print(f"Rate limited, sleeping for 5 minutes {instance}")
-                        await asyncio.sleep(60 * 5)
-                        continue
-                    if response.status_code != 200:
-                        self.console.print(
-                            f"[bold red]Error status code[/bold red] for {instance}. {response.status_code}"
-                        )
-                        return instance, results
-                    res = response.json()
-                    if not res:
-                        break
-                    results += res
-                    if res[-1]["created_at"] < "2023-01-01 00:00:00.000":
-                        break
-                    max_id = res[-1]["id"]
-                    await asyncio.sleep(5)
+            self.console.print(f"Fetching {instance} {min_id} {f"https://{instance}/api/v1/timelines/tag/{tags[0]}"}")
+            response = await client.get(
+                f"https://{instance}/api/v1/timelines/tag/{tags[0]}",
+                params={
+                    "q": "",
+                    "any": tags[1:],
+                    "type": "statuses",
+                    "limit": 40,
+                    "min_id": min_id,
+                    "local": True,
+                },
+                timeout=30,
+            )
+            if response.status_code == 429:
+                self.console.print(f"Rate limited, sleeping for 5 minutes {instance}")
+                await asyncio.sleep(60 * 5)
+                return self.fetch_and_handle_fail(client, instance, tags, min_id)
+            if response.status_code != 200:
+                self.console.print(f"[bold red]Error status code[/bold red] for {instance}. {response.status_code}")
+                return []
+            return response.json()
         except httpx.HTTPError:
             self.console.print(f"[bold red]Error timeout[/bold red] for {instance}")
-            return instance, results
+            return []
 
-        return instance, results
+    async def process_posts(self, posts, conferences):
+        unique_accounts = []
+        seen_account_ids = set()
+        for post in posts:
+            if post["account"]["id"] not in seen_account_ids:
+                seen_account_ids.add(post["account"]["id"])
+                unique_accounts.append(post["account"])
+
+        accounts = [
+            Account(
+                **{
+                    "url": account["url"],
+                    "account_id": account["id"],
+                    "instance": account["url"].split("/")[2],
+                    "username": account["username"],
+                    "acct": account["acct"],
+                    "display_name": account["display_name"],
+                    "locked": account["locked"],
+                    "bot": account["bot"],
+                    "discoverable": account.get("discoverable", False) or False,
+                    "group": account.get("group", False),
+                    "noindex": account.get("noindex", None),
+                    "created_at": (datetime.fromisoformat(account["created_at"])),
+                    "last_status_at": make_aware(datetime.fromisoformat(account["last_status_at"]))
+                    if account["last_status_at"]
+                    else None,
+                    "last_sync_at": datetime.now(tz=timezone.utc),
+                    "followers_count": account["followers_count"],
+                    "following_count": account["following_count"],
+                    "statuses_count": account["statuses_count"],
+                    "note": account["note"],
+                    "avatar": account["avatar"],
+                    "avatar_static": account["avatar_static"],
+                    "header": account["header"],
+                    "header_static": account["header_static"],
+                    "emojis": account["emojis"],
+                    "roles": account.get("roles", []),
+                    "fields": account["fields"],
+                }
+            )
+            for account in unique_accounts
+        ]
+        accounts = await Account.objects.abulk_create(
+            accounts,
+            update_conflicts=True,
+            update_fields=["last_sync_at", "followers_count", "following_count", "statuses_count"],
+            unique_fields=["account_id", "instance"],
+        )
+        account_map = {account.url: account for account in accounts}
+
+        post_objs = [
+            Post(
+                **{
+                    "post_id": result["id"],
+                    "account": account_map[result["account"]["url"]],
+                    "instance": result["account"]["url"].split("/")[2],
+                    "created_at": datetime.fromisoformat(result["created_at"]),
+                    "in_reply_to_id": result["in_reply_to_id"],
+                    "in_reply_to_account_id": result["in_reply_to_account_id"],
+                    "sensitive": result.get("sensitive", None),
+                    "spoiler_text": result["spoiler_text"],
+                    "visibility": result["visibility"],
+                    "language": result["language"],
+                    "uri": result["uri"],
+                    "url": result["url"],
+                    "replies_count": result["replies_count"],
+                    "reblogs_count": result["reblogs_count"],
+                    "favourites_count": result["favourites_count"],
+                    "edited_at": datetime.fromisoformat(result["edited_at"]) if result.get("edited_at") else None,
+                    "content": result["content"],
+                    "reblog": result["reblog"],
+                    "application": result.get("application", None),
+                    "media_attachments": result["media_attachments"],
+                    "mentions": result["mentions"],
+                    "tags": result["tags"],
+                    "emojis": result["emojis"],
+                    "card": result["card"],
+                    "poll": result["poll"],
+                }
+            )
+            for result in posts
+        ]
+        post_objs = await Post.objects.abulk_create(
+            post_objs,
+            update_conflicts=True,
+            update_fields=["replies_count", "reblogs_count", "favourites_count"],
+            unique_fields=["post_id", "account"],
+        )
+
+        for conf in conferences:
+            conf_tags = [c.strip() for c in conf.tags.split(",")]
+            posts = []
+            for post in post_objs:
+                for tag in post.tags:
+                    if tag["name"] in conf_tags:
+                        posts.append(post)
+                        break
+            await asyncio.gather(
+                conf.posts.aadd(*posts),
+                conf.accounts.aadd(*[post.account for post in posts]),
+            )
