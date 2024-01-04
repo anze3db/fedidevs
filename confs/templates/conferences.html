@@ -30,34 +30,41 @@
                             <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
                         </td>
                         <td>{{ conf.location }}</td>
-                        <td>{{ conf.start_date | date:"M. j" }} - {{ conf.end_date }}</td>
+                        <td>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
                     </tr>
                 {% endfor %}
                 <tr>
                     <td>
-                        <a href="{% url 'djangoconus' %}">#djangocon US 2023 🐂</a>
+                        <a href="{% url 'dotnetconf' %}">.NET Conf 2023</a>
                     </td>
-                    <td>Durham, NC</td>
-                    <td>October 16-20, 2023</td>
+                    <td>Virtual</td>
+                    <td>Nov 14 - 16, 2023</td>
                 </tr>
                 <tr>
                     <td>
-                        <a href="{% url 'djangoconafrica' %}">#djangocon Africa 2023</a>
+                        <a href="{% url 'fwd50' %}">FWD50 2023</a>
+                    </td>
+                    <td>Ottawa, Canada</td>
+                    <td>Nov 6 - 8, 2023</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="{% url 'djangoconus' %}">DjangoCon US 2023</a>
+                    </td>
+                    <td>Durham, NC</td>
+                    <td>Oct 16 - 20, 2023</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="{% url 'djangoconafrica' %}">DjangoCon Africa 2023</a>
                     </td>
                     <td>Zanzibar, Tanzania</td>
                     <td>Nov 6 - 11, 2023</td>
                 </tr>
-                <tr>
-                    <td>
-                        <a href="{% url 'fwd50' %}">#fwd50 2023</a>
-                    </td>
-                    <td>Ottawa, Canada</td>
-                    <td>November 6-8, 2023</td>
-                </tr>
             </table>
             <footer>
                 <p>
-                    Missing a conference? <a href="mailto:hello@fedidevs.com">Let me know</a> and I'll add it asap.
+                    <small>Missing a conference? <a href="mailto:hello@fedidevs.com">Let me know</a> and I'll add it asap.</small>
                 </p>
             </footer>
         </article>
