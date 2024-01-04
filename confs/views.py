@@ -2,6 +2,7 @@ import datetime as dt
 
 from django.core.paginator import Paginator
 from django.db.models import Count, Q, Sum
+from django.http import Http404
 from django.shortcuts import render
 from django.utils import timezone
 
@@ -34,7 +35,11 @@ def conferences(request):
 
 
 def conference(request, slug: str):
-    conference = Conference.objects.get(slug=slug)
+    try:
+        conference = Conference.objects.get(slug=slug)
+    except Conference.DoesNotExist:
+        # Raising a generic 404 exception because conference slug is a catch all (probably a bad idea)
+        raise Http404("Page not found") from None
     search_query = Q()
     posts = (
         conference.posts.filter(search_query)
