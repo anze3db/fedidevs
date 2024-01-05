@@ -27,7 +27,7 @@
                 {% for conf in conferences %}
                     <tr>
                         <td>
-                            {% comment %} <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a> {% endcomment %}
+                            <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
                         </td>
                         <td>{{ conf.location }}</td>
                         <td>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>

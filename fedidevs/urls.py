@@ -50,6 +50,7 @@ urlpatterns = (
         path("__debug__/", include("debug_toolbar.urls")),
         path("__reload__/", include("django_browser_reload.urls")),
         path("robots.txt", robots_txt),
+        path("", views.index, name="index"),
         path("faq/", views.faq, name="faq"),
         path(
             "developers-on-mastodon/",
@@ -57,10 +58,9 @@ urlpatterns = (
             name="developers-on-mastodon",
         ),
         path("conferences/", confs_views.conferences, name="conferences"),
-        path("", views.index, name="index"),
         path("posts/subscribe", post_views.subscribe, name="posts_subscribe"),
         path(
-            "posts/subscribe/success",
+            "posts/subscribe/success/",
             post_views.subscribe_success,
             name="posts_subscribe_success",
         ),
@@ -77,11 +77,11 @@ urlpatterns = (
     ]
     + [
         path(
-            "posts/<date:date>/djangoconus23",
+            "posts/<date:date>/djangoconus23/",
             post_views.djangoconus,
             name="djangoconus",
         ),
-        path("posts/djangoconus23", post_views.djangoconus, name="djangoconus"),
+        path("posts/djangoconus23/", post_views.djangoconus, name="djangoconus"),
     ]
     + [
         path(
@@ -117,6 +117,7 @@ urlpatterns = (
         ),
     ]
     + [
-        # path("<str:slug>", confs_views.conference, name="conference"),
+        path("<str:slug>/<date:date>/", confs_views.conference, name="conference"),
+        path("<str:slug>/", confs_views.conference, name="conference", kwargs={"date": None}),
     ]
 )

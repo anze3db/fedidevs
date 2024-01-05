@@ -2,8 +2,7 @@ import datetime as dt
 
 from django.core.paginator import Paginator
 from django.db.models import Count, Q, Sum
-from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
 from confs.models import (
@@ -34,17 +33,17 @@ def conferences(request):
     )
 
 
-def conference(request, slug: str):
-    try:
-        conference = Conference.objects.get(slug=slug)
-    except Conference.DoesNotExist:
-        # Raising a generic 404 exception because conference slug is a catch all (probably a bad idea)
-        raise Http404("Page not found") from None
-    search_query = Q()
+def conference(request, slug: str, date: dt.date | None = None):
+    conference = get_object_or_404(Conference, slug=slug)
+    search_query = Q(
+        visibility="public",
+    )
+    order = request.GET.get("order")
+    if order not in ("-favourites_count", "-reblogs_count", "-replies_count", "-created_at"):
+        order = "-favourites_count"
+
     posts = (
-        conference.posts.filter(search_query)
-        .order_by("-favourites_count")
-        .prefetch_related("account", "account__accountlookup_set")
+        conference.posts.filter(search_query).order_by(order).prefetch_related("account", "account__accountlookup_set")
     )
     accounts = conference.accounts.all().order_by("-followers_count")[:10]
 
@@ -63,6 +62,8 @@ def conference(request, slug: str):
             "conference": conference,
             "posts": page_obj,
             "accounts": accounts,
+            "slug": slug,
+            "post_date": date,
         },
     )
 
