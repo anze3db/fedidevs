@@ -1,7 +1,7 @@
 import datetime as dt
 
 from django.core.paginator import Paginator
-from django.db.models import Count, Q, Sum
+from django.db.models import Count, F, Q, Sum
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
@@ -37,15 +37,64 @@ def conference(request, slug: str, date: dt.date | None = None):
     conference = get_object_or_404(Conference, slug=slug)
     search_query = Q(
         visibility="public",
+        created_at__lte=conference.end_date + dt.timedelta(days=30),
+        created_at__gte=conference.start_date - dt.timedelta(days=180),
     )
     order = request.GET.get("order")
     if order not in ("-favourites_count", "-reblogs_count", "-replies_count", "-created_at"):
         order = "-favourites_count"
 
+    if date:
+        date = date.date()
+        search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
+
+    counts = (
+        conference.posts.filter(
+            visibility="public",
+            created_at__gte=conference.start_date,
+            created_at__lt=conference.end_date + dt.timedelta(days=1),
+        )
+        .values("created_at__date")
+        .annotate(count=Count("id"))
+    )
+    counts_dict = {c["created_at__date"]: c["count"] for c in counts}
+    dates = [
+        conference.start_date + dt.timedelta(days=i)
+        for i in range((conference.end_date - conference.start_date).days + 1)
+    ]
+    dates = [
+        {
+            "value": date,
+            "pre_display": f"Day {i+1}",
+            "display": date,
+            "count": counts_dict.get(date, 0),
+        }
+        for i, date in enumerate(dates)
+        if date <= timezone.now().date()
+    ]
+
+    stats = conference.posts.filter(
+        visibility="public",
+        created_at__lte=conference.end_date + dt.timedelta(days=30),
+        created_at__gte=conference.start_date - dt.timedelta(days=180),
+    ).aggregate(
+        total_posts=Count("id"),
+        total_favourites=Sum("favourites_count"),
+    )
+
+    try:
+        account_id = int(request.GET.get("account"))
+    except (ValueError, TypeError):
+        account_id = None
+    if account_id:
+        search_query &= Q(account_id=account_id)
+
     posts = (
         conference.posts.filter(search_query).order_by(order).prefetch_related("account", "account__accountlookup_set")
     )
-    accounts = conference.accounts.all().order_by("-followers_count")[:10]
+    accounts = conference.accounts.annotate(
+        count=Count("conference__posts", filter=Q(conference__posts__account=F("pk"), conference=conference))
+    ).order_by("-count")[:10]
 
     paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
@@ -64,6 +113,9 @@ def conference(request, slug: str, date: dt.date | None = None):
             "accounts": accounts,
             "slug": slug,
             "post_date": date,
+            "account_id": account_id,
+            "dates": dates,
+            "stats": stats,
         },
     )
 

@@ -16,20 +16,23 @@
                             class="active">Conferences</li>
                     </ul>
                 </nav>
+                <p>{{ conference.description | safe }}</p>
                 <nav>
                     <ul style="flex-wrap: wrap; justify-content: center;">
-                        <li>
-                            <a href="{% url 'conference' slug %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
-                               {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
-                               role="button">All ({{ stats.total_posts }})</a>
-                        </li>
-                        {% for date in dates %}
+                        {% if dates %}
                             <li>
-                                <a href="{% url 'conference' slug date.value %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
-                                   {% if posts_date != date.value %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
-                                   role="button">{{ date.pre_display }} ({{ date.count }})</a>
+                                <a href="{% url 'conference' slug %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
+                                   {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
+                                   role="button">All ({{ stats.total_posts }})</a>
                             </li>
-                        {% endfor %}
+                            {% for date in dates %}
+                                <li>
+                                    <a href="{% url 'conference' slug date.value %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
+                                       {% if posts_date != date.value %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
+                                       role="button">{{ date.pre_display }} ({{ date.count }})</a>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
                     </ul>
                     <ul>
                         <li>
@@ -103,25 +106,6 @@
                         {% endfor %}
                     </ul>
                 </p>
-                <p>
-                    <ul style="padding:0;">
-                        <li style="display: inline-block;">
-                            <a href="{% if posts_date %}{% url 'conference' slug posts_date %}{% else %}{% url 'conference' slug %}{% endif %}?account={{ account_id }}"
-                               role="button"
-                               class="{% if selected_tag is not None %}outline{% endif %} no-wrap"
-                               style="padding: 5px">All Tags</a>
-                        </li>
-                        {% for tag in tags %}
-                            <li style="display: inline-block;">
-                                <a href="{% if posts_date %}{% url 'conference' slug posts_date %}?account={{ account_id }}&tag={{ tag }}{% else %}{% url 'conference' slug %}?account={{ account_id }}&tag={{ tag }}{% endif %}"
-                                   role="button"
-                                   class="{% if selected_tag != tag %}outline{% endif %} no-wrap"
-                                   style="padding: 5px">#{{ tag }}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </p>
-                {{ conference.description | safe }}
             </header>
             <section data-nosnippet>
                 {% for post in posts %}
