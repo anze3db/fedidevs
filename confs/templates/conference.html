@@ -21,14 +21,14 @@
                     <h3>Most active accounts</h3>
                     <ul style="padding:0;">
                         <li style="display: inline-block;">
-                            <a href="{% if posts_date %}{% url 'conference' slug posts_date %}{% else %}{% url 'conference' slug %}{% endif %}?tag={{ selected_tag }}"
+                            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}"
                                role="button"
                                class="{% if account_id is not None %}outline{% endif %} no-wrap"
                                style="padding: 5px">All Accounts</a>
                         </li>
                         {% for account in accounts %}
                             <li style="display: inline-block;">
-                                <a href="{% if posts_date %}{% url 'conference' slug posts_date %}?account={{ account.id }}&tag={{ selected_tag }}{% else %}{% url 'conference' slug %}?account={{ account.id }}&tag={{ selected_tag }}{% endif %}"
+                                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account.id }}&tag={{ selected_tag }}"
                                    role="button"
                                    class="{% if account.id != account_id %}outline{% endif %} no-wrap"
                                    style="padding: 5px">
@@ -54,7 +54,7 @@
                             </li>
                             {% for date in dates %}
                                 <li>
-                                    <a href="{% url 'conference' slug date.value %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
+                                    <a href="{% url 'conference' slug %}?date={{ date.value | date:"Y-m-d" }}&order={{ order }}&account={{ account_id }}"
                                        {% if posts_date != date.value %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
                                        role="button">{{ date.pre_display }} ({{ date.count }})</a>
                                 </li>
@@ -65,13 +65,13 @@
                         <li>
                             <script>
                                 function change_sort(element) {
-                                    let url = '{% if post_date%}{% url "conference" slug post_date %}{% else %}{% url "conference" slug %}{% endif %}';
+                                    let url = '{% url "conference" slug %}';
 
                                     const date = {% if posts_date %}"{{ posts_date|date:"Y-m-d" }}"{% else %}null{% endif %};
                                     if (date) {
-                                        url += date + "/?order=" + element.value ;
+                                        url += "?date=" + date + "&order=" + element.value;
                                     } else {
-                                        url += "?order=" + element.value ;
+                                        url += "?order=" + element.value;
                                     }
 
                                     const account_id = {% if account_id %}"{{ account_id }}"{% else %}null{% endif %};

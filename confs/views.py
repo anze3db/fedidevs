@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count, F, Q, Sum
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
+from django.utils.dateparse import parse_date
 
 from confs.models import (
     Conference,
@@ -33,7 +34,7 @@ def conferences(request):
     )
 
 
-def conference(request, slug: str, date: dt.date | None = None):
+def conference(request, slug: str):
     conference = get_object_or_404(Conference, slug=slug)
     search_query = Q(
         visibility="public",
@@ -44,8 +45,9 @@ def conference(request, slug: str, date: dt.date | None = None):
     if order not in ("-favourites_count", "-reblogs_count", "-replies_count", "-created_at"):
         order = "-favourites_count"
 
-    if date:
-        date = date.date()
+    date = request.GET.get("date")
+    if date is not None:
+        date = parse_date(date)
         search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
 
     counts = (

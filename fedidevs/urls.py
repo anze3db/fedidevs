@@ -117,7 +117,6 @@ urlpatterns = (
         ),
     ]
     + [
-        path("<str:slug>/<date:date>/", confs_views.conference, name="conference"),
-        path("<str:slug>/", confs_views.conference, name="conference", kwargs={"date": None}),
+        path("<str:slug>/", confs_views.conference, name="conference"),
     ]
 )
