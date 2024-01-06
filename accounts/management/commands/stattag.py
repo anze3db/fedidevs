@@ -47,6 +47,7 @@ class Command(RichCommand):
         )
         min_ids = MinId.objects.filter(conference__in=conferences, instance=instance)
         min_id = min([min_id.min_id async for min_id in min_ids], default="111054552104295026")
+        min_id_to_save = min_id
         async with httpx.AsyncClient() as client:
             while True:
                 posts = await self.fetch_and_handle_fail(client, instance, tags, min_id)
@@ -54,11 +55,15 @@ class Command(RichCommand):
                     self.console.print(f"Finishing fetching {instance}")
                     break
                 min_id = posts[-1]["id"]
+                if datetime.fromisoformat(posts[-1]["created_at"]) < (
+                    datetime.now(tz=timezone.utc) - timedelta(days=3)
+                ):
+                    min_id_to_save = min_id
                 await self.process_posts(posts, conferences)
 
         min_ids = []
         for conf in conferences:
-            min_ids.append(MinId(conference=conf, instance=instance, min_id=min_id))
+            min_ids.append(MinId(conference=conf, instance=instance, min_id=min_id_to_save))
 
         await MinId.objects.abulk_create(
             min_ids, update_conflicts=True, unique_fields=["conference", "instance"], update_fields=["min_id"]
