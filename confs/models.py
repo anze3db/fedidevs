@@ -19,10 +19,17 @@ class Conference(models.Model):
     instances = models.TextField(default="")
     tags = models.TextField(default="")
 
-    min_id = models.CharField(default="0", max_length=255)
-
     accounts = models.ManyToManyField("accounts.Account", blank=True)
     posts = models.ManyToManyField("posts.Post", blank=True)
+
+
+class MinId(models.Model):
+    conference = models.ForeignKey(Conference, on_delete=models.CASCADE)
+    instance = models.TextField()
+    min_id = models.CharField(default="0", max_length=255)
+
+    class Meta:
+        unique_together = ("conference", "instance")
 
 
 class Fwd50Account(models.Model):

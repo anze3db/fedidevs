@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import httpx
 from asgiref.sync import async_to_sync
@@ -7,7 +7,7 @@ from django.utils.timezone import make_aware
 from django_rich.management import RichCommand
 
 from accounts.models import Account
-from confs.models import Conference
+from confs.models import Conference, MinId
 from posts.models import Post
 
 
@@ -45,7 +45,8 @@ class Command(RichCommand):
                 if conference.tags
             }
         )
-        min_id = min(conf.min_id for conf in conferences)
+        min_ids = MinId.objects.filter(conference__in=conferences, instance=instance)
+        min_id = min([min_id.min_id async for min_id in min_ids], default="111054552104295026")
         async with httpx.AsyncClient() as client:
             while True:
                 posts = await self.fetch_and_handle_fail(client, instance, tags, min_id)
@@ -55,9 +56,13 @@ class Command(RichCommand):
                 min_id = posts[-1]["id"]
                 await self.process_posts(posts, conferences)
 
+        min_ids = []
         for conf in conferences:
-            conf.min_id = min_id
-        await Conference.objects.abulk_update(conferences, ["min_id"])
+            min_ids.append(MinId(conference=conf, instance=instance, min_id=min_id))
+
+        await MinId.objects.abulk_create(
+            min_ids, update_conflicts=True, unique_fields=["conference", "instance"], update_fields=["min_id"]
+        )
 
     async def fetch_and_handle_fail(self, client, instance: str, tags: list[str], min_id: str):
         try:
@@ -77,13 +82,16 @@ class Command(RichCommand):
             if response.status_code == 429:
                 self.console.print(f"Rate limited, sleeping for 5 minutes {instance}")
                 await asyncio.sleep(60 * 5)
-                return self.fetch_and_handle_fail(client, instance, tags, min_id)
+                return await self.fetch_and_handle_fail(client, instance, tags, min_id)
             if response.status_code != 200:
                 self.console.print(f"[bold red]Error status code[/bold red] for {instance}. {response.status_code}")
                 return []
             return response.json()
         except httpx.HTTPError:
-            self.console.print(f"[bold red]Error timeout[/bold red] for {instance}")
+            self.console.print(f"[bold red]Error Http[/bold red] for {instance}")
+            return []
+        except Exception as e:
+            self.console.print(f"[bold red]Error Unknown[/bold red] for {instance}", e)
             return []
 
     async def process_posts(self, posts, conferences):
@@ -176,11 +184,15 @@ class Command(RichCommand):
         )
 
         for conf in conferences:
-            conf_tags = [c.strip() for c in conf.tags.split(",")]
+            conf_tags = [c.strip().replace("#", "").lower() for c in conf.tags.split(",")]
             posts = []
             for post in post_objs:
+                if post.created_at.date() < (conf.start_date - timedelta(days=90)) or post.created_at.date() > (
+                    conf.end_date + timedelta(days=90)
+                ):
+                    continue
                 for tag in post.tags:
-                    if tag["name"] in conf_tags:
+                    if tag["name"].lower() in conf_tags:
                         posts.append(post)
                         break
             await asyncio.gather(
