@@ -17,13 +17,40 @@
                     </ul>
                 </nav>
                 <p>{{ conference.description | safe }}</p>
+                <p>
+                    <h3>Most active accounts</h3>
+                    <ul style="padding:0;">
+                        <li style="display: inline-block;">
+                            <a href="{% if posts_date %}{% url 'conference' slug posts_date %}{% else %}{% url 'conference' slug %}{% endif %}?tag={{ selected_tag }}"
+                               role="button"
+                               class="{% if account_id is not None %}outline{% endif %} no-wrap"
+                               style="padding: 5px">All Accounts</a>
+                        </li>
+                        {% for account in accounts %}
+                            <li style="display: inline-block;">
+                                <a href="{% if posts_date %}{% url 'conference' slug posts_date %}?account={{ account.id }}&tag={{ selected_tag }}{% else %}{% url 'conference' slug %}?account={{ account.id }}&tag={{ selected_tag }}{% endif %}"
+                                   role="button"
+                                   class="{% if account.id != account_id %}outline{% endif %} no-wrap"
+                                   style="padding: 5px">
+                                    <img class="small-avatar"
+                                         src="{{ account.avatar }}"
+                                         alt="{{ account.login }}"
+                                         width="50"
+                                         height="50" />
+                                {% render_emojis account.display_name account.emojis %} ({{ account.count }})</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </p>
+                <h3>Filter by conference day</h3>
                 <nav>
                     <ul style="flex-wrap: wrap; justify-content: center;">
                         {% if dates %}
                             <li>
                                 <a href="{% url 'conference' slug %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
                                    {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
-                                   role="button">All ({{ stats.total_posts }})</a>
+                                   role="button"
+                                   data-tooltip="This includes posts before, during, and after the conference.">All ({{ stats.total_posts }})</a>
                             </li>
                             {% for date in dates %}
                                 <li>
@@ -82,30 +109,6 @@
                         </li>
                     </ul>
                 </nav>
-                <p>
-                    <ul style="padding:0;">
-                        <li style="display: inline-block;">
-                            <a href="{% if posts_date %}{% url 'conference' slug posts_date %}{% else %}{% url 'conference' slug %}{% endif %}?tag={{ selected_tag }}"
-                               role="button"
-                               class="{% if account_id is not None %}outline{% endif %} no-wrap"
-                               style="padding: 5px">All Accounts</a>
-                        </li>
-                        {% for account in accounts %}
-                            <li style="display: inline-block;">
-                                <a href="{% if posts_date %}{% url 'conference' slug posts_date %}?account={{ account.id }}&tag={{ selected_tag }}{% else %}{% url 'conference' slug %}?account={{ account.id }}&tag={{ selected_tag }}{% endif %}"
-                                   role="button"
-                                   class="{% if account.id != account_id %}outline{% endif %} no-wrap"
-                                   style="padding: 5px">
-                                    <img class="small-avatar"
-                                         src="{{ account.avatar }}"
-                                         alt="{{ account.login }}"
-                                         width="50"
-                                         height="50" />
-                                {% render_emojis account.display_name account.emojis %} ({{ account.count }})</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </p>
             </header>
             <section data-nosnippet>
                 {% for post in posts %}

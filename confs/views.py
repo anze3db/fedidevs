@@ -70,7 +70,6 @@ def conference(request, slug: str, date: dt.date | None = None):
             "count": counts_dict.get(date, 0),
         }
         for i, date in enumerate(dates)
-        if date <= timezone.now().date()
     ]
 
     stats = conference.posts.filter(
@@ -116,6 +115,7 @@ def conference(request, slug: str, date: dt.date | None = None):
             "account_id": account_id,
             "dates": dates,
             "stats": stats,
+            "posts_date": date,
         },
     )
 
