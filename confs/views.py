@@ -116,6 +116,7 @@ def conference(request, slug: str, date: dt.date | None = None):
             "dates": dates,
             "stats": stats,
             "posts_date": date,
+            "order": order,
         },
     )
 
