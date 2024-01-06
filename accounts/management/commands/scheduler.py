@@ -10,7 +10,7 @@ class Command(RichCommand):
     help = "Starts the scheduler"
 
     @monitor(monitor_slug="daily-sync")
-    def job(self):
+    def daily_job(self):
         self.console.print("Starting daily job")
         self.console.print("Running crawler")
         with monitor(monitor_slug="daily-sync-crawler"):
@@ -31,37 +31,11 @@ class Command(RichCommand):
             management.call_command("dailystats")
         self.console.print("All done! 🎉")
 
-    def djangocon_job(self):
-        self.console.print("Running djangocon job")
+    def hourly_job(self):
+        self.console.print("Starting hourly job")
+        # with monitor(monitor_slug="hourly-sync-stattagger"):
         management.call_command("stattag")
-        self.console.print("Finished djangocon job")
-
-    def fwd50_job(self):
-        self.console.print("Running fwd50 job")
-        management.call_command(
-            "stattag",
-            tags="fwd50",
-            instances="mastodon.social,mastodon.sboots.ca,mastodon.me.uk,mstdn.ca,cosocial.ca",
-        )
-        self.console.print("Finished fwd50 job")
-
-    def djangoconafrica_job(self):
-        self.console.print("Running djangoconafrica job")
-        management.call_command(
-            "stattag",
-            tags="djangoconafrica",
-            instances="fosstodon.org,mastodon.social",
-        )
-        self.console.print("Finished djangoconafrica job")
-
-    def dotnetconf_job(self):
-        self.console.print("Running dotnetconf job")
-        management.call_command(
-            "stattag",
-            tags="dotnetconf",
-            instances="fosstodon.org,mastodon.social,indieweb.social,toot.community,dotnet.social",
-        )
-        self.console.print("Finished dotnetconf job")
+        self.console.print("All done! 🎉")
 
     def add_arguments(self, parser):
         parser.add_argument("--offset", type=int, nargs="?", default=0)
@@ -76,17 +50,13 @@ class Command(RichCommand):
     def handle(self, *args, run_now=False, **options):
         if run_now:
             self.console.print("Running job(s) now 🏃‍♂️")
-            # self.djangoconafrica_job()
-            # self.fwd50_job()
-            # self.dotnetconf_job()
-            self.job()
+            self.hourly_job()
+            self.daily_job()
             return
 
         self.console.print("Starting scheduler 🕐")
-        schedule.every().day.at("01:00").do(self.job)
-        # schedule.every().day.at("00:00").do(self.fwd50_job)
-        # schedule.every(30).minutes.do(self.djangoconafrica_job)
-        # schedule.every(30).minutes.do(self.dotnetconf_job)
+        schedule.every().day.at("01:00").do(self.daily_job)
+        schedule.every().hour.do(self.hourly_job)
 
         while True:
             schedule.run_pending()
