@@ -22,7 +22,10 @@ class Command(RichCommand):
 
     @async_to_sync
     async def main(self, slug: str):
-        conferences = [c async for c in Conference.objects.all()]
+        if slug:
+            conferences = [await Conference.objects.aget(slug=slug)]
+        else:
+            conferences = [c async for c in Conference.objects.all()]
         instances_lst = {
             instance.strip()
             for conference in conferences
