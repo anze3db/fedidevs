@@ -3,6 +3,7 @@ import datetime as dt
 from django.core.paginator import Paginator
 from django.db.models import Count, F, Q, Sum
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_date
 
@@ -106,8 +107,9 @@ def conference(request, slug: str):
             "page_title": f"{conference.name} | Fediverse Developers",
             "page_header": conference.name,
             "page_subheader": f"{conference.start_date.strftime('%b %d')} - {conference.end_date.strftime('%b %d, %Y')}",
-            "page_description": conference.description,
+            "page_description": "Aggregated posts from the Fediverse about " + conference.name,
             "page_image": "og-conferences.png",
+            "page_url": reverse("conference", kwargs={"slug": conference.slug}),
             "conference": conference,
             "posts": page_obj,
             "accounts": accounts,

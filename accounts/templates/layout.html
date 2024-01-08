@@ -11,12 +11,13 @@
         <link rel="stylesheet" href="{% static 'site.css' %}">
         <title>{{ page_title }}</title>
         <meta name="description"
-              content="{% if page_description %}{{ page_description }}{{ else }}Discover amazing developers from across the fediverse.{% endif %}">
+              content="{% if page_description %}{{ page_description }}{% else %}Discover amazing developers from across the fediverse.{% endif %}">
         <!-- Facebook Meta Tags -->
-        <meta property="og:url" content="https://fedidevs.com">
+        <meta property="og:url" content="https://fedidevs.com{{ page_url }}">
         <meta property="og:type" content="website">
         <meta property="og:title" content="{{ page_title }}">
-        <meta property="og:description" content="{{ page_description }}">
+        <meta property="og:description"
+              content="{% if page_description %}{{ page_description }}{% else %}Discover amazing developers from across the fediverse.{% endif %}">
         {% if page_image %}
             <meta property="og:image"
                   content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static page_image %}">
@@ -24,9 +25,10 @@
         <!-- Twitter Meta Tags -->
         <meta name="twitter:card" content="summary_large_image">
         <meta property="twitter:domain" content="fedidevs.com">
-        <meta property="twitter:url" content="https://fedidevs.com">
+        <meta property="twitter:url" content="https://fedidevs.com{{ page_url }}">
         <meta name="twitter:title" content="{{ page_title }}">
-        <meta name="twitter:description" content="{{ page_description }}">
+        <meta name="twitter:description"
+              content="{% if page_description %}{{ page_description }}{% else %}Discover amazing developers from across the fediverse.{% endif %}">
         {% if page_image %}
             <meta name="twitter:image"
                   content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static page_image %}">
