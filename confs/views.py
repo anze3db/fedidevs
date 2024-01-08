@@ -46,8 +46,7 @@ def conference(request, slug: str):
         order = "-favourites_count"
 
     date = request.GET.get("date")
-    if date is not None:
-        date = parse_date(date)
+    if date and (date := parse_date(date)):
         search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
 
     counts = (
