@@ -42,7 +42,7 @@ class Command(RichCommand):
     async def handle_instance(self, instance, conferences):
         tags = list(
             {
-                tag.strip().replace("#", "")
+                tag.strip().replace("#", "").lower()
                 for conference in conferences
                 for tag in conference.tags.split(",")
                 if conference.tags
@@ -74,7 +74,7 @@ class Command(RichCommand):
 
     async def fetch_and_handle_fail(self, client, instance: str, tags: list[str], min_id: str):
         try:
-            self.console.print(f"Fetching {instance} {min_id} {f"https://{instance}/api/v1/timelines/tag/{tags[0]}"}")
+            self.console.print(f"Fetching {instance} {min_id} {f"https://{instance}/api/v1/timelines/tag/{tags}"}")
             response = await client.get(
                 f"https://{instance}/api/v1/timelines/tag/{tags[0]}",
                 params={
