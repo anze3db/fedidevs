@@ -30,7 +30,7 @@ class Command(RichCommand):
             instance.strip()
             for conference in conferences
             for instance in conference.instances.split(",")
-            if conference.instances
+            if conference.instances and instance.strip()
         }
         await asyncio.gather(
             *[
