@@ -37,11 +37,7 @@ def conferences(request):
 
 def conference(request, slug: str):
     conference = get_object_or_404(Conference, slug=slug)
-    search_query = Q(
-        visibility="public",
-        created_at__lte=conference.end_date + dt.timedelta(days=30),
-        created_at__gte=conference.start_date - dt.timedelta(days=180),
-    )
+    search_query = Q()
     order = request.GET.get("order")
     if order not in ("-favourites_count", "-reblogs_count", "-replies_count", "-created_at"):
         order = "-favourites_count"
@@ -74,11 +70,7 @@ def conference(request, slug: str):
         for i, date in enumerate(dates)
     ]
 
-    stats = conference.posts.filter(
-        visibility="public",
-        created_at__lte=conference.end_date + dt.timedelta(days=30),
-        created_at__gte=conference.start_date - dt.timedelta(days=180),
-    ).aggregate(
+    stats = conference.posts.filter(search_query).aggregate(
         total_posts=Count("id"),
         total_favourites=Sum("favourites_count"),
     )
