@@ -195,9 +195,7 @@ class Command(RichCommand):
             conf_tags = [c.strip().replace("#", "").lower() for c in conf.tags.split(",")]
             posts = []
             for post in post_objs:
-                if post.created_at.date() < (conf.start_date - timedelta(days=180)) or post.created_at.date() > (
-                    conf.end_date + timedelta(days=90)
-                ):
+                if conf.post_start_date and post.created_at.date() < conf.post_start_date:
                     continue
                 for tag in post.tags:
                     if tag["name"].lower() in conf_tags:
