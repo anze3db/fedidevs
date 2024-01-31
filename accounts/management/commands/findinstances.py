@@ -44,7 +44,7 @@ class Command(RichCommand):
                 if not verified_instances:
                     continue
                 self.console.log("Adding", verified_instances)
-                conference.instances = ",".join(existing_instances.union(verified_instances))
+                conference.instances = ", ".join(existing_instances.union(verified_instances))
                 await conference.asave()
 
     async def fetch_and_handle_fail(self, client, instance: str, tags: list[str]):
