@@ -51,7 +51,7 @@ INSTANCES = [
     "oldbytes.space",
     "phpc.social",
     "ruby.social",
-    "seocommunity.social",
+    "scicomm.xyz" "seocommunity.social",
     "sfba.social",
     "social.jacklinke.com",
     "social.juanlu.space",
