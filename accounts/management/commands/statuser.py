@@ -40,71 +40,76 @@ class Command(RichCommand):
                 },
                 timeout=30,
             )
-            if response.status_code == 429:
-                self.console.print("Rate limited, sleeping for 5 minutes")
-                await asyncio.sleep(60 * 5)
-                await self.fetch(client, account)
-                return
-            if response.status_code != 200:
-                self.console.print(f"[bold red]Error status code[/bold red] for {account}. {response.status_code}")
-                return
-            posts = (
-                Post(
-                    post_id=result["id"],
-                    account=account,
-                    created_at=datetime.fromisoformat(result["created_at"]),
-                    instance=account.instance,
-                    in_reply_to_id=result["in_reply_to_id"],
-                    in_reply_to_account_id=result["in_reply_to_account_id"],
-                    sensitive=result.get("sensitive", None),
-                    spoiler_text=result["spoiler_text"],
-                    visibility=result["visibility"],
-                    language=result["language"],
-                    uri=result["uri"],
-                    url=result["url"],
-                    replies_count=result["replies_count"],
-                    reblogs_count=result["reblogs_count"],
-                    favourites_count=result["favourites_count"],
-                    edited_at=datetime.fromisoformat(result["edited_at"]) if result["edited_at"] else None,
-                    content=result["content"],
-                    reblog=result["reblog"],
-                    application=result.get("application", None),
-                    media_attachments=result["media_attachments"],
-                    mentions=result["mentions"],
-                    tags=result["tags"],
-                    emojis=result["emojis"],
-                    card=result["card"],
-                    poll=result["poll"],
-                )
-                for result in response.json()
-            )
-
-            await Post.objects.abulk_create(
-                posts,
-                update_conflicts=True,
-                unique_fields=["post_id", "account"],
-                update_fields=[
-                    "account",
-                    "sensitive",
-                    "spoiler_text",
-                    "visibility",
-                    "language",
-                    "uri",
-                    "url",
-                    "replies_count",
-                    "reblogs_count",
-                    "favourites_count",
-                    "edited_at",
-                    "content",
-                    "reblog",
-                    "application",
-                    "media_attachments",
-                    "mentions",
-                    "tags",
-                    "emojis",
-                    "card",
-                    "poll",
-                ],
-            )
         except httpx.HTTPError:
             self.console.print(f"[bold red]Error timeout[/bold red] for {account}")
+            return
+        except Exception as e:
+            self.console.print(f"[bold red]Error[/bold red] for {account}", e)
+            return
+
+        if response.status_code == 429:
+            self.console.print("Rate limited, sleeping for 5 minutes")
+            await asyncio.sleep(60 * 5)
+            await self.fetch(client, account)
+            return
+        if response.status_code != 200:
+            self.console.print(f"[bold red]Error status code[/bold red] for {account}. {response.status_code}")
+            return
+        posts = (
+            Post(
+                post_id=result["id"],
+                account=account,
+                created_at=datetime.fromisoformat(result["created_at"]),
+                instance=account.instance,
+                in_reply_to_id=result["in_reply_to_id"],
+                in_reply_to_account_id=result["in_reply_to_account_id"],
+                sensitive=result.get("sensitive", None),
+                spoiler_text=result["spoiler_text"],
+                visibility=result["visibility"],
+                language=result["language"],
+                uri=result["uri"],
+                url=result["url"],
+                replies_count=result["replies_count"],
+                reblogs_count=result["reblogs_count"],
+                favourites_count=result["favourites_count"],
+                edited_at=datetime.fromisoformat(result["edited_at"]) if result["edited_at"] else None,
+                content=result["content"],
+                reblog=result["reblog"],
+                application=result.get("application", None),
+                media_attachments=result["media_attachments"],
+                mentions=result["mentions"],
+                tags=result["tags"],
+                emojis=result["emojis"],
+                card=result["card"],
+                poll=result["poll"],
+            )
+            for result in response.json()
+        )
+
+        await Post.objects.abulk_create(
+            posts,
+            update_conflicts=True,
+            unique_fields=["post_id", "account"],
+            update_fields=[
+                "account",
+                "sensitive",
+                "spoiler_text",
+                "visibility",
+                "language",
+                "uri",
+                "url",
+                "replies_count",
+                "reblogs_count",
+                "favourites_count",
+                "edited_at",
+                "content",
+                "reblog",
+                "application",
+                "media_attachments",
+                "mentions",
+                "tags",
+                "emojis",
+                "card",
+                "poll",
+            ],
+        )
