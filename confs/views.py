@@ -40,7 +40,14 @@ def conference(request, slug: str):
     search_query = Q()
     order = request.GET.get("order")
 
-    all_conf_posts_count = conference.posts.count()
+    try:
+        account_id = int(request.GET.get("account"))
+    except (ValueError, TypeError):
+        account_id = None
+    if account_id:
+        search_query &= Q(account_id=account_id)
+
+    all_conf_posts_count = conference.posts.filter(search_query).count()
 
     if order not in ("-favourites_count", "-reblogs_count", "-replies_count", "-created_at"):
         order = "-favourites_count"
@@ -72,13 +79,6 @@ def conference(request, slug: str):
         }
         for i, date in enumerate(dates)
     ]
-
-    try:
-        account_id = int(request.GET.get("account"))
-    except (ValueError, TypeError):
-        account_id = None
-    if account_id:
-        search_query &= Q(account_id=account_id)
 
     posts = (
         conference.posts.filter(search_query).order_by(order).prefetch_related("account", "account__accountlookup_set")
