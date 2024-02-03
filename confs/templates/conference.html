@@ -55,7 +55,7 @@
                                 <a href="{% url 'conference' slug %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
                                    {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
                                    role="button"
-                                   data-tooltip="This includes posts before, during, and after the conference.">All ({{ stats.total_posts }})</a>
+                                   data-tooltip="This includes posts before, during, and after the conference.">All ({{ all_conf_posts_count }})</a>
                             </li>
                             {% for date in dates %}
                                 <li>
