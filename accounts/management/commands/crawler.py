@@ -211,33 +211,37 @@ class Command(RichCommand):
                 },
                 timeout=30,
             )
-            if response.status_code != 200:
-                self.console.print(
-                    f"[bold red]Error status code[/bold red] for {instance} at offset {offset}. {response.status_code}"
-                )
-                return instance, []
-            results = response.json()
-
-            # Don't skip inactive accounts if skip_inactive_for is None or 0
-            if not skip_inactive_for:
-                return instance, results
-
-            def is_recently_updated(account) -> bool:
-                if not account.get("last_status_at"):
-                    return False
-                last_status_at = make_aware(datetime.fromisoformat(account["last_status_at"]))
-                if (datetime.now(tz=timezone.utc) - last_status_at) > timedelta(days=skip_inactive_for):
-                    return False
-                return True
-
-            before = len(results)
-            results = [r for r in results if is_recently_updated(r)]
-            after = len(results)
-            if before != after:
-                self.console.print(
-                    f"[bold yellow]Filtered out {before - after} accounts[/bold yellow] for {instance} at offset {offset}"
-                )
-            return instance, results
         except httpx.HTTPError:
             self.console.print(f"[bold red]Error timeout[/bold red] for {instance} at offset {offset}")
             return instance, []
+        except Exception as e:
+            self.console.print(f"[bold red]Error[/bold red] for {instance} at offset {offset}", e)
+            return instance, []
+
+        if response.status_code != 200:
+            self.console.print(
+                f"[bold red]Error status code[/bold red] for {instance} at offset {offset}. {response.status_code}"
+            )
+            return instance, []
+        results = response.json()
+
+        # Don't skip inactive accounts if skip_inactive_for is None or 0
+        if not skip_inactive_for:
+            return instance, results
+
+        def is_recently_updated(account) -> bool:
+            if not account.get("last_status_at"):
+                return False
+            last_status_at = make_aware(datetime.fromisoformat(account["last_status_at"]))
+            if (datetime.now(tz=timezone.utc) - last_status_at) > timedelta(days=skip_inactive_for):
+                return False
+            return True
+
+        before = len(results)
+        results = [r for r in results if is_recently_updated(r)]
+        after = len(results)
+        if before != after:
+            self.console.print(
+                f"[bold yellow]Filtered out {before - after} accounts[/bold yellow] for {instance} at offset {offset}"
+            )
+        return instance, results
