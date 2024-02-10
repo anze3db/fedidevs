@@ -44,7 +44,7 @@ class Command(RichCommand):
                 "noindex": account.get("noindex", None) if not make_visible else False,
                 "created_at": (datetime.fromisoformat(account["created_at"])),
                 "last_status_at": make_aware(datetime.fromisoformat(account["last_status_at"]))
-                if account["last_status_at"]
+                if account.get("last_status_at")
                 else None,
                 "last_sync_at": datetime.now(tz=timezone.utc),
                 "followers_count": account["followers_count"],
