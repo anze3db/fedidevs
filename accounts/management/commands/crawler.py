@@ -137,7 +137,7 @@ class Command(RichCommand):
                             noindex=account.get("noindex", None),
                             created_at=(datetime.fromisoformat(account["created_at"])),
                             last_status_at=make_aware(datetime.fromisoformat(account["last_status_at"]))
-                            if account.get(["last_status_at"])
+                            if account.get("last_status_at")
                             else None,
                             last_sync_at=now,
                             followers_count=account["followers_count"],
