@@ -72,7 +72,7 @@ class Command(RichCommand):
                 replies_count=result["replies_count"],
                 reblogs_count=result["reblogs_count"],
                 favourites_count=result["favourites_count"],
-                edited_at=datetime.fromisoformat(result["edited_at"]) if result["edited_at"] else None,
+                edited_at=datetime.fromisoformat(result["edited_at"]) if result.get("edited_at") else None,
                 content=result["content"],
                 reblog=result["reblog"],
                 application=result.get("application", None),
