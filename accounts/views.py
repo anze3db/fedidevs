@@ -50,7 +50,7 @@ def index(request, lang: str | None = None):
 
     selected_lang = langs_map.get(lang)
     selected_framework = frameworks_map.get(lang)
-    search_query = Q()
+    search_query = Q(discoverable=True, noindex=False)
     if selected_lang:
         search_query &= Q(accountlookup__language=selected_lang.code)
     if selected_framework:
