@@ -24,6 +24,9 @@ class Conference(models.Model):
     accounts = models.ManyToManyField("accounts.Account", blank=True)
     posts = models.ManyToManyField("posts.Post", blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class MinId(models.Model):
     conference = models.ForeignKey(Conference, on_delete=models.CASCADE)
