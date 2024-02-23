@@ -25,7 +25,8 @@ class Command(RichCommand):
         if slug:
             conferences = [await Conference.objects.aget(slug=slug)]
         else:
-            conferences = [c async for c in Conference.objects.all()]
+            conferences = [c async for c in Conference.objects.filter(archived_date__isnull=True)]
+
         instances_lst = {
             instance.strip()
             for conference in conferences

@@ -10,6 +10,8 @@ class Conference(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
 
+    archived_date = models.DateField(null=True, blank=True)
+
     website = models.URLField(default="")
     mastodon = models.URLField(default="")
 
