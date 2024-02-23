@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.utils.html import mark_safe
 
 from accounts.models import Account
 
@@ -25,4 +24,4 @@ class AuthorAdmin(admin.ModelAdmin):
     )
 
     def html_note(self, obj):
-        return mark_safe(obj.note)
+        return obj.note

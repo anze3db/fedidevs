@@ -1,6 +1,6 @@
 [tool.ruff]
 line-length = 120
-select = [
+lint.select = [
   "A",
   "ARG",
   "B",
@@ -27,7 +27,7 @@ select = [
   "W",
   "YTT",
 ]
-ignore = [
+lint.ignore = [
   "A003", "ARG002",
   "PLR2004", "E501",
   # Allow non-abstract empty methods in abstract base classes
