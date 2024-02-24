@@ -56,7 +56,6 @@ class Command(RichCommand):
             while True:
                 posts = await self.fetch_and_handle_fail(client, instance, tags, min_id)
                 if not posts:
-                    self.console.print(f"Finishing fetching {instance}")
                     break
                 min_id = posts[-1]["id"]
                 if datetime.fromisoformat(posts[-1]["created_at"]) < (
@@ -75,7 +74,6 @@ class Command(RichCommand):
 
     async def fetch_and_handle_fail(self, client, instance: str, tags: list[str], min_id: str):
         try:
-            self.console.print(f"Fetching {instance} {min_id} {f"https://{instance}/api/v1/timelines/tag/{tags}"}")
             response = await client.get(
                 f"https://{instance}/api/v1/timelines/tag/{tags[0]}",
                 params={
