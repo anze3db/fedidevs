@@ -96,16 +96,20 @@ def conference(request, slug: str):
         conference.posts.filter(search_query).order_by(order).prefetch_related("account", "account__accountlookup_set")
     )
     if conference.posts_after:
-        accounts = conference.accounts.annotate(
-            count=Count(
-                "conference__posts",
-                filter=Q(
-                    conference__posts__account=F("pk"),
-                    conference__posts__created_at__gte=conference.posts_after,
-                    conference=conference,
-                ),
+        accounts = (
+            conference.accounts.annotate(
+                count=Count(
+                    "conference__posts",
+                    filter=Q(
+                        conference__posts__account=F("pk"),
+                        conference__posts__created_at__gte=conference.posts_after,
+                        conference=conference,
+                    ),
+                )
             )
-        ).order_by("-count")[:10]
+            .filter(count__gt=0)
+            .order_by("-count")[:10]
+        )
     else:
         accounts = conference.accounts.annotate(
             count=Count("conference__posts", filter=Q(conference__posts__account=F("pk"), conference=conference))
