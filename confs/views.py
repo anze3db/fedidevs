@@ -100,7 +100,9 @@ def conference(request, slug: str):
             count=Count(
                 "conference__posts",
                 filter=Q(
-                    conference__posts__account=F("pk"), conference=conference, created_at__gte=conference.posts_after
+                    conference__posts__account=F("pk"),
+                    conference__posts__created_at__gte=conference.posts_after,
+                    conference=conference,
                 ),
             )
         ).order_by("-count")[:10]
