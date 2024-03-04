@@ -52,12 +52,15 @@ def conference(request, slug: str):
 
     all_conf_posts_count = conference.posts.filter(search_query).count()
 
-    if order not in ("-favourites_count", "-reblogs_count", "-replies_count", "-created_at"):
-        order = "-favourites_count"
-
     date = request.GET.get("date")
     if date and (date := parse_date(date)):
         search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
+
+    if order not in ("-favourites_count", "-reblogs_count", "-replies_count", "-created_at"):
+        if date:
+            order = "-favourites_count"
+        else:
+            order = "-created_at"
 
     counts = (
         conference.posts.filter(
