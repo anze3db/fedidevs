@@ -17,11 +17,14 @@
                     </ul>
                 </nav>
                 <p>{{ conference.description | safe }}</p>
-                {% if conference.mastodon %}
-                    <p>
-                        Follow the <a href="{{ conference.mastodon }}">official Mastodon account</a> for more info.
-                    </p>
-                {% endif %}
+                <p>
+                    {% if conference.website %}
+                        Visit <a href="{{ conference.website }}">{{ conference.website }}</a> for more info!
+                    {% endif %}
+                    {% if conference.mastodon %}
+                        Follow the <a href="{{ conference.mastodon }}">official Mastodon account</a> to be up to date.
+                    {% endif %}
+                </p>
                 <p>
                     <h3>Most active accounts</h3>
                     <ul style="padding:0;">
