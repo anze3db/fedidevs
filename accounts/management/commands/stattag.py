@@ -194,8 +194,6 @@ class Command(RichCommand):
             conf_tags = [c.strip().replace("#", "").lower() for c in conf.tags.split(",")]
             posts = []
             for post in post_objs:
-                if conf.posts_after and post.created_at.date() > conf.posts_after:
-                    continue
                 for tag in post.tags:
                     if tag["name"].lower() in conf_tags:
                         posts.append(post)

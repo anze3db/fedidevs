@@ -37,7 +37,10 @@ def conferences(request):
 
 def conference(request, slug: str):
     conference = get_object_or_404(Conference, slug=slug)
-    search_query = Q()
+    if conference.posts_after:
+        search_query = Q(created_at__gte=conference.posts_after)
+    else:
+        search_query = Q()
     order = request.GET.get("order")
 
     try:
