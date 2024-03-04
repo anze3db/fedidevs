@@ -25,6 +25,9 @@
                         Follow the <a href="{{ conference.mastodon }}">official Mastodon account</a> to be up to date.
                     {% endif %}
                 </p>
+                {% if is_superuser %}
+                    <a href="{% url 'admin:confs_conference_change' conference.id %}">Edit</a>
+                {% endif %}
                 <p>
                     <h3>Most active accounts</h3>
                     <ul style="padding:0;">

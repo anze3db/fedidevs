@@ -19,7 +19,10 @@ from confs.models import (
 
 
 def conferences(request):
-    conferences = Conference.objects.all().order_by("-start_date")
+    today = timezone.now().date()
+    upcoming_conferences = Conference.objects.filter(start_date__gt=today).order_by("start_date")
+    live_conferences = Conference.objects.filter(start_date__lte=today, end_date__gte=today).order_by("start_date")
+    past_conferences = Conference.objects.filter(end_date__lt=today).order_by("-start_date")
 
     return render(
         request,
@@ -30,7 +33,10 @@ def conferences(request):
             "page_subheader": "",
             "page_description": "",
             "page_image": "og-conferences.png",
-            "conferences": conferences,
+            "is_superuser": request.user.is_superuser,
+            "upcoming_conferences": upcoming_conferences,
+            "live_conferences": live_conferences,
+            "past_conferences": past_conferences,
         },
     )
 
@@ -116,6 +122,7 @@ def conference(request, slug: str):
             "all_conf_posts_count": all_conf_posts_count,
             "posts_date": date,
             "order": order,
+            "is_superuser": request.user.is_superuser,
         },
     )
 

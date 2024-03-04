@@ -16,52 +16,109 @@
                     </ul>
                 </nav>
             </header>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Conference</th>
-                        <th>Location</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                {% for conf in conferences %}
+            {% if live_conferences %}
+                <h2>🔴 Live Conferences 🔴</h2>
+                <p>Happening right now! You can join the discussion even if you are not attending!</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Conference</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    {% for conf in live_conferences %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
+                                {% if is_superuser %}
+                                    <a href="{% url 'admin:confs_conference_change' conf.id %}">(edit)</a>
+                                {% endif %}
+                            </td>
+                            <td>{{ conf.location }}</td>
+                            <td>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+            {% if upcoming_conferences %}
+                <h2>Upcoming Conferences</h2>
+                <p>Join the discussion and get hyped for the upcoming conferences.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Conference</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    {% for conf in upcoming_conferences %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
+                                {% if is_superuser %}
+                                    <a href="{% url 'admin:confs_conference_change' conf.id %}">(edit)</a>
+                                {% endif %}
+                            </td>
+                            <td>{{ conf.location }}</td>
+                            <td>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+            {% if past_conferences %}
+                <h2>Past Conferences</h2>
+                <p>See an archive of past conferences and all the top posts from each event.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Conference</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    {% for conf in past_conferences %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
+                                {% if is_superuser %}
+                                    <a href="{% url 'admin:confs_conference_change' conf.id %}">(edit)</a>
+                                {% endif %}
+                            </td>
+                            <td>{{ conf.location }}</td>
+                            <td>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
+                        </tr>
+                    {% endfor %}
                     <tr>
                         <td>
-                            <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
+                            <a href="{% url 'dotnetconf' %}">.NET Conf 2023</a>
                         </td>
-                        <td>{{ conf.location }}</td>
-                        <td>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
+                        <td>Virtual</td>
+                        <td>Nov 14 - 16, 2023</td>
                     </tr>
-                {% endfor %}
-                <tr>
-                    <td>
-                        <a href="{% url 'dotnetconf' %}">.NET Conf 2023</a>
-                    </td>
-                    <td>Virtual</td>
-                    <td>Nov 14 - 16, 2023</td>
-                </tr>
-                <tr>
-                    <td>
-                        <a href="{% url 'fwd50' %}">FWD50 2023</a>
-                    </td>
-                    <td>Ottawa, Canada</td>
-                    <td>Nov 6 - 8, 2023</td>
-                </tr>
-                <tr>
-                    <td>
-                        <a href="{% url 'djangoconus' %}">DjangoCon US 2023</a>
-                    </td>
-                    <td>Durham, NC</td>
-                    <td>Oct 16 - 20, 2023</td>
-                </tr>
-                <tr>
-                    <td>
-                        <a href="{% url 'djangoconafrica' %}">DjangoCon Africa 2023</a>
-                    </td>
-                    <td>Zanzibar, Tanzania</td>
-                    <td>Nov 6 - 11, 2023</td>
-                </tr>
-            </table>
+                    <tr>
+                        <td>
+                            <a href="{% url 'fwd50' %}">FWD50 2023</a>
+                        </td>
+                        <td>Ottawa, Canada</td>
+                        <td>Nov 6 - 8, 2023</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="{% url 'djangoconus' %}">DjangoCon US 2023</a>
+                        </td>
+                        <td>Durham, NC</td>
+                        <td>Oct 16 - 20, 2023</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="{% url 'djangoconafrica' %}">DjangoCon Africa 2023</a>
+                        </td>
+                        <td>Zanzibar, Tanzania</td>
+                        <td>Nov 6 - 11, 2023</td>
+                    </tr>
+                </table>
+            {% endif %}
             <footer>
                 <p>
                     <small>Missing a conference? <a href="mailto:hello@fedidevs.com">Let me know</a> and I'll add it asap.</small>
