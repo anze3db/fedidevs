@@ -104,3 +104,14 @@ class Daily(models.Model):
 
     def __str__(self):
         return self.date.strftime("%Y-%m-%d")
+
+
+class DailyAccount(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    date = models.DateField(db_index=True)
+    statuses_count = models.IntegerField(default=0)
+    followers_count = models.IntegerField(default=0)
+    following_count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.account.username} - {self.date}"

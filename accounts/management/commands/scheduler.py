@@ -29,6 +29,7 @@ class Command(RichCommand):
         self.console.print("Running dailystats")
         with monitor(monitor_slug="daily-sync-stats"):
             management.call_command("dailystats")
+            management.call_command("dailyaccountstats")
         with monitor(monitor_slug="daily-findinstances"):
             management.call_command("findinstances")
         self.console.print("All done! 🎉")
