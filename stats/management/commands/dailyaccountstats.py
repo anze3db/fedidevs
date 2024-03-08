@@ -1,8 +1,11 @@
+from textwrap import dedent
+
+from django.core.mail import send_mail
 from django.utils import timezone
 from django_rich.management import RichCommand
 
 from accounts.models import Account
-from stats.models import DailyAccount, DailyAccountChange
+from stats.models import Daily, DailyAccount, DailyAccountChange
 
 
 class Command(RichCommand):
@@ -87,5 +90,29 @@ class Command(RichCommand):
             )
             self.console.print(f"{len(to_update)} daily account changes updated")
 
-    def _increment_change(self, daily_account_change, current_account, yesterdays_account_counts):
-        return True
+        self.send_email_report()
+
+    def send_email_report(self):
+        todays_date = timezone.now().date()
+        today, yesterday = Daily.objects.filter().order_by("-date")[:2]
+        top_growing = DailyAccountChange.objects.select_related("account").order_by("-followers_count")[:5]
+        top_growing = "\n".join(
+            [f"{dac.account.username} {dac.followers_count} {dac.account.url}" for dac in top_growing]
+        )
+        send_mail(
+            f"Fedidevs daily stats for {todays_date.isoformat()}",
+            dedent(
+                f"""
+                    Number of accounts today {today.total_accounts} ({today.total_accounts - yesterday.total_accounts:+})
+                    Number of posts today {today.total_posts} ({today.total_posts - yesterday.total_posts:+})
+                    Number of python accounts today {today.python_accounts} ({today.python_accounts - yesterday.python_accounts:+})
+                    Number of python posts today {today.python_posts} ({today.python_posts - yesterday.python_posts:+})
+
+                    Top growing accounts:
+                    {top_growing}
+                    """
+            ),
+            "anze@fedidevs.com",
+            ["anze@pecar.me"],
+            fail_silently=False,
+        )
