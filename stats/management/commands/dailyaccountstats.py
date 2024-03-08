@@ -97,7 +97,7 @@ class Command(RichCommand):
         today, yesterday = Daily.objects.filter().order_by("-date")[:2]
         top_growing = DailyAccountChange.objects.select_related("account").order_by("-followers_count")[:5]
         top_growing = "\n".join(
-            [f"{dac.account.username} {dac.followers_count} {dac.account.url}" for dac in top_growing]
+            [f"{dac.followers_count:>6} {dac.account.username} {dac.account.url}" for dac in top_growing]
         )
         send_mail(
             f"Fedidevs daily stats for {todays_date.isoformat()}",
@@ -109,9 +109,9 @@ class Command(RichCommand):
                     Number of python posts today {today.python_posts} ({today.python_posts - yesterday.python_posts:+})
 
                     Top growing accounts:
-                    {top_growing}
                     """
-            ),
+            )
+            + top_growing,
             "anze@fedidevs.com",
             ["anze@pecar.me"],
             fail_silently=False,
