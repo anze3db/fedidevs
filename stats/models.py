@@ -115,3 +115,13 @@ class DailyAccount(models.Model):
 
     def __str__(self):
         return f"{self.account.username} - {self.date}"
+
+
+class DailyAccountChange(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    statuses_count = models.IntegerField(default=0)
+    followers_count = models.IntegerField(default=0)
+    following_count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.account.username}"

@@ -2,7 +2,7 @@ from django.utils import timezone
 from django_rich.management import RichCommand
 
 from accounts.models import Account
-from stats.models import DailyAccount
+from stats.models import DailyAccount, DailyAccountChange
 
 
 class Command(RichCommand):
@@ -30,3 +30,62 @@ class Command(RichCommand):
         ]
         DailyAccount.objects.bulk_create(daily_accounts, batch_size=5000)
         self.console.print(f"{len(daily_accounts)} daily account stats created")
+
+        yesterdays_date = todays_date - timezone.timedelta(days=1)
+        yesterdays_account_counts = {
+            da["account_id"]: da
+            for da in DailyAccount.objects.filter(date=yesterdays_date).values(
+                "account_id",
+                "followers_count",
+                "following_count",
+                "statuses_count",
+            )
+        }
+
+        daily_change_counts = {dac.account_id: dac for dac in DailyAccountChange.objects.all()}
+        to_update = []
+        to_create = []
+        for daily_account in daily_accounts:
+            if daily_account.account_id not in daily_change_counts:
+                daily_account_change = DailyAccountChange(
+                    account_id=daily_account.account_id,
+                    followers_count=0,
+                    following_count=0,
+                    statuses_count=0,
+                )
+                to_create.append(daily_account_change)
+                continue
+
+            daily_account_change = daily_change_counts[daily_account.account_id]
+
+            yesterday_count = yesterdays_account_counts.get(
+                daily_account_change.account_id, {"followers_count": 0, "following_count": 0, "statuses_count": 0}
+            )
+
+            prev_followers_count = yesterday_count["followers_count"]
+            prev_following_count = yesterday_count["following_count"]
+            prev_statuses_count = yesterday_count["statuses_count"]
+
+            if (
+                daily_account.followers_count == prev_followers_count
+                or daily_account.following_count == prev_following_count
+                or daily_account.statuses_count == prev_statuses_count
+            ):
+                # no change
+                continue
+            daily_account_change.followers_count = daily_account.followers_count - prev_followers_count
+            daily_account_change.following_count = daily_account.following_count - prev_following_count
+            daily_account_change.statuses_count = daily_account.statuses_count - prev_statuses_count
+            to_update.append(daily_account_change)
+
+        if to_create:
+            DailyAccountChange.objects.bulk_create(to_create, batch_size=5000)
+            self.console.print(f"{len(to_create)} new daily account changes created")
+        if to_update:
+            DailyAccountChange.objects.bulk_update(
+                to_update, ["followers_count", "following_count", "statuses_count"], batch_size=5000
+            )
+            self.console.print(f"{len(to_update)} daily account changes updated")
+
+    def _increment_change(self, daily_account_change, current_account, yesterdays_account_counts):
+        return True
