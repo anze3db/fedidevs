@@ -62,7 +62,12 @@ class Command(RichCommand):
             daily_account_change = daily_change_counts[daily_account.account_id]
 
             yesterday_count = yesterdays_account_counts.get(
-                daily_account_change.account_id, {"followers_count": 0, "following_count": 0, "statuses_count": 0}
+                daily_account_change.account_id,
+                {
+                    "followers_count": daily_account.followers_count,
+                    "following_count": daily_account.following_count,
+                    "statuses_count": daily_account.statuses_count,
+                },
             )
 
             prev_followers_count = yesterday_count["followers_count"]
