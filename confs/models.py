@@ -19,11 +19,20 @@ class Conference(models.Model):
     instances = models.TextField(default="")
     tags = models.TextField(default="")
 
-    accounts = models.ManyToManyField("accounts.Account", blank=True)
+    accounts = models.ManyToManyField("accounts.Account", blank=True, through="ConferenceAccount")
     posts = models.ManyToManyField("posts.Post", blank=True)
 
     def __str__(self):
         return self.name
+
+
+class ConferenceAccount(models.Model):
+    conference = models.ForeignKey(Conference, on_delete=models.CASCADE)
+    account = models.ForeignKey("accounts.Account", on_delete=models.CASCADE)
+    count = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ("conference", "account")
 
 
 class MinId(models.Model):
