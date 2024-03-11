@@ -37,18 +37,18 @@
                                class="{% if account_id is not None %}outline{% endif %} no-wrap"
                                style="padding: 5px">All Accounts</a>
                         </li>
-                        {% for account in accounts %}
+                        {% for account_count in account_counts %}
                             <li style="display: inline-block;">
-                                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account.id }}&tag={{ selected_tag }}"
+                                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}"
                                    role="button"
-                                   class="{% if account.id != account_id %}outline{% endif %} no-wrap"
+                                   class="{% if account_count.account.id != account_id %}outline{% endif %} no-wrap"
                                    style="padding: 5px">
                                     <img class="small-avatar"
-                                         src="{{ account.avatar }}"
-                                         alt="{{ account.login }}"
+                                         src="{{ account_count.account.avatar }}"
+                                         alt="{{ account_count.account.login }}"
                                          width="50"
                                          height="50" />
-                                {% render_emojis account.display_name account.emojis %} ({{ account.count }})</a>
+                                {% render_emojis account_count.account.display_name account_count.account.emojis %} ({{ account_count.count }})</a>
                             </li>
                         {% endfor %}
                     </ul>

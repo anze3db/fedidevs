@@ -3,11 +3,13 @@ from datetime import datetime, timedelta, timezone
 
 import httpx
 from asgiref.sync import async_to_sync
+from django.db.models import Count, OuterRef, Subquery, Value
+from django.db.models.functions import Coalesce
 from django.utils.timezone import make_aware
 from django_rich.management import RichCommand
 
 from accounts.models import Account
-from confs.models import Conference, MinId
+from confs.models import Conference, ConferenceAccount, MinId
 from posts.models import Post
 
 
@@ -201,4 +203,21 @@ class Command(RichCommand):
             await asyncio.gather(
                 conf.posts.aadd(*posts),
                 conf.accounts.aadd(*[post.account for post in posts]),
+            )
+
+            if conf.posts_after:
+                posts_after = conf.posts_after
+            else:
+                posts_after = datetime.now(tz=timezone.utc) - timedelta(days=999)
+
+            await ConferenceAccount.objects.filter(conference=conf).aupdate(
+                count=Coalesce(
+                    Subquery(
+                        conf.posts.values("account_id")
+                        .filter(account_id=OuterRef("account_id"), created_at__gte=posts_after)
+                        .annotate(post_count=Count("id"))
+                        .values("post_count")[:1],
+                    ),
+                    Value(0),
+                )
             )

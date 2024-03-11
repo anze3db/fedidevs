@@ -1,7 +1,7 @@
 import datetime as dt
 
 from django.core.paginator import Paginator
-from django.db.models import Count, F, Q, Sum
+from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
@@ -9,6 +9,7 @@ from django.utils.dateparse import parse_date
 
 from confs.models import (
     Conference,
+    ConferenceAccount,
     DjangoConAfricaAccount,
     DjangoConAfricaPost,
     DotNetConfAccount,
@@ -95,25 +96,10 @@ def conference(request, slug: str):
     posts = (
         conference.posts.filter(search_query).order_by(order).prefetch_related("account", "account__accountlookup_set")
     )
-    if conference.posts_after:
-        accounts = (
-            conference.accounts.annotate(
-                count=Count(
-                    "conference__posts",
-                    filter=Q(
-                        conference__posts__account=F("pk"),
-                        conference__posts__created_at__gte=conference.posts_after,
-                        conference=conference,
-                    ),
-                )
-            )
-            .filter(count__gt=0)
-            .order_by("-count")[:10]
-        )
-    else:
-        accounts = conference.accounts.annotate(
-            count=Count("conference__posts", filter=Q(conference__posts__account=F("pk"), conference=conference))
-        ).order_by("-count")[:10]
+
+    account_counts = (
+        ConferenceAccount.objects.filter(conference=conference).select_related("account").order_by("-count")[:10]
+    )
 
     paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
@@ -130,7 +116,7 @@ def conference(request, slug: str):
             "page_url": reverse("conference", kwargs={"slug": conference.slug}),
             "conference": conference,
             "posts": page_obj,
-            "accounts": accounts,
+            "account_counts": account_counts,
             "slug": slug,
             "post_date": date,
             "account_id": account_id,
