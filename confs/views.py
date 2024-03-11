@@ -94,7 +94,22 @@ def conference(request, slug: str):
     ]
 
     posts = (
-        conference.posts.filter(search_query).order_by(order).prefetch_related("account", "account__accountlookup_set")
+        conference.posts.only(
+            "id",
+            "account_id",
+            "sensitive",
+            "content",
+            "media_attachments",
+            "card",
+            "favourites_count",
+            "reblogs_count",
+            "replies_count",
+            "uri",
+            "created_at",
+        )
+        .filter(search_query)
+        .order_by(order)
+        .prefetch_related("account", "account__accountlookup_set")
     )
 
     account_counts = (
