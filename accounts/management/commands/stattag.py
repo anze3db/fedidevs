@@ -210,6 +210,7 @@ class Command(RichCommand):
             else:
                 posts_after = datetime.now(tz=timezone.utc) - timedelta(days=999)
 
+        for conf in conferences:
             await ConferenceAccount.objects.filter(conference=conf).aupdate(
                 count=Coalesce(
                     Subquery(
