@@ -205,12 +205,12 @@ class Command(RichCommand):
                 conf.accounts.aadd(*[post.account for post in posts]),
             )
 
+        for conf in conferences:
             if conf.posts_after:
                 posts_after = conf.posts_after
             else:
                 posts_after = datetime.now(tz=timezone.utc) - timedelta(days=999)
 
-        for conf in conferences:
             await ConferenceAccount.objects.filter(conference=conf).aupdate(
                 count=Coalesce(
                     Subquery(
