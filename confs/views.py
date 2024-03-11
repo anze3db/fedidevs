@@ -10,6 +10,7 @@ from django.utils.dateparse import parse_date
 from confs.models import (
     Conference,
     ConferenceAccount,
+    ConferencePost,
     DjangoConAfricaAccount,
     DjangoConAfricaPost,
     DotNetConfAccount,
@@ -45,9 +46,11 @@ def conferences(request):
 def conference(request, slug: str):
     conference = get_object_or_404(Conference, slug=slug)
     if conference.posts_after:
-        search_query = Q(created_at__gte=conference.posts_after)
+        search_query = Q(conference=conference, created_at__gte=conference.posts_after)
     else:
-        search_query = Q()
+        search_query = Q(
+            conference=conference,
+        )
     order = request.GET.get("order")
 
     try:
@@ -57,7 +60,7 @@ def conference(request, slug: str):
     if account_id:
         search_query &= Q(account_id=account_id)
 
-    all_conf_posts_count = conference.posts.filter(search_query).count()
+    all_conf_posts_count = ConferencePost.objects.filter(search_query).count()
 
     date = request.GET.get("date")
     if date and (date := parse_date(date)):
@@ -67,7 +70,8 @@ def conference(request, slug: str):
         order = "-favourites_count"
 
     counts = (
-        conference.posts.filter(
+        ConferencePost.objects.filter(
+            conference=conference,
             visibility="public",
             created_at__gte=conference.start_date,
             created_at__lt=conference.end_date + dt.timedelta(days=1),
@@ -89,31 +93,17 @@ def conference(request, slug: str):
         }
         for i, date in enumerate(dates)
     ]
-
-    posts = (
-        conference.posts.only(
-            "id",
-            "account_id",
-            "sensitive",
-            "content",
-            "media_attachments",
-            "card",
-            "favourites_count",
-            "reblogs_count",
-            "replies_count",
-            "uri",
-            "created_at",
-        )
-        .filter(search_query)
+    conf_posts = (
+        ConferencePost.objects.filter(search_query)
         .order_by(order)
-        .prefetch_related("account", "account__accountlookup_set")
+        .prefetch_related("post", "post__account", "post__account__accountlookup_set")
     )
 
     account_counts = (
         ConferenceAccount.objects.filter(conference=conference).select_related("account").order_by("-count")[:10]
     )
 
-    paginator = Paginator(posts, 10)
+    paginator = Paginator(conf_posts, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     return render(
@@ -127,7 +117,7 @@ def conference(request, slug: str):
             "page_image": "og-conferences.png",
             "page_url": reverse("conference", kwargs={"slug": conference.slug}),
             "conference": conference,
-            "posts": page_obj,
+            "conf_posts": page_obj,
             "account_counts": account_counts,
             "slug": slug,
             "post_date": date,

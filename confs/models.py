@@ -20,7 +20,7 @@ class Conference(models.Model):
     tags = models.TextField(default="")
 
     accounts = models.ManyToManyField("accounts.Account", blank=True, through="ConferenceAccount")
-    posts = models.ManyToManyField("posts.Post", blank=True)
+    posts = models.ManyToManyField("posts.Post", blank=True, through="ConferencePost")
 
     def __str__(self):
         return self.name
@@ -33,6 +33,31 @@ class ConferenceAccount(models.Model):
 
     class Meta:
         unique_together = ("conference", "account")
+
+
+class ConferencePost(models.Model):
+    conference = models.ForeignKey(Conference, on_delete=models.CASCADE)
+    post = models.ForeignKey("posts.Post", on_delete=models.CASCADE)
+    # Fields to be sorted on
+    created_at = models.DateTimeField(null=True, blank=True)
+    favourites_count = models.IntegerField(null=True, blank=True)
+    reblogs_count = models.IntegerField(null=True, blank=True)
+    replies_count = models.IntegerField(null=True, blank=True)
+    visibility = models.TextField(null=True, blank=True)
+    account = models.ForeignKey("accounts.Account", on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        unique_together = ("conference", "post")
+        indexes = [
+            models.Index(fields=["conference", "created_at"]),
+            models.Index(fields=["conference", "favourites_count"]),
+            models.Index(fields=["conference", "reblogs_count"]),
+            models.Index(fields=["conference", "replies_count"]),
+            models.Index(fields=["conference", "account", "created_at"]),
+            models.Index(fields=["conference", "account", "favourites_count"]),
+            models.Index(fields=["conference", "account", "reblogs_count"]),
+            models.Index(fields=["conference", "account", "replies_count"]),
+        ]
 
 
 class MinId(models.Model):

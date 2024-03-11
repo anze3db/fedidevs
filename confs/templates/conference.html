@@ -122,17 +122,23 @@
                 </nav>
             </header>
             <section data-nosnippet>
-                {% for post in posts %}
-                    {% include "post.html" %}
+                {% for conf_post in conf_posts %}
+                    {% with post=conf_post.post %}
+                        {% include "post.html" %}
+                    {% endwith %}
                 {% endfor %}
-                {% if not posts %}<p style="text-align:center;">No results, please check back later!</p>{% endif %}
+                {% if not conf_posts %}<p style="text-align:center;">No results, please check back later!</p>{% endif %}
                 <div class="pagination" style="padding-bottom: 20px;">
                     <span class="step-links">
-                        {% if posts.has_previous %}
-                            <a href="?page={{ posts.previous_page_number }}&q={{ query }}&o={{ order }}">previous</a>
+                        {% if conf_posts.has_previous %}
+                            <a href="?page={{ conf_posts.previous_page_number }}&q={{ query }}&o={{ order }}">previous</a>
                         {% endif %}
-                        {% if posts %}<span class="current">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>{% endif %}
-                        {% if posts.has_next %}<a href="?page={{ posts.next_page_number }}&q={{ query }}&o={{ order }}">next</a>{% endif %}
+                        {% if conf_posts %}
+                            <span class="current">Page {{ conf_posts.number }} of {{ conf_posts.paginator.num_pages }}</span>
+                        {% endif %}
+                        {% if conf_posts.has_next %}
+                            <a href="?page={{ conf_posts.next_page_number }}&q={{ query }}&o={{ order }}">next</a>
+                        {% endif %}
                     </span>
                 </div>
             </section>

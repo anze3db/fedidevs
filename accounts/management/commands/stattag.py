@@ -9,7 +9,7 @@ from django.utils.timezone import make_aware
 from django_rich.management import RichCommand
 
 from accounts.models import Account
-from confs.models import Conference, ConferenceAccount, MinId
+from confs.models import Conference, ConferenceAccount, ConferencePost, MinId
 from posts.models import Post
 
 
@@ -221,4 +221,12 @@ class Command(RichCommand):
                     ),
                     Value(0),
                 )
+            )
+
+            await ConferencePost.objects.filter(conference=conf).aupdate(
+                created_at=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("created_at")[:1]),
+                favourites_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("favourites_count")[:1]),
+                reblogs_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("reblogs_count")[:1]),
+                replies_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("replies_count")[:1]),
+                visibility=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("visibility")[:1]),
             )
