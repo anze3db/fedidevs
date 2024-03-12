@@ -100,7 +100,10 @@ def conference(request, slug: str):
     )
 
     account_counts = (
-        ConferenceAccount.objects.filter(conference=conference).select_related("account").order_by("-count")[:10]
+        ConferenceAccount.objects.filter(conference=conference)
+        .select_related("account")
+        .filter(count__gt=0)
+        .order_by("-count")[:10]
     )
 
     paginator = Paginator(conf_posts, 10)
