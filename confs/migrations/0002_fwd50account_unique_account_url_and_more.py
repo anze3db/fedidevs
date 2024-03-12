@@ -3,12 +3,10 @@
 from django.db import migrations, models
 
 
-def clear_tables(_, __):
-    ...
+def clear_tables(_, __): ...
 
 
-def run_stattag(*_, **__):
-    ...
+def run_stattag(*_, **__): ...
 
 
 class Migration(migrations.Migration):
