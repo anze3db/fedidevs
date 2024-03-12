@@ -12,8 +12,7 @@ from posts.models import Post
 class Command(RichCommand):
     help = "Crawles the instance API and saves top account statuses"
 
-    def add_arguments(self, parser):
-        ...
+    def add_arguments(self, parser): ...
 
     def handle(self, *args, offset=0, instances=None, **options):
         min_stat = datetime.now(tz=timezone.utc) - timedelta(days=2)
