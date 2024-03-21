@@ -156,9 +156,9 @@
             <section data-nosnippet>
                 <div class="grid-container">
                     {% for account in accounts %}
-                        {% if forloop.counter0|divisibleby:4  %}
+                        {% if forloop.counter0|divisibleby:4 %}
                             {% if forloop.counter0 %}</div>{% endif %}
-                            <div class="col">
+                        <div class="col">
                         {% endif %}
                         <article>
                             <div class="header-img-container">
