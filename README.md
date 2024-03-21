@@ -15,22 +15,27 @@ python -m venv .venv
 . .venv/bin/activate
 ```
 
-3. Run the migrations
+3. Install required packages
+```
+python -m pip install -r requirements.txt
+```
+
+4. Run the migrations
 ```
 python manage.py migrate
 ```
 
-4. Run the development server
+5. Run the development server
 ```
 python manage.py runserver
 ```
 
-5. Populate the local database (takes about ~2hrs)
+6. Populate the local database (takes about ~2hrs)
 ```
 python manage.py scheduler --run-now
 ```
 
-6. Create a Django Admin user for `http://localhost:8000/admin`
+7. Create a Django Admin user for `http://localhost:8000/admin`
 ```
 python manage.py createsuperuser
 ```
