@@ -123,27 +123,31 @@ article.card {
     background-color: var(--pico-card-sectionning-background-color);
 }
 
-
 .grid-container {
-    /**
-   * User input values.
-   */
-    --grid-layout-gap: 20px;
-    --grid-column-count: 3;
-    --grid-item--min-width: 290px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pico-spacing);
+}
 
-    /**
-   * Calculated values.
-   */
-    --gap-count: calc(var(--grid-column-count) - 1);
-    --total-gap-width: calc(var(--gap-count) * var(--grid-layout-gap));
-    --grid-item--max-width: calc((100% - var(--total-gap-width)) / var(--grid-column-count));
+.grid-container .col {
+    flex: 1 1 0;
+}
 
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(max(var(--grid-item--min-width), var(--grid-item--max-width)), 1fr));
-    grid-gap: var(--grid-layout-gap);
+@media (min-width: 768px) {
+    .grid-container .col {
+        flex-basis: calc(100% / 2 - var(--pico-spacing));
+    }
+}
 
-    align-items: flex-start
+@media (min-width: 992px) {
+    .grid-container .col {
+        flex-basis: calc(100% / 3 - var(--pico-spacing));
+    }
+}
+
+.grid-container article {
+    margin-bottom: var(--pico-spacing);
+    padding-bottom: var(--pico-spacing);
 }
 
 .no-wrap {
