@@ -169,12 +169,12 @@
                                 <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}"
                                    target="_blank"
                                    style="display:inline-block;
-                                          white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
+                                          white-space: nowrap">{% render_emojis account.name account.emojis %}</a>
                             {% else %}
                                 <a href="https://{{ account.source }}/@{{ account.username }}"
                                    target="_blank"
                                    style="display:inline-block;
-                                          white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
+                                          white-space: nowrap">{% render_emojis account.name account.emojis %}</a>
                             {% endif %}
                             <div style="padding-top: 10px;">{% render_emojis account.note account.emojis %}</div>
                             <p>

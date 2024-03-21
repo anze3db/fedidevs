@@ -139,6 +139,10 @@ class Account(models.Model):
         return self.username
 
     @property
+    def name(self):
+        return self.display_name or self.username or self.acct
+
+    @property
     def source(self):
         return self.url.split("/")[2]
 
