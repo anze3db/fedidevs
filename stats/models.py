@@ -31,6 +31,7 @@ class Daily(models.Model):
     total_accounts = models.IntegerField()
     python_accounts = models.IntegerField()
     javascript_accounts = models.IntegerField()
+    typescript_accounts = models.IntegerField(default=0)
     rust_accounts = models.IntegerField()
     ruby_accounts = models.IntegerField()
     golang_accounts = models.IntegerField()
@@ -63,11 +64,13 @@ class Daily(models.Model):
     nextjs_accounts = models.IntegerField(default=0)
     svelte_accounts = models.IntegerField(default=0)
     tailwind_accounts = models.IntegerField(default=0)
+    kubernetes_accounts = models.IntegerField(default=0)
     bootstrap_accounts = models.IntegerField(default=0)
 
     total_posts = models.IntegerField(default=0)
     python_posts = models.IntegerField(default=0)
     javascript_posts = models.IntegerField(default=0)
+    typescript_posts = models.IntegerField(default=0)
     rust_posts = models.IntegerField(default=0)
     ruby_posts = models.IntegerField(default=0)
     golang_posts = models.IntegerField(default=0)
@@ -100,6 +103,7 @@ class Daily(models.Model):
     nextjs_posts = models.IntegerField(default=0)
     svelte_posts = models.IntegerField(default=0)
     tailwind_posts = models.IntegerField(default=0)
+    kubernetes_posts = models.IntegerField(default=0)
     bootstrap_posts = models.IntegerField(default=0)
 
     def __str__(self):
