@@ -39,6 +39,7 @@ FRAMEWORKS = [
     Framework("rails", "Rails", "🛤️", r"rails", "frameworks/rails.png"),
     Framework("laravel", "Laravel", "🎣", r"laravel", "frameworks/laravel.png"),
     Framework("symfony", "Symfony", "🎻", r"symfony", "frameworks/symfony.png"),
+    Framework("kubernetes", "Kubernetes", "🎻", r"kubernetes", "frameworks/kubernetes.png"),
     Framework("spring", "Spring", "🌱", r"spring", "frameworks/spring.png"),
     Framework("htmx", "HTMX", "🧬", r"htmx", "frameworks/htmx.png"),
     Framework("react", "React", "⚛️", r"react", "frameworks/react.png"),
