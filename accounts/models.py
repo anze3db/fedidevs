@@ -62,10 +62,17 @@ FRAMEWORKS = [
 LANGUAGES = [
     Language("python", "Python", "🐍", r"python|psf|django", "languages/python.png"),
     Language(
+        "typescript",
+        "TypeScript",
+        "📜",
+        r"typescript|[^a-z]ts[^a-z:]",
+        "languages/typescript.png",
+    ),
+    Language(
         "javascript",
         "JavaScript",
         "📜",
-        r"javascript|[^a-z]js[^a-z:]|typescript",
+        r"javascript|[^a-z]js[^a-z:]",
         "languages/javascript.png",
     ),
     Language("rust", "Rust", "🦀", r"[^a-z:]rust[^a-z]|rustlang", "languages/rust.png"),  # Filters out trust, etc.
