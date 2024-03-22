@@ -50,6 +50,7 @@ INSTANCES = [
     "ohai.social",
     "oldbytes.space",
     "phpc.social",
+    "pouet.chapril.org",
     "ruby.social",
     "scicomm.xyz",
     "seocommunity.social",
