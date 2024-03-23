@@ -17,6 +17,7 @@ INSTANCES = [
     "cloud-native.social",
     "cyberplace.social",
     "defcon.social",
+    "discuss.systems",
     "dotnet.social",
     "drupal.community",
     "emacs.ch",
