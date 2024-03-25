@@ -17,10 +17,16 @@ class Command(RichCommand):
             old_count = AccountLookup.objects.filter(language=lang.code).count()
             AccountLookup.objects.filter(language=lang.code).delete()
             self.console.print(f"Fetching {lang.code} objects.")
+            if lang.only_bio:
+                regex_query = Q(note__iregex=lang.regex)
+            else:
+                regex_query = (
+                    Q(note__iregex=lang.regex) | Q(display_name__iregex=lang.regex) | Q(fields__iregex=lang.regex)
+                )
             lookup_objects = [
                 AccountLookup(account=account, language=lang.code)
                 for account in Account.objects.filter(
-                    (Q(note__iregex=lang.regex) | Q(display_name__iregex=lang.regex) | Q(fields__iregex=lang.regex)),
+                    regex_query,
                     discoverable=True,
                     noindex=False,
                     last_status_at__gt=timezone.now() - dt.timedelta(days=230),

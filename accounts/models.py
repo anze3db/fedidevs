@@ -16,6 +16,8 @@ class Language:
     regex: str
     image: str
 
+    only_bio: bool = False
+
     def post_code(self):
         return f"{self.code}-posts"
 
@@ -27,6 +29,8 @@ class Framework:
     emoji: str
     regex: str
     image: str
+
+    only_bio: bool = False
 
     def post_code(self):
         return f"{self.code}-posts"
@@ -90,6 +94,7 @@ LANGUAGES = [
     Language("haskell", "Haskell", "🦥", r"haskell", "languages/haskell.png"),
     Language("ocaml", "OCaml", "🐫", r"ocaml", "languages/ocaml.png"),
     Language("nix", "Nix", "❄️", r"[^a-z:]nix", "languages/nix.png"),  # Filters out unix, linux, etc.
+    Language("julia", "Julia", "📊", r"julia", "languages/julia.png", only_bio=True),
     # Language("gaming", "Gaming", "🎮", r"gaming|game", "languages/gaming.png"),
     # Language(
     #     "security",
