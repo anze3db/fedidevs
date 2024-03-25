@@ -93,7 +93,9 @@ LANGUAGES = [
     Language("php", "PHP", "🐘", r"[^\.]php", "languages/php.png"),  # Filters out index.php? and others
     Language("haskell", "Haskell", "🦥", r"haskell", "languages/haskell.png"),
     Language("ocaml", "OCaml", "🐫", r"ocaml", "languages/ocaml.png"),
-    Language("nix", "Nix", "❄️", r"[^a-z:]nix", "languages/nix.png"),  # Filters out unix, linux, etc.
+    Language(
+        "nix", "Nix", "❄️", r"[^(a-z|\.|\*):]nix[^Craft]", "languages/nix.png"
+    ),  # Filters out unix, linux, nixCraft, git.nix etc.
     Language("julia", "Julia", "📊", r"julia", "languages/julia.png", only_bio=True),
     # Language("gaming", "Gaming", "🎮", r"gaming|game", "languages/gaming.png"),
     # Language(
