@@ -63,6 +63,7 @@ img.header {
     height: 245px;
     margin: 0;
     border-radius: var(--pico-border-radius) var(--pico-border-radius) 0 0;
+    background-color: var(--pico-background-color);
 }
 
 .header-img-container {
