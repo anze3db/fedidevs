@@ -48,6 +48,7 @@ class Daily(models.Model):
     nix_accounts = models.IntegerField()
     opensource_accounts = models.IntegerField()
     php_accounts = models.IntegerField()
+    julia_accounts = models.IntegerField(default=0)
 
     dotnet_accounts = models.IntegerField()
     django_accounts = models.IntegerField(default=0)
@@ -88,6 +89,7 @@ class Daily(models.Model):
     nix_posts = models.IntegerField(default=0)
     opensource_posts = models.IntegerField(default=0)
     php_posts = models.IntegerField(default=0)
+    julia_posts = models.IntegerField(default=0)
 
     django_posts = models.IntegerField(default=0)
     flask_posts = models.IntegerField(default=0)
