@@ -76,7 +76,7 @@ def index(request, lang: str | None = None):
 
     return render(
         request,
-        "index.html",
+        "v2/index.html",
         {
             "page_title": "FediDevs | List of software developers on Mastodon"
             if not selected_lang

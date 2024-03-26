@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     "posts",
     "stats",
     "confs",
+    'compressor',
 ]
 
 MIDDLEWARE = [
@@ -200,3 +201,9 @@ if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
     )
+
+COMPRESS_ROOT = BASE_DIR / 'static'
+
+COMPRESS_ENABLED = True
+
+STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
