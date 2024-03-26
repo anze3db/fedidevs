@@ -96,7 +96,7 @@ LANGUAGES = [
     Language(
         "nix", "Nix", "❄️", r"[^(a-z|\.|\*):]nix[^Craft]", "languages/nix.png"
     ),  # Filters out unix, linux, nixCraft, git.nix etc.
-    Language("julia", "Julia", "📊", r"julia", "languages/julia.png", only_bio=True),
+    Language("julia", "Julia", "📊", r"julia(?!n)", "languages/julia.png", only_bio=True),  # Filters out Julian
     # Language("gaming", "Gaming", "🎮", r"gaming|game", "languages/gaming.png"),
     # Language(
     #     "security",
