@@ -6,259 +6,81 @@
     {% if accounts.has_previous %}<meta name="robots" content="none">{% endif %}
 {% endblock head %}
 {% block content %}
-<!--
-    <h1 class="text-green-500 text-3xl font-bold">Developers</h1>
-    <main class="container">
-        <article>
-            <header>
-                <nav class="tabs">
-                    <ul>
-                        <li class="active">Developers</li>
-                        <li onclick="window.location.href='{% url 'posts' %}'">Posts</li>
-                        <li onclick="window.location.href='{% url 'conferences' %}'">Conferences</li>
-                    </ul>
-                </nav>
-                <nav>
-                    <ul style="flex-wrap: wrap; justify-content: center;">
-                        {% for language in languages %}
-                            <li>
-                                <a href="{% if selected_lang.code != language.code %}{% url language.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
-                                   class="{% if selected_lang.code != language.code %}outline{% endif %} "
-                                   role="button">
-                                    <img src="{% static language.image %}"
-                                         alt="{{ language.code }}"
-                                         class="emojione"
-                                         height="16"
-                                         width="16" />
-                                {{ language.name }} ({{ language.count }})</a>
-                            </li>
+    <div class="gap-12 columns-1 xl:columns-3 lg:columns-2">
+        {% for account in accounts %}
+            <div class="w-full p-3 mb-12 bg-white shadow-md rounded-2xl dark:bg-gray-800 dark:border-gray-700 break-inside-avoid-column">
+                <div class="relative rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 min-h-24 -z-0">
+                    <div class="absolute flex flex-row gap-4 p-3 bg-white rounded-bl-xl dark:bg-gray-800 -top-2 -right-2">
+                        {% for language in account.languages %}
+                            <a href="{% url language.code %}?q={{ query }}&o={{ order }}" class= text-gray-500 text-sm" >
+                                <img src="{% static language.image %}"
+                                     alt="{{ language.code }}"
+                                     class="w-auto h-5" />
+                            </a>
                         {% endfor %}
-                    </ul>
-                </nav>
-                <details {% if selected_framework %}open{% endif %}>
-                    <summary role="button" class="outline secondary">Frameworks, Libraries, and others</summary>
-                    <nav>
-                        <ul style="flex-wrap: wrap; justify-content: center;">
-                            {% for framework in frameworks %}
-                                <li>
-                                    <a href="{% if selected_framework.code != framework.code %}{% url framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
-                                       class="{% if selected_framework.code != framework.code %}outline{% endif %} "
-                                       role="button">
-                                        <img src="{% static framework.image %}"
-                                             alt="{{ framework.code }}"
-                                             class="emojione"
-                                             height="16"
-                                             width="16" />
-                                    {{ framework.name }}  ({{ framework.count }})</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </nav>
-                </details>
-                <form method="get"
-                      role="group"
-                      action="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}">
-                    <input type="text"
-                           name="q"
-                           placeholder="Filter by name, bio, or instance..."
-                           value="{{ query }}"
-                           style="min-width: 100px" />
-                    <input type="hidden" name="o" value="{{ order }}" />
-                    <details class="dropdown">
-                        <summary style="min-width: 160px; border-radius: 0; border-left: 0;">Order by</summary>
-                        <ul>
-                            <li>
-                                <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-followers_count">
-                                    {% if order == '-followers_count' %}
-                                        <strong>▼&nbsp;Followers Count</strong>
-                                    {% else %}
-                                        Followers Count
-                                    {% endif %}
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-last_status_at">
-                                    {% if order == '-last_status_at' %}
-                                        <strong>▼&nbsp;Post Status</strong>
-                                    {% else %}
-                                        Last Post
-                                    {% endif %}
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-statuses_count">
-                                    {% if order == '-statuses_count' %}
-                                        <strong>▼&nbsp;Post Count</strong>
-                                    {% else %}
-                                        Post Count
-                                    {% endif %}
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=url">
-                                    {% if order == 'url' %}
-                                        <strong>▼&nbsp;Source Instance</strong>
-                                    {% else %}
-                                        Source Instance
-                                    {% endif %}
-                                </a>
-                            </li>
-                        </ul>
-                    </details>
-                    <button type="submit">{% heroicon_outline 'magnifying-glass' %}</button>
-                </form>
-                <form method="get" action="{% url 'index' %}">
-                    <div>
-                        <a style="cursor:pointer"
-                           data-target="modal-example"
-                           onClick="toggleModal(event)">
-                            {% if selected_instance %}
-                                {{ selected_instance }} selected
-                            {% else %}
-                                Select your Mastodon instance
-                            {% endif %}
-                        </a>  to make it easier to follow accounts below.
-                        <dialog id="modal-example">
-                            <article>
-                                <a href="#close"
-                                   aria-label="Close"
-                                   class="close"
-                                   data-target="modal-example"
-                                   onClick="toggleModal(event)"></a>
-                                <h3>Select your Mastodon instance</h3>
-                                <p>
-                                    Account links will use your instance making it easier to follow accounts that you open. This way you'll avoid the Follow Dialog for people on different instances.
-                                </p>
-                                <p>
-                                    <input type="text"
-                                           list="instances"
-                                           value="{% if selected_instance %}{{ selected_instance }}{% endif %}"
-                                           id="selected_instance"
-                                           name="selected_instance" />
-                                    <datalist id="instances">
-                                        {% for instance in instances %}<option value="{{ instance }}">{{ instance }}</option>{% endfor %}
-                                    </datalist>
-                                </p>
-                                <footer>
-                                    <a href="#cancel"
-                                       role="button"
-                                       class="secondary"
-                                       data-target="modal-example"
-                                       onClick="toggleModal(event)">Cancel</a>
-                                    <a href="#confirm"
-                                       role="button"
-                                       data-target="modal-example"
-                                       onClick="closest('form').submit()">Confirm</a>
-                                </footer>
-                            </article>
-                        </dialog>
                     </div>
-                </form>
-            </header>
-            -->
-            <div class="columns-3 gap-12">
-                {% for account in accounts %}
-                    <div class="w-full bg-white rounded-2xl dark:bg-gray-800 dark:border-gray-700 shadow-md p-3 mb-12 break-inside-avoid-column">
-                        <div class="relative bg-gradient-to-r from-cyan-500 to-blue-500 min-h-24 rounded-lg">
-                            <div class="flex flex-row gap-4 p-3 rounded-bl-xl dark:bg-gray-800 absolute -top-2 -right-2">
-                                {% for language in account.languages %}
-                                    <a
-                                        href="{% url language.code %}?q={{ query }}&o={{ order }}"
-                                        class= text-gray-500 text-sm"
-                                    >
-                                        <img
-                                            src="{% static language.image %}"
-                                            alt="{{ language.code }}"
-                                            class="h-5 w-auto"
-                                        />
-                                    </a>
-                                {% endfor %}
-                            </div>
-                            <img src="{{ account.header }}" alt="header" class="rounded-lg" />
-                            <img
-                                class="rounded-full outline-8 outline  outline-gray-800 absolute left-4 bg-white dark:bg-gray-800 -outline-offset-1 bottom-0  translate-y-1/2"
-                                src="{{ account.avatar }}"
-                                alt="{{ account.login }}"
-                                width="80"
-                                height="80"
-                            />
+                    <div class="overflow-hidden rounded-lg max-h-64">
+                        <img src="{{ account.header }}" alt="Header Image" class="object-cover" />
+                    </div>
+                    <img class="absolute bottom-0 translate-y-1/2 bg-white rounded-full outline-8 outline outline-white dark:outline-gray-800 left-4 dark:bg-gray-800 -outline-offset-1"
+                         src="{{ account.avatar }}"
+                         alt="{{ account.login }}"
+                         width="80"
+                         height="80" />
+                </div>
+                <div class="p-4 pt-16">
+                    <div class="relative">
+                        <h5 class="mb-1 text-2xl font-semibold text-gray-900 dark:text-white flex gap-2 [&>img]:max-w-8">
+                            {% render_emojis account.display_name account.emojis %}
+                        </h5>
+                        {% if selected_instance and selected_instance != account.source %}
+                            <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}"
+                               class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2"
+                               target="_blank">@{{ account.username }}</a>
+                        {% else %}
+                            <a href="https://{{ account.source }}/@{{ account.username }}"
+                               target="_blank"
+                               class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2">
+                                @{{ account.username }}
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="mt-6 mb-4 font-normal text-gray-700 dark:text-gray-400 prose dark:prose-invert text-balance break-words [&_img]:max-h-4 [&_img]:inline-block [&_img]:m-0 line-clamp-6">
+                        {% render_emojis account.note account.emojis %}
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 pt-4 mt-8 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">
+                        <div class="flex flex-col gap-0 text-center" title="Last status">
+                            <span class="text-xs">Last seen</span>
+                            <span class="font-semibold text-gray-400 truncate text-md">{{ account.last_status_at_cached }}</span>
                         </div>
-                        <div class="p-4 pt-16">
-                            <div class="relative">
-                                <h5 class="mb-1 text-2xl font-semibold text-gray-900 dark:text-white flex gap-2 [&>img]:max-w-8">
-                                    {% render_emojis account.display_name account.emojis %}
-                                </h5>
-                                {% if selected_instance and selected_instance != account.source %}
-                                    <a
-                                        href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}"
-                                        class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2"
-                                        target="_blank"
-                                    >
-                                        @{% render_emojis account.display_name account.emojis %}
-                                    </a>
-                                {% else %}
-                                    <a
-                                        href="https://{{ account.source }}/@{{ account.username }}"
-                                        target="_blank"
-                                        class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2"
-                                    >
-                                        @{% render_emojis account.display_name account.emojis %}
-                                    </a>
-                                {% endif %}
-                            </div>
-                            <div class="mt-6 mb-4 font-normal text-gray-700 dark:text-gray-400 prose dark:prose-invert text-balance break-words [&_img]:max-h-4 [&_img]:inline-block [&_img]:m-0 line-clamp-6">
-                                {% render_emojis account.note account.emojis %}
-                            </div>
-                            <div class="mt-8 text-sm text-gray-500 dark:text-gray-500 pt-4 border-t border-color-gray-700 dark:border-gray-700 grid grid-cols-3 divide-x gap-2 divide-color-gray-700 dark:divide-gray-700">
-                                <div class="flex flex-col gap-0 text-center" title="Last status">
-                                    <span class="text-xs">Last seen</span>
-                                    <span class="text-gray-400 text-md font-semibold truncate">{{ account.last_status_at_cached }}</span>
-                                </div>
-                                <div class="flex flex-col gap-0 text-center" title="Statuses">
-                                    <span class="text-xs">Posts</span>
-                                    <span class="text-gray-400 text-md font-semibold truncate">{{ account.statuses_count | intcomma }}</span>
-                                </div>
-                                <div class="flex flex-col gap-0 text-center" title="Followers">
-                                    <span class="text-xs">Followers</span>
-                                    <span class="text-gray-400 text-md font-semibold truncate">{{ account.followers_count | intcomma }}</span>
-                                </div>
-                            </div>
+                        <div class="flex flex-col gap-0 text-center" title="Statuses">
+                            <span class="text-xs">Posts</span>
+                            <span class="font-semibold text-gray-400 truncate text-md">{{ account.statuses_count | intcomma }}</span>
+                        </div>
+                        <div class="flex flex-col gap-0 text-center" title="Followers">
+                            <span class="text-xs">Followers</span>
+                            <span class="font-semibold text-gray-400 truncate text-md">{{ account.followers_count | intcomma }}</span>
                         </div>
                     </div>
-
-<!--
+                </div>
+            </div>
+            <!--
                     <article class="grid-item" style="padding-bottom: 20px;">
                         <div class="header-img-container">
                             <img src="{{ account.header }}" alt="header" class="header" />
                         </div>
-                        <img class="avatar"
-                                src="{{ account.avatar }}"
-                                alt="{{ account.login }}"
-                                width="150"
-                                height="150" />
+                        <img class="avatar" src="{{ account.avatar }}" alt="{{ account.login }}" width="150" height="150" />
                         {% if selected_instance and selected_instance != account.source %}
-                            <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}"
-                                target="_blank"
-                                style="display:inline-block;
-                                        white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
+                            <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}" target="_blank" style="display:inline-block; white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
                         {% else %}
-                            <a href="https://{{ account.source }}/@{{ account.username }}"
-                                target="_blank"
-                                style="display:inline-block;
-                                        white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
+                            <a href="https://{{ account.source }}/@{{ account.username }}" target="_blank" style="display:inline-block; white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
                         {% endif %}
                         <div style="padding-top: 10px;">{% render_emojis account.note account.emojis %}</div>
                         <p>
                             <small>
                                 {% for language in account.languages %}
-                                    <a href="{% url language.code %}?q={{ query }}&o={{ order }}"
-                                        style="display:inline-block;
-                                                white-space: nowrap">
-                                        <img src="{% static language.image %}"
-                                                alt="{{ language.code }}"
-                                                class="emojione"
-                                                height="8"
-                                                width="8" />
+                                    <a href="{% url language.code %}?q={{ query }}&o={{ order }}" style="display:inline-block; white-space: nowrap">
+                                        <img src="{% static language.image %}" alt="{{ language.code }}" class="emojione" height="8" width="8" />
                                         <small>{{ language.name }}</small>
                                     </a>
                                 {% endfor %}
@@ -271,8 +93,8 @@
                         </p>
                     </article>
 -->
-                {% endfor %}
-<!--
+        {% endfor %}
+        <!--
             </div>
             {% if not accounts %}
                 <p style="text-align:center;">
@@ -299,41 +121,176 @@
             </footer>
         </article>
 -->
-        </div>
-        <footer class="mb-16 mt-32 text-center">
-            <nav aria-label="Pagination">
-                <ul class="inline-flex -space-x-px text-base h-10">
-                    {% if accounts.has_previous %}
+    </div>
+    <footer class="mt-32 mb-16 text-center">
+        <nav aria-label="Pagination">
+            <ul class="inline-flex h-10 -space-x-px text-base">
+                {% if accounts.has_previous %}
+                    <li>
+                        <a href="?page={{ accounts.previous_page_number }}&q={{ query }}&o={{ order }}"
+                           class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white ms-0 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                            Previous
+                        </a>
+                    </li>
+                {% endif %}
+                {% if accounts %}
+                    <li>
+                        <span class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                            Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}
+                        </span>
+                    </li>
+                {% endif %}
+                {% if accounts.has_next %}
+                    <li>
+                        <a href="?page={{ accounts.next_page_number }}&q={{ query }}&o={{ order }}"
+                           class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                            Next
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </footer>
+</main>
+{% endblock content %}
+{% block sidebar %}
+    <header>
+        <section class="mb-8">
+            <h2 class="pb-1 mb-4 text-lg font-semibold border-b">Filter by Language</h2>
+            <ul class="text-small">
+                {% for language in languages %}
+                    <li class="mb-2">
+                        <a href="{% if selected_lang.code != language.code %}{% url language.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
+                           class="inline-flex gap-2 {% if selected_lang.code == language.code %}outline{% endif %} "
+                           role="button">
+                            <img src="{% static language.image %}"
+                                 alt="{{ language.code }}"
+                                 class="object-contain w-4" />
+                            <span>{{ language.name }} <span class="text-xs">({{ language.count }})</span></span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+        <details {% if selected_framework %}open{% endif %}>
+            <summary role="button">Frameworks, Libraries, and others</summary>
+            <nav>
+                <ul>
+                    {% for framework in frameworks %}
                         <li>
-                            <a
-                                href="?page={{ accounts.previous_page_number }}&q={{ query }}&o={{ order }}"
-                                class="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                            >
-                                    Previous
+                            <a href="{% if selected_framework.code != framework.code %}{% url framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
+                               class="{% if selected_framework.code != framework.code %}outline{% endif %} "
+                               role="button">
+                                <img src="{% static framework.image %}"
+                                     alt="{{ framework.code }}"
+                                     class="emojione"
+                                     height="16"
+                                     width="16" />
+                                <span>{{ framework.name }}  ({{ framework.count }})</span>
                             </a>
                         </li>
-                    {% endif %}
-                    {% if accounts %}
-                        <li>
-                            <span
-                                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                            >
-                                Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}
-                            </span>
-                        </li>
-                    {% endif %}
-                    {% if accounts.has_next %}
-                        <li>
-                            <a
-                                href="?page={{ accounts.next_page_number }}&q={{ query }}&o={{ order }}"
-                                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                            >
-                                Next
-                            </a>
-                        </li>
-                    {% endif %}
+                    {% endfor %}
                 </ul>
             </nav>
-        </footer>
-    </main>
-{% endblock content %}
+        </details>
+        <form method="get"
+              role="group"
+              action="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}">
+            <input type="text"
+                   name="q"
+                   placeholder="Filter by name, bio, or instance..."
+                   value="{{ query }}"
+                   style="min-width: 100px" />
+            <input type="hidden" name="o" value="{{ order }}" />
+            <details class="dropdown">
+                <summary style="min-width: 160px; border-radius: 0; border-left: 0;">Order by</summary>
+                <ul>
+                    <li>
+                        <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-followers_count">
+                            {% if order == '-followers_count' %}
+                                <strong>▼&nbsp;Followers Count</strong>
+                            {% else %}
+                                Followers Count
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-last_status_at">
+                            {% if order == '-last_status_at' %}
+                                <strong>▼&nbsp;Post Status</strong>
+                            {% else %}
+                                Last Post
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-statuses_count">
+                            {% if order == '-statuses_count' %}
+                                <strong>▼&nbsp;Post Count</strong>
+                            {% else %}
+                                Post Count
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=url">
+                            {% if order == 'url' %}
+                                <strong>▼&nbsp;Source Instance</strong>
+                            {% else %}
+                                Source Instance
+                            {% endif %}
+                        </a>
+                    </li>
+                </ul>
+            </details>
+            <button type="submit">{% heroicon_outline 'magnifying-glass' %}</button>
+        </form>
+        <form method="get" action="{% url 'index' %}">
+            <div>
+                <a style="cursor:pointer"
+                   data-target="modal-example"
+                   onClick="toggleModal(event)">
+                    {% if selected_instance %}
+                        {{ selected_instance }} selected
+                    {% else %}
+                        Select your Mastodon instance
+                    {% endif %}
+                </a>  to make it easier to follow accounts below.
+                <dialog id="modal-example">
+                    <article>
+                        <a href="#close"
+                           aria-label="Close"
+                           class="close"
+                           data-target="modal-example"
+                           onClick="toggleModal(event)"></a>
+                        <h3>Select your Mastodon instance</h3>
+                        <p>
+                            Account links will use your instance making it easier to follow accounts that you open. This way you'll avoid the Follow Dialog for people on different instances.
+                        </p>
+                        <p>
+                            <input type="text"
+                                   list="instances"
+                                   value="{% if selected_instance %}{{ selected_instance }}{% endif %}"
+                                   id="selected_instance"
+                                   name="selected_instance" />
+                            <datalist id="instances">
+                                {% for instance in instances %}<option value="{{ instance }}">{{ instance }}</option>{% endfor %}
+                            </datalist>
+                        </p>
+                        <footer>
+                            <a href="#cancel"
+                               role="button"
+                               class="secondary"
+                               data-target="modal-example"
+                               onClick="toggleModal(event)">Cancel</a>
+                            <a href="#confirm"
+                               role="button"
+                               data-target="modal-example"
+                               onClick="closest('form').submit()">Confirm</a>
+                        </footer>
+                    </article>
+                </dialog>
+            </div>
+        </form>
+    </header>
+{% endblock sidebar %}
