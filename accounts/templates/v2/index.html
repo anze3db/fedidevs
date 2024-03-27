@@ -13,7 +13,7 @@
                     <div class="absolute flex flex-row gap-4 p-3 bg-white rounded-bl-xl dark:bg-gray-800 -top-2 -right-2">
                         {% for language in account.languages %}
                             <a href="{% url language.code %}?q={{ query }}&o={{ order }}"
-                               class="text-gray-500 text-sm">
+                               class="text-sm text-gray-500">
                                 <img src="{% static language.image %}"
                                      alt="{{ language.code }}"
                                      class="w-auto h-5" />
