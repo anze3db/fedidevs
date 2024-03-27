@@ -57,15 +57,15 @@ def index(request, lang: str | None = None):
     frameworks = sorted(
         frameworks,
         key=lambda framework: (
-            framework["code"] != selected_framework.code if selected_framework else False,
+            framework["code"] == selected_framework.code if selected_framework else True,
             framework["count"],
         ),
-        reverse=False,
+        reverse=True,
     )
     languages = sorted(
         languages,
-        key=lambda lng: (lng["code"] != selected_lang.code if selected_lang else False, lng["count"]),
-        reverse=False,
+        key=lambda lng: (lng["code"] == selected_lang.code if selected_lang else True, lng["count"]),
+        reverse=True,
     )
 
     query = request.GET.get("q", "").strip()
