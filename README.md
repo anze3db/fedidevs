@@ -30,7 +30,17 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-6. Populate the local database (takes about ~1hr)
+6. In a separate terminal set up tailwindcss...
+```
+python manage.py tailwind install
+```
+
+7. ... and start the tailwind server
+```
+python manage.py tailwind start
+```
+
+8. Populate the local database (takes about ~1hr)
 ```
 python manage.py scheduler --run-now
 ```
@@ -42,7 +52,7 @@ python manage.py crawler
 python manage.py indexer
 ```
 
-7. Create a Django Admin user for `http://localhost:8000/admin`
+9. Create a Django Admin user for `http://localhost:8000/admin`
 ```
 python manage.py createsuperuser
 ```

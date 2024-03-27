@@ -1,4 +1,4 @@
-{% load compress %}
+{% load static tailwind_tags %}
 {% load static %}
 {% load humanize %}
 <!DOCTYPE html>
@@ -10,9 +10,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
               rel="stylesheet">
-        {% compress css %}
-            <link rel="stylesheet" href="{% static 'src/output.css' %}">
-        {% endcompress %}
+        {% tailwind_css %}
         <meta name="keywords"
               content="fedidevs,mastodon,developers,developer,fediverse,discover,discover developers" />
         <title>{{ page_title }}</title>
@@ -59,58 +57,54 @@
     <body class="min-h-screen bg-gray-100 dark:bg-gray-950">
         <div class="z-50 flex fixed w-full top-0 backdrop-blur bg-gray-100/[0.5] dark:bg-gray-950/[0.5] px-12 py-4 flex-row justify-between items-center text-gray-900 dark:text-white">
             <div class="flex items-center flex-1 gap-8">
-            <h1 class="text-3xl font-bold w-60">
-                <a class="flex gap-4" href="{% url 'index' %}">
-                    <img src="{% static 'logo.png' %}" alt="logo" width="32">
-                    {{ page_header }}
-                </a>
-            </h1>
-            <nav class="flex gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
-                <a href="/">Accounts</a>
-                <a class="pl-4" href="{% url 'posts' %}"><span class="opacity-50 hover:opacity-75">Posts</span></a>
-                <a class="pl-4" href="{% url 'conferences' %}"><span class="opacity-50 hover:opacity-75">Conferences</span></a>
-            </nav>
+                <h1 class="text-3xl font-bold w-60">
+                    <a class="flex gap-4" href="{% url 'index' %}">
+                        <img src="{% static 'logo.png' %}" alt="logo" width="32">
+                        {{ page_header }}
+                    </a>
+                </h1>
+                <nav class="flex gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
+                    <a href="{% url 'index' %}">Accounts</a>
+                    <a class="pl-4" href="{% url 'posts' %}"><span class="opacity-50 hover:opacity-75">Posts</span></a>
+                    <a class="pl-4" href="{% url 'conferences' %}"><span class="opacity-50 hover:opacity-75">Conferences</span></a>
+                </nav>
             </div>
             <div class="flex justify-between gap-2">
-               <theme-toggle>
-            <button type="button"
-                    class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
-                <span class="sr-only">Toggle Theme</span>
-                <span class="hidden dark:block">
-                    {% heroicon_outline 'sun' %}
-                </span>
-                <span class="block w-6 h-6 dark:hidden">
-                    {% heroicon_outline 'moon' %}
-                </span>
-            </button>
-            </theme-toggle>
-            <form method="get"
-              role="group"
-              class="w-96"
-              action="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}">
-                <label for="default-search"
-                       class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                             aria-hidden="true"
-                             xmlns="http://www.w3.org/2000/svg"
-                             fill="none"
-                             viewBox="0 0 20 20">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                        </svg>
+                <theme-toggle>
+                <button type="button"
+                        class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
+                    <span class="sr-only">Toggle Theme</span>
+                    <span class="hidden dark:block">{% heroicon_outline 'sun' %}</span>
+                    <span class="block w-6 h-6 dark:hidden">{% heroicon_outline 'moon' %}</span>
+                </button>
+                </theme-toggle>
+                <form method="get"
+                      role="group"
+                      class="w-96"
+                      action="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}">
+                    <label for="default-search"
+                           class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
+                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                 aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                            </svg>
+                        </div>
+                        <input type="search"
+                               name="q"
+                               class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               placeholder="Filter by name, bio, or instance..."
+                               value="{{ query }}" />
+                        <button type="submit"
+                                class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            Search
+                        </button>
                     </div>
-                    <input type="search"
-                           name="q"
-                           class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                           placeholder="Filter by name, bio, or instance..."
-                           value="{{ query }}" />
-                    <button type="submit"
-                            class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Search
-                    </button>
-                </div>
-            </form>
+                </form>
             </div>
         </div>
         <div class="flex pt-14 h-svh">

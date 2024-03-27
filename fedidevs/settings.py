@@ -70,11 +70,12 @@ INSTALLED_APPS = [
     "django_browser_reload",
     "debug_toolbar",
     "django_tui",
+    "tailwind",
+    "theme",
     "accounts",
     "posts",
     "stats",
     "confs",
-    'compressor',
 ]
 
 MIDDLEWARE = [
@@ -117,6 +118,8 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+TAILWIND_APP_NAME = "theme"
 
 STORAGES = {
     "default": {
@@ -201,9 +204,3 @@ if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
     )
-
-COMPRESS_ROOT = BASE_DIR / 'static'
-
-COMPRESS_ENABLED = True
-
-STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
