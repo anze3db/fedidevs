@@ -170,8 +170,8 @@
                            role="button">
                             <span class="flex gap-2">
                                 <img src="{% static language.image %}"
-                                    alt="{{ language.code }}"
-                                    class="object-contain w-4" />
+                                     alt="{{ language.code }}"
+                                     class="object-contain w-4" />
                                 <span class="leading-loose">
                                     {{ language.name }} <small class="text-xs">({{ language.count }})</small>
                                 </span>
@@ -185,7 +185,7 @@
             </ul>
         </section>
         <section class="mb-8">
-           <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
+            <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
                 Frameworks, Libraries, and others
                 <span class="hidden">{% heroicon_outline 'plus' %}</span>
                 <span class="hidden [&>svg]:h-4">{% heroicon_outline 'minus' %}</span>
@@ -198,8 +198,8 @@
                            role="button">
                             <span class="flex gap-2">
                                 <img src="{% static framework.image %}"
-                                    alt="{{ framework.code }}"
-                                    class="object-contain w-4" />
+                                     alt="{{ framework.code }}"
+                                     class="object-contain w-4" />
                                 <span class="leading-loose">
                                     {{ framework.name }} <small class="text-xs">({{ framework.count }})</small>
                                 </span>
@@ -211,7 +211,7 @@
                     </li>
                 {% endfor %}
             </ul>
-        {% comment %} </details> {% endcomment %}
+            {% comment %} </details> {% endcomment %}
         </section>
         <section class="mb-8">
             <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
@@ -220,17 +220,17 @@
                 <span class="hidden [&>svg]:h-4">{% heroicon_outline 'minus' %}</span>
             </h2>
             <input type="text"
-                    list="instances"
-                    onfocus="this.value=''" onchange="this.blur();"
-                    value="{% if selected_instance %}{{ selected_instance }}{% endif %}"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    id="selected_instance"
-                    name="selected_instance" />
+                   list="instances"
+                   onfocus="this.value=''"
+                   onchange="this.blur();"
+                   value="{% if selected_instance %}{{ selected_instance }}{% endif %}"
+                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                   id="selected_instance"
+                   name="selected_instance" />
             <datalist id="instances">
                 {% for instance in instances %}<option value="{{ instance }}">{{ instance }}</option>{% endfor %}
             </datalist>
         </section>
-
         <form method="get"
               role="group"
               action="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}">
