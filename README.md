@@ -30,9 +30,16 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-6. Populate the local database (takes about ~2hrs)
+6. Populate the local database (takes about ~1hr)
 ```
 python manage.py scheduler --run-now
+```
+
+or run the crawler and indexer separately if you only want to populate account data (takes about ~5mins)
+
+```
+python manage.py crawler
+python manage.py indexer
 ```
 
 7. Create a Django Admin user for `http://localhost:8000/admin`

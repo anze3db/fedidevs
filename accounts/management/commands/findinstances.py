@@ -21,6 +21,8 @@ class Command(RichCommand):
             async for conference in Conference.objects.all():
                 tags = [tag.strip().replace("#", "") for tag in conference.tags.split(",")]
                 posts = await self.fetch_and_handle_fail(client, "mastodon.social", list(tags))
+                if not posts:
+                    continue
                 last_post_date = datetime.fromisoformat(posts[-1]["created_at"])
                 first_post_date = datetime.fromisoformat(posts[0]["created_at"])
                 if (first_post_date - last_post_date) < timedelta(days=1):

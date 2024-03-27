@@ -16,6 +16,8 @@ class Language:
     regex: str
     image: str
 
+    only_bio: bool = False
+
     def post_code(self):
         return f"{self.code}-posts"
 
@@ -28,6 +30,8 @@ class Framework:
     regex: str
     image: str
 
+    only_bio: bool = False
+
     def post_code(self):
         return f"{self.code}-posts"
 
@@ -39,6 +43,7 @@ FRAMEWORKS = [
     Framework("rails", "Rails", "🛤️", r"rails", "frameworks/rails.png"),
     Framework("laravel", "Laravel", "🎣", r"laravel", "frameworks/laravel.png"),
     Framework("symfony", "Symfony", "🎻", r"symfony", "frameworks/symfony.png"),
+    Framework("kubernetes", "Kubernetes", "🎻", r"kubernetes", "frameworks/kubernetes.png"),
     Framework("spring", "Spring", "🌱", r"spring", "frameworks/spring.png"),
     Framework("htmx", "HTMX", "🧬", r"htmx", "frameworks/htmx.png"),
     Framework("react", "React", "⚛️", r"react", "frameworks/react.png"),
@@ -62,10 +67,17 @@ FRAMEWORKS = [
 LANGUAGES = [
     Language("python", "Python", "🐍", r"python|psf|django", "languages/python.png"),
     Language(
+        "typescript",
+        "TypeScript",
+        "📜",
+        r"typescript|[^a-z]ts[^a-z:]",
+        "languages/typescript.png",
+    ),
+    Language(
         "javascript",
         "JavaScript",
         "📜",
-        r"javascript|[^a-z]js[^a-z:]|typescript",
+        r"javascript|[^a-z]js[^a-z:]",
         "languages/javascript.png",
     ),
     Language("rust", "Rust", "🦀", r"[^a-z:]rust[^a-z]|rustlang", "languages/rust.png"),  # Filters out trust, etc.
@@ -81,7 +93,10 @@ LANGUAGES = [
     Language("php", "PHP", "🐘", r"[^\.]php", "languages/php.png"),  # Filters out index.php? and others
     Language("haskell", "Haskell", "🦥", r"haskell", "languages/haskell.png"),
     Language("ocaml", "OCaml", "🐫", r"ocaml", "languages/ocaml.png"),
-    Language("nix", "Nix", "❄️", r"[^a-z:]nix", "languages/nix.png"),  # Filters out unix, linux, etc.
+    Language(
+        "nix", "Nix", "❄️", r"[^(a-z|\.|\*):]nix[^Craft]", "languages/nix.png"
+    ),  # Filters out unix, linux, nixCraft, git.nix etc.
+    Language("julia", "Julia", "📊", r"julia(?!n)", "languages/julia.png", only_bio=True),  # Filters out Julian
     # Language("gaming", "Gaming", "🎮", r"gaming|game", "languages/gaming.png"),
     # Language(
     #     "security",
@@ -137,6 +152,10 @@ class Account(models.Model):
 
     def __str__(self):
         return self.username
+
+    @property
+    def name(self):
+        return self.display_name or self.username or self.acct
 
     @property
     def source(self):

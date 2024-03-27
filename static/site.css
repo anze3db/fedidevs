@@ -63,6 +63,7 @@ img.header {
     height: 245px;
     margin: 0;
     border-radius: var(--pico-border-radius) var(--pico-border-radius) 0 0;
+    background-color: var(--pico-background-color);
 }
 
 .header-img-container {
@@ -121,29 +122,6 @@ article.card {
 .tabs li.active {
     border-bottom: 3px solid color(srgb 0.1594 0.666 0.9605);
     background-color: var(--pico-card-sectionning-background-color);
-}
-
-
-.grid-container {
-    /**
-   * User input values.
-   */
-    --grid-layout-gap: 20px;
-    --grid-column-count: 3;
-    --grid-item--min-width: 290px;
-
-    /**
-   * Calculated values.
-   */
-    --gap-count: calc(var(--grid-column-count) - 1);
-    --total-gap-width: calc(var(--gap-count) * var(--grid-layout-gap));
-    --grid-item--max-width: calc((100% - var(--total-gap-width)) / var(--grid-column-count));
-
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(max(var(--grid-item--min-width), var(--grid-item--max-width)), 1fr));
-    grid-gap: var(--grid-layout-gap);
-
-    align-items: flex-start
 }
 
 .no-wrap {
