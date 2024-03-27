@@ -54,8 +54,19 @@ def index(request, lang: str | None = None):
     if selected_framework:
         search_query &= Q(accountlookup__language=selected_framework.code)
 
-    frameworks = sorted(frameworks, key=lambda framework: (framework["code"] != selected_framework.code if selected_framework else False, framework["count"]), reverse=False)
-    languages = sorted(languages, key=lambda lng: (lng["code"] != selected_lang.code if selected_lang else False, lng["count"]), reverse=False)
+    frameworks = sorted(
+        frameworks,
+        key=lambda framework: (
+            framework["code"] != selected_framework.code if selected_framework else False,
+            framework["count"],
+        ),
+        reverse=False,
+    )
+    languages = sorted(
+        languages,
+        key=lambda lng: (lng["code"] != selected_lang.code if selected_lang else False, lng["count"]),
+        reverse=False,
+    )
 
     query = request.GET.get("q", "").strip()
     order = request.GET.get("o", "-followers_count")
@@ -75,9 +86,15 @@ def index(request, lang: str | None = None):
     page_obj = paginator.get_page(page_number)
     accounts_count = Account.objects.filter(discoverable=True, noindex=False).count()
 
+    # get v2 from request ARGS and set a cookie if it exist. is_v2 should read the state of the cookie
+    if "v" in request.GET:
+        request.session["v"] = request.GET.get("v")
+
+    is_v2 = request.session.get("v") == "2"
+
     return render(
         request,
-        "v2/index.html",
+        "v2/index.html" if is_v2 else "index.html",
         {
             "page_title": "FediDevs | List of software developers on Mastodon"
             if not selected_lang
