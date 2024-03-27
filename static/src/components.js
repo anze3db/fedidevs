@@ -31,5 +31,6 @@ class ThemeToggle extends HTMLElement {
 		);
 	}
 }
-
-customElements.define("theme-toggle", ThemeToggle);
+window.addEventListener("DOMContentLoaded", () => {
+	customElements.define("theme-toggle", ThemeToggle);
+});
