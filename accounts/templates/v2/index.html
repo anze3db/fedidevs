@@ -65,64 +65,7 @@
                     </div>
                 </div>
             </div>
-            <!--
-                    <article class="grid-item" style="padding-bottom: 20px;">
-                        <div class="header-img-container">
-                            <img src="{{ account.header }}" alt="header" class="header" />
-                        </div>
-                        <img class="avatar" src="{{ account.avatar }}" alt="{{ account.login }}" width="150" height="150" />
-                        {% if selected_instance and selected_instance != account.source %}
-                            <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}" target="_blank" style="display:inline-block; white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
-                        {% else %}
-                            <a href="https://{{ account.source }}/@{{ account.username }}" target="_blank" style="display:inline-block; white-space: nowrap">{% render_emojis account.display_name account.emojis %}</a>
-                        {% endif %}
-                        <div style="padding-top: 10px;">{% render_emojis account.note account.emojis %}</div>
-                        <p>
-                            <small>
-                                {% for language in account.languages %}
-                                    <a href="{% url language.code %}?q={{ query }}&o={{ order }}" style="display:inline-block; white-space: nowrap">
-                                        <img src="{% static language.image %}" alt="{{ language.code }}" class="emojione" height="8" width="8" />
-                                        <small>{{ language.name }}</small>
-                                    </a>
-                                {% endfor %}
-                            </small>
-                        </p>
-                        <p>
-                            <small>
-                                {% heroicon_outline 'chat-bubble-left' %} {{ account.statuses_count | intcomma }} {% heroicon_outline 'user' %} {{ account.followers_count | intcomma }} {% heroicon_outline 'clock' %} {{ account.last_status_at_cached }}
-                            </small>
-                        </p>
-                    </article>
--->
         {% endfor %}
-        <!--
-            </div>
-            {% if not accounts %}
-                <p style="text-align:center;">
-                    No results, <a href="{% url "index" %}">try clearing your search</a>!
-                </p>
-            {% endif %}
-            <footer>
-                <div class="pagination">
-                    <span class="step-links">
-                        {% if accounts.has_previous %}
-                            <a href="?page={{ accounts.previous_page_number }}&q={{ query }}&o={{ order }}">previous</a>
-                        {% endif %}
-                        {% if accounts %}
-                            <span class="current">Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}</span>
-                        {% endif %}
-                        {% if accounts.has_next %}
-                            <a href="?page={{ accounts.next_page_number }}&q={{ query }}&o={{ order }}">next</a>
-                        {% endif %}
-                    </span>
-                </div>
-                <p style="text-align:center">
-                    <small>Don't see yourself on the list? Read through <a href="{% url 'faq' %}">the FAQ</a> to make sure you're eligible to be listed.</small>
-                </p>
-            </footer>
-        </article>
-    </div>
--->
         <footer class="mt-32 mb-16 text-center">
             <nav aria-label="Pagination">
                 <ul class="inline-flex h-10 -space-x-px text-base">
@@ -211,7 +154,6 @@
                         </li>
                     {% endfor %}
                 </ul>
-                {% comment %} </details> {% endcomment %}
             </section>
             <section class="mb-8">
                 <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
