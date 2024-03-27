@@ -8,7 +8,7 @@
 {% block content %}
     <div class="gap-12 columns-1 xl:columns-3 lg:columns-2">
         {% for account in accounts %}
-            <div class="w-full p-3 mb-12 bg-white shadow-md rounded-2xl dark:bg-gray-800 dark:border-gray-700 break-inside-avoid-column">
+            <div class="w-full p-3 mb-12 bg-white shadow-md rounded-2xl dark:bg-gray-800 break-inside-avoid-column">
                 <div class="relative rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 min-h-24 -z-0">
                     <div class="absolute flex flex-row gap-4 p-3 bg-white rounded-bl-xl dark:bg-gray-800 -top-2 -right-2">
                         {% for language in account.languages %}
@@ -155,52 +155,68 @@
 {% endblock content %}
 {% block sidebar %}
     <header>
+        <h1 class="mb-8 text-xl font-semibold">Filter By</h1>
         <section class="mb-8">
-            <h2 class="pb-1 mb-4 text-lg font-semibold border-b">Filter by Language</h2>
-            <ul class="text-small">
+            <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
+                Programming Language
+                <span class="hidden">{% heroicon_outline 'plus' %}</span>
+                <span class="hidden [&>svg]:h-4">{% heroicon_outline 'minus' %}</span>
+            </h2>
+            <ul class="px-4 -mx-4 overflow-hidden overflow-y-auto text-small max-h-64">
                 {% for language in languages %}
                     <li class="mb-2">
                         <a href="{% if selected_lang.code != language.code %}{% url language.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
-                           class="inline-flex gap-2 {% if selected_lang.code == language.code %}outline{% endif %} "
+                           class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md {% if selected_lang.code == language.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
                            role="button">
-                            <img src="{% static language.image %}"
-                                 alt="{{ language.code }}"
-                                 class="object-contain w-4" />
-                            <span>{{ language.name }} <span class="text-xs">({{ language.count }})</span></span>
+                            <span class="flex gap-2">
+                                <img src="{% static language.image %}"
+                                    alt="{{ language.code }}"
+                                    class="object-contain w-4" />
+                                <span class="leading-loose">
+                                    {{ language.name }} <small class="text-xs">({{ language.count }})</small>
+                                </span>
+                            </span>
+                            {% if selected_lang.code == language.code %}
+                                <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                            {% endif %}
                         </a>
                     </li>
                 {% endfor %}
             </ul>
         </section>
-        <details {% if selected_framework %}open{% endif %}>
-            <summary role="button">Frameworks, Libraries, and others</summary>
-            <nav>
-                <ul>
-                    {% for framework in frameworks %}
-                        <li>
-                            <a href="{% if selected_framework.code != framework.code %}{% url framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
-                               class="{% if selected_framework.code != framework.code %}outline{% endif %} "
-                               role="button">
+        {% comment %} <details {% if selected_framework %}open{% endif %}> {% endcomment %}
+        <section class="mb-8">
+           <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
+                Frameworks, Libraries, and others
+                <span class="hidden">{% heroicon_outline 'plus' %}</span>
+                <span class="hidden [&>svg]:h-4">{% heroicon_outline 'minus' %}</span>
+            </h2>
+            <ul class="px-4 -mx-4 overflow-hidden overflow-y-auto text-small max-h-64">
+                {% for framework in frameworks %}
+                    <li class="mb-2">
+                        <a href="{% if selected_framework.code != framework.code %}{% url framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
+                           class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md {% if selected_framework.code == framework.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
+                           role="button">
+                            <span class="flex gap-2">
                                 <img src="{% static framework.image %}"
-                                     alt="{{ framework.code }}"
-                                     class="emojione"
-                                     height="16"
-                                     width="16" />
-                                <span>{{ framework.name }}  ({{ framework.count }})</span>
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </nav>
-        </details>
+                                    alt="{{ framework.code }}"
+                                    class="object-contain w-4" />
+                                <span class="leading-loose">
+                                    {{ framework.name }} <small class="text-xs">({{ framework.count }})</small>
+                                </span>
+                            </span>
+                            {% if selected_framework.code == framework.code %}
+                                <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% comment %} </details> {% endcomment %}
+        </section>
         <form method="get"
               role="group"
               action="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}">
-            <input type="text"
-                   name="q"
-                   placeholder="Filter by name, bio, or instance..."
-                   value="{{ query }}"
-                   style="min-width: 100px" />
             <input type="hidden" name="o" value="{{ order }}" />
             <details class="dropdown">
                 <summary style="min-width: 160px; border-radius: 0; border-left: 0;">Order by</summary>

@@ -6,6 +6,9 @@ module.exports = {
 	content: ["./accounts/templates/**/*.html"],
 	theme: {
 		extend: {
+			colors: {
+				primary: colors.slate,
+			},
 			fontFamily: {
 				sans: ["Inter", "Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
 			},
