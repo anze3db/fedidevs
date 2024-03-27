@@ -70,6 +70,8 @@ INSTALLED_APPS = [
     "django_browser_reload",
     "debug_toolbar",
     "django_tui",
+    "tailwind",
+    "theme",
     "accounts",
     "posts",
     "stats",
@@ -116,6 +118,8 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+TAILWIND_APP_NAME = "theme"
 
 STORAGES = {
     "default": {

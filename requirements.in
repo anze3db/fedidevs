@@ -1,6 +1,7 @@
 # Prod
 django
 django-environ
+django-tailwind
 gunicorn
 heroicons[django]
 httpx

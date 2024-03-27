@@ -3,3 +3,5 @@
 db.*
 staticfiles
 __pycache__/
+static/CACHE
+node_modules/

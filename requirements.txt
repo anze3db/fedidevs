@@ -36,6 +36,7 @@ django==5.0.3
     #   django-browser-reload
     #   django-debug-toolbar
     #   django-rich
+    #   django-tailwind
     #   django-tui
     #   heroicons
 django-browser-reload==1.12.1
@@ -47,6 +48,8 @@ django-debug-toolbar==4.3.0
 django-environ==0.11.2
     # via -r requirements.in
 django-rich==1.8.0
+    # via -r requirements.in
+django-tailwind==3.8.0
     # via -r requirements.in
 django-tui==24.1
     # via -r requirements.in
@@ -159,7 +162,7 @@ sqlparse==0.4.4
     # via
     #   django
     #   django-debug-toolbar
-textual==0.53.1
+textual==0.54.0
     # via
     #   django-tui
     #   trogon
