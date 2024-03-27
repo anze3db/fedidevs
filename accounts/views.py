@@ -32,7 +32,6 @@ def index(request, lang: str | None = None):
         }
         for lng in LANGUAGES
     )
-    languages = sorted(languages, key=lambda lng: lng["count"], reverse=True)
 
     frameworks = (
         {
@@ -46,7 +45,6 @@ def index(request, lang: str | None = None):
         }
         for framework in FRAMEWORKS
     )
-    frameworks = sorted(frameworks, key=lambda framework: framework["count"], reverse=True)
 
     selected_lang = langs_map.get(lang)
     selected_framework = frameworks_map.get(lang)
@@ -55,6 +53,9 @@ def index(request, lang: str | None = None):
         search_query &= Q(accountlookup__language=selected_lang.code)
     if selected_framework:
         search_query &= Q(accountlookup__language=selected_framework.code)
+
+    frameworks = sorted(frameworks, key=lambda framework: (framework["code"] != selected_framework.code if selected_framework else False, framework["count"]), reverse=False)
+    languages = sorted(languages, key=lambda lng: (lng["code"] != selected_lang.code if selected_lang else False, lng["count"]), reverse=False)
 
     query = request.GET.get("q", "").strip()
     order = request.GET.get("o", "-followers_count")
