@@ -1659,6 +1659,11 @@ select {
   border-color: rgb(51 65 85 / var(--tw-divide-opacity));
 }
 
+.divide-slate-300 > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-opacity: 1;
+  border-color: rgb(203 213 225 / var(--tw-divide-opacity));
+}
+
 .overflow-auto {
   overflow: auto;
 }
@@ -2054,6 +2059,11 @@ select {
   color: rgb(148 163 184 / var(--tw-text-opacity));
 }
 
+.text-gray-800 {
+  --tw-text-opacity: 1;
+  color: rgb(31 41 55 / var(--tw-text-opacity));
+}
+
 .text-opacity-50 {
   --tw-text-opacity: 0.5;
 }
@@ -2157,6 +2167,18 @@ select {
   color: rgb(55 65 81 / var(--tw-text-opacity));
 }
 
+.hover\:opacity-0:hover {
+  opacity: 0;
+}
+
+.hover\:opacity-100:hover {
+  opacity: 1;
+}
+
+.hover\:opacity-75:hover {
+  opacity: 0.75;
+}
+
 .focus\:border-blue-500:focus {
   --tw-border-opacity: 1;
   border-color: rgb(59 130 246 / var(--tw-border-opacity));
@@ -2200,6 +2222,11 @@ select {
 :is(.dark .dark\:divide-gray-700) > :not([hidden]) ~ :not([hidden]) {
   --tw-divide-opacity: 1;
   border-color: rgb(55 65 81 / var(--tw-divide-opacity));
+}
+
+:is(.dark .dark\:divide-slate-800) > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-opacity: 1;
+  border-color: rgb(30 41 59 / var(--tw-divide-opacity));
 }
 
 :is(.dark .dark\:border-gray-500) {
