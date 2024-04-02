@@ -185,115 +185,50 @@
         </section>
         <section class="mb-8">
             <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
-                Select Instance
+                Order By
                 <span class="hidden">{% heroicon_outline 'plus' %}</span>
                 <span class="hidden [&>svg]:h-4">{% heroicon_outline 'minus' %}</span>
             </h2>
-            <input type="text"
-                   list="instances"
-                   onfocus="this.value=''"
-                   onchange="this.blur();"
-                   value="{% if selected_instance %}{{ selected_instance }}{% endif %}"
-                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                   id="selected_instance"
-                   name="selected_instance" />
-            <datalist id="instances">
-                {% for instance in instances %}<option value="{{ instance }}">{{ instance }}</option>{% endfor %}
-            </datalist>
-        </section>
-        <form method="get"
-              role="group"
-              action="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}">
             <input type="hidden" name="o" value="{{ order }}" />
-            <details class="dropdown">
-                <summary style="min-width: 160px; border-radius: 0; border-left: 0;">Order by</summary>
-                <ul>
-                    <li>
-                        <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-followers_count">
-                            {% if order == '-followers_count' %}
-                                <strong>▼&nbsp;Followers Count</strong>
-                            {% else %}
-                                Followers Count
-                            {% endif %}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-last_status_at">
-                            {% if order == '-last_status_at' %}
-                                <strong>▼&nbsp;Post Status</strong>
-                            {% else %}
-                                Last Post
-                            {% endif %}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-statuses_count">
-                            {% if order == '-statuses_count' %}
-                                <strong>▼&nbsp;Post Count</strong>
-                            {% else %}
-                                Post Count
-                            {% endif %}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=url">
-                            {% if order == 'url' %}
-                                <strong>▼&nbsp;Source Instance</strong>
-                            {% else %}
-                                Source Instance
-                            {% endif %}
-                        </a>
-                    </li>
-                </ul>
-            </details>
-            <button type="submit">{% heroicon_outline 'magnifying-glass' %}</button>
+            <ul class="px-4 -mx-4 overflow-hidden overflow-y-auto text-small max-h-64">
+                <li>
+                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-followers_count">
+                        {% if order == '-followers_count' %}
+                            <strong>Followers Count</strong>
+                        {% else %}
+                            Followers Count
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-last_status_at">
+                        {% if order == '-last_status_at' %}
+                            <strong>Post Status</strong>
+                        {% else %}
+                            Last Post
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-statuses_count">
+                        {% if order == '-statuses_count' %}
+                            <strong>Post Count</strong>
+                        {% else %}
+                            Post Count
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=url">
+                        {% if order == 'url' %}
+                            <strong>Source Instance</strong>
+                        {% else %}
+                            Source Instance
+                        {% endif %}
+                    </a>
+                </li>
+            </ul>
         </form>
-        <form method="get" action="{% url 'index' %}">
-            <div>
-                <a style="cursor:pointer"
-                   data-target="modal-example"
-                   onClick="toggleModal(event)">
-                    {% if selected_instance %}
-                        {{ selected_instance }} selected
-                    {% else %}
-                        Select your Mastodon instance
-                    {% endif %}
-                </a>  to make it easier to follow accounts below.
-                <dialog id="modal-example">
-                    <article>
-                        <a href="#close"
-                           aria-label="Close"
-                           class="close"
-                           data-target="modal-example"
-                           onClick="toggleModal(event)"></a>
-                        <h3>Select your Mastodon instance</h3>
-                        <p>
-                            Account links will use your instance making it easier to follow accounts that you open. This way you'll avoid the Follow Dialog for people on different instances.
-                        </p>
-                        <p>
-                            <input type="text"
-                                   list="instances"
-                                   value="{% if selected_instance %}{{ selected_instance }}{% endif %}"
-                                   id="selected_instance"
-                                   name="selected_instance" />
-                            <datalist id="instances">
-                                {% for instance in instances %}<option value="{{ instance }}">{{ instance }}</option>{% endfor %}
-                            </datalist>
-                        </p>
-                        <footer>
-                            <a href="#cancel"
-                               role="button"
-                               class="secondary"
-                               data-target="modal-example"
-                               onClick="toggleModal(event)">Cancel</a>
-                            <a href="#confirm"
-                               role="button"
-                               data-target="modal-example"
-                               onClick="closest('form').submit()">Confirm</a>
-                        </footer>
-                    </article>
-                </dialog>
-            </div>
-        </form>
-    </header>
+    </section>
+</header>
 {% endblock sidebar %}
