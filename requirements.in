@@ -5,6 +5,7 @@ django-tailwind
 gunicorn
 heroicons[django]
 httpx
+mastodon.py
 psycopg2-binary
 schedule
 sentry-sdk
