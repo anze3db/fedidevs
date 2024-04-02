@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "django_tui",
     "tailwind",
     "theme",
+    "mastodon_auth",
     "accounts",
     "posts",
     "stats",

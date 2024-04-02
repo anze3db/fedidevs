@@ -28,21 +28,35 @@ lint.select = [
   "YTT",
 ]
 lint.ignore = [
-  "A003", "ARG002",
-  "PLR2004", "E501",
+  "A003",
+  "ARG002",
+  "PLR2004",
+  "E501",
   # Allow non-abstract empty methods in abstract base classes
   "B027",
   # Allow boolean positional values in function calls, like `dict.get(... True)`
-  "FBT001", "FBT002", "FBT003",
+  "FBT001",
+  "FBT002",
+  "FBT003",
   # Ignore checks for possible passwords
-  "S105", "S106", "S107",
+  "S105",
+  "S106",
+  "S107",
   # Ignore complexity
-  "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+  "C901",
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
   # Ignore assert False
   "B011",
-  "S311", "S108", "RUF012", "EM101",
+  "S311",
+  "S108",
+  "RUF012",
+  "EM101",
   # May cause conflicts with formatter:
   "ISC001",
+  "S101",   # I like asserts
 ]
 
 [tool.ruff.format]
@@ -60,4 +74,11 @@ DJANGO_SETTINGS_MODULE = "fedidevs.settings"
 
 [tool.coverage.run]
 plugins = ["django_coverage_plugin"]
-omit = [".venv/*", "staticfiles/*", "manage.py", "requirements.txt", "fedidevs/wsgi.py", "fedidevs/asgi.py"]
+omit = [
+  ".venv/*",
+  "staticfiles/*",
+  "manage.py",
+  "requirements.txt",
+  "fedidevs/wsgi.py",
+  "fedidevs/asgi.py",
+]
