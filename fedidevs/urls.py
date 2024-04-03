@@ -53,6 +53,7 @@ urlpatterns = (
         path("__reload__/", include("django_browser_reload.urls")),
         path("robots.txt", robots_txt),
         path("", views.index, name="index"),
+        path("follow/<int:account_id>", views.follow, name="follow"),
         path("mastodon_login/", mastodon_views.login, name="mastodon_login"),
         path("mastodon_logout/", mastodon_views.logout, name="mastodon_logout"),
         path("mastodon_auth/", mastodon_views.auth, name="mastodon_auth"),

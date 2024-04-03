@@ -30,21 +30,16 @@
                          height="80" />
                     {% if user.is_authenticated %}
                         {% if account.is_following %}
-                            <form method="post" action="#">
-                                {% csrf_token %}
-                                <button disable
-                                        class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
-                                    Following
-                                </button>
-                            </form>
+                            <button disable
+                                    class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
+                                Following
+                            </button>
                         {% else %}
-                            <form method="post" action="#">
-                                {% csrf_token %}
-                                <button type="submit"
-                                        class="absolute -bottom-12 end-2 rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                    Follow
-                                </button>
-                            </form>
+                            {% csrf_token %}
+                            <button hx-post="{% url 'follow' account.pk %}"
+                                    class="absolute -bottom-12 end-2 rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                Follow
+                            </button>
                         {% endif %}
                     {% else %}
                         <button data-modal-target="authentication-modal"
@@ -121,6 +116,9 @@
             </ul>
         </nav>
     </footer>
+    <script src="https://unpkg.com/htmx.org@1.9.11"
+            integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
+            crossorigin="anonymous"></script>
 {% endblock content %}
 {% block sidebar %}
     <header>

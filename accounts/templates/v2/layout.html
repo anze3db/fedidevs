@@ -51,7 +51,8 @@
         {% block head %}
         {% endblock head %}
     </head>
-    <body class="min-h-screen bg-gray-100 dark:bg-gray-950">
+    <body class="min-h-screen bg-gray-100 dark:bg-gray-950"
+          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <div class="z-50 flex fixed w-full top-0 backdrop-blur bg-gray-100/[0.5] dark:bg-gray-950/[0.5] px-12 py-4 flex-row justify-between items-center text-gray-900 dark:text-white">
             <div class="flex items-center flex-1 gap-8">
                 <h1 class="text-3xl font-bold w-60">

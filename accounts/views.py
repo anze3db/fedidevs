@@ -1,7 +1,9 @@
 from django.core.paginator import Paginator
 from django.db.models import Count, Exists, OuterRef, Q
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
+from mastodon import Mastodon
 
 from mastodon_auth.models import AccountFollowing
 
@@ -147,6 +149,29 @@ def index(request, lang: str | None = None):
             ],
         },
     )
+
+
+def follow(request, account_id: int):
+    account_access = request.user.accountaccess
+    instance = account_access.instance
+    mastodon = Mastodon(
+        api_base_url=instance.url,
+        client_id=instance.client_id,
+        client_secret=instance.client_secret,
+        access_token=account_access.access_token,
+        user_agent="fedidevs",
+    )
+    account = Account.objects.get(pk=account_id)
+    if account.instance == instance.url:
+        account_id = account.account_id
+    else:
+        local_account = mastodon.account_lookup(acct=account.username_at_instance)
+        account_id = local_account["id"]
+
+    mastodon.account_follow(account_id)
+    AccountFollowing.objects.get_or_create(account=request.user.accountaccess.account, url=account.url)
+    # TODO: Remove full page refresh here
+    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 
 
 @cache_page(60 * 60 * 24, cache="memory")
