@@ -1,7 +1,9 @@
 from django.core.paginator import Paginator
-from django.db.models import Count, Q
+from django.db.models import Count, Exists, OuterRef, Q
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
+
+from mastodon_auth.models import AccountFollowing
 
 from .management.commands.crawler import INSTANCES
 from .models import FRAMEWORKS, LANGUAGES, Account, AccountLookup
@@ -81,6 +83,13 @@ def index(request, lang: str | None = None):
         )
 
     accounts = Account.objects.filter(search_query).prefetch_related("accountlookup_set").order_by(order)
+    if request.user.is_authenticated:
+        # Annotate whether the current request user is following the account:
+        accounts = accounts.annotate(
+            is_following=Exists(
+                AccountFollowing.objects.filter(account=request.user.accountaccess.account, url=OuterRef("url")),
+            )
+        )
     paginator = Paginator(accounts, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -117,6 +126,7 @@ def index(request, lang: str | None = None):
             "selected_instance": request.session.get("selected_instance"),
             "query": query,
             "order": order,
+            "user": request.user,
             "adjectives": [
                 "great",
                 "awesome",

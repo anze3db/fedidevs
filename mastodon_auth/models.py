@@ -18,8 +18,9 @@ class Instance(models.Model):
         verbose_name_plural = "Auth Instance ws"
 
 
-class Account(models.Model):
+class AccountAccess(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    account = models.ForeignKey("accounts.Account", on_delete=models.CASCADE)
     instance = models.ForeignKey(Instance, on_delete=models.CASCADE)
     access_token = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -27,3 +28,13 @@ class Account(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+class AccountFollowing(models.Model):
+    account = models.ForeignKey("accounts.Account", on_delete=models.CASCADE)
+    url = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("account", "url")

@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from django.conf import settings
@@ -12,7 +13,8 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 from mastodon import Mastodon, MastodonNetworkError
 
-from mastodon_auth.models import Account, Instance
+from accounts.models import Account
+from mastodon_auth.models import AccountAccess, AccountFollowing, Instance
 
 
 def get_redirect_uri(request):
@@ -83,6 +85,19 @@ def login(request):
 
 
 def logout(request):
+    user = request.user
+    if not user.is_authenticated:
+        return redirect("index")
+
+    # TODO: Addd delete option
+    # mastodon = Mastodon(
+    #     client_id=user.account.instance.client_id,
+    #     client_secret=user.account.instance.client_secret,
+    #     api_base_url=user.account.instance.url,
+    #     access_token=user.account.access_token,
+    # )
+    # mastodon.revoke_access_token()
+    # AccountAccess.objects.filter(user=request.user).delete()
     auth_logout(request)
     return redirect("index")
 
@@ -113,23 +128,61 @@ def auth(request):
         scopes=scopes,
     )
 
-    # get username for Django user
+    now = datetime.now(tz=timezone.utc)
     logged_in_account = mastodon.me()
-    username = logged_in_account["username"]
-    server_host = instance.url.replace("https://", "").replace("http://", "")
-    username = f"@{username}@{server_host}"
+    account, _ = Account.objects.update_or_create(
+        account_id=logged_in_account["id"],
+        instance=instance,
+        defaults={
+            "username": logged_in_account.get("username"),
+            "acct": logged_in_account.get("acct"),
+            "display_name": logged_in_account.get("display_name"),
+            "locked": logged_in_account.get("locked"),
+            "bot": logged_in_account.get("bot"),
+            "group": logged_in_account.get("group"),
+            "discoverable": logged_in_account.get("discoverable"),
+            "noindex": logged_in_account.get("noindex"),
+            "created_at": logged_in_account.get("created_at"),
+            "last_status_at": logged_in_account.get("last_status_at"),
+            "last_sync_at": now,
+            "followers_count": logged_in_account.get("followers_count"),
+            "following_count": logged_in_account.get("following_count"),
+            "statuses_count": logged_in_account.get("statuses_count"),
+            "note": logged_in_account.get("note"),
+            "url": logged_in_account.get("url"),
+            "avatar": logged_in_account.get("avatar"),
+            "avatar_static": logged_in_account.get("avatar_static"),
+            "header": logged_in_account.get("header"),
+            "header_static": logged_in_account.get("header_static"),
+            "emojis": logged_in_account.get("emojis"),
+            "roles": logged_in_account.get("roles", []),
+            "fields": logged_in_account.get("fields"),
+        },
+    )
 
-    user = User.objects.filter(username=username).first()
+    user, _ = User.objects.get_or_create(username=account.username_at_instance)
 
-    if not user:
-        user = User(username=username)
-        user.save()
-
-    account = Account.objects.filter(user=user).first()
-
-    if not account:
-        account = Account(user=user, access_token=access_token, instance=instance)
-        account.save()
+    AccountAccess.objects.update_or_create(
+        user=user,
+        defaults={
+            "account": account,
+            "instance": instance,
+            "access_token": access_token,
+        },
+    )
+    # TODO: Move to bg
+    accounts = mastodon.account_following(logged_in_account["id"])
+    to_create = []
+    while accounts:
+        for following in accounts:
+            to_create.append(
+                AccountFollowing(
+                    account=account,
+                    url=following["url"],
+                )
+            )
+        accounts = mastodon.fetch_next(accounts)
+    AccountFollowing.objects.bulk_create(to_create, batch_size=1000, ignore_conflicts=True)
 
     # force log the user in
     auth_login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])

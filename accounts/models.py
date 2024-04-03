@@ -173,6 +173,10 @@ class Account(models.Model):
         return naturaltime(self.last_status_at)
 
     @property
+    def username_at_instance(self):
+        return f"@{self.username}@{self.source}"
+
+    @property
     def languages(self):
         lang_lookup = {lang.code: lang for lang in LANGUAGES + FRAMEWORKS}
         return [lang_lookup[lang.language] for lang in self.accountlookup_set.all()]
