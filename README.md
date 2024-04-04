@@ -40,7 +40,12 @@ python manage.py tailwind install
 python manage.py tailwind start
 ```
 
-8. Populate the local database (takes about ~1hr)
+8. ... and start the background worker (only needed for syncing followers on login)
+```
+python manage.py runworker --reload
+```
+
+9. Populate the local database (takes about ~1hr)
 ```
 python manage.py scheduler --run-now
 ```
@@ -52,7 +57,7 @@ python manage.py crawler
 python manage.py indexer
 ```
 
-9. Create a Django Admin user for `http://localhost:8000/admin`
+10. Create a Django Admin user for `http://localhost:8000/admin`
 ```
 python manage.py createsuperuser
 ```
