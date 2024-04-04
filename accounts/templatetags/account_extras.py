@@ -1,6 +1,8 @@
 from django import template
 from django.utils.safestring import mark_safe
 
+from accounts.management.commands.crawler import INSTANCES
+
 register = template.Library()
 
 
@@ -20,3 +22,12 @@ def render_username_at_instance(account_url: str):
     # return: @djangocon@fosstodon.org
     instance, username = account_url.replace("https://", "").split("/")
     return f"{username}@{instance}"
+
+
+@register.simple_tag
+def instances_datalist():
+    res = "<datalist id='instances'>"
+    for instance in INSTANCES:
+        res += f"<option value='{instance}'>"
+    res += "</datalist>"
+    return mark_safe(res)  # noqa: S308)

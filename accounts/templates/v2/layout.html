@@ -46,7 +46,6 @@
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
         <meta name="msapplication-TileColor" content="#2d89ef">
         <meta name="theme-color" content="#ffffff">
-        <script src="{% static "src/components.js" %}"></script>
         <!-- Page specific head -->
         {% block head %}
         {% endblock head %}
@@ -221,7 +220,9 @@
                                        id="instance"
                                        class="bg-gray-50 mb-4 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                        placeholder="fosstodon.org"
+                                       list="instances"
                                        required />
+                                {% instances_datalist %}
                                 <p class="mb-4 text-sm font-medium text-gray-500 dark:text-gray-300">
                                     <strong>Write</strong> permissions will be requested to be able to follow accounts on your behalf.
                                 </p>
@@ -235,7 +236,9 @@
                 </div>
             </div>
         </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+        <script src="{% static "src/components.js" %}"></script>
+        <script src="{% static "htmx.min.js" %}"></script>
+        <script src="{% static "flowbite.min.js" %}"></script>
         <script data-goatcounter="https://fedidevs.goatcounter.com/count"
                 async
                 src="//gc.zgo.at/count.js"></script>
