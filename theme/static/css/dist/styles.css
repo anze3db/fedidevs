@@ -1442,6 +1442,14 @@ select {
   margin-left: 0.5rem;
 }
 
+.me-2 {
+  margin-inline-end: 0.5rem;
+}
+
+.me-3 {
+  margin-inline-end: 0.75rem;
+}
+
 .line-clamp-6 {
   overflow: hidden;
   display: -webkit-box;
@@ -1451,6 +1459,10 @@ select {
 
 .block {
   display: block;
+}
+
+.inline {
+  display: inline;
 }
 
 .flex {
@@ -1507,6 +1519,10 @@ select {
 
 .h-svh {
   height: 100svh;
+}
+
+.h-2 {
+  height: 0.5rem;
 }
 
 .max-h-64 {
@@ -1573,6 +1589,14 @@ select {
   width: 3rem;
 }
 
+.w-2 {
+  width: 0.5rem;
+}
+
+.w-0 {
+  width: 0px;
+}
+
 .min-w-64 {
   min-width: 16rem;
 }
@@ -1596,6 +1620,16 @@ select {
 .translate-y-1\/2 {
   --tw-translate-y: 50%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
 .cursor-not-allowed {
