@@ -1,12 +1,15 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 
+import dramatiq
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 from mastodon import Mastodon, MastodonNetworkError
@@ -173,8 +176,29 @@ def auth(request):
             "access_token": access_token,
         },
     )
-    # TODO: Move to bg
-    accounts = mastodon.account_following(logged_in_account["id"])
+    # force log the user in
+    auth_login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])
+
+    transaction.on_commit(lambda: sync_following.send(user.id))
+    messages.success(request, "Login successful, your following list is syncing...")
+
+    return redirect("index")
+
+
+@dramatiq.actor
+def sync_following(user_id: int):
+    user = User.objects.get(pk=user_id)
+    account_access = user.accountaccess
+    instance = account_access.instance
+    account = account_access.account
+    mastodon = Mastodon(
+        api_base_url=instance.url,
+        client_id=instance.client_id,
+        client_secret=instance.client_secret,
+        access_token=account_access.access_token,
+        user_agent="fedidevs",
+    )
+    accounts = mastodon.account_following(account.account_id)
     to_create = []
     while accounts:
         for following in accounts:
@@ -185,12 +209,34 @@ def auth(request):
                 )
             )
         accounts = mastodon.fetch_next(accounts)
-    AccountFollowing.objects.bulk_create(to_create, batch_size=1000, ignore_conflicts=True)
     AccountFollowing.objects.filter(account=account).exclude(url__in=[x.url for x in to_create]).delete()
+    AccountFollowing.objects.bulk_create(to_create, batch_size=1000, ignore_conflicts=True)
 
-    # force log the user in
-    auth_login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])
 
-    messages.success(request, "Login successful, your following list is syncing...")
+def follow(request, account_id: int):
+    account_access = request.user.accountaccess
+    instance = account_access.instance
+    mastodon = Mastodon(
+        api_base_url=instance.url,
+        client_id=instance.client_id,
+        client_secret=instance.client_secret,
+        access_token=account_access.access_token,
+        user_agent="fedidevs",
+    )
+    account = Account.objects.get(pk=account_id)
+    if account.instance == instance.url:
+        account_id = account.account_id
+    else:
+        local_account = mastodon.account_lookup(acct=account.username_at_instance)
+        account_id = local_account["id"]
 
-    return redirect("index")
+    mastodon.account_follow(account_id)
+    AccountFollowing.objects.get_or_create(account=request.user.accountaccess.account, url=account.url)
+
+    return HttpResponse(
+        status=200,
+        content="""<button disable
+        class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
+        Following
+        </button>""",
+    )

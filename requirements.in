@@ -1,7 +1,9 @@
 # Prod
 django
+django-dramatiq
 django-environ
 django-tailwind
+dramatiq[redis, watch]
 gunicorn
 heroicons[django]
 httpx

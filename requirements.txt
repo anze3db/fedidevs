@@ -42,6 +42,7 @@ django==5.0.3
     #   -r requirements.in
     #   django-browser-reload
     #   django-debug-toolbar
+    #   django-dramatiq
     #   django-rich
     #   django-tailwind
     #   django-tui
@@ -51,6 +52,8 @@ django-browser-reload==1.12.1
 django-coverage-plugin==3.1.0
     # via -r requirements.in
 django-debug-toolbar==4.3.0
+    # via -r requirements.in
+django-dramatiq==0.11.6
     # via -r requirements.in
 django-environ==0.11.2
     # via -r requirements.in
@@ -62,12 +65,20 @@ django-tui==24.2
     # via -r requirements.in
 djlint==1.34.1
     # via -r requirements.in
+dramatiq[redis,watch]==1.16.0
+    # via
+    #   -r requirements.in
+    #   django-dramatiq
 editorconfig==0.12.4
     # via
     #   cssbeautifier
     #   jsbeautifier
 flakytest==2023.0b11
     # via -r requirements.in
+gevent==24.2.1
+    # via watchdog-gevent
+greenlet==3.0.3
+    # via gevent
 gunicorn==21.2.0
     # via -r requirements.in
 h11==0.14.0
@@ -123,6 +134,8 @@ pip-tools==7.4.1
     # via -r requirements.in
 pluggy==1.4.0
     # via pytest
+prometheus-client==0.20.0
+    # via dramatiq
 psycopg2-binary==2.9.9
     # via -r requirements.in
 pygments==2.17.2
@@ -149,6 +162,8 @@ pywatchman==2.0.0
     # via -r requirements.in
 pyyaml==6.0.1
     # via djlint
+redis==5.0.3
+    # via dramatiq
 regex==2023.12.25
     # via djlint
 requests==2.31.0
@@ -199,10 +214,20 @@ urllib3==2.2.1
     #   flakytest
     #   requests
     #   sentry-sdk
+watchdog==4.0.0
+    # via
+    #   dramatiq
+    #   watchdog-gevent
+watchdog-gevent==0.1.1
+    # via dramatiq
 wheel==0.43.0
     # via pip-tools
 whitenoise==6.6.0
     # via -r requirements.in
+zope-event==5.0
+    # via gevent
+zope-interface==6.2
+    # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

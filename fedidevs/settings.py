@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import sys
 from pathlib import Path
 
 import environ
@@ -69,6 +70,7 @@ INSTALLED_APPS = [
     "heroicons",
     "django_browser_reload",
     "debug_toolbar",
+    "django_dramatiq",
     "django_tui",
     "tailwind",
     "theme",
@@ -194,6 +196,52 @@ vars().update(EMAIL_CONFIG)
 # Mastodon API settings:
 MSTDN_CLIENT_NAME = env.str("MSTDN_CLIENT_NAME", default="local.fedidevs.com")
 MSTDN_REDIRECT_URI = env.str("MSTDN_REDIRECT_URI", default="http://localhost:8000/mastodon_auth/")
+
+
+# Dramatiq settings:
+TESTS_RUNNING = "pytest" in sys.modules
+if TESTS_RUNNING:
+    DRAMATIQ_BROKER = {
+        "BROKER": "dramatiq.brokers.stub.StubBroker",
+        "OPTIONS": {},
+        "MIDDLEWARE": [
+            "dramatiq.middleware.AgeLimit",
+            "dramatiq.middleware.TimeLimit",
+            "dramatiq.middleware.Callbacks",
+            "dramatiq.middleware.Pipelines",
+            "dramatiq.middleware.Retries",
+            "django_dramatiq.middleware.DbConnectionsMiddleware",
+            "django_dramatiq.middleware.AdminMiddleware",
+        ],
+    }
+else:  # no cov
+    DRAMATIQ_BROKER = {
+        "BROKER": "dramatiq.brokers.redis.RedisBroker",
+        "OPTIONS": {
+            "url": "redis://localhost:6379/1",
+        },
+        "MIDDLEWARE": [
+            "dramatiq.middleware.AgeLimit",
+            "dramatiq.middleware.TimeLimit",
+            "dramatiq.middleware.Callbacks",
+            "dramatiq.middleware.Retries",
+            "django_dramatiq.middleware.DbConnectionsMiddleware",
+            "django_dramatiq.middleware.AdminMiddleware",
+        ],
+    }
+
+    DRAMATIQ_RESULT_BACKEND = {
+        "BACKEND": "dramatiq.results.backends.redis.RedisBackend",
+        "BACKEND_OPTIONS": {
+            "url": "redis://localhost:6379",
+        },
+        "MIDDLEWARE_OPTIONS": {"result_ttl": 1000 * 60 * 10},
+    }
+
+# Defines which database should be used to persist Task objects when the
+# AdminMiddleware is enabled.  The default value is "default".
+DRAMATIQ_TASKS_DATABASE = "default"
+DRAMATIQ_AUTODISCOVER_MODULES = ["tasks", "views"]
 
 if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
     sentry_sdk.init(
