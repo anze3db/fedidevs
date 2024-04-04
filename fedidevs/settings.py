@@ -191,6 +191,10 @@ EMAIL_CONFIG = env.email("EMAIL_URL", default="consolemail://")
 
 vars().update(EMAIL_CONFIG)
 
+# Mastodon API settings:
+MSTDN_CLIENT_NAME = env.str("MSTDN_CLIENT_NAME", default="local.fedidevs.com")
+MSTDN_REDIRECT_URI = env.str("MSTDN_REDIRECT_URI", default="http://localhost:8000/mastodon_auth/")
+
 if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
     sentry_sdk.init(
         dsn=SENTRY_DSN,
