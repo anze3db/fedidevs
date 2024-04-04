@@ -176,7 +176,6 @@ def auth(request):
     # TODO: Move to bg
     accounts = mastodon.account_following(logged_in_account["id"])
     to_create = []
-    AccountFollowing.objects.filter(account=account).delete()
     while accounts:
         for following in accounts:
             to_create.append(
@@ -187,10 +186,11 @@ def auth(request):
             )
         accounts = mastodon.fetch_next(accounts)
     AccountFollowing.objects.bulk_create(to_create, batch_size=1000, ignore_conflicts=True)
+    AccountFollowing.objects.filter(account=account).exclude(url__in=[x.url for x in to_create]).delete()
 
     # force log the user in
     auth_login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])
 
-    messages.success(request, "Login successful")
+    messages.success(request, "Login successful, your following list is syncing...")
 
     return redirect("index")
