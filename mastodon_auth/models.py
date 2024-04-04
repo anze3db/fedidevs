@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-# Create your models here.
 class Instance(models.Model):
     url = models.CharField(max_length=255)
     client_id = models.CharField(max_length=255)
@@ -15,7 +14,7 @@ class Instance(models.Model):
 
     class Meta:
         verbose_name = "Auth Instance"
-        verbose_name_plural = "Auth Instance ws"
+        verbose_name_plural = "Auth Instance"
 
 
 class AccountAccess(models.Model):
