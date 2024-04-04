@@ -16,6 +16,33 @@ from mastodon import Mastodon, MastodonNetworkError
 from accounts.models import Account
 from mastodon_auth.models import AccountAccess, AccountFollowing, Instance
 
+app_scopes = (
+    "read:accounts",
+    "read:blocks",
+    "read:favourites",
+    "read:filters",
+    "read:follows",
+    "read:lists",
+    "read:mutes",
+    "read:notifications",
+    "read:search",
+    "read:statuses",
+    "read:bookmarks",
+    "write:accounts",
+    "write:blocks",
+    "write:favourites",
+    "write:filters",
+    "write:follows",
+    "write:lists",
+    "write:media",
+    "write:mutes",
+    "write:notifications",
+    "write:reports",
+    "write:statuses",
+    "write:bookmarks",
+)
+login_scopes = ("read:accounts", "read:follows", "write:follows")
+
 
 def get_redirect_uri(request):
     site_domain = get_current_site(request).domain
@@ -31,15 +58,6 @@ def login(request):
     api_base_url = request.POST.get("instance", "").strip()
     api_base_url = api_base_url.replace("https://", "").replace("http://", "")
 
-    scopes = (
-        # "read:blocks",
-        # "write:blocks",
-        "read",
-        "write:follows",
-        # "read:mutes",
-        # "write:mutes",
-    )
-
     if api_base_url.endswith("/"):
         api_base_url = api_base_url[0:-1]
 
@@ -51,8 +69,8 @@ def login(request):
     if not instance:
         try:
             (client_id, client_secret) = Mastodon.create_app(
-                "fedidevs.com" if "8000" not in api_base_url else "local.fedidevs.com",
-                scopes=scopes,
+                client_name="fedidevs.com" if "8000" not in api_base_url else "local.fedidevs.com",
+                scopes=app_scopes,
                 redirect_uris=redirect_uri,
                 website="https://fedidevs.com",
                 api_base_url=api_base_url,
@@ -76,7 +94,7 @@ def login(request):
         client_id=instance.client_id,
         state=state,
         redirect_uris=redirect_uri,
-        scopes=scopes,
+        scopes=login_scopes,
     )
 
     cache.set(f"oauth:{state}", instance.id, timeout=500)
@@ -120,12 +138,10 @@ def auth(request):
         user_agent="fedidevs",
     )
 
-    scopes = ("read", "write:follows")
-
     access_token = mastodon.log_in(
         code=code,
         redirect_uri=redirect_uri,
-        scopes=scopes,
+        scopes=login_scopes,
     )
 
     now = datetime.now(tz=timezone.utc)
