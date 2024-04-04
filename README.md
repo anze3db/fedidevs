@@ -42,7 +42,7 @@ python manage.py tailwind start
 
 8. ... and start the background worker (only needed for syncing followers on login)
 ```
-python manage.py runworker --reload
+python manage.py rundramatiq --reload
 ```
 
 9. Populate the local database (takes about ~1hr)
