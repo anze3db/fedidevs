@@ -170,8 +170,14 @@ def follow(request, account_id: int):
 
     mastodon.account_follow(account_id)
     AccountFollowing.objects.get_or_create(account=request.user.accountaccess.account, url=account.url)
-    # TODO: Remove full page refresh here
-    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
+    return HttpResponse(
+        status=200,
+        content="""<button disable
+        class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
+        Following
+        </button>""",
+    )
 
 
 @cache_page(60 * 60 * 24, cache="memory")
