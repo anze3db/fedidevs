@@ -25,7 +25,6 @@ def store_daily_stats():
     Daily.objects.update_or_create(date=today, defaults=account_defaults | post_defaults)
 
 
-# Create your models here.
 class Daily(models.Model):
     date = models.DateField(unique=True, db_index=True)
     total_accounts = models.IntegerField()

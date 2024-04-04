@@ -1,10 +1,13 @@
 # Prod
 django
+django-dramatiq
 django-environ
 django-tailwind
+dramatiq[redis, watch]
 gunicorn
 heroicons[django]
 httpx
+mastodon.py
 psycopg2-binary
 schedule
 sentry-sdk

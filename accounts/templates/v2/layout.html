@@ -1,6 +1,7 @@
 {% load static tailwind_tags %}
 {% load static %}
 {% load humanize %}
+{% load account_extras %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -45,12 +46,12 @@
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
         <meta name="msapplication-TileColor" content="#2d89ef">
         <meta name="theme-color" content="#ffffff">
-        <script src="{% static "src/components.js" %}"></script>
         <!-- Page specific head -->
         {% block head %}
         {% endblock head %}
     </head>
-    <body class="min-h-screen bg-gray-100 dark:bg-gray-950">
+    <body class="min-h-screen bg-gray-100 dark:bg-gray-950"
+          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <div class="z-50 flex fixed w-full top-0 backdrop-blur bg-gray-100/[0.5] dark:bg-gray-950/[0.5] px-12 py-4 flex-row justify-between items-center text-gray-900 dark:text-white">
             <div class="flex items-center flex-1 gap-8">
                 <h1 class="text-3xl font-bold w-60">
@@ -74,6 +75,44 @@
                     <span class="block w-6 h-6 dark:hidden">{% heroicon_outline 'moon' %}</span>
                 </button>
                 </theme-toggle>
+                {% if request.user.is_authenticated %}
+                    <button type="button"
+                            data-dropdown-toggle="dropdown"
+                            class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
+                        <span class="sr-only">Account</span>
+                        <img src={{ user.accountaccess.account.avatar_static }} alt="avatar" class="w-8 h-8 rounded-full" />
+                    </button>
+                    <div id="dropdown"
+                         class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                            aria-labelledby="dropdownDefaultButton">
+                            <li>
+                                <a href="{% url 'mastodon_logout' %}"
+                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</a>
+                            </li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <button type="button"
+                            data-dropdown-toggle="dropdown"
+                            class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
+                        <span class="sr-only">Account</span>
+                        <span class="block w-6 h-6">{% heroicon_outline 'user' %}</span>
+                    </button>
+                    <div id="dropdown"
+                         class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                            aria-labelledby="dropdownDefaultButton">
+                            <li>
+                                <a data-modal-target="authentication-modal"
+                                   data-modal-toggle="authentication-modal"
+                                   class="block px-4 py-2  hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    Sign in
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                {% endif %}
             </div>
         </div>
         <div class="flex pt-14 h-svh">
@@ -141,6 +180,67 @@
                 </div>
             </div>
         </div>
+        {% if not request.user.is_authenticated %}
+            <div id="authentication-modal"
+                 tabindex="-1"
+                 aria-hidden="true"
+                 class="hidden backdrop-blur-md bg-white/30 dark:bg-black/30 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <div class="relative p-4 w-full max-w-md max-h-full">
+                    <!-- Modal content -->
+                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Sign in to your Mastodon instance</h3>
+                            <button type="button"
+                                    class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                    data-modal-hide="authentication-modal">
+                                <svg class="w-3 h-3"
+                                     aria-hidden="true"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     fill="none"
+                                     viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-4 md:p-5">
+                            <form method="post"
+                                  action="{% url 'mastodon_login' %}"
+                                  class="space-y-4"
+                                  action="#">
+                                {% csrf_token %}
+                                <div>
+                                    <label for="email"
+                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                        Your instance
+                                    </label>
+                                    <input type="text"
+                                           name="instance"
+                                           id="instance"
+                                           class="bg-gray-50 mb-4 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                           placeholder="fosstodon.org"
+                                           list="instances"
+                                           required />
+                                    {% instances_datalist %}
+                                    <p class="mb-4 text-sm font-medium text-gray-500 dark:text-gray-300">
+                                        <strong>Write</strong> permissions will be requested to be able to follow accounts on your behalf.
+                                    </p>
+                                    <button type="submit"
+                                            class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                        Authorize
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <script src="{% static "src/components.js" %}"></script>
+        <script src="{% static "htmx.min.js" %}"></script>
+        <script src="{% static "flowbite.min.js" %}"></script>
         <script data-goatcounter="https://fedidevs.goatcounter.com/count"
                 async
                 src="//gc.zgo.at/count.js"></script>

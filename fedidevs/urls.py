@@ -22,6 +22,7 @@ from django.utils import dateparse, timezone
 from accounts import views
 from accounts.models import FRAMEWORKS, LANGUAGES
 from confs import views as confs_views
+from mastodon_auth import views as mastodon_views
 from posts import views as post_views
 
 
@@ -52,6 +53,10 @@ urlpatterns = (
         path("__reload__/", include("django_browser_reload.urls")),
         path("robots.txt", robots_txt),
         path("", views.index, name="index"),
+        path("follow/<int:account_id>", mastodon_views.follow, name="follow"),
+        path("mastodon_login/", mastodon_views.login, name="mastodon_login"),
+        path("mastodon_logout/", mastodon_views.logout, name="mastodon_logout"),
+        path("mastodon_auth/", mastodon_views.auth, name="mastodon_auth"),
         path("faq/", views.faq, name="faq"),
         path(
             "developers-on-mastodon/",
