@@ -16,6 +16,7 @@ from mastodon import Mastodon, MastodonNetworkError
 
 from accounts.models import Account
 from mastodon_auth.models import AccountAccess, AccountFollowing, Instance
+from stats.models import FollowClick
 
 app_scopes = (
     "read:accounts",
@@ -232,6 +233,7 @@ def follow(request, account_id: int):
 
     mastodon.account_follow(account_id)
     AccountFollowing.objects.get_or_create(account=request.user.accountaccess.account, url=account.url)
+    FollowClick.objects.create(user=request.user, url=account.url)
 
     return HttpResponse(
         status=200,

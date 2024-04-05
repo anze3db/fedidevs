@@ -130,3 +130,9 @@ class DailyAccountChange(models.Model):
 
     def __str__(self):
         return f"{self.account.username}"
+
+
+class FollowClick(models.Model):
+    user = models.ForeignKey("auth.User", on_delete=models.CASCADE)
+    url = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
