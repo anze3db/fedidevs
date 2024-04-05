@@ -27,4 +27,3 @@ pytest-cov
 pytest-django
 rich
 ruff
-pywatchman
