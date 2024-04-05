@@ -52,132 +52,151 @@
     </head>
     <body class="min-h-screen bg-gray-100 dark:bg-gray-950"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-        <div class="z-50 flex fixed w-full top-0 backdrop-blur bg-gray-100/[0.5] dark:bg-gray-950/[0.5] px-12 py-4 flex-row justify-between items-center text-gray-900 dark:text-white">
-            <div class="flex items-center flex-1 gap-8">
-                <h1 class="text-3xl font-bold w-60">
-                    <a class="flex gap-4" href="{% url 'index' %}">
-                        <img src="{% static 'logo.png' %}" alt="logo" width="32">
-                        {{ page_header }}
-                    </a>
-                </h1>
-                <nav class="flex gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
-                    <a href="{% url 'index' %}">Accounts</a>
-                    <a class="pl-4" href="{% url 'posts' %}"><span class="opacity-50 hover:opacity-75">Posts</span></a>
-                    <a class="pl-4" href="{% url 'conferences' %}"><span class="opacity-50 hover:opacity-75">Conferences</span></a>
-                </nav>
-            </div>
-            <div class="flex justify-between gap-2">
-                <theme-toggle>
-                <button type="button"
-                        class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
-                    <span class="sr-only">Toggle Theme</span>
-                    <span class="hidden dark:block">{% heroicon_outline 'sun' %}</span>
-                    <span class="block w-6 h-6 dark:hidden">{% heroicon_outline 'moon' %}</span>
-                </button>
-                </theme-toggle>
-                {% if request.user.is_authenticated %}
-                    <button type="button"
-                            data-dropdown-toggle="dropdown"
-                            class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
-                        <span class="sr-only">Account</span>
-                        <img src={{ user.accountaccess.account.avatar_static }} alt="avatar" class="w-8 h-8 rounded-full" />
+        <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+            <div class="z-50 flex fixed w-full top-0 backdrop-blur bg-gray-100/[0.5] dark:bg-gray-950/[0.5] px-4 sm:px-12 py-4 flex-row justify-between items-center text-gray-900 dark:text-white">
+                <div class="flex items-center flex-1 gap-4 sm:gap-8">
+                    <button data-drawer-target="logo-sidebar"
+                            data-drawer-toggle="logo-sidebar"
+                            aria-controls="logo-sidebar"
+                            type="button"
+                            class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                        <span class="sr-only">Open sidebar</span>
+                        <svg class="w-6 h-6"
+                             aria-hidden="true"
+                             fill="currentColor"
+                             viewBox="0 0 20 20"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
+                            </path>
+                        </svg>
                     </button>
-                    <div id="dropdown"
-                         class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
-                            aria-labelledby="dropdownDefaultButton">
-                            <li>
-                                <a href="{% url 'mastodon_logout' %}"
-                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</a>
-                            </li>
-                        </ul>
-                    </div>
-                {% else %}
+                    <h1 class="text-3xl font-bold w-8 md:w-60">
+                        <a class="flex gap-4" href="{% url 'index' %}">
+                            <img src="{% static 'logo.png' %}" alt="logo" width="32">
+                            <span class="hidden md:block">{{ page_header }}</span>
+                        </a>
+                    </h1>
+                    <nav class="flex gap-2 sm:gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
+                        <a href="{% url 'index' %}"><span class="sm:hidden">{% heroicon_outline 'users' %}</span><span class="hidden sm:block">Accounts</span></a>
+                        <a class="pl-4" href="{% url 'posts' %}"><span class="sm:hidden">{% heroicon_outline 'book-open' %}</span><span class="hidden sm:block opacity-50 hover:opacity-75">Posts</span></a>
+                        <a class="pl-4" href="{% url 'conferences' %}"><span class="sm:hidden">{% heroicon_outline 'building-office-2' %}</span><span class="hidden sm:block opacity-50 hover:opacity-75">Conferences</span></a>
+                    </nav>
+                </div>
+                <div class="flex justify-between sm:gap-2">
+                    <theme-toggle>
                     <button type="button"
-                            data-dropdown-toggle="dropdown"
                             class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
-                        <span class="sr-only">Account</span>
-                        <span class="block w-6 h-6">{% heroicon_outline 'user' %}</span>
+                        <span class="sr-only">Toggle Theme</span>
+                        <span class="hidden dark:block">{% heroicon_outline 'sun' %}</span>
+                        <span class="block w-6 h-6 dark:hidden">{% heroicon_outline 'moon' %}</span>
                     </button>
-                    <div id="dropdown"
-                         class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
-                            aria-labelledby="dropdownDefaultButton">
-                            <li>
-                                <a data-modal-target="authentication-modal"
-                                   data-modal-toggle="authentication-modal"
-                                   class="block px-4 py-2  hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                    Sign in
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                {% endif %}
+                    </theme-toggle>
+                    {% if request.user.is_authenticated %}
+                        <button type="button"
+                                data-dropdown-toggle="dropdown"
+                                class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
+                            <span class="sr-only">Account</span>
+                            <img src={{ user.accountaccess.account.avatar_static }} alt="avatar" class="w-8 h-8 rounded-full" />
+                        </button>
+                        <div id="dropdown"
+                             class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                aria-labelledby="dropdownDefaultButton">
+                                <li>
+                                    <a href="{% url 'mastodon_logout' %}"
+                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <button type="button"
+                                data-dropdown-toggle="dropdown"
+                                class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
+                            <span class="sr-only">Account</span>
+                            <span class="block w-6 h-6">{% heroicon_outline 'user' %}</span>
+                        </button>
+                        <div id="dropdown"
+                             class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                aria-labelledby="dropdownDefaultButton">
+                                <li>
+                                    <a data-modal-target="authentication-modal"
+                                       data-modal-toggle="authentication-modal"
+                                       class="block px-4 py-2  hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                        Sign in
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-        </div>
-        <div class="flex pt-14 h-svh">
+        </nav>
+        {% block header %}
+            {% comment %} {% if page_subheader %}<h2>{{ page_subheader | safe }}</h2>{% endif %} {% endcomment %}
+        {% endblock header %}
+        <aside id="logo-sidebar"
+               class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full sm:translate-x-0  bg-gray-100 dark:bg-gray-950"
+               aria-label="Sidebar">
             <div class="flex flex-col justify-between w-1/6 p-12 pr-8 overflow-y-auto text-gray-900 min-w-64 max-w-80 dark:text-white max-h-svh">
                 <div class="align-top">
-                    {% block header %}
-                        {% comment %} {% if page_subheader %}<h2>{{ page_subheader | safe }}</h2>{% endif %} {% endcomment %}
-                    {% endblock header %}
                     {% block sidebar %}
                     {% endblock sidebar %}
+                    <footer class="align-baseline">
+                        <nav>
+                            <div class="flex gap-4 mb-4">
+                                <a href="https://github.com/anze3db/fedidevs">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         width="18"
+                                         height="18"
+                                         fill="currentColor"
+                                         viewBox="0 0 16 16">
+                                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8" />
+                                    </svg>
+                                </a>
+                                <a rel="me" href="https://fosstodon.org/@fedidevs">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         width="18"
+                                         height="18"
+                                         fill="currentColor"
+                                         viewBox="0 0 16 16">
+                                        <path d="M11.19 12.195c2.016-.24 3.77-1.475 3.99-2.603.348-1.778.32-4.339.32-4.339 0-3.47-2.286-4.488-2.286-4.488C12.062.238 10.083.017 8.027 0h-.05C5.92.017 3.942.238 2.79.765c0 0-2.285 1.017-2.285 4.488l-.002.662c-.004.64-.007 1.35.011 2.091.083 3.394.626 6.74 3.78 7.57 1.454.383 2.703.463 3.709.408 1.823-.1 2.847-.647 2.847-.647l-.06-1.317s-1.303.41-2.767.36c-1.45-.05-2.98-.156-3.215-1.928a4 4 0 0 1-.033-.496s1.424.346 3.228.428c1.103.05 2.137-.064 3.188-.189zm1.613-2.47H11.13v-4.08c0-.859-.364-1.295-1.091-1.295-.804 0-1.207.517-1.207 1.541v2.233H7.168V5.89c0-1.024-.403-1.541-1.207-1.541-.727 0-1.091.436-1.091 1.296v4.079H3.197V5.522q0-1.288.66-2.046c.456-.505 1.052-.764 1.793-.764.856 0 1.504.328 1.933.983L8 4.39l.417-.695c.429-.655 1.077-.983 1.934-.983.74 0 1.336.259 1.791.764q.662.757.661 2.046z" />
+                                    </svg>
+                                </a>
+                                <a href="mailto:hello@fedidevs.com">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         width="18"
+                                         height="18"
+                                         fill="currentColor"
+                                         viewBox="0 0 16 16">
+                                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z" />
+                                    </svg>
+                                </a>
+                            </div>
+                            <ul>
+                                <li>
+                                    <a href="{% url 'faq' %}">FAQ</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'developers-on-mastodon' %}">Mastodon instances</a>
+                                </li>
+                                <li>
+                                    <a target="_blank" href="https://anze3db.ck.page/76db70f6e0 ">Newsletter</a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <p class="mt-4 text-sm">
+                            Created by <a href="https://fosstodon.org/@anze3db">Anže</a>
+                            and <a href="https://github.com/anze3db/fedidevs/graphs/contributors">friends.</a>
+                        </p>
+                    </footer>
                 </div>
-                <footer class="align-baseline">
-                    <nav>
-                        <div class="flex gap-4 mb-4">
-                            <a href="https://github.com/anze3db/fedidevs">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                     width="18"
-                                     height="18"
-                                     fill="currentColor"
-                                     viewBox="0 0 16 16">
-                                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8" />
-                                </svg>
-                            </a>
-                            <a rel="me" href="https://fosstodon.org/@fedidevs">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                     width="18"
-                                     height="18"
-                                     fill="currentColor"
-                                     viewBox="0 0 16 16">
-                                    <path d="M11.19 12.195c2.016-.24 3.77-1.475 3.99-2.603.348-1.778.32-4.339.32-4.339 0-3.47-2.286-4.488-2.286-4.488C12.062.238 10.083.017 8.027 0h-.05C5.92.017 3.942.238 2.79.765c0 0-2.285 1.017-2.285 4.488l-.002.662c-.004.64-.007 1.35.011 2.091.083 3.394.626 6.74 3.78 7.57 1.454.383 2.703.463 3.709.408 1.823-.1 2.847-.647 2.847-.647l-.06-1.317s-1.303.41-2.767.36c-1.45-.05-2.98-.156-3.215-1.928a4 4 0 0 1-.033-.496s1.424.346 3.228.428c1.103.05 2.137-.064 3.188-.189zm1.613-2.47H11.13v-4.08c0-.859-.364-1.295-1.091-1.295-.804 0-1.207.517-1.207 1.541v2.233H7.168V5.89c0-1.024-.403-1.541-1.207-1.541-.727 0-1.091.436-1.091 1.296v4.079H3.197V5.522q0-1.288.66-2.046c.456-.505 1.052-.764 1.793-.764.856 0 1.504.328 1.933.983L8 4.39l.417-.695c.429-.655 1.077-.983 1.934-.983.74 0 1.336.259 1.791.764q.662.757.661 2.046z" />
-                                </svg>
-                            </a>
-                            <a href="mailto:hello@fedidevs.com">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                     width="18"
-                                     height="18"
-                                     fill="currentColor"
-                                     viewBox="0 0 16 16">
-                                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z" />
-                                </svg>
-                            </a>
-                        </div>
-                        <ul>
-                            <li>
-                                <a href="{% url 'faq' %}">FAQ</a>
-                            </li>
-                            <li>
-                                <a href="{% url 'developers-on-mastodon' %}">Mastodon instances</a>
-                            </li>
-                            <li>
-                                <a target="_blank" href="https://anze3db.ck.page/76db70f6e0 ">Newsletter</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <p class="mt-4 text-sm">
-                        Created by <a href="https://fosstodon.org/@anze3db">Anže</a>
-                        and <a href="https://github.com/anze3db/fedidevs/graphs/contributors">friends.</a>
-                    </p>
-                </footer>
             </div>
-            <div class="flex-grow pl-16 overflow-auto">
-                <div class="container p-12 pl-0 mx-auto">
-                    {% block content %}
-                    {% endblock content %}
-                </div>
+        </aside>
+        <div class="p-4 sm:ml-64">
+            <div class="container pt-20 pl-0 mx-auto">
+                {% block content %}
+                {% endblock content %}
             </div>
         </div>
         {% if not request.user.is_authenticated %}
