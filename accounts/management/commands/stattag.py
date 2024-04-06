@@ -54,17 +54,18 @@ class Command(RichCommand):
         min_ids = MinId.objects.filter(conference__in=conferences, instance=instance)
         min_id = min([min_id.min_id async for min_id in min_ids], default="111054552104295026")
         min_id_to_save = min_id
-        async with httpx.AsyncClient() as client:
-            while True:
-                posts = await self.fetch_and_handle_fail(client, instance, tags, min_id)
-                if not posts:
-                    break
-                min_id = posts[-1]["id"]
-                if datetime.fromisoformat(posts[-1]["created_at"]) < (
-                    datetime.now(tz=timezone.utc) - timedelta(days=3)
-                ):
-                    min_id_to_save = min_id
-                await self.process_posts(posts, conferences)
+        for tag in tags:
+            async with httpx.AsyncClient() as client:
+                while True:
+                    posts = await self.fetch_and_handle_fail(client, instance, tag, min_id)
+                    if not posts:
+                        break
+                    min_id = posts[-1]["id"]
+                    if datetime.fromisoformat(posts[-1]["created_at"]) < (
+                        datetime.now(tz=timezone.utc) - timedelta(days=3)
+                    ):
+                        min_id_to_save = min_id
+                    await self.process_posts(posts, conferences)
 
         min_ids = []
         for conf in conferences:
@@ -191,7 +192,6 @@ class Command(RichCommand):
             update_fields=["replies_count", "reblogs_count", "favourites_count"],
             unique_fields=["post_id", "account"],
         )
-
         for conf in conferences:
             conf_tags = [c.strip().replace("#", "").lower() for c in conf.tags.split(",")]
             posts = []
