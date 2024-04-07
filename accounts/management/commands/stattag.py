@@ -43,6 +43,7 @@ class Command(RichCommand):
         )
 
     async def handle_instance(self, instance, conferences):
+        self.console.print(f"Starting {instance}, {", ".join(conf.slug for conf in conferences)}")
         tags = list(
             {
                 tag.strip().replace("#", "").lower()
