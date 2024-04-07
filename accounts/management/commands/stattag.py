@@ -230,4 +230,5 @@ class Command(RichCommand):
                 reblogs_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("reblogs_count")[:1]),
                 replies_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("replies_count")[:1]),
                 visibility=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("visibility")[:1]),
+                account_id=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("account_id")[:1]),
             )
