@@ -62,7 +62,7 @@ def conference(request, slug: str):
 
     all_conf_posts_count = ConferencePost.objects.filter(search_query).count()
 
-    date = request.GET.get("date")
+    date = request.GET.get("date") or None
     if date and (date := parse_date(date)):
         search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
 
