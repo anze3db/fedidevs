@@ -29,30 +29,16 @@ class Command(RichCommand):
         else:
             conferences = [c async for c in Conference.objects.filter(archived_date__isnull=True)]
 
-        instances_lst = {
-            instance.strip()
-            for conference in conferences
-            for instance in conference.instances.split(",")
-            if conference.instances and instance.strip()
-        }
-        await asyncio.gather(
-            *[
-                self.handle_instance(instance, [c for c in conferences if instance in c.instances])
-                for instance in instances_lst
-            ]
-        )
+        for conference in conferences:
+            if not conference.instances:
+                self.console.log(f"No instances for {conference.slug}")
+            instances = conference.instances.split(",")
+            await asyncio.gather(*[self.handle_instance(instance.strip(), conference) for instance in instances])
 
-    async def handle_instance(self, instance, conferences):
-        self.console.print(f"Starting {instance}, {", ".join(conf.slug for conf in conferences)}")
-        tags = list(
-            {
-                tag.strip().replace("#", "").lower()
-                for conference in conferences
-                for tag in conference.tags.split(",")
-                if conference.tags
-            }
-        )
-        min_ids = MinId.objects.filter(conference__in=conferences, instance=instance)
+    async def handle_instance(self, instance, conference):
+        self.console.print(f"Starting {instance}, {conference.slug}")
+        tags = list({tag.strip().replace("#", "").lower() for tag in conference.tags.split(",") if conference.tags})
+        min_ids = MinId.objects.filter(conference=conference, instance=instance)
         min_id = min([min_id.min_id async for min_id in min_ids], default="111054552104295026")
         min_id_to_save = min_id
         for tag in tags:
@@ -66,23 +52,21 @@ class Command(RichCommand):
                         datetime.now(tz=timezone.utc) - timedelta(days=3)
                     ):
                         min_id_to_save = min_id
-                    await self.process_posts(posts, conferences)
+                    await self.process_posts(posts, conference)
 
         min_ids = []
-        for conf in conferences:
-            min_ids.append(MinId(conference=conf, instance=instance, min_id=min_id_to_save))
+        min_ids.append(MinId(conference=conference, instance=instance, min_id=min_id_to_save))
 
         await MinId.objects.abulk_create(
             min_ids, update_conflicts=True, unique_fields=["conference", "instance"], update_fields=["min_id"]
         )
 
-    async def fetch_and_handle_fail(self, client, instance: str, tags: list[str], min_id: str):
+    async def fetch_and_handle_fail(self, client, instance: str, tag: str, min_id: str):
         try:
             response = await client.get(
-                f"https://{instance}/api/v1/timelines/tag/{tags[0]}",
+                f"https://{instance}/api/v1/timelines/tag/{tag}",
                 params={
                     "q": "",
-                    "any": tags[1:],
                     "type": "statuses",
                     "limit": 40,
                     "min_id": min_id,
@@ -93,7 +77,7 @@ class Command(RichCommand):
             if response.status_code == 429:
                 self.console.print(f"Rate limited, sleeping for 5 minutes {instance}")
                 await asyncio.sleep(60 * 5)
-                return await self.fetch_and_handle_fail(client, instance, tags, min_id)
+                return await self.fetch_and_handle_fail(client, instance, tag, min_id)
             if response.status_code != 200:
                 self.console.print(f"[bold red]Error status code[/bold red] for {instance}. {response.status_code}")
                 return []
@@ -105,7 +89,7 @@ class Command(RichCommand):
             self.console.print(f"[bold red]Error Unknown[/bold red] for {instance}", e)
             return []
 
-    async def process_posts(self, posts, conferences):
+    async def process_posts(self, posts, conference):
         unique_accounts = []
         seen_account_ids = set()
         for post in posts:
@@ -193,42 +177,33 @@ class Command(RichCommand):
             update_fields=["replies_count", "reblogs_count", "favourites_count"],
             unique_fields=["post_id", "account"],
         )
-        for conf in conferences:
-            conf_tags = [c.strip().replace("#", "").lower() for c in conf.tags.split(",")]
-            posts = []
-            for post in post_objs:
-                for tag in post.tags:
-                    if tag["name"].lower() in conf_tags:
-                        posts.append(post)
-                        break
-            await asyncio.gather(
-                conf.posts.aadd(*posts),
-                conf.accounts.aadd(*[post.account for post in posts]),
-            )
+        await asyncio.gather(
+            conference.posts.aadd(*post_objs),
+            conference.accounts.aadd(*[post.account for post in post_objs]),
+        )
 
-        for conf in conferences:
-            if conf.posts_after:
-                posts_after = conf.posts_after
-            else:
-                posts_after = datetime.now(tz=timezone.utc) - timedelta(days=999)
+        if conference.posts_after:
+            posts_after = conference.posts_after
+        else:
+            posts_after = datetime.now(tz=timezone.utc) - timedelta(days=999)
 
-            await ConferenceAccount.objects.filter(conference=conf).aupdate(
-                count=Coalesce(
-                    Subquery(
-                        conf.posts.values("account_id")
-                        .filter(account_id=OuterRef("account_id"), created_at__gte=posts_after)
-                        .annotate(post_count=Count("id"))
-                        .values("post_count")[:1],
-                    ),
-                    Value(0),
-                )
+        await ConferenceAccount.objects.filter(conference=conference).aupdate(
+            count=Coalesce(
+                Subquery(
+                    conference.posts.values("account_id")
+                    .filter(account_id=OuterRef("account_id"), created_at__gte=posts_after)
+                    .annotate(post_count=Count("id"))
+                    .values("post_count")[:1],
+                ),
+                Value(0),
             )
+        )
 
-            await ConferencePost.objects.filter(conference=conf).aupdate(
-                created_at=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("created_at")[:1]),
-                favourites_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("favourites_count")[:1]),
-                reblogs_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("reblogs_count")[:1]),
-                replies_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("replies_count")[:1]),
-                visibility=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("visibility")[:1]),
-                account_id=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("account_id")[:1]),
-            )
+        await ConferencePost.objects.filter(conference=conference).aupdate(
+            created_at=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("created_at")[:1]),
+            favourites_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("favourites_count")[:1]),
+            reblogs_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("reblogs_count")[:1]),
+            replies_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("replies_count")[:1]),
+            visibility=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("visibility")[:1]),
+            account_id=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("account_id")[:1]),
+        )
