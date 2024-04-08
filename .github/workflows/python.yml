@@ -36,3 +36,12 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           bash projects/fedidevs/fedidevs_update.sh
+  dagger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+      - name: Install Dagger CLI
+        run: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sh; cd -; }
+      - name: Run Dagger pipeline
+        run: dagger call --dir . --flakytest-token env:${{ secrets.FLAKYTEST_SECRET_TOKEN }} ci 
