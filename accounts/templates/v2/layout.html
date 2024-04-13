@@ -49,6 +49,7 @@
         <!-- Page specific head -->
         {% block head %}
         {% endblock head %}
+        <script src="{% static "src/components.js" %}"></script>
     </head>
     <body class="min-h-screen bg-gray-100 dark:bg-gray-950"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
@@ -257,7 +258,6 @@
                 </div>
             </div>
         {% endif %}
-        <script src="{% static "src/components.js" %}"></script>
         <script src="{% static "htmx.min.js" %}"></script>
         <script src="{% static "flowbite.min.js" %}"></script>
         <script data-goatcounter="https://fedidevs.goatcounter.com/count"
