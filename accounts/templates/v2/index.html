@@ -136,9 +136,9 @@
             </h2>
             <ul class="px-4 -mx-4 text-small ">
                 {% for language in languages %}
-                    <li class="mb-2 inline">
+                    <li class="m-1 inline-block">
                         <a href="{% if selected_lang.code != language.code %}{% url language.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
-                           class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md {% if selected_lang.code == language.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
+                           class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 {% if selected_lang.code == language.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
                            role="button">
                             <span class="flex gap-2">
                                 <img src="{% static language.image %}"
@@ -164,9 +164,9 @@
             </h2>
             <ul class="px-4 -mx-4">
                 {% for framework in frameworks %}
-                    <li class="mb-2">
+                    <li class="m-1 inline-block">
                         <a href="{% if selected_framework.code != framework.code %}{% url framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
-                           class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md {% if selected_framework.code == framework.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
+                           class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if selected_framework.code == framework.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
                            role="button">
                             <span class="flex gap-2">
                                 <img src="{% static framework.image %}"

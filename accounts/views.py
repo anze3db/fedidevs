@@ -56,20 +56,6 @@ def index(request, lang: str | None = None):
     if selected_framework:
         search_query &= Q(accountlookup__language=selected_framework.code)
 
-    frameworks = sorted(
-        frameworks,
-        key=lambda framework: (
-            framework["code"] == selected_framework.code if selected_framework else True,
-            framework["count"],
-        ),
-        reverse=True,
-    )
-    languages = sorted(
-        languages,
-        key=lambda lng: (lng["code"] == selected_lang.code if selected_lang else True, lng["count"]),
-        reverse=True,
-    )
-
     query = request.GET.get("q", "").strip()
     order = request.GET.get("o", "-followers_count")
     if order not in ("-followers_count", "url", "-last_status_at", "-statuses_count"):
