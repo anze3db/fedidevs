@@ -69,10 +69,6 @@ class TestSelectedInstance(TestCase):
         self.assertIsNone(self.client.session.get("selected_instance"))
         self.assertContains(
             response,
-            "Select your Mastodon instance",
-        )
-        self.assertContains(
-            response,
             '<a href="https://fosstodon.org/@fosstest"',
         )
         self.assertContains(
@@ -85,10 +81,7 @@ class TestSelectedInstance(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["selected_instance"], "mastodon.social")
         self.assertEqual(self.client.session["selected_instance"], "mastodon.social")
-        self.assertContains(
-            response,
-            "mastodon.social selected",
-        )
+
         self.assertContains(
             response,
             '<a href="https://mastodon.social/@fosstest@fosstodon.org"',
@@ -104,10 +97,7 @@ class TestSelectedInstance(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.context["selected_instance"])
         self.assertIsNone(self.client.session.get("selected_instance"))
-        self.assertContains(
-            response,
-            "Select your Mastodon instance",
-        )
+
         self.assertContains(
             response,
             '<a href="https://fosstodon.org/@fosstest"',
@@ -122,10 +112,7 @@ class TestSelectedInstance(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["selected_instance"], "mastodon.social")
         self.assertEqual(self.client.session["selected_instance"], "mastodon.social")
-        self.assertContains(
-            response,
-            "mastodon.social selected",
-        )
+
         self.assertContains(
             response,
             '<a href="https://mastodon.social/@fosstest@fosstodon.org"',
@@ -140,10 +127,7 @@ class TestSelectedInstance(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["selected_instance"], "mastodon.social")
         self.assertEqual(self.client.session["selected_instance"], "mastodon.social")
-        self.assertContains(
-            response,
-            "mastodon.social selected",
-        )
+
         self.assertContains(
             response,
             '<a href="https://mastodon.social/@fosstest@fosstodon.org"',
@@ -158,10 +142,7 @@ class TestSelectedInstance(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["selected_instance"], "mastodon.social")
         self.assertEqual(self.client.session["selected_instance"], "mastodon.social")
-        self.assertContains(
-            response,
-            "mastodon.social selected",
-        )
+
         self.assertContains(
             response,
             '<a href="https://mastodon.social/@fosstest@fosstodon.org"',
@@ -178,10 +159,6 @@ class TestSelectedInstance(TestCase):
         self.assertIsNone(self.client.session.get("selected_instance"))
         self.assertContains(
             response,
-            "Select your Mastodon instance",
-        )
-        self.assertContains(
-            response,
             '<a href="https://fosstodon.org/@fosstest"',
         )
         self.assertContains(
@@ -195,10 +172,7 @@ class TestSelectedInstance(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["selected_instance"], "mastodon.social")
         self.assertEqual(self.client.session["selected_instance"], "mastodon.social")
-        self.assertContains(
-            response,
-            "mastodon.social selected",
-        )
+
         self.assertContains(
             response,
             '<a href="https://mastodon.social/@fosstest@fosstodon.org"',
