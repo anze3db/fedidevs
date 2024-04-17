@@ -39,7 +39,7 @@ def follow_button(user, account):
         _type = "login"
     elif user.accountaccess.account.account_id == account.account_id:
         _type = "self"
-    elif account.is_folowing:
+    elif account.is_following:
         _type = "unfollow"
     else:
         _type = "follow"
