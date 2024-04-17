@@ -1597,6 +1597,18 @@ select {
   width: 5rem;
 }
 
+.w-\[180px\] {
+  width: 180px;
+}
+
+.w-\[35rem\] {
+  width: 35rem;
+}
+
+.w-\[25rem\] {
+  width: 25rem;
+}
+
 .min-w-64 {
   min-width: 16rem;
 }
@@ -1605,12 +1617,32 @@ select {
   min-width: 20rem;
 }
 
+.min-w-60 {
+  min-width: 15rem;
+}
+
+.min-w-\[10rem\] {
+  min-width: 10rem;
+}
+
 .max-w-80 {
   max-width: 20rem;
 }
 
 .max-w-md {
   max-width: 28rem;
+}
+
+.max-w-\[150px\] {
+  max-width: 150px;
+}
+
+.max-w-\[35rem\] {
+  max-width: 35rem;
+}
+
+.max-w-\[25rem\] {
+  max-width: 25rem;
 }
 
 .flex-1 {
@@ -2472,6 +2504,14 @@ select {
     margin-left: 20rem;
   }
 
+  .sm\:ml-\[130px\] {
+    margin-left: 130px;
+  }
+
+  .sm\:ml-\[25rem\] {
+    margin-left: 25rem;
+  }
+
   .sm\:block {
     display: block;
   }
@@ -2512,12 +2552,25 @@ select {
     inset: 0px;
   }
 
+  .md\:ml-\[25rem\] {
+    margin-left: 25rem;
+  }
+
   .md\:block {
     display: block;
   }
 
+  .md\:hidden {
+    display: none;
+  }
+
   .md\:w-60 {
     width: 15rem;
+  }
+
+  .md\:translate-x-0 {
+    --tw-translate-x: 0px;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
   }
 
   .md\:p-5 {

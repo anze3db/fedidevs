@@ -57,7 +57,7 @@
                             data-drawer-toggle="logo-sidebar"
                             aria-controls="logo-sidebar"
                             type="button"
-                            class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                            class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
                         <span class="sr-only">Open sidebar</span>
                         <svg class="w-6 h-6"
                              aria-hidden="true"
@@ -134,9 +134,9 @@
             {% comment %} {% if page_subheader %}<h2>{{ page_subheader | safe }}</h2>{% endif %} {% endcomment %}
         {% endblock header %}
         <aside id="logo-sidebar"
-               class="fixed top-0 left-0 z-40 w-80 h-screen pt-20 transition-transform -translate-x-full sm:translate-x-0  bg-gray-100 dark:bg-gray-950"
+               class="fixed top-0 left-0 z-40 min-w-[10rem] max-w-[25rem] h-screen pt-20 transition-transform -translate-x-full md:translate-x-0  bg-gray-100 dark:bg-gray-950"
                aria-label="Sidebar">
-            <div class="flex flex-col justify-between p-12 pr-8 overflow-y-auto text-gray-900 min-w-80 max-w-80 dark:text-white max-h-svh">
+            <div class="flex flex-col justify-between p-12 pr-8 overflow-y-auto text-gray-900 min-w-60 max-w-[25rem] dark:text-white max-h-svh">
                 <div class="align-top">
                     {% block sidebar %}
                     {% endblock sidebar %}
@@ -191,7 +191,7 @@
                 </div>
             </div>
         </aside>
-        <div class="p-4 sm:ml-80">
+        <div class="p-4 md:ml-[25rem]">
             <div class="container pt-20 pl-0 mx-auto">
                 {% block content %}
                 {% endblock content %}
