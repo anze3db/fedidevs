@@ -101,12 +101,16 @@
 {% block sidebar %}
     <header>
         <blockquote>
-            <p class="text-xl italic font-medium text-gray-900 dark:text-white" data-tooltip-target="tooltip-hover" data-tooltip-trigger="hover">
+            <p class="text-xl italic font-medium text-gray-900 dark:text-white"
+               data-tooltip-target="tooltip-hover"
+               data-tooltip-trigger="hover">
                 Discover <mark>{{ accounts_count }}</mark> superb devs from across the <a class="underline" href="{% url 'developers-on-mastodon' %}">Fediverse</a>!
-                <div id="tooltip-hover" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-    Tooltip content
-    <div class="tooltip-arrow" data-popper-arrow></div>
-</div>
+                <div id="tooltip-hover"
+                     role="tooltip"
+                     class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                    Tooltip content
+                    <div class="tooltip-arrow" data-popper-arrow></div>
+                </div>
             </p>
         </blockquote>
         <h1 class="mb-8 mt-8 text-xl font-semibold">Filter By</h1>
