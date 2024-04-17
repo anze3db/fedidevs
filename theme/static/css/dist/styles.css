@@ -1291,6 +1291,10 @@ select {
   pointer-events: none;
 }
 
+.invisible {
+  visibility: hidden;
+}
+
 .static {
   position: static;
 }
@@ -1930,6 +1934,11 @@ select {
   background-color: rgb(219 234 254 / var(--tw-bg-opacity));
 }
 
+.bg-gray-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+}
+
 .bg-gradient-to-r {
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
@@ -2129,6 +2138,10 @@ select {
   font-weight: 600;
 }
 
+.italic {
+  font-style: italic;
+}
+
 .leading-loose {
   line-height: 2;
 }
@@ -2172,8 +2185,16 @@ select {
   color: rgb(31 41 55 / var(--tw-text-opacity));
 }
 
+.underline {
+  text-decoration-line: underline;
+}
+
 .opacity-50 {
   opacity: 0.5;
+}
+
+.opacity-0 {
+  opacity: 0;
 }
 
 .shadow {
