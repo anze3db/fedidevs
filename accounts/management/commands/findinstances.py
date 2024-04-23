@@ -45,7 +45,7 @@ class Command(RichCommand):
                     verified_instances.add(instance)
                 if not verified_instances:
                     continue
-                self.console.log("Adding", verified_instances)
+                self.console.log("Adding", conference.name, verified_instances)
                 conference.instances = ", ".join(existing_instances.union(verified_instances))
                 await conference.asave()
 
