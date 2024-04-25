@@ -18,17 +18,29 @@ class Command(RichCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--slug", type=str, nargs="?", default="")
+        parser.add_argument(
+            "--active",
+            action="store_true",
+        )
 
-    def handle(self, *args, slug: str, **options):
-        self.main(slug=slug)
+    def handle(self, *args, slug: str, active: bool, **options):
+        self.main(slug=slug, active=active)
 
     @async_to_sync
-    async def main(self, slug: str):
+    async def main(self, slug: str, active: bool):
         if slug:
             conferences = [await Conference.objects.aget(slug=slug)]
+        elif active:
+            conferences = [
+                c
+                async for c in Conference.objects.filter(
+                    start_date__lte=datetime.now(tz=timezone.utc), end_date__gte=datetime.now(tz=timezone.utc)
+                )
+            ]
         else:
             conferences = [c async for c in Conference.objects.filter(archived_date__isnull=True)]
 
+        print(conferences)
         for conference in conferences:
             if not conference.instances:
                 self.console.log(f"No instances for {conference.slug}")
