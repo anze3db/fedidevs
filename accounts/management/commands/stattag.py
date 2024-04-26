@@ -40,7 +40,6 @@ class Command(RichCommand):
         else:
             conferences = [c async for c in Conference.objects.filter(archived_date__isnull=True)]
 
-        print(conferences)
         for conference in conferences:
             if not conference.instances:
                 self.console.log(f"No instances for {conference.slug}")
@@ -58,6 +57,8 @@ class Command(RichCommand):
                 while True:
                     posts = await self.fetch_and_handle_fail(client, instance, tag, min_id)
                     if not posts:
+                        break
+                    if min_id == posts[-1]["id"]:
                         break
                     min_id = posts[-1]["id"]
                     if datetime.fromisoformat(posts[-1]["created_at"]) < (
