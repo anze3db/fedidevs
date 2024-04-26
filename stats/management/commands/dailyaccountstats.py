@@ -107,7 +107,7 @@ class Command(RichCommand):
             [f"{dac.followers_count:>6} {dac.account.username} {dac.account.url}" for dac in top_growing]
         )
 
-        auth_users_cnt = User.objects.filter(is_staff=True, is_active=True).count()
+        auth_users_cnt = User.objects.filter(is_active=True).count()
         yesterday_auth_users_cnt = User.objects.filter(
             is_staff=True, is_active=True, date_joined__gte=yesterdays_date
         ).count()
