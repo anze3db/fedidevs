@@ -1,129 +1,148 @@
-{% extends "layout.html" %}
+{% extends "v2/layout.html" %}
 {% load account_extras %}
 {% load static %}
-{% block head %}
-    {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
-{% endblock head %}
 {% block content %}
-    <main class="container">
+    <style>
+            /* https://adrianroselli.com/2020/02/block-links-cards-clickable-regions-etc.html */
+            .block-link {
+                position: relative;
+            }
+            .block-link a[href]::after {
+                content: "";
+                display: block;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+
+    </style>
+    <main class="text-gray-900 dark:text-white">
         <article>
-            <header style="padding-bottom: 0;">
-                <nav class="tabs">
-                    <ul>
-                        <li onclick="window.location.href='{% url 'index' %}'">Developers</li>
-                        <li onclick="window.location.href='{% url 'posts' %}'">Posts</li>
-                        <li class="active">Conferences</li>
-                    </ul>
-                </nav>
-            </header>
             {% if live_conferences %}
-                <h2>🔴 Live Conferences</h2>
-                <p>Happening right now! You can join the discussion even if you are not attending!</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Conference</th>
-                            <th>Location</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    {% for conf in live_conferences %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
-                                {% if is_superuser %}
-                                    <a href="{% url 'admin:confs_conference_change' conf.id %}">(edit)</a>
-                                {% endif %}
-                            </td>
-                            <td>{{ conf.location }}</td>
-                            <td>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+                            🔴 Live Conferences
+                            <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
+                                Happening right now! You can join the discussion even if you are not attending!
+                            </p>
+                        </caption>
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th class="px-6 py-3">Conference</th>
+                                <th class="px-6 py-3">Location</th>
+                                <th class="px-6 py-3">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for conf in live_conferences %}
+                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                                    <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
+                                    </th>
+                                    <td class="px-6 py-4">{{ conf.location }}</td>
+                                    <td class="px-6 py-4">{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             {% endif %}
             {% if upcoming_conferences %}
-                <h2>Upcoming Conferences</h2>
-                <p>Join the discussion and get hyped for the upcoming conferences.</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Conference</th>
-                            <th>Location</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    {% for conf in upcoming_conferences %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
-                                {% if is_superuser %}
-                                    <a href="{% url 'admin:confs_conference_change' conf.id %}">(edit)</a>
-                                {% endif %}
-                            </td>
-                            <td>{{ conf.location }}</td>
-                            <td>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-8">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+                            Upcoming Conferences
+                            <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
+                                Join the discussion and get hyped for the upcoming conferences.
+                            </p>
+                        </caption>
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th class="px-6 py-3">Conference</th>
+                                <th class="px-6 py-3">Location</th>
+                                <th class="px-6 py-3">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for conf in upcoming_conferences %}
+                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                                    <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
+                                    </th>
+                                    <td class="px-6 py-4">{{ conf.location }}</td>
+                                    <td class="px-6 py-4">{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             {% endif %}
             {% if past_conferences %}
-                <h2>Past Conferences</h2>
-                <p>See an archive of past conferences and all the top posts from each event.</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Conference</th>
-                            <th>Location</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    {% for conf in past_conferences %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
-                                {% if is_superuser %}
-                                    <a href="{% url 'admin:confs_conference_change' conf.id %}">(edit)</a>
-                                {% endif %}
-                            </td>
-                            <td>{{ conf.location }}</td>
-                            <td>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
-                        </tr>
-                    {% endfor %}
-                    <tr>
-                        <td>
-                            <a href="{% url 'dotnetconf' %}">.NET Conf 2023</a>
-                        </td>
-                        <td>Virtual</td>
-                        <td>Nov 14 - 16, 2023</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <a href="{% url 'fwd50' %}">FWD50 2023</a>
-                        </td>
-                        <td>Ottawa, Canada</td>
-                        <td>Nov 6 - 8, 2023</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <a href="{% url 'djangoconus' %}">DjangoCon US 2023</a>
-                        </td>
-                        <td>Durham, NC</td>
-                        <td>Oct 16 - 20, 2023</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <a href="{% url 'djangoconafrica' %}">DjangoCon Africa 2023</a>
-                        </td>
-                        <td>Zanzibar, Tanzania</td>
-                        <td>Nov 6 - 11, 2023</td>
-                    </tr>
-                </table>
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-8">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+                            Past Conferences
+                            <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
+                                See an archive of past conferences and all the top posts from each event.
+                            </p>
+                        </caption>
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th class="px-6 py-3">Conference</th>
+                                <th class="px-6 py-3">Location</th>
+                                <th class="px-6 py-3">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for conf in past_conferences %}
+                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                                    <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
+                                    </th>
+                                    <td>{{ conf.location }}</td>
+                                    <td>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
+                                </tr>
+                            {% endfor %}
+                            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                                <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <a href="{% url 'dotnetconf' %}">.NET Conf 2023</a>
+                                </th>
+                                <td>Virtual</td>
+                                <td>Nov 14 - 16, 2023</td>
+                            </tr>
+                            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                                <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <a href="{% url 'fwd50' %}">FWD50 2023</a>
+                                </th>
+                                <td>Ottawa, Canada</td>
+                                <td>Nov 6 - 8, 2023</td>
+                            </tr>
+                            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                                <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <a href="{% url 'djangoconus' %}">DjangoCon US 2023</a>
+                                </th>
+                                <td>Durham, NC</td>
+                                <td>Oct 16 - 20, 2023</td>
+                            </tr>
+                            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                                <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <a href="{% url 'djangoconafrica' %}">DjangoCon Africa 2023</a>
+                                </th>
+                                <td>Zanzibar, Tanzania</td>
+                                <td>Nov 6 - 11, 2023</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             {% endif %}
-            <footer>
-                <p>
-                    <small>Missing a conference? <a href="mailto:hello@fedidevs.com">Let me know</a> and I'll add it asap.</small>
-                </p>
-            </footer>
         </article>
     </main>
 {% endblock content %}
+{% block sidebar %}
+    <p class="pb-4">
+        Missing a conference? <a href="mailto:hello@fedidevs.com" class="font-medium text-blue-600 dark:text-blue-500 underline hover:no-underline">Let me know</a> and I'll add it asap.
+    </p>
+{% endblock sidebar %}

@@ -31,7 +31,7 @@ def conferences(request):
         "conferences.html",
         {
             "page_title": "Conferences | Fediverse Developers",
-            "page_header": "CONFERENCES",
+            "page_header": "FEDIDEVS",
             "page_subheader": "",
             "page_description": "",
             "page_image": "og-conferences.png",

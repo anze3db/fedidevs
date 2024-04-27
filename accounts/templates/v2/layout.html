@@ -74,9 +74,8 @@
                         </a>
                     </h1>
                     <nav class="flex gap-2 sm:gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
-                        <a href="{% url 'index' %}"><span class="sm:hidden">{% heroicon_outline 'users' %}</span><span class="hidden sm:block">Accounts</span></a>
-                        <a class="pl-4" href="{% url 'posts' %}"><span class="sm:hidden">{% heroicon_outline 'book-open' %}</span><span class="hidden sm:block opacity-50 hover:opacity-75">Posts</span></a>
-                        <a class="pl-4" href="{% url 'conferences' %}"><span class="sm:hidden">{% heroicon_outline 'building-office-2' %}</span><span class="hidden sm:block opacity-50 hover:opacity-75">Conferences</span></a>
+                        <a href="{% url 'index' %}"><span class="sm:hidden">{% heroicon_outline 'users' %}</span><span class="hidden sm:block {% if '/conferences' not in request.path %}{% else %}opacity-50 hover:opacity-75{%endif %}">Accounts</span></a>
+                        <a class="pl-4" href="{% url 'conferences' %}"><span class="sm:hidden">{% heroicon_outline 'building-office-2' %}</span><span class="hidden sm:block {% if '/conferences' in request.path %}{% else %}opacity-50 hover:opacity-75{% endif %}">Conferences</span></a>
                     </nav>
                 </div>
                 <div class="flex justify-between sm:gap-2">
