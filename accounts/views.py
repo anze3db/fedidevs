@@ -96,6 +96,7 @@ def index(request, lang: str | None = None):
         request,
         "v2/index.html",
         {
+            "page": "accounts",
             "page_title": "FediDevs | List of software developers on Mastodon"
             if not selected_lang
             else f"FediDevs | List of {selected_lang.name} developers on Mastodon",

@@ -31,6 +31,7 @@ def conferences(request):
         "conferences.html",
         {
             "page_title": "Conferences | Fediverse Developers",
+            "page": "conferences",
             "page_header": "FEDIDEVS",
             "page_subheader": "",
             "page_description": "",
@@ -114,6 +115,7 @@ def conference(request, slug: str):
         "conference.html",
         {
             "page_title": f"{conference.name} | Fediverse Developers",
+            "page": "conferences",
             "page_header": conference.name,
             "page_subheader": f"{conference.start_date.strftime('%b %d')} - {conference.end_date.strftime('%b %d, %Y')}",
             "page_description": "Aggregated posts from the Fediverse about " + conference.name,
@@ -204,6 +206,7 @@ def fwd50(request, date: dt.date | None = None):
         "fwd50.html",
         {
             "page_title": "Mastodon posts FWD50 | Most Favourited Mastodon Posts about FWD50",
+            "page": "conferences",
             "page_header": "FWD50",
             "page_subheader": "Nov. 6-8, 2023 | Ottawa and online",
             "page_description": "Most Favourited Mastodon Posts about FWD50",
@@ -303,6 +306,7 @@ def djangoconafrica(request, date: dt.date | None = None):
         "djangoconafrica.html",
         {
             "page_title": "Mastodon posts | Most Favourited Mastodon Posts about #djangoconafrica",
+            "page": "conferences",
             "page_header": "DjangoCon Africa",
             "page_subheader": "Nov 6 - 11, 2023 | Zanzibar, Tanzania",
             "page_description": "Most Favourited Mastodon Posts about #djangoconafrica",
@@ -405,6 +409,7 @@ def dotnetconf(request, date: dt.date | None = None):
         "dotnetcon.html",
         {
             "page_title": ".NET Conf 2023 | Most Favourited Mastodon Posts about .NET Conf 2023",
+            "page": "conferences",
             "page_header": ".NET Conf 2023",
             "page_subheader": "Nov 14-16, 2023",
             "page_description": "Most Favourited Mastodon Posts about #dotnetconf",
