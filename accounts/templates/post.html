@@ -1,98 +1,87 @@
 {% load account_extras %}
+{% load humanize %}
 {% load static %}
-<div style="padding: 20px 0px;">
-    <img class="avatar"
+<div class="flex items-start gap-2.5 mt-8 ">
+    <img class="h-16 w-16 rounded"
          src="{{ post.account.avatar }}"
-         alt="{{ post.account.login }}"
-         width="100"
-         height="100" />
-    {% if selected_instance and selected_instance != post.account.source %}
-        <a href="https://{% firstof selected_instance %}/@{{ post.account.username }}@{{ post.account.source }}"
-           target="_blank"
-           style="display:inline-block;
-                  white-space: nowrap">{% render_emojis post.account.display_name post.account.emojis %}</a>
-    {% else %}
-        <a href="https://{{ post.account.source }}/@{{ post.account.username }}"
-           target="_blank"
-           style="display:inline-block;
-                  white-space: nowrap">{% render_emojis post.account.display_name post.account.emojis %}</a>
-    {% endif %}
-    @ <a href="https://{{ post.account.source }}">{{ post.account.source }}</a>
-    |
-    {% for language in post.account.languages %}
-        <a href="{% url language.post_code %}?q={{ query }}&o={{ order }}"
-           style="display:inline-block;
-                  white-space: nowrap">
-            <img src="{% static language.image %}"
-                 alt="{{ language.code }}"
-                 class="emojione"
-                 height="8"
-                 width="8" />
-            <small>{{ language.name }}</small>
-        </a>
-    {% endfor %}
-</div>
-{% if post.sensitive %}
-    <details>
-        <summary role="button" class="outline secondary">{{ post.spoiler_text }}</summary>
-        {{ post.content|safe }}
-    </details>
-{% else %}
-    {{ post.content|safe }}
-    {% if post.media_attachments %}
-        <div>
-            {% for media in post.media_attachments %}
-                {% if media.type == "image" %}
-                    <a href="{{ media.url }}">
-                        <img src="{{ media.preview_url }}"
-                             alt="{{ media.description }}"
-                             style="max-height: 300px;
-                                    margin-bottom: 10px;
-                                    border-radius: var(--pico-border-radius);
-                                    background: var(--pico-card-background-color);
-                                    box-shadow: var(--pico-card-box-shadow)" />
-                    </a>
-                {% endif %}
-                {% if media.type == "video" %}
-                    <video controls style="max-height: 300px; margin-bottom: 10px;">
-                        <source src="{{ media.url }}" type="{{ media.meta.mime_type }}">
-                        Your browser does not support the video tag.
-                    </video>
-                {% endif %}
-                {% if media.type == "gifv" %}
-                    <video autoplay loop muted style="max-height: 300px; margin-bottom: 10px;">
-                        <source src="{{ media.url }}" type="{{ media.meta.mime_type }}">
-                        Your browser does not support the video tag.
-                    </video>
-                {% endif %}
-            {% endfor %}
+         alt="{{ post.account.login }}" />
+    <div class="flex flex-column gap-2.5 justify-between w-full">
+        <div class="block-link ">
+            <div class="flex items-center space-x-2 rtl:space-x-reverse mt-2">
+                <a href="{% if selected_instance and selected_instance != post.account.source %} https://{% firstof selected_instance %}/@{{ post.account.username }}@{{ post.account.source }} {% else %} https://{{ post.account.source }}/@{{ post.account.username }} {% endif %}"
+                   class="font-semibold text-gray-900 dark:text-white"
+                   target="_blank"><span class="flex gap-1 [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1">{% render_emojis post.account.display_name post.account.emojis %}</span>
+                    <span class="opacity-80 underline">@{{ post.account.source }}@{{ post.account.username }} </span>
+                </a>
+            </div>
         </div>
-    {% endif %}
-    {% if not post.media_attachments and post.card %}
-        <article class="card" style="max-width: 350px">
-            <a href="{{ post.card.url }}" target="_blank">
-                {% if post.card.image %}
-                    <img src="{{ post.card.image }}"
-                         alt="{{ post.card.title }}"
-                         width="100%"
-                         height="auto" />
-                {% endif %}
-            </a>
-            <footer>
-                <h3>
-                    <a href="{{ post.card.url }}" target="_blank">{{ post.card.title }}</a>
-                </h3>
-                <small>{{ post.card.description }}</small>
-            </footer>
-        </article>
-    {% endif %}
-{% endif %}
-<div>
-    <small>
-        {% heroicon_outline 'star' %} {{ post.favourites_count }} | {% heroicon_outline 'arrow-path-rounded-square' %} {{ post.reblogs_count }} | {% heroicon_outline 'chat-bubble-bottom-center' %} {{ post.replies_count }} |
         <a href="{{ post.uri }}">
-            <span>{{ post.created_at }}</span>
+            <span>{{ post.created_at |naturaltime }}</span>
         </a>
-    </small>
+    </div>
 </div>
-<hr>
+<div class="mt-4 mb-4">
+    {% if post.sensitive %}
+        <details>
+            <summary role="button" class="outline secondary">
+                {{ post.spoiler_text }}
+            </summary>
+            {{ post.content|safe }}
+        </details>
+    {% else %}
+        <div class="mb-2">
+            {{ post.content|safe }}
+        </div>
+        {% if post.media_attachments %}
+            <div class="grid grid-cols-2 gap-2">
+                {% for media in post.media_attachments %}
+                    <div>
+                        {% if media.type == "image" %}
+                            <a href="{{ media.url }}">
+                                <img src="{{ media.preview_url }}"
+                                     alt="{{ media.description }}"
+                                     class="h-auto max-w-full rounded-lg" />
+                            </a>
+                        {% endif %}
+                        {% if media.type == "video" %}
+                            <video controls class="h-auto max-w-full rounded-lg">
+                                <source src="{{ media.url }}" type="{{ media.meta.mime_type }}">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% endif %}
+                        {% if media.type == "gifv" %}
+                            <video autoplay loop muted class="h-auto max-w-full rounded-lg">
+                                <source src="{{ media.url }}" type="{{ media.meta.mime_type }}">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if not post.media_attachments and post.card %}
+            <article class="card" style="max-width: 350px">
+                <a href="{{ post.card.url }}" target="_blank">
+                    {% if post.card.image %}
+                        <img src="{{ post.card.image }}"
+                             alt="{{ post.card.title }}"
+                             width="100%"
+                             height="auto" />
+                    {% endif %}
+                </a>
+                <footer>
+                    <h3>
+                        <a href="{{ post.card.url }}" target="_blank">{{ post.card.title }}</a>
+                    </h3>
+                    <small>{{ post.card.description }}</small>
+                </footer>
+            </article>
+        {% endif %}
+    {% endif %}
+</div>
+<div class="flex justify-between mt-2 mb-2">
+    <span class="flex gap-2">{% heroicon_outline 'star' %} {{ post.favourites_count }}</span>
+    <span class="flex gap-2">{% heroicon_outline 'arrow-path-rounded-square' %} {{ post.reblogs_count }}</span>
+    <span class="flex gap-2"> {% heroicon_outline 'chat-bubble-bottom-center' %} {{ post.replies_count }} </span>
+</div>
+<hr class="opacity-20 mt-4 mb-4">

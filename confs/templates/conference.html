@@ -1,146 +1,55 @@
-{% extends "layout.html" %}
+{% extends "v2/layout.html" %}
 {% load account_extras %}
 {% load static %}
 {% block head %}
-    {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
+    {% if posts.has_previous %}
+        <meta name="robots" content="none">
+    {% endif %}
 {% endblock head %}
 {% block content %}
-    <main class="container">
-        <article>
-            <header>
-                <nav class="tabs">
-                    <ul>
-                        <li onclick="window.location.href='{% url 'index' %}'">Developers</li>
-                        <li onclick="window.location.href='{% url 'posts' %}'">Posts</li>
-                        <li onclick="window.location.href='{% url 'conferences' %}'"
-                            class="active">Conferences</li>
-                    </ul>
-                </nav>
-                <p>{{ conference.description | safe }}</p>
-                <p>
-                    {% if conference.website %}
-                        Visit <a href="{{ conference.website }}">{{ conference.website }}</a> for more info!
-                    {% endif %}
-                    {% if conference.mastodon %}
-                        Follow the <a href="{{ conference.mastodon }}">official Mastodon account</a> to be up to date.
-                    {% endif %}
-                </p>
-                {% if is_superuser %}
-                    <a href="{% url 'admin:confs_conference_change' conference.id %}">Edit</a>
-                {% endif %}
-                <p>
-                    <h3>Most active accounts</h3>
-                    <ul style="padding:0;">
-                        <li style="display: inline-block;">
-                            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}"
-                               role="button"
-                               class="{% if account_id is not None %}outline{% endif %} no-wrap"
-                               style="padding: 5px">All Accounts</a>
-                        </li>
-                        {% for account_count in account_counts %}
-                            <li style="display: inline-block;">
-                                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}"
-                                   role="button"
-                                   class="{% if account_count.account.id != account_id %}outline{% endif %} no-wrap"
-                                   style="padding: 5px">
-                                    <img class="small-avatar"
-                                         src="{{ account_count.account.avatar }}"
-                                         alt="{{ account_count.account.login }}"
-                                         width="50"
-                                         height="50" />
-                                {% render_emojis account_count.account.display_name account_count.account.emojis %} ({{ account_count.count }})</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </p>
-                <h3>Filter by conference day</h3>
-                <nav>
-                    <ul style="flex-wrap: wrap; justify-content: center;">
-                        {% if dates %}
-                            <li>
-                                <a href="{% url 'conference' slug %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
-                                   {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
-                                   role="button"
-                                   data-tooltip="This includes posts before, during, and after the conference.">All ({{ all_conf_posts_count }})</a>
-                            </li>
-                            {% for date in dates %}
-                                <li>
-                                    <a href="{% url 'conference' slug %}?date={{ date.value | date:"Y-m-d" }}&order={{ order }}&account={{ account_id }}"
-                                       {% if posts_date != date.value %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
-                                       role="button">{{ date.pre_display }} ({{ date.count }})</a>
-                                </li>
-                            {% endfor %}
-                        {% endif %}
-                    </ul>
-                    <ul>
-                        <li>
-                            <script>
-                                function change_sort(element) {
-                                    let url = '{% url "conference" slug %}';
-
-                                    const date = {% if posts_date %}"{{ posts_date|date:"Y-m-d" }}"{% else %}null{% endif %};
-                                    if (date) {
-                                        url += "?date=" + date + "&order=" + element.value;
-                                    } else {
-                                        url += "?order=" + element.value;
-                                    }
-
-                                    const account_id = {% if account_id %}"{{ account_id }}"{% else %}null{% endif %};
-                                    if (account_id) {
-                                        url += "&account=" + account_id;
-                                    }
-
-                                    const selected_tag = {% if selected_tag %}"{{ selected_tag }}"{% else %}null{% endif %};
-                                    if (selected_tag) {
-                                        url += "&tag=" + selected_tag;
-                                    }
-
-                                    window.location.href = url;
-                                }
-                            </script>
-                            <select onchange="change_sort(this)">
-                                <option value="" disabled>Sort By</option>
-                                <option value="-favourites_count"
-                                        {% if order == "-favourites_count" %}selected{% endif %}>
-                                    Sort by Number of Favourites
-                                </option>
-                                <option value="-reblogs_count"
-                                        {% if order == "-reblogs_count" %}selected{% endif %}>
-                                    Sort by Number of Boosts
-                                </option>
-                                <option value="-replies_count"
-                                        {% if order == "-replies_count" %}selected{% endif %}>
-                                    Sort by Number of Replies
-                                </option>
-                                <option value="-created_at"
-                                        {% if order == "-created_at" %}selected{% endif %}>
-                                    Sort by Created Date
-                                </option>
-                            </select>
-                        </li>
-                    </ul>
-                </nav>
-            </header>
-            <section data-nosnippet>
+    <main class="flex justify-center">
+        <article class="text-gray-900 dark:text-white">
+            <section data-nosnippet class="max-w-3xl">
                 {% for conf_post in conf_posts %}
                     {% with post=conf_post.post %}
                         {% include "post.html" %}
                     {% endwith %}
+                {{ else }}
+                    {% if not conf_posts %}
+                        <p style="text-align:center;">
+                            No results, please check back later!
+                        </p>
+                    {% endif %}
                 {% endfor %}
-                {% if not conf_posts %}<p style="text-align:center;">No results, please check back later!</p>{% endif %}
-                <div class="pagination" style="padding-bottom: 20px;">
-                    <span class="step-links">
-                        {% if conf_posts.has_previous %}
-                            <a href="?page={{ conf_posts.previous_page_number }}&q={{ query }}&o={{ order }}">previous</a>
-                        {% endif %}
-                        {% if conf_posts %}
-                            <span class="current">Page {{ conf_posts.number }} of {{ conf_posts.paginator.num_pages }}</span>
-                        {% endif %}
-                        {% if conf_posts.has_next %}
-                            <a href="?page={{ conf_posts.next_page_number }}&q={{ query }}&o={{ order }}">next</a>
-                        {% endif %}
-                    </span>
-                </div>
+                <footer class="mt-16 mb-16 text-center">
+                    <nav aria-label="Pagination">
+                        <ul class="inline-flex h-10 -space-x-px text-base">
+                            {% if conf_posts.has_previous %}
+                                <li>
+                                    <a href="?page={{ conf_posts.previous_page_number }}&q={{ query }}&o={{ order }}"
+                                       class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white ms-0 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                        Previous
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if conf_posts %}
+                                <li>
+                                    <span class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                        Page {{ conf_posts.number }} of {{ conf_posts.paginator.num_pages }}
+                                    </span>
+                                </li>
+                            {% endif %}
+                            {% if conf_posts.has_next %}
+                                <li>
+                                    <a href="?page={{ conf_posts.next_page_number }}&q={{ query }}&o={{ order }}"
+                                       class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                        Next
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </footer>
             </section>
             <p>
                 These results were aggregated by indexing <b>{{ conference.tags }}</b> on <b>{{ conference.instances }}</b>.
@@ -162,3 +71,86 @@
         </article>
     </main>
 {% endblock content %}
+{% block sidebar %}
+    <p class="mt-4 mb-4">
+        {{ conference.description | safe }}
+    </p>
+    <p  class="mt-4 mb-4">
+        {% if conference.website %}
+            Visit <a href="{{ conference.website }}" class="underline">{{ conference.website }}</a> for more info!
+        {% endif %}
+        {% if conference.mastodon %}
+            Follow the <a href="{{ conference.mastodon }}" class="underline">official Mastodon account</a> to be up to date.
+        {% endif %}
+    </p>
+    {% if is_superuser %}
+        <a href="{% url 'admin:confs_conference_change' conference.id %}">Edit</a>
+    {% endif %}
+    <p class="mt-4 mb-4">
+        <h3 class="text-xl font-bold" >
+            Most active accounts
+        </h3>
+        <ul style="padding:0;">
+            <li style="display: inline-block;">
+                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}"
+                   role="button"
+                   class="{% if account_id is not None %}outline{% endif %} no-wrap"
+                   style="padding: 5px">All Accounts</a>
+            </li>
+            {% for account_count in account_counts %}
+                <li style="display: inline-block;">
+                    <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}"
+                       role="button"
+                       class="{% if account_count.account.id != account_id %}outline{% endif %} no-wrap"
+                       style="padding: 5px">
+                        <img class="small-avatar"
+                             src="{{ account_count.account.avatar }}"
+                             alt="{{ account_count.account.login }}"
+                             width="50"
+                             height="50" />
+                    {% render_emojis account_count.account.display_name account_count.account.emojis %} ({{ account_count.count }})</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </p>
+    <h3 class="text-xl font-bold">
+        Filter by conference day
+    </h3>
+    <nav>
+        <ul style="flex-wrap: wrap; justify-content: center;">
+            {% if dates %}
+                <li>
+                    <a href="{% url 'conference' slug %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
+                       {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
+                       role="button"
+                       data-tooltip="This includes posts before, during, and after the conference.">All ({{ all_conf_posts_count }})</a>
+                </li>
+                {% for date in dates %}
+                    <li>
+                        <a href="{% url 'conference' slug %}?date={{ date.value | date:"Y-m-d" }}&order={{ order }}&account={{ account_id }}"
+                           {% if posts_date != date.value %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
+                           role="button">{{ date.pre_display }} ({{ date.count }})</a>
+                    </li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    <h3 class="text-xl font-bold">
+        Sort by
+    </h3>
+        <ul class="mb-5">
+            <li>
+                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-favourites_count" {% if order == "-favourites_count" %}class="font-bold"{% endif %}>Number of Favourites</a>
+            </li>
+            <li>
+                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-reblogs_count" {% if order == "-reblogs_count" %}class="font-bold"{% endif %}>Number of Boosts</a>
+            </li>
+            <li>
+                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-replies_count" {% if order == "-replies_count" %}class="font-bold"{% endif %}>Number of Replies</a>
+            </li>
+            <li>
+                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-created_at" {% if order == "-created_at" %}class="font-bold"{% endif %}>Created Date</a>
+            </li>
+
+        </ul>
+    </nav>
+{% endblock sidebar %}
