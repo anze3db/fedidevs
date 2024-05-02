@@ -32,7 +32,7 @@
                 </div>
                 <div class="p-4 pt-16">
                     <div class="relative">
-                        <h5 class="mb-1 text-2xl font-semibold text-gray-900 dark:text-white flex gap-2 [&>img]:max-w-8">
+                        <h5 class="mb-1 text-2xl font-semibold flex gap-2 [&>img]:max-w-8">
                             {% render_emojis account.name account.emojis %}
                         </h5>
                         {% if selected_instance and selected_instance != account.source %}
@@ -101,7 +101,7 @@
 {% block sidebar %}
     <header>
         <blockquote>
-            <p class="text-xl italic font-medium text-gray-900 dark:text-white">
+            <p class="text-xl italic font-medium">
                 Discover <mark>{{ accounts_count }}</mark> superb devs from across the <a class="underline" href="{% url 'developers-on-mastodon' %}">Fediverse</a>!
             </p>
         </blockquote>
