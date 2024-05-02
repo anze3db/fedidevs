@@ -70,21 +70,22 @@
             </div>
         {% endif %}
         {% if not post.media_attachments and post.card %}
-            <article class="max-w-sm" >
-                <a href="{{ post.card.url }}" target="_blank">
+            <article class="max-w-sm">
+                <div class="p-4 mt-4 mb-4 bg-white rounded-lg shadow md:flex-row  dark:border-gray-700 dark:bg-gray-800">
                     {% if post.card.image %}
-                        <img src="{{ post.card.image }}"
-                             alt="{{ post.card.title }}"
-                             width="100%"
-                             height="auto" />
+                        <a href="{{ post.card.url }}" target="_blank">
+                            <img src="{{ post.card.image }}"
+                                 alt="{{ post.card.title }}"
+                                 width="100%"
+                                 class="rounded-t-lg"
+                                 height="auto" />
+                        </a>
                     {% endif %}
-                </a>
-                <footer class="p-4 mt-4 mb-4 bg-white rounded-lg shadow md:flex-row  dark:border-gray-700 dark:bg-gray-800">
                     <h3>
                         <a href="{{ post.card.url }}" class="underline" target="_blank">{{ post.card.title }}</a>
                     </h3>
                     <small>{{ post.card.description }}</small>
-                </footer>
+                </div>
             </article>
         {% endif %}
     {% endif %}
