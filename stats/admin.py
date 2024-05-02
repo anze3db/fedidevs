@@ -28,4 +28,5 @@ class AuthorAdmin(admin.ModelAdmin):
         "nix_accounts",
         "opensource_accounts",
         "php_accounts",
+        "css_accounts",
     )
