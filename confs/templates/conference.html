@@ -132,19 +132,19 @@
     </h2>
     <ul class="mb-8">
         <li>
-            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-favourites_count"
+            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_id }}&tag={{ selected_tag }}&order=-favourites_count"
                {% if order == "-favourites_count" %}class="font-bold"{% endif %}>Number of Favourites</a>
         </li>
         <li>
-            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-reblogs_count"
+            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_id }}&tag={{ selected_tag }}&order=-reblogs_count"
                {% if order == "-reblogs_count" %}class="font-bold"{% endif %}>Number of Boosts</a>
         </li>
         <li>
-            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-replies_count"
+            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_id }}&tag={{ selected_tag }}&order=-replies_count"
                {% if order == "-replies_count" %}class="font-bold"{% endif %}>Number of Replies</a>
         </li>
         <li>
-            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-created_at"
+            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_id }}&tag={{ selected_tag }}&order=-created_at"
                {% if order == "-created_at" %}class="font-bold"{% endif %}>Created Date</a>
         </li>
     </ul>
