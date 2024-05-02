@@ -14,12 +14,10 @@
                     {% with post=conf_post.post %}
                         {% include "post.html" %}
                     {% endwith %}
-                {{ else }}
-                    {% if not conf_posts %}
-                        <p style="text-align:center;">
-                            No results, please check back later!
-                        </p>
-                    {% endif %}
+                {% empty %}
+                    <p style="text-align:center;" class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                        No results, create a post with <b>{{ conference.tags }}</b> on Mastodon for and it will show up here!
+                    </p>
                 {% endfor %}
                 <footer class="mt-16 mb-16 text-center">
                     <nav aria-label="Pagination">
@@ -51,21 +49,21 @@
                     </nav>
                 </footer>
             </section>
-            <p>
+            <p class="mb-3">
                 These results were aggregated by indexing <b>{{ conference.tags }}</b> on <b>{{ conference.instances }}</b>.
             </p>
             <footer>
                 <p class="mb-3">
-                    <a href="https://sboots.ca/2023/10/27/twitter-is-dead-lets-start-live-tweeting-conferences-on-mastodon-instead/">Twitter is dead. Let's start live-tweeting conferences on Mastodon instead</a>
+                    <a href="https://sboots.ca/2023/10/27/twitter-is-dead-lets-start-live-tweeting-conferences-on-mastodon-instead/" class="underline">Twitter is dead. Let's start live-tweeting conferences on Mastodon instead.</a>
                 </p>
                 <p class="mb-3">
-                    If you are not seeing your posts, but would like you, please <a href="mailto:hello@fedidevs.com">reach out</a>.
+                    If you are not seeing your posts, but would like you, please <a href="mailto:hello@fedidevs.com" class="underline">reach out</a>.
                 </p>
                 <p class="mb-3">
-                    If you want posts or instance removed, please <a href="mailto:hello@fedidevs.com">let me know</a> and I will remove them ASAP.
+                    If you want posts or instance removed, please <a href="mailto:hello@fedidevs.com" class="underline">let me know</a> and I will remove them ASAP.
                 </p>
                 <p class="mb-3">
-                    If you have any other ideas on how to encourage more toots, please <a href="https://fosstodon.org/@fedidevs">toot at me</a> or <a href="mailto:hello@fedidevs.com">send an email</a> 💙
+                    If you have any other ideas on how to encourage more toots, please <a href="https://fosstodon.org/@fedidevs" class="underline">toot at me</a> or <a href="mailto:hello@fedidevs.com" class="underline">send an email</a> 💙
                 </p>
             </footer>
         </article>
