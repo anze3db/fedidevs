@@ -49,7 +49,7 @@
                     </nav>
                 </footer>
             </section>
-            <p class="mb-3">
+            <p class="mb-3 max-w-3xl">
                 These results were aggregated by indexing <b>{{ conference.tags }}</b> on <b>{{ conference.instances }}</b>.
             </p>
             <footer>
@@ -130,7 +130,7 @@
     <h2 class="flex items-center gap-2 pb-2 mb-2 text-sm font-semibold align-middle border-b">
         Order by
     </h2>
-    <ul class="mb-8 max-w-3xl">
+    <ul class="mb-8">
         <li>
             <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_id }}&tag={{ selected_tag }}&order=-favourites_count"
                {% if order == "-favourites_count" %}class="font-bold"{% endif %}>Number of Favourites</a>
