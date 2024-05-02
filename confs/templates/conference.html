@@ -130,7 +130,7 @@
     <h2 class="flex items-center gap-2 pb-2 mb-2 text-sm font-semibold align-middle border-b">
         Order by
     </h2>
-    <ul class="mb-8">
+    <ul class="mb-8 max-w-3xl">
         <li>
             <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_id }}&tag={{ selected_tag }}&order=-favourites_count"
                {% if order == "-favourites_count" %}class="font-bold"{% endif %}>Number of Favourites</a>
