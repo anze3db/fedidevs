@@ -72,7 +72,9 @@
     </main>
 {% endblock content %}
 {% block sidebar %}
-    <h1 class="mb-4 text-3xl font-extrabold">{{ conference.name }}</h1>
+    <h1 class="mb-4 text-3xl font-extrabold">
+        {{ conference.name }}
+    </h1>
     <p class="mt-4 mb-4">
         {{ conference.description | safe }}
     </p>
@@ -114,43 +116,38 @@
     <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
         Filter by conference day
     </h2>
-    <nav>
-            {% if dates %}
-        <ul class="flex mb-8">
-                {% for date in dates %}
+    <ul class="px-4 -mx-4 mb-8">
+        {% for date in dates %}
             <li class="m-1 inline-block">
-                        <a href="{% if posts_date == date.value %}{% url 'conference' slug %}?order={{ order }}&account={{ account_id }}{% else %}{% url 'conference' slug %}?date={{ date.value | date:"Y-m-d" }}&order={{ order }}&account={{ account_id }}{%endif%}"
+                <a href="{% if posts_date == date.value %}{% url 'conference' slug %}?order={{ order }}&account={{ account_id }}{% else %}{% url 'conference' slug %}?date={{ date.value | date:"Y-m-d" }}&order={{ order }}&account={{ account_id }}{% endif %}"
                    class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if posts_date == date.value %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
-                           class=" {% if posts_date != date.value %}text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 dark:bg-gray-900 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-900 {% else %} text-blue-700 hover:text-white border border-blue-600 bg-white hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:bg-gray-900 dark:focus:ring-blue-800 {% endif %}"
-                           role="button">{{ date.pre_display }} ({{ date.count }})
-                        
+                   role="button">{{ date.pre_display }} ({{ date.count }})
                     {% if posts_date == date.value %}
                         <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
                     {% endif %}
-                        
-                        </a>
-                    </li>
-                {% endfor %}
-        </ul>
-            {% endif %}
-    <h2 class="flex items-center gap-2 pb-2 mb-2 text-sm font-semibold align-middle border-b">Order by</h2>
-        <ul class="mb-8">
-            <li>
-                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-favourites_count"
-                   {% if order == "-favourites_count" %}class="font-bold"{% endif %}>Number of Favourites</a>
+                </a>
             </li>
-            <li>
-                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-reblogs_count"
-                   {% if order == "-reblogs_count" %}class="font-bold"{% endif %}>Number of Boosts</a>
-            </li>
-            <li>
-                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-replies_count"
-                   {% if order == "-replies_count" %}class="font-bold"{% endif %}>Number of Replies</a>
-            </li>
-            <li>
-                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-created_at"
-                   {% if order == "-created_at" %}class="font-bold"{% endif %}>Created Date</a>
-            </li>
-        </ul>
-    </nav>
+        {% endfor %}
+    </ul>
+    <h2 class="flex items-center gap-2 pb-2 mb-2 text-sm font-semibold align-middle border-b">
+        Order by
+    </h2>
+    <ul class="mb-8">
+        <li>
+            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-favourites_count"
+               {% if order == "-favourites_count" %}class="font-bold"{% endif %}>Number of Favourites</a>
+        </li>
+        <li>
+            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-reblogs_count"
+               {% if order == "-reblogs_count" %}class="font-bold"{% endif %}>Number of Boosts</a>
+        </li>
+        <li>
+            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-replies_count"
+               {% if order == "-replies_count" %}class="font-bold"{% endif %}>Number of Replies</a>
+        </li>
+        <li>
+            <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-created_at"
+               {% if order == "-created_at" %}class="font-bold"{% endif %}>Created Date</a>
+        </li>
+    </ul>
 {% endblock sidebar %}
