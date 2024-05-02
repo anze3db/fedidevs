@@ -10,7 +10,7 @@
         text-decoration: underline;
     }
 </style>
-<div class="p-4 m-8 bg-white border border-gray-200 rounded-lg shadow md:flex-row hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+<div class="p-4 m-8 bg-white border border-gray-200 rounded-lg shadow md:flex-row  dark:border-gray-700 dark:bg-gray-800 ">
     <div class="flex items-start gap-2.5">
         <img class="h-16 w-16 rounded"
              src="{{ post.account.avatar }}"
@@ -70,7 +70,7 @@
             </div>
         {% endif %}
         {% if not post.media_attachments and post.card %}
-            <article class="card" style="max-width: 350px">
+            <article class="max-w-sm" >
                 <a href="{{ post.card.url }}" target="_blank">
                     {% if post.card.image %}
                         <img src="{{ post.card.image }}"
@@ -79,9 +79,9 @@
                              height="auto" />
                     {% endif %}
                 </a>
-                <footer>
+                <footer class="p-4 mt-4 mb-4 bg-white rounded-lg shadow md:flex-row  dark:border-gray-700 dark:bg-gray-800">
                     <h3>
-                        <a href="{{ post.card.url }}" target="_blank">{{ post.card.title }}</a>
+                        <a href="{{ post.card.url }}" class="underline" target="_blank">{{ post.card.title }}</a>
                     </h3>
                     <small>{{ post.card.description }}</small>
                 </footer>
