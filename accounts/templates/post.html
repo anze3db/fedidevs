@@ -10,23 +10,24 @@
         text-decoration: underline;
     }
 </style>
-<div class="flex items-start gap-2.5 mt-8 ">
-    <img class="h-16 w-16 rounded"
-         src="{{ post.account.avatar }}"
-         alt="{{ post.account.login }}" />
-    <div class="flex flex-column gap-2.5 justify-between w-full">
-        <div class="block-link ">
-            <div class="flex items-center space-x-2 rtl:space-x-reverse mt-2">
-            <a href="{% if selected_instance and selected_instance != post.account.source %} https://{% firstof selected_instance %}/@{{ post.account.username }}@{{ post.account.source }} {% else %} https://{{ post.account.source }}/@{{ post.account.username }} {% endif %}"
-               class="font-semibold"
-               target="_blank"><span class="flex gap-1 [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1">{% render_emojis post.account.name post.account.emojis %}</span>
-            <span class="opacity-80 underline">@{{ post.account.source }}@{{ post.account.username }} </span>
-        </a>
+<div class="p-4 m-8 bg-white border border-gray-200 rounded-lg shadow md:flex-row hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+    <div class="flex items-start gap-2.5">
+        <img class="h-16 w-16 rounded"
+             src="{{ post.account.avatar }}"
+             alt="{{ post.account.login }}" />
+        <div class="flex flex-column gap-2.5 justify-between w-full">
+            <div class="block-link">
+                <div class="flex items-center space-x-2 rtl:space-x-reverse mt-2">
+                <a href="{% if selected_instance and selected_instance != post.account.source %} https://{% firstof selected_instance %}/@{{ post.account.username }}@{{ post.account.source }} {% else %} https://{{ post.account.source }}/@{{ post.account.username }} {% endif %}"
+                   class="font-semibold"
+                   target="_blank"><span class="flex gap-1 [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1">{% render_emojis post.account.name post.account.emojis %}</span>
+                <span class="opacity-80 underline">@{{ post.account.source }}@{{ post.account.username }} </span>
+            </a>
+        </div>
     </div>
-</div>
-<a href="{{ post.uri }}">
-    <span>{{ post.created_at |naturaltime }}</span>
-</a>
+    <a href="{{ post.uri }}" class="overflow-hidden block">
+        <span>{{ post.created_at |naturalday }}</span>
+    </a>
 </div>
 </div>
 <div class="mt-4 mb-4">
@@ -88,9 +89,9 @@
         {% endif %}
     {% endif %}
 </div>
-<div class="flex justify-between mt-2 mb-2">
+<div class="flex justify-between mt-6 mb-2">
     <span class="flex gap-2">{% heroicon_outline 'star' %} {{ post.favourites_count }}</span>
     <span class="flex gap-2">{% heroicon_outline 'arrow-path-rounded-square' %} {{ post.reblogs_count }}</span>
     <span class="flex gap-2"> {% heroicon_outline 'chat-bubble-bottom-center' %} {{ post.replies_count }} </span>
 </div>
-<hr class="opacity-20 mt-4 mb-4">
+</div>
