@@ -90,6 +90,7 @@ LANGUAGES = [
     Language("csharp", "C#", "♫", r"csharp|c#", "languages/csharp.png"),
     Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
     Language("cpp", "C++", "🐯", r"c\+\+|cpp", "languages/cpp.png"),
+    Language("css", "CSS", "🦝", r"[^\.]css", "languages/css.svg"),
     Language("php", "PHP", "🐘", r"[^\.]php", "languages/php.png"),  # Filters out index.php? and others
     Language("haskell", "Haskell", "🦥", r"haskell", "languages/haskell.png"),
     Language("ocaml", "OCaml", "🐫", r"ocaml", "languages/ocaml.png"),
