@@ -3,7 +3,7 @@
 {% load static %}
 {% block content %}
     <style>
-            /* https://adrianroselli.com/2020/02/block-links-cards-clickable-regions-etc.html */
+            /* https://adrianroselli.com/2020/02/s-cards-clickable-regions-etc.html */
             .block-link {
                 position: relative;
             }
@@ -38,7 +38,7 @@
                         </thead>
                         <tbody>
                             {% for conf in live_conferences %}
-                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                                <tr onClick="window.location = '{% url 'conference' conf.slug %}'" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
                                     <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
                                     </th>
@@ -68,7 +68,7 @@
                         </thead>
                         <tbody>
                             {% for conf in upcoming_conferences %}
-                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                     <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
                                     </th>
@@ -98,7 +98,7 @@
                         </thead>
                         <tbody>
                             {% for conf in past_conferences %}
-                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                     <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
                                     </th>
@@ -106,28 +106,28 @@
                                     <td>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
                                 </tr>
                             {% endfor %}
-                            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                 <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     <a href="{% url 'dotnetconf' %}">.NET Conf 2023</a>
                                 </th>
                                 <td>Virtual</td>
                                 <td>Nov 14 - 16, 2023</td>
                             </tr>
-                            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                 <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     <a href="{% url 'fwd50' %}">FWD50 2023</a>
                                 </th>
                                 <td>Ottawa, Canada</td>
                                 <td>Nov 6 - 8, 2023</td>
                             </tr>
-                            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                 <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     <a href="{% url 'djangoconus' %}">DjangoCon US 2023</a>
                                 </th>
                                 <td>Durham, NC</td>
                                 <td>Oct 16 - 20, 2023</td>
                             </tr>
-                            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 block-link">
+                            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                 <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     <a href="{% url 'djangoconafrica' %}">DjangoCon Africa 2023</a>
                                 </th>
