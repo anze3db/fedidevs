@@ -32,9 +32,7 @@
                 </div>
                 <div class="p-4 pt-16">
                     <div class="relative">
-                        <h5 class="mb-1 text-2xl font-semibold flex gap-2 [&>img]:max-w-8">
-                            {% render_emojis account.name account.emojis %}
-                        </h5>
+                        <h5 class="mb-1 text-2xl font-semibold flex gap-2 [&>img]:max-w-8">{% render_emojis account.name account.emojis %}</h5>
                         {% if selected_instance and selected_instance != account.source %}
                             <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}"
                                class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2"

@@ -2,9 +2,7 @@
 {% load account_extras %}
 {% load static %}
 {% block head %}
-    {% if posts.has_previous %}
-        <meta name="robots" content="none">
-    {% endif %}
+    {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
 {% endblock head %}
 {% block content %}
     <main class="flex justify-center">
@@ -15,7 +13,8 @@
                         {% include "post.html" %}
                     {% endwith %}
                 {% empty %}
-                    <p style="text-align:center;" class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                    <p style="text-align:center"
+                       class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                         No results, create a post with <b>{{ conference.tags }}</b> hashtag on Mastodon and it will show up here!
                     </p>
                 {% endfor %}
@@ -54,7 +53,8 @@
             </p>
             <footer>
                 <p class="mb-3">
-                    <a href="https://sboots.ca/2023/10/27/twitter-is-dead-lets-start-live-tweeting-conferences-on-mastodon-instead/" class="underline">Twitter is dead. Let's start live-tweeting conferences on Mastodon instead.</a>
+                    <a href="https://sboots.ca/2023/10/27/twitter-is-dead-lets-start-live-tweeting-conferences-on-mastodon-instead/"
+                       class="underline">Twitter is dead. Let's start live-tweeting conferences on Mastodon instead.</a>
                 </p>
                 <p class="mb-3">
                     If you are not seeing your posts, but would like you, please <a href="mailto:hello@fedidevs.com" class="underline">reach out</a>.
@@ -70,12 +70,8 @@
     </main>
 {% endblock content %}
 {% block sidebar %}
-    <h1 class="mb-4 text-3xl font-extrabold">
-        {{ conference.name }}
-    </h1>
-    <p class="mt-4 mb-4">
-        {{ conference.description | safe }}
-    </p>
+    <h1 class="mb-4 text-3xl font-extrabold">{{ conference.name }}</h1>
+    <p class="mt-4 mb-4">{{ conference.description | safe }}</p>
     <p class="mt-4 mb-4">
         {% if conference.website %}
             Visit <a href="{{ conference.website }}" class="underline">{{ conference.website }}</a> for more info!
@@ -111,9 +107,7 @@
             </li>
         {% endfor %}
     </ul>
-    <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
-        Filter by conference day
-    </h2>
+    <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">Filter by conference day</h2>
     <ul class="px-4 -mx-4 mb-8">
         {% for date in dates %}
             <li class="m-1 inline-block">
@@ -127,9 +121,7 @@
             </li>
         {% endfor %}
     </ul>
-    <h2 class="flex items-center gap-2 pb-2 mb-2 text-sm font-semibold align-middle border-b">
-        Order by
-    </h2>
+    <h2 class="flex items-center gap-2 pb-2 mb-2 text-sm font-semibold align-middle border-b">Order by</h2>
     <ul class="mb-8">
         <li>
             <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_id }}&tag={{ selected_tag }}&order=-favourites_count"

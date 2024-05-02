@@ -21,7 +21,7 @@
                 <a href="{% if selected_instance and selected_instance != post.account.source %} https://{% firstof selected_instance %}/@{{ post.account.username }}@{{ post.account.source }} {% else %} https://{{ post.account.source }}/@{{ post.account.username }} {% endif %}"
                    class="font-semibold"
                    target="_blank"><span class="flex gap-1 [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1">{% render_emojis post.account.name post.account.emojis %}</span>
-                <span class="opacity-80 underline">@{{ post.account.source }}@{{ post.account.username }} </span>
+                <span class="opacity-80 underline">@{{ post.account.source }}@{{ post.account.username }}</span>
             </a>
         </div>
     </div>
@@ -33,15 +33,11 @@
 <div class="mt-4 mb-4">
     {% if post.sensitive %}
         <details>
-            <summary>
-                {{ post.spoiler_text }}
-            </summary>
+            <summary>{{ post.spoiler_text }}</summary>
             {{ post.content|safe }}
         </details>
     {% else %}
-        <div class="mb-2 post">
-            {{ post.content|safe }}
-        </div>
+        <div class="mb-2 post">{{ post.content|safe }}</div>
         {% if post.media_attachments %}
             <div class="grid grid-cols-2 gap-2">
                 {% for media in post.media_attachments %}
@@ -82,11 +78,11 @@
                         </a>
                     {% endif %}
                     <div class="p-4">
-                    <h3>
-                        <a href="{{ post.card.url }}" class="underline" target="_blank">{{ post.card.title }}</a>
-                    </h3>
-                    <small>{{ post.card.description }}</small>
-                </div>
+                        <h3>
+                            <a href="{{ post.card.url }}" class="underline" target="_blank">{{ post.card.title }}</a>
+                        </h3>
+                        <small>{{ post.card.description }}</small>
+                    </div>
                 </div>
             </article>
         {% endif %}
@@ -95,6 +91,6 @@
 <div class="flex justify-between mt-6 mb-2">
     <span class="flex gap-2">{% heroicon_outline 'star' %} {{ post.favourites_count }}</span>
     <span class="flex gap-2">{% heroicon_outline 'arrow-path-rounded-square' %} {{ post.reblogs_count }}</span>
-    <span class="flex gap-2"> {% heroicon_outline 'chat-bubble-bottom-center' %} {{ post.replies_count }} </span>
+    <span class="flex gap-2">{% heroicon_outline 'chat-bubble-bottom-center' %} {{ post.replies_count }}</span>
 </div>
 </div>
