@@ -55,16 +55,16 @@
                 These results were aggregated by indexing <b>{{ conference.tags }}</b> on <b>{{ conference.instances }}</b>.
             </p>
             <footer>
-                <p>
+                <p class="mb-3">
                     <a href="https://sboots.ca/2023/10/27/twitter-is-dead-lets-start-live-tweeting-conferences-on-mastodon-instead/">Twitter is dead. Let's start live-tweeting conferences on Mastodon instead</a>
                 </p>
-                <p>
+                <p class="mb-3">
                     If you are not seeing your posts, but would like you, please <a href="mailto:hello@fedidevs.com">reach out</a>.
                 </p>
-                <p>
+                <p class="mb-3">
                     If you want posts or instance removed, please <a href="mailto:hello@fedidevs.com">let me know</a> and I will remove them ASAP.
                 </p>
-                <p>
+                <p class="mb-3">
                     If you have any other ideas on how to encourage more toots, please <a href="https://fosstodon.org/@fedidevs">toot at me</a> or <a href="mailto:hello@fedidevs.com">send an email</a> 💙
                 </p>
             </footer>
@@ -72,13 +72,16 @@
     </main>
 {% endblock content %}
 {% block sidebar %}
+    <h1 class="mb-4 text-3xl font-extrabold">{{ conference.name }}</h1>
     <p class="mt-4 mb-4">
         {{ conference.description | safe }}
     </p>
-    <p  class="mt-4 mb-4">
+    <p class="mt-4 mb-4">
         {% if conference.website %}
             Visit <a href="{{ conference.website }}" class="underline">{{ conference.website }}</a> for more info!
         {% endif %}
+    </p>
+    <p class="mt-4 mb-8">
         {% if conference.mastodon %}
             Follow the <a href="{{ conference.mastodon }}" class="underline">official Mastodon account</a> to be up to date.
         {% endif %}
@@ -86,71 +89,68 @@
     {% if is_superuser %}
         <a href="{% url 'admin:confs_conference_change' conference.id %}">Edit</a>
     {% endif %}
-    <p class="mt-4 mb-4">
-        <h3 class="text-xl font-bold" >
-            Most active accounts
-        </h3>
-        <ul style="padding:0;">
-            <li style="display: inline-block;">
-                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}"
+    <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
+        Filter by most active accounts
+    </h2>
+    <ul class="px-4 -mx-4 mb-8">
+        {% for account_count in account_counts %}
+            <li class="m-1 inline-block">
+                <a href="{% if account_id != account_count.account.id %}{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}{% else %}{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&tag={{ selected_tag }}{% endif %}"
                    role="button"
-                   class="{% if account_id is not None %}outline{% endif %} no-wrap"
-                   style="padding: 5px">All Accounts</a>
+                   class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if account_id == account_count.account.id %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center">
+                    <img src="{{ account_count.account.avatar }}"
+                         alt="{{ account_count.account.login }}"
+                         width="50"
+                         height="50"
+                         class="h-6 w-6 rounded-full mr-1" />
+                    <span class="flex gap-1 [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1">{% render_emojis account_count.account.name account_count.account.emojis %} ({{ account_count.count }})</span>
+                    {% if account_id == account_count.account.id %}
+                        <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                    {% endif %}
+                </a>
             </li>
-            {% for account_count in account_counts %}
-                <li style="display: inline-block;">
-                    <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}"
-                       role="button"
-                       class="{% if account_count.account.id != account_id %}outline{% endif %} no-wrap"
-                       style="padding: 5px">
-                        <img class="small-avatar"
-                             src="{{ account_count.account.avatar }}"
-                             alt="{{ account_count.account.login }}"
-                             width="50"
-                             height="50" />
-                    {% render_emojis account_count.account.display_name account_count.account.emojis %} ({{ account_count.count }})</a>
-                </li>
-            {% endfor %}
-        </ul>
-    </p>
-    <h3 class="text-xl font-bold">
+        {% endfor %}
+    </ul>
+    <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
         Filter by conference day
-    </h3>
+    </h2>
     <nav>
-        <ul style="flex-wrap: wrap; justify-content: center;">
             {% if dates %}
-                <li>
-                    <a href="{% url 'conference' slug %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
-                       {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
-                       role="button"
-                       data-tooltip="This includes posts before, during, and after the conference.">All ({{ all_conf_posts_count }})</a>
-                </li>
+        <ul class="flex mb-8">
                 {% for date in dates %}
-                    <li>
-                        <a href="{% url 'conference' slug %}?date={{ date.value | date:"Y-m-d" }}&order={{ order }}&account={{ account_id }}"
-                           {% if posts_date != date.value %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
-                           role="button">{{ date.pre_display }} ({{ date.count }})</a>
+            <li class="m-1 inline-block">
+                        <a href="{% if posts_date == date.value %}{% url 'conference' slug %}?order={{ order }}&account={{ account_id }}{% else %}{% url 'conference' slug %}?date={{ date.value | date:"Y-m-d" }}&order={{ order }}&account={{ account_id }}{%endif%}"
+                   class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if posts_date == date.value %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
+                           class=" {% if posts_date != date.value %}text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 dark:bg-gray-900 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-900 {% else %} text-blue-700 hover:text-white border border-blue-600 bg-white hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:bg-gray-900 dark:focus:ring-blue-800 {% endif %}"
+                           role="button">{{ date.pre_display }} ({{ date.count }})
+                        
+                    {% if posts_date == date.value %}
+                        <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                    {% endif %}
+                        
+                        </a>
                     </li>
                 {% endfor %}
-            {% endif %}
         </ul>
-    <h3 class="text-xl font-bold">
-        Sort by
-    </h3>
-        <ul class="mb-5">
+            {% endif %}
+    <h2 class="flex items-center gap-2 pb-2 mb-2 text-sm font-semibold align-middle border-b">Order by</h2>
+        <ul class="mb-8">
             <li>
-                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-favourites_count" {% if order == "-favourites_count" %}class="font-bold"{% endif %}>Number of Favourites</a>
+                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-favourites_count"
+                   {% if order == "-favourites_count" %}class="font-bold"{% endif %}>Number of Favourites</a>
             </li>
             <li>
-                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-reblogs_count" {% if order == "-reblogs_count" %}class="font-bold"{% endif %}>Number of Boosts</a>
+                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-reblogs_count"
+                   {% if order == "-reblogs_count" %}class="font-bold"{% endif %}>Number of Boosts</a>
             </li>
             <li>
-                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-replies_count" {% if order == "-replies_count" %}class="font-bold"{% endif %}>Number of Replies</a>
+                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-replies_count"
+                   {% if order == "-replies_count" %}class="font-bold"{% endif %}>Number of Replies</a>
             </li>
             <li>
-                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-created_at" {% if order == "-created_at" %}class="font-bold"{% endif %}>Created Date</a>
+                <a href="{% url 'conference' slug %}?date={{ posts_date|date:"Y-m-d" }}&account={{ account_count.account.id }}&tag={{ selected_tag }}&order=-created_at"
+                   {% if order == "-created_at" %}class="font-bold"{% endif %}>Created Date</a>
             </li>
-
         </ul>
     </nav>
 {% endblock sidebar %}
