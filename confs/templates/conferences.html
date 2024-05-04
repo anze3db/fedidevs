@@ -3,20 +3,20 @@
 {% load static %}
 {% block content %}
     <style>
-            /* https://adrianroselli.com/2020/02/s-cards-clickable-regions-etc.html */
-            .block-link {
-                position: relative;
-            }
-            .block-link a[href]::after {
-                content: "";
-                display: block;
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-            }
+        /* https://adrianroselli.com/2020/02/s-cards-clickable-regions-etc.html */
+        .block-link {
+            position: relative;
+        }
 
+        .block-link a[href]::after {
+            content: "";
+            display: block;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
     </style>
     <main>
         <article>
@@ -31,9 +31,15 @@
                         </caption>
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th class="px-6 py-3">Conference</th>
-                                <th class="px-6 py-3">Location</th>
-                                <th class="px-6 py-3">Date</th>
+                                <th class="px-6 py-3">
+                                    Conference
+                                </th>
+                                <th class="px-6 py-3">
+                                    Location
+                                </th>
+                                <th class="px-6 py-3">
+                                    Date
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -43,8 +49,12 @@
                                     <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
                                     </th>
-                                    <td class="px-6 py-4">{{ conf.location }}</td>
-                                    <td class="px-6 py-4">{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
+                                    <td class="px-6 py-4">
+                                        {{ conf.location }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        {{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -62,9 +72,15 @@
                         </caption>
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th class="px-6 py-3">Conference</th>
-                                <th class="px-6 py-3">Location</th>
-                                <th class="px-6 py-3">Date</th>
+                                <th class="px-6 py-3">
+                                    Conference
+                                </th>
+                                <th class="px-6 py-3">
+                                    Location
+                                </th>
+                                <th class="px-6 py-3">
+                                    Date
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -73,8 +89,12 @@
                                     <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
                                     </th>
-                                    <td class="px-6 py-4">{{ conf.location }}</td>
-                                    <td class="px-6 py-4">{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
+                                    <td class="px-6 py-4">
+                                        {{ conf.location }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        {{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -92,9 +112,15 @@
                         </caption>
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th class="px-6 py-3">Conference</th>
-                                <th class="px-6 py-3">Location</th>
-                                <th class="px-6 py-3">Date</th>
+                                <th class="px-6 py-3">
+                                    Conference
+                                </th>
+                                <th class="px-6 py-3">
+                                    Location
+                                </th>
+                                <th class="px-6 py-3">
+                                    Date
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -103,49 +129,68 @@
                                     <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
                                     </th>
-                                    <td>{{ conf.location }}</td>
-                                    <td>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
+                                    <td>
+                                        {{ conf.location }}
+                                    </td>
+                                    <td>
+                                        {{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}
+                                    </td>
                                 </tr>
                             {% endfor %}
                             <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                 <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     <a href="{% url 'dotnetconf' %}">.NET Conf 2023</a>
                                 </th>
-                                <td>Virtual</td>
-                                <td>Nov 14 - 16, 2023</td>
+                                <td>
+                                    Virtual
+                                </td>
+                                <td>
+                                    Nov 14 - 16, 2023
+                                </td>
                             </tr>
                             <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                 <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     <a href="{% url 'fwd50' %}">FWD50 2023</a>
                                 </th>
-                                <td>Ottawa, Canada</td>
-                                <td>Nov 6 - 8, 2023</td>
+                                <td>
+                                    Ottawa, Canada
+                                </td>
+                                <td>
+                                    Nov 6 - 8, 2023
+                                </td>
                             </tr>
                             <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                 <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     <a href="{% url 'djangoconus' %}">DjangoCon US 2023</a>
                                 </th>
-                                <td>Durham, NC</td>
-                                <td>Oct 16 - 20, 2023</td>
+                                <td>
+                                    Durham, NC
+                                </td>
+                                <td>
+                                    Oct 16 - 20, 2023
+                                </td>
                             </tr>
                             <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                 <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     <a href="{% url 'djangoconafrica' %}">DjangoCon Africa 2023</a>
                                 </th>
-                                <td>Zanzibar, Tanzania</td>
-                                <td>Nov 6 - 11, 2023</td>
+                                <td>
+                                    Zanzibar, Tanzania
+                                </td>
+                                <td>
+                                    Nov 6 - 11, 2023
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             {% endif %}
+            <footer class="prose dark:prose-invert m-6">
+                <p>
+                    Missing a conference? <a href="mailto:hello@fedidevs.com">Reach out</a> and I'll add it asap.
+                </p>
+            </footer>
         </article>
-        <footer>
-            <p class="pt-4 text-center">
-                Missing a conference? <a href="mailto:hello@fedidevs.com"
-    class="font-medium text-blue-600 dark:text-blue-500 underline hover:no-underline">Reach out</a> and I'll add it asap.
-            </p>
-        </footer>
     </main>
 {% endblock content %}
 {% block sidebar %}
