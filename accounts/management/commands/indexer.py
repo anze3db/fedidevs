@@ -8,7 +8,7 @@ from accounts.models import FRAMEWORKS, LANGUAGES, Account, AccountLookup
 
 
 class Command(RichCommand):
-    help = "Crawles the fosstodon.org API and saves all accounts to the database"
+    help = "Indexes accounts in the database"
 
     def handle(self, *args, **options):
         any_lookup = set()
