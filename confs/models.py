@@ -1,5 +1,83 @@
 from django.db import models
 
+from accounts.models import Framework, Language
+
+FRAMEWORKS = [
+    Framework("django", "Django", "🐍", r"django", "frameworks/django.svg"),
+    Framework("flask", "Flask", "🍶", r"flask", "frameworks/flask.png"),
+    Framework("fastapi", "FastAPI", "🚀", r"fastapi", "frameworks/fastapi.svg"),
+    Framework("rails", "Rails", "🛤️", r"rails", "frameworks/rails.png"),
+    Framework("laravel", "Laravel", "🎣", r"laravel", "frameworks/laravel.png"),
+    Framework("symfony", "Symfony", "🎻", r"symfony", "frameworks/symfony.png"),
+    Framework("kubernetes", "Kubernetes", "🎻", r"kubernetes", "frameworks/kubernetes.png"),
+    Framework("spring", "Spring", "🌱", r"spring", "frameworks/spring.png"),
+    Framework("htmx", "HTMX", "🧬", r"htmx", "frameworks/htmx.png"),
+    Framework("react", "React", "⚛️", r"react", "frameworks/react.png"),
+    Framework("vue", "Vue", "🎨", r"[^a-z:]vue", "frameworks/vue.png"),
+    Framework("angular", "Angular", "🅰️", r"angular", "frameworks/angular.png"),
+    Framework("nextjs", "Next.js", "🖖", r"nextjs", "frameworks/nextjs.svg"),
+    Framework("svelte", "Svelte", "🎬", r"svelte", "frameworks/svelte.png"),
+    Framework("tailwind", "Tailwind", "🐱", r"tailwind", "frameworks/tailwind.svg"),
+    Framework("bootstrap", "Bootstrap", "🥾", r"bootstrap", "frameworks/bootstrap.png"),
+    Framework("dotnet", ".NET", "🌐", r" \.net|dotnet", "frameworks/dotnet.png"),
+    Framework(
+        "opensource",
+        "Open Source",
+        "📖",
+        r"open[- _]?source|free[- _]?software|libre[- _]?software|foss[^i]",
+        "languages/opensource.png",
+    ),
+    Framework("linux", "Linux", "🐧", r"linux", "languages/linux.png"),
+    Framework("bsd", "BSD", "😈", r"bsd", "frameworks/bsd.svg"),
+    Framework("android", "Android", "🤖", r"roboto|android", "frameworks/android.png"),
+    Framework("postgres", "Postgres", "🐧", r"postgres|pg", "frameworks/postgres.png"),
+    Framework("flutter", "Flutter", "🐤", r"flutter", "frameworks/flutter.png"),
+]
+
+LANGUAGES = [
+    Language("python", "Python", "🐍", r"python|psf|pycon|py", "languages/python.png"),
+    Language(
+        "typescript",
+        "TypeScript",
+        "📜",
+        r"typescript|[^a-z]ts[^a-z:]",
+        "languages/typescript.png",
+    ),
+    Language(
+        "javascript",
+        "JavaScript",
+        "📜",
+        r"javascript|jsconf|js",
+        "languages/javascript.png",
+    ),
+    Language("rust", "Rust", "🦀", r"[^a-z:]rust[^a-z]|rustlang", "languages/rust.png"),  # Filters out trust, etc.
+    Language("ruby", "Ruby", "💎", r"ruby", "languages/ruby.png"),
+    Language("golang", "Golang", "🐹", r"golang|golab", "languages/golang.png"),
+    Language("java", "Java", "☕", r"java[^script]", "languages/java.png"),
+    Language("kotlin", "Kotlin", "🤖", r"kotlin", "languages/kotlin.png"),
+    Language("scala", "Scala", "🧪", r"[^e]scala[^b]", "languages/scala.png"),
+    Language("swift", "Swift", "🐦", r"swift|ios|apple", "languages/swift.png"),
+    Language("csharp", "C#", "♫", r"csharp|c#", "languages/csharp.png"),
+    Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
+    Language("cpp", "C++", "🐯", r"c\+\+|cpp", "languages/cpp.png"),
+    Language("css", "CSS", "🦝", r"[^\.]css", "languages/css.svg"),
+    Language("php", "PHP", "🐘", r"php", "languages/php.png"),  # Filters out index.php? and others
+    Language("haskell", "Haskell", "🦥", r"haskell", "languages/haskell.png"),
+    Language("ocaml", "OCaml", "🐫", r"ocaml", "languages/ocaml.png"),
+    Language(
+        "nix", "Nix", "❄️", r"[^(a-z|\.|\*):]nix[^Craft]", "languages/nix.png"
+    ),  # Filters out unix, linux, nixCraft, git.nix etc.
+    Language("julia", "Julia", "📊", r"julia(?!n)", "languages/julia.png", only_bio=True),  # Filters out Julian
+    # Language("gaming", "Gaming", "🎮", r"gaming|game", "languages/gaming.png"),
+    # Language(
+    #     "security",
+    #     "Security",
+    #     "🔒",
+    #     r"security|infosec|appsec",
+    #     "languages/security.png",
+    # ),
+]
+
 
 class Conference(models.Model):
     name = models.CharField(max_length=255)
@@ -17,13 +95,26 @@ class Conference(models.Model):
 
     posts_after = models.DateField(null=True, blank=True)
     instances = models.TextField(default="")
-    tags = models.TextField(default="")
+    tags = models.TextField(default="")  # hashtags
 
     accounts = models.ManyToManyField("accounts.Account", blank=True, through="ConferenceAccount")
     posts = models.ManyToManyField("posts.Post", blank=True, through="ConferencePost")
 
     def __str__(self):
         return self.name
+
+    @property
+    def languages(self):
+        lang_lookup = {lang.code: lang for lang in LANGUAGES + FRAMEWORKS}
+        return [lang_lookup[lang.language] for lang in self.conferencelookup_set.all()]
+
+
+class ConferenceLookup(models.Model):
+    conference = models.ForeignKey(Conference, on_delete=models.CASCADE)
+    language = models.CharField(
+        max_length=55,
+        choices=[(lang.code, lang.name) for lang in LANGUAGES + FRAMEWORKS],
+    )
 
 
 class ConferenceAccount(models.Model):
@@ -58,6 +149,12 @@ class ConferencePost(models.Model):
             models.Index(fields=["conference", "account", "reblogs_count"]),
             models.Index(fields=["conference", "account", "replies_count"]),
         ]
+
+
+class ConferenceTag(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True)
+    icon = models.CharField(max_length=255)
 
 
 class MinId(models.Model):

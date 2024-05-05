@@ -22,6 +22,8 @@ from django.utils import dateparse, timezone
 from accounts import views
 from accounts.models import FRAMEWORKS, LANGUAGES
 from confs import views as confs_views
+from confs.models import FRAMEWORKS as CONF_FRAMEWORKS
+from confs.models import LANGUAGES as CONF_LANGUAGES
 from mastodon_auth import views as mastodon_views
 from posts import views as post_views
 
@@ -45,6 +47,7 @@ class DateConverter:
 register_converter(DateConverter, "date")
 
 LANG_OR_FRAMEWORK = LANGUAGES + FRAMEWORKS
+CONF_LANG_OR_FRAMEWORK = CONF_LANGUAGES + CONF_FRAMEWORKS
 
 urlpatterns = (
     [
@@ -70,6 +73,15 @@ urlpatterns = (
             post_views.subscribe_success,
             name="posts_subscribe_success",
         ),
+    ]
+    + [
+        path(
+            f"conferences/{lang.code}/",
+            confs_views.conferences,
+            name=f"conference-{lang.code}",
+            kwargs={"lang": lang.code},
+        )
+        for lang in CONF_LANG_OR_FRAMEWORK
     ]
     + [path(f"{lang.code}/", views.index, name=lang.code, kwargs={"lang": lang.code}) for lang in LANG_OR_FRAMEWORK]
     + [

@@ -8,8 +8,11 @@ from django.utils import timezone
 from django.utils.dateparse import parse_date
 
 from confs.models import (
+    FRAMEWORKS,
+    LANGUAGES,
     Conference,
     ConferenceAccount,
+    ConferenceLookup,
     ConferencePost,
     DjangoConAfricaAccount,
     DjangoConAfricaPost,
@@ -20,12 +23,68 @@ from confs.models import (
 )
 
 
-def conferences(request):
-    today = timezone.now().date()
-    upcoming_conferences = Conference.objects.filter(start_date__gt=today).order_by("start_date")
-    live_conferences = Conference.objects.filter(start_date__lte=today, end_date__gte=today).order_by("start_date")
-    past_conferences = Conference.objects.filter(end_date__lt=today).order_by("-start_date")
+def conferences(request, lang: str | None = None):
+    language_count_dict = {
+        al["language"]: al["count"]
+        for al in ConferenceLookup.objects.values("language").annotate(count=Count("language")).order_by("-count")
+    }
 
+    languages = (
+        {
+            "code": lng.code,
+            "name": lng.name,
+            "emoji": lng.emoji,
+            "regex": lng.regex,
+            "image": lng.image,
+            "post_code": lng.post_code,
+            "count": language_count_dict.get(lng.code, 0),
+        }
+        for lng in LANGUAGES
+    )
+
+    frameworks = (
+        {
+            "code": framework.code,
+            "name": framework.name,
+            "emoji": framework.emoji,
+            "regex": framework.regex,
+            "image": framework.image,
+            "post_code": framework.post_code,
+            "count": language_count_dict.get(framework.code, 0),
+        }
+        for framework in FRAMEWORKS
+    )
+
+    langs_map = {lng.code: lng for lng in LANGUAGES}
+    frameworks_map = {f.code: f for f in FRAMEWORKS}
+
+    selected_lang = langs_map.get(lang)
+    selected_framework = frameworks_map.get(lang)
+    search_query = Q()
+    if selected_lang:
+        search_query &= Q(conferencelookup__language=selected_lang.code)
+    if selected_framework:
+        search_query &= Q(conferencelookup__language=selected_framework.code)
+
+    today = timezone.now().date()
+    upcoming_conferences = Conference.objects.filter(start_date__gt=today).filter(search_query).order_by("start_date")
+    live_conferences = (
+        Conference.objects.filter(start_date__lte=today, end_date__gte=today)
+        .filter(search_query)
+        .order_by("start_date")
+    )
+    past_conferences = Conference.objects.filter(end_date__lt=today).filter(search_query).order_by("-start_date")
+
+    frameworks = sorted(
+        [f for f in frameworks if f["count"] > 0],
+        key=lambda framework: (framework["count"]),
+        reverse=True,
+    )
+    languages = sorted(
+        [lang for lang in languages if lang["count"] > 0],
+        key=lambda lng: lng["count"],
+        reverse=True,
+    )
     return render(
         request,
         "conferences.html",
@@ -40,6 +99,10 @@ def conferences(request):
             "upcoming_conferences": upcoming_conferences,
             "live_conferences": live_conferences,
             "past_conferences": past_conferences,
+            "languages": languages,
+            "frameworks": frameworks,
+            "selected_lang": selected_lang,
+            "selected_framework": selected_framework,
         },
     )
 
