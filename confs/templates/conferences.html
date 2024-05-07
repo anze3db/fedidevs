@@ -31,15 +31,9 @@
                         </caption>
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th class="px-6 py-3">
-                                    Conference
-                                </th>
-                                <th class="px-6 py-3">
-                                    Location
-                                </th>
-                                <th class="px-6 py-3">
-                                    Date
-                                </th>
+                                <th class="px-6 py-3">Conference</th>
+                                <th class="px-6 py-3">Location</th>
+                                <th class="px-6 py-3">Date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -47,19 +41,15 @@
                                 <tr onClick="window.location = '{% url 'conference' conf.slug %}'"
                                     class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
                                     <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                       {% for language in conf.languages %}
-                                                <img src="{% static language.image %}"
-                                                     alt="{{ language.code }}"
-                                                     class="w-auto h-5 mr-2 inline" />
+                                        {% for language in conf.languages %}
+                                            <img src="{% static language.image %}"
+                                                 alt="{{ language.code }}"
+                                                 class="w-auto h-5 mr-2 inline" />
                                         {% endfor %}
                                         <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
                                     </th>
-                                    <td class="px-6 py-4">
-                                        {{ conf.location }}
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        {{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}
-                                    </td>
+                                    <td class="px-6 py-4">{{ conf.location }}</td>
+                                    <td class="px-6 py-4">{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -77,15 +67,9 @@
                         </caption>
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th class="px-6 py-3">
-                                    Conference
-                                </th>
-                                <th class="px-6 py-3">
-                                    Location
-                                </th>
-                                <th class="px-6 py-3">
-                                    Date
-                                </th>
+                                <th class="px-6 py-3">Conference</th>
+                                <th class="px-6 py-3">Location</th>
+                                <th class="px-6 py-3">Date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -93,18 +77,14 @@
                                 <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                     <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         {% for language in conf.languages %}
-                                                <img src="{% static language.image %}"
-                                                     alt="{{ language.code }}"
-                                                     class="w-auto h-5 mr-2 inline" />
+                                            <img src="{% static language.image %}"
+                                                 alt="{{ language.code }}"
+                                                 class="w-auto h-5 mr-2 inline" />
                                         {% endfor %}
                                         <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
                                     </th>
-                                    <td class="px-6 py-4">
-                                        {{ conf.location }}
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        {{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}
-                                    </td>
+                                    <td class="px-6 py-4">{{ conf.location }}</td>
+                                    <td class="px-6 py-4">{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -122,81 +102,53 @@
                         </caption>
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-
-                                <th class="px-6 py-3">
-                                    Conference
-                                </th>
-                                <th class="px-6 py-3">
-                                    Location
-                                </th>
-                                <th class="px-6 py-3">
-                                    Date
-                                </th>
+                                <th class="px-6 py-3">Conference</th>
+                                <th class="px-6 py-3">Location</th>
+                                <th class="px-6 py-3">Date</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for conf in past_conferences %}
                                 <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
-
                                     <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                       {% for language in conf.languages %}
-                                                <img src="{% static language.image %}"
-                                                     alt="{{ language.code }}"
-                                                     class="w-auto h-5 mr-2 inline" />
+                                        {% for language in conf.languages %}
+                                            <img src="{% static language.image %}"
+                                                 alt="{{ language.code }}"
+                                                 class="w-auto h-5 mr-2 inline" />
                                         {% endfor %}
                                         <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
                                     </th>
-                                    <td>
-                                        {{ conf.location }}
-                                    </td>
-                                    <td>
-                                        {{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}
-                                    </td>
+                                    <td>{{ conf.location }}</td>
+                                    <td>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</td>
                                 </tr>
                             {% endfor %}
                             <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                 <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     <a href="{% url 'dotnetconf' %}">.NET Conf 2023</a>
                                 </th>
-                                <td>
-                                    Virtual
-                                </td>
-                                <td>
-                                    Nov 14 - 16, 2023
-                                </td>
+                                <td>Virtual</td>
+                                <td>Nov 14 - 16, 2023</td>
                             </tr>
                             <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                 <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     <a href="{% url 'fwd50' %}">FWD50 2023</a>
                                 </th>
-                                <td>
-                                    Ottawa, Canada
-                                </td>
-                                <td>
-                                    Nov 6 - 8, 2023
-                                </td>
+                                <td>Ottawa, Canada</td>
+                                <td>Nov 6 - 8, 2023</td>
                             </tr>
                             <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                 <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     <a href="{% url 'djangoconus' %}">DjangoCon US 2023</a>
                                 </th>
-                                <td>
-                                    Durham, NC
-                                </td>
-                                <td>
-                                    Oct 16 - 20, 2023
-                                </td>
+                                <td>Durham, NC</td>
+                                <td>Oct 16 - 20, 2023</td>
                             </tr>
                             <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ">
                                 <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     <a href="{% url 'djangoconafrica' %}">DjangoCon Africa 2023</a>
                                 </th>
-                                <td>
-                                    Zanzibar, Tanzania
-                                </td>
-                                <td>
-                                    Nov 6 - 11, 2023
-                                </td>
+                                <td>Zanzibar, Tanzania</td>
+                                <td>Nov 6 - 11, 2023</td>
                             </tr>
                         </tbody>
                     </table>
@@ -211,61 +163,60 @@
     </main>
 {% endblock content %}
 {% block sidebar %}
-
-        <section class="mb-8">
-            <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
-                Programming Language
-                <span class="hidden">{% heroicon_outline 'plus' %}</span>
-                <span class="hidden [&>svg]:h-4">{% heroicon_outline 'minus' %}</span>
-            </h2>
-            <ul class="px-4 -mx-4 text-small ">
-                {% for language in languages %}
-                    <li class="m-1 inline-block">
-                        <a href="{% url "conferences" %}{% if selected_lang.code != language.code %}{{ language.code }}{% endif %}?o={{ order }}"
-                           class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 {% if selected_lang.code == language.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
-                           role="button">
-                            <span class="flex gap-2">
-                                <img src="{% static language.image %}"
-                                     alt="{{ language.code }}"
-                                     class="object-contain w-4" />
-                                <span class="leading-loose">
-                                    {{ language.name }} <small class="text-xs">({{ language.count }})</small>
-                                </span>
+    <section class="mb-8">
+        <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
+            Programming Language
+            <span class="hidden">{% heroicon_outline 'plus' %}</span>
+            <span class="hidden [&>svg]:h-4">{% heroicon_outline 'minus' %}</span>
+        </h2>
+        <ul class="px-4 -mx-4 text-small ">
+            {% for language in languages %}
+                <li class="m-1 inline-block">
+                    <a href="{% url "conferences" %}{% if selected_lang.code != language.code %}{{ language.code }}{% endif %}?o={{ order }}"
+                       class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 {% if selected_lang.code == language.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
+                       role="button">
+                        <span class="flex gap-2">
+                            <img src="{% static language.image %}"
+                                 alt="{{ language.code }}"
+                                 class="object-contain w-4" />
+                            <span class="leading-loose">
+                                {{ language.name }} <small class="text-xs">({{ language.count }})</small>
                             </span>
-                            {% if selected_lang.code == language.code %}
-                                <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
-                            {% endif %}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </section>
-        <section class="mb-8">
-            <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
-                Frameworks, Libraries, and others
-                <span class="hidden">{% heroicon_outline 'plus' %}</span>
-                <span class="hidden [&>svg]:h-4">{% heroicon_outline 'minus' %}</span>
-            </h2>
-            <ul class="px-4 -mx-4">
-                {% for framework in frameworks %}
-                    <li class="m-1 inline-block">
-                        <a href="{% url "conferences" %}{% if selected_framework.code != framework.code %}{{ framework.code }}{% endif %}?o={{ order }}"
-                           class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if selected_framework.code == framework.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
-                           role="button">
-                            <span class="flex gap-2">
-                                <img src="{% static framework.image %}"
-                                     alt="{{ framework.code }}"
-                                     class="object-contain w-4" />
-                                <span class="leading-loose">
-                                    {{ framework.name }} <small class="text-xs">({{ framework.count }})</small>
-                                </span>
+                        </span>
+                        {% if selected_lang.code == language.code %}
+                            <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+    <section class="mb-8">
+        <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
+            Frameworks, Libraries, and others
+            <span class="hidden">{% heroicon_outline 'plus' %}</span>
+            <span class="hidden [&>svg]:h-4">{% heroicon_outline 'minus' %}</span>
+        </h2>
+        <ul class="px-4 -mx-4">
+            {% for framework in frameworks %}
+                <li class="m-1 inline-block">
+                    <a href="{% url "conferences" %}{% if selected_framework.code != framework.code %}{{ framework.code }}{% endif %}?o={{ order }}"
+                       class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if selected_framework.code == framework.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
+                       role="button">
+                        <span class="flex gap-2">
+                            <img src="{% static framework.image %}"
+                                 alt="{{ framework.code }}"
+                                 class="object-contain w-4" />
+                            <span class="leading-loose">
+                                {{ framework.name }} <small class="text-xs">({{ framework.count }})</small>
                             </span>
-                            {% if selected_framework.code == framework.code %}
-                                <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
-                            {% endif %}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </section>
+                        </span>
+                        {% if selected_framework.code == framework.code %}
+                            <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
 {% endblock sidebar %}
