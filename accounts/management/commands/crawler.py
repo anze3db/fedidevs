@@ -58,6 +58,7 @@ INSTANCES = [
     "sfba.social",
     "social.jacklinke.com",
     "social.juanlu.space",
+    "social.rochacbruno.com",
     "tech.lgbt",
     "techhub.social",
     "technews.social",
