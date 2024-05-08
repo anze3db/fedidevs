@@ -29,7 +29,7 @@ click==8.1.7
     #   trogon
 colorama==0.4.6
     # via djlint
-coverage[toml]==7.4.4
+coverage[toml]==7.5.1
     # via
     #   django-coverage-plugin
     #   pytest-cov
@@ -37,7 +37,7 @@ cssbeautifier==1.15.1
     # via djlint
 decorator==5.1.1
     # via mastodon-py
-django==5.0.4
+django==5.0.6
     # via
     #   -r requirements.in
     #   django-browser-reload
@@ -79,7 +79,7 @@ gevent==24.2.1
     # via watchdog-gevent
 greenlet==3.0.3
     # via gevent
-gunicorn==21.2.0
+gunicorn==22.0.0
     # via -r requirements.in
 h11==0.14.0
     # via httpcore
@@ -119,7 +119,7 @@ mdit-py-plugins==0.4.0
     # via markdown-it-py
 mdurl==0.1.2
     # via markdown-it-py
-mypy==1.9.0
+mypy==1.10.0
     # via -r requirements.in
 mypy-extensions==1.0.0
     # via mypy
@@ -132,19 +132,19 @@ pathspec==0.12.1
     # via djlint
 pip-tools==7.4.1
     # via -r requirements.in
-pluggy==1.4.0
+pluggy==1.5.0
     # via pytest
 prometheus-client==0.20.0
     # via dramatiq
 psycopg2-binary==2.9.9
     # via -r requirements.in
-pygments==2.17.2
+pygments==2.18.0
     # via rich
-pyproject-hooks==1.0.0
+pyproject-hooks==1.1.0
     # via
     #   build
     #   pip-tools
-pytest==8.1.1
+pytest==8.2.0
     # via
     #   pytest-cov
     #   pytest-django
@@ -160,7 +160,7 @@ python-magic==0.4.27
     # via mastodon-py
 pyyaml==6.0.1
     # via djlint
-redis==5.0.3
+redis==5.0.4
     # via dramatiq
 regex==2023.12.25
     # via djlint
@@ -171,11 +171,11 @@ rich==13.7.1
     #   -r requirements.in
     #   django-rich
     #   textual
-ruff==0.3.7
+ruff==0.4.3
     # via -r requirements.in
 schedule==1.2.1
     # via -r requirements.in
-sentry-sdk==1.45.0
+sentry-sdk==2.1.1
     # via -r requirements.in
 setproctitle==1.3.3
     # via -r requirements.in
@@ -193,11 +193,11 @@ sqlparse==0.5.0
     # via
     #   django
     #   django-debug-toolbar
-textual==0.56.4
+textual==0.58.1
     # via
     #   django-tui
     #   trogon
-tqdm==4.66.2
+tqdm==4.66.4
     # via djlint
 trogon==0.5.0
     # via django-tui
@@ -216,7 +216,7 @@ watchdog==4.0.0
     # via
     #   dramatiq
     #   watchdog-gevent
-watchdog-gevent==0.1.1
+watchdog-gevent==0.2.0
     # via dramatiq
 wheel==0.43.0
     # via pip-tools

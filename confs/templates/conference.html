@@ -9,7 +9,7 @@
         <article>
             <section data-nosnippet class="max-w-3xl">
                 {% for conf_post in conf_posts %}
-                    {% with post=conf_post.post %}
+                    {% with post=conf_post.post conference_subtitle="Join the discussion and get hyped for the upcoming conferences." conference_title="Upcoming Conferences" %}
                         {% include "post.html" %}
                     {% endwith %}
                 {% empty %}
