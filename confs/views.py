@@ -69,19 +69,19 @@ def conferences(request, lang: str | None = None):
     today = timezone.now().date()
     upcoming_conferences = (
         Conference.objects.filter(start_date__gt=today)
-        .prefetch_related("posts__count", "conferencelookup_set")
+        .prefetch_related("conferencelookup_set")
         .filter(search_query)
         .order_by("start_date")
     )
     live_conferences = (
         Conference.objects.filter(start_date__lte=today, end_date__gte=today)
         .filter(search_query)
-        .prefetch_related("posts__count", "conferencelookup_set")
+        .prefetch_related("conferencelookup_set")
         .order_by("start_date")
     )
     past_conferences = (
         Conference.objects.filter(end_date__lt=today)
-        .prefetch_related("posts__count", "conferencelookup_set")
+        .prefetch_related("conferencelookup_set")
         .filter(search_query)
         .order_by("-start_date")
     )
