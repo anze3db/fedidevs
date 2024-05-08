@@ -67,13 +67,24 @@ def conferences(request, lang: str | None = None):
         search_query &= Q(conferencelookup__language=selected_framework.code)
 
     today = timezone.now().date()
-    upcoming_conferences = Conference.objects.filter(start_date__gt=today).filter(search_query).order_by("start_date")
-    live_conferences = (
-        Conference.objects.filter(start_date__lte=today, end_date__gte=today)
+    upcoming_conferences = (
+        Conference.objects.filter(start_date__gt=today)
+        .prefetch_related("posts__count", "conferencelookup_set")
         .filter(search_query)
         .order_by("start_date")
     )
-    past_conferences = Conference.objects.filter(end_date__lt=today).filter(search_query).order_by("-start_date")
+    live_conferences = (
+        Conference.objects.filter(start_date__lte=today, end_date__gte=today)
+        .filter(search_query)
+        .prefetch_related("posts__count", "conferencelookup_set")
+        .order_by("start_date")
+    )
+    past_conferences = (
+        Conference.objects.filter(end_date__lt=today)
+        .prefetch_related("posts__count", "conferencelookup_set")
+        .filter(search_query)
+        .order_by("-start_date")
+    )
 
     frameworks = sorted(
         [f for f in frameworks if f["count"] > 0],
