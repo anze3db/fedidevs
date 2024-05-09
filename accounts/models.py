@@ -82,7 +82,7 @@ LANGUAGES = [
     ),
     Language("rust", "Rust", "🦀", r"[^a-z:]rust[^a-z]|rustlang", "languages/rust.png"),  # Filters out trust, etc.
     Language("ruby", "Ruby", "💎", r"ruby", "languages/ruby.png"),
-    Language("golang", "Golang", "🐹", r"golang", "languages/golang.png"),
+    Language("golang", "Golang", "🐹", r"golang|robpike", "languages/golang.png"),
     Language("java", "Java", "☕", r"java[^script]", "languages/java.png"),
     Language("kotlin", "Kotlin", "🤖", r"kotlin", "languages/kotlin.png"),
     Language("scala", "Scala", "🧪", r"[^e]scala[^b]", "languages/scala.png"),
