@@ -56,9 +56,9 @@
                         </svg>
                     </span>
                 </summary>
-                <div class="my-4 mx-2 post text-gray-500">
-                    {{ post.content|safe }}
-                </div>
+            <div class="my-4 mx-2 post text-gray-700 dark:text-gray-200 prose dark:prose-invert [&_img]:max-h-5 [&_img]:inline-block [&_img]:m-0">
+                {% render_emojis post.content post.emojis %}
+            </div>
                 {% if post.media_attachments %}
                     <div class="grid grid-cols-2 gap-2 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl">
                         {% for media in post.media_attachments %}
@@ -117,7 +117,7 @@
                 {% render_emojis post.content post.emojis %}
             </div>
             {% if post.media_attachments %}
-                <div class="grid grid-cols-2 gap-2 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl">
+                <div class="grid grid-cols-2 gap-2 p-4 shadow-lg md:flex-row  bg-gray-100 dark:bg-gray-700 rounded-xl">
                     {% for media in post.media_attachments %}
                         <div>
                             {% if media.type == "image" %}
