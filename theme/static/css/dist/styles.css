@@ -1900,6 +1900,10 @@ select {
   justify-content: space-between;
 }
 
+.justify-around {
+  justify-content: space-around;
+}
+
 .justify-stretch {
   justify-content: stretch;
 }
@@ -2306,6 +2310,10 @@ select {
 
 .pb-0 {
   padding-bottom: 0px;
+}
+
+.pt-5 {
+  padding-top: 1.25rem;
 }
 
 .text-left {

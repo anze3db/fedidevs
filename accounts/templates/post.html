@@ -29,7 +29,7 @@
         </div>
         <a href="{{ post.uri }}"
            class="overflow-hidden ml-auto mt-1 text-sm text-gray-500 dark:text-gray-200">
-            <span>{{ post.created_at |naturalday }}</span>
+            <span class="underline">{{ post.created_at |naturalday }}</span>
         </a>
     </div>
     <div class="mt-4 mb-4">
@@ -113,7 +113,7 @@
                 {% endif %}
             </details>
         {% else %}
-            <div class="my-4 mx-2 post text-gray-700 dark:text-gray-200 prose dark:prose-invert text-balance break-words [&_img]:max-h-5 [&_img]:inline-block [&_img]:m-0">
+            <div class="my-4 mx-2 post text-gray-700 dark:text-gray-200 prose dark:prose-invert [&_img]:max-h-5 [&_img]:inline-block [&_img]:m-0">
                 {% render_emojis post.content post.emojis %}
             </div>
             {% if post.media_attachments %}
@@ -170,7 +170,7 @@
             {% endif %}
         {% endif %}
     </div>
-    <div class="flex justify-between mt-6 mb-2">
+    <div class="flex justify-around mt-6 mb-2 border-t pt-5 dark:border-gray-700 ">
         <span class="flex gap-2">{% heroicon_outline 'star' %} {{ post.favourites_count }}</span>
         <span class="flex gap-2">{% heroicon_outline 'arrow-path-rounded-square' %} {{ post.reblogs_count }}</span>
         <span class="flex gap-2">{% heroicon_outline 'chat-bubble-bottom-center' %} {{ post.replies_count }}</span>
