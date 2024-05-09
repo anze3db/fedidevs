@@ -10,41 +10,114 @@
         text-decoration: underline;
     }
 </style>
-<div class="p-4 m-8 bg-white border border-gray-200 rounded-lg shadow md:flex-row  dark:border-gray-700 dark:bg-gray-800 ">
+<div class="p-5 my-8 mx-2  bg-white shadow-md rounded-2xl md:flex-row   dark:bg-gray-800 ">
     <div class="flex items-start gap-2.5">
-        <img class="h-16 w-16 rounded"
+        <img class="h-16 w-16 rounded-xl"
              src="{{ post.account.avatar }}"
              alt="{{ post.account.login }}" />
-        <div class="flex flex-column gap-2.5 justify-between w-full">
+        <div>
             <div class="block-link">
-                <div class="flex items-center space-x-2 rtl:space-x-reverse mt-2">
+                <div class="flex items-center space-x-2 rtl:space-x-reverse mt-1">
                     <a href="{% if selected_instance and selected_instance != post.account.source %} https://{% firstof selected_instance %}/@{{ post.account.username }}@{{ post.account.source }} {% else %} https://{{ post.account.source }}/@{{ post.account.username }} {% endif %}"
                        class="font-semibold"
                        target="_blank">
-                        <span class="flex gap-1 [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1">{% render_emojis post.account.name post.account.emojis %}</span>
-                        <span class="opacity-80 underline">@{{ post.account.source }}@{{ post.account.username }}</span>
+                        <span class="flex gap-1 text-ellipsis [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1 text-lg">{% render_emojis post.account.name post.account.emojis %}</span>
+                        <span class="text-gray-600 text-ellipsis dark:text-gray-300 underline text-sm">@{{ post.account.source }}@{{ post.account.username }}</span>
                     </a>
                 </div>
             </div>
         </div>
-        <a href="{{ post.uri }}" class="overflow-hidden block">
+        <a href="{{ post.uri }}"
+           class="overflow-hidden ml-auto mt-1 text-sm text-gray-500 dark:text-gray-200">
             <span>{{ post.created_at |naturalday }}</span>
         </a>
     </div>
     <div class="mt-4 mb-4">
         {% if post.sensitive %}
-            <details>
-                <summary>
-                    {{ post.spoiler_text }}
+            <details class="group">
+                <summary class="flex justify-between items-center font-medium border border-gray-400 dark:border-gray-600 rounded-xl p-2 cursor-pointer list-none">
+                    <span>Sensitive content
+                        {% if post.spoiler_text %}
+                            :
+                        {% endif %}
+                    </span> {{ post.spoiler_text }}
+                    <span class="transition group-open:rotate-180">
+                        <svg fill="none"
+                             height="24"
+                             shape-rendering="geometricPrecision"
+                             stroke="currentColor"
+                             stroke-linecap="round"
+                             stroke-linejoin="round"
+                             stroke-width="1.5"
+                             viewBox="0 0 24 24"
+                             width="24">
+                            <path d="M6 9l6 6 6-6">
+                            </path>
+                        </svg>
+                    </span>
                 </summary>
-                {{ post.content|safe }}
+                <div class="my-4 mx-2 post text-gray-500">
+                    {{ post.content|safe }}
+                </div>
+                {% if post.media_attachments %}
+                    <div class="grid grid-cols-2 gap-2 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl">
+                        {% for media in post.media_attachments %}
+                            <div>
+                                {% if media.type == "image" %}
+                                    <a href="{{ media.url }}">
+                                        <img src="{{ media.preview_url }}"
+                                             alt="{{ media.description }}"
+                                             class="h-auto max-w-full rounded-lg" />
+                                    </a>
+                                {% endif %}
+                                {% if media.type == "video" %}
+                                    <video controls class="h-auto max-w-full rounded-lg">
+                                        <source src="{{ media.url }}" type="{{ media.meta.mime_type }}">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                {% endif %}
+                                {% if media.type == "gifv" %}
+                                    <video autoplay loop muted class="h-auto max-w-full rounded-lg">
+                                        <source src="{{ media.url }}" type="{{ media.meta.mime_type }}">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if not post.media_attachments and post.card %}
+                    <article class="max-w-sm">
+                        <div class=" bg-gray-100 rounded-lg shadow-lg md:flex-row  dark:bg-gray-700">
+                            {% if post.card.image %}
+                                <div class="p-4 pb-0">
+                                    <a href="{{ post.card.url }}" target="_blank">
+                                        <img src="{{ post.card.image }}"
+                                             alt="{{ post.card.title }}"
+                                             width="100%"
+                                             class="rounded-t-lg"
+                                             height="auto" />
+                                    </a>
+                                </div>
+                            {% endif %}
+                            <div class="p-4">
+                                <a href="{{ post.card.url }}" target="_blank">
+                                    <h3 class="text-lg font-bold hover:underline">
+                                        {{ post.card.title }}
+                                    </h3>
+                                    <small class="line-clamp-4 text-gray-700 dark:text-gray-400">{{ post.card.description }}</small>
+                                </div>
+                            </a>
+                        </div>
+                    </article>
+                {% endif %}
             </details>
         {% else %}
-            <div class="mb-2 post">
-                {{ post.content|safe }}
+            <div class="my-4 mx-2 post text-gray-700 dark:text-gray-200 prose dark:prose-invert text-balance break-words [&_img]:max-h-5 [&_img]:inline-block [&_img]:m-0">
+                {% render_emojis post.content post.emojis %}
             </div>
             {% if post.media_attachments %}
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-2 gap-2 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl">
                     {% for media in post.media_attachments %}
                         <div>
                             {% if media.type == "image" %}
@@ -72,22 +145,26 @@
             {% endif %}
             {% if not post.media_attachments and post.card %}
                 <article class="max-w-sm">
-                    <div class="mt-4 mb-4 bg-white rounded-lg shadow md:flex-row  dark:border-gray-700 dark:bg-gray-800">
+                    <div class=" bg-gray-100 rounded-lg shadow-lg md:flex-row  dark:bg-gray-700">
                         {% if post.card.image %}
-                            <a href="{{ post.card.url }}" target="_blank">
-                                <img src="{{ post.card.image }}"
-                                     alt="{{ post.card.title }}"
-                                     width="100%"
-                                     class="rounded-t-lg"
-                                     height="auto" />
-                            </a>
+                            <div class="p-4 pb-0">
+                                <a href="{{ post.card.url }}" target="_blank">
+                                    <img src="{{ post.card.image }}"
+                                         alt="{{ post.card.title }}"
+                                         width="100%"
+                                         class="rounded-t-lg"
+                                         height="auto" />
+                                </a>
+                            </div>
                         {% endif %}
                         <div class="p-4">
-                            <h3>
-                                <a href="{{ post.card.url }}" class="underline" target="_blank">{{ post.card.title }}</a>
-                            </h3>
-                            <small>{{ post.card.description }}</small>
-                        </div>
+                            <a href="{{ post.card.url }}" target="_blank">
+                                <h3 class="text-lg font-bold hover:underline">
+                                    {{ post.card.title }}
+                                </h3>
+                                <small class="line-clamp-4 text-gray-700 dark:text-gray-400">{{ post.card.description }}</small>
+                            </div>
+                        </a>
                     </div>
                 </article>
             {% endif %}
