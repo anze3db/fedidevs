@@ -254,7 +254,6 @@ def follow(request, account_id: int):
 
     try:
         mastodon.account_follow(account_id)
-        raise MastodonAPIError
     except MastodonUnauthorizedError:
         return err_response("Unothorized")
     except MastodonAPIError:
