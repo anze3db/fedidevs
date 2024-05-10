@@ -14,7 +14,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 from mastodon import Mastodon, MastodonNetworkError
-from mastodon.errors import MastodonAPIError, MastodonNotFoundError
+from mastodon.errors import MastodonAPIError, MastodonNotFoundError, MastodonUnauthorizedError
 
 from accounts.models import Account
 from mastodon_auth.models import AccountAccess, AccountFollowing, Instance
@@ -217,6 +217,15 @@ def sync_following(user_id: int):
 
 
 def follow(request, account_id: int):
+    def err_response(msg):
+        return HttpResponse(
+            status=200,
+            content=f"""<span
+        class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
+        {msg}
+        </span>""",
+        )
+
     account_access = request.user.accountaccess
     instance = account_access.instance
     mastodon = Mastodon(
@@ -234,41 +243,35 @@ def follow(request, account_id: int):
             local_account = mastodon.account_lookup(acct=account.username_at_instance)
         except MastodonNotFoundError:
             logging.warning("Account not found on instance %s", account.username_at_instance)
-            return HttpResponse(
-                status=200,
-                content="""<span
-        class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
-        Account not found
-        </span>""",
-            )
+            return err_response("Account not found")
+        except MastodonUnauthorizedError:
+            logging.warning("Not authorized %s", account.username_at_instance)
+            return err_response("Not Authorized")
+        except MastodonAPIError:
+            logging.error("Unknown error when following %s", account.username_at_instance)
+            return err_response("Failed to follow")
         account_id = local_account["id"]
 
     try:
         mastodon.account_follow(account_id)
+        raise MastodonAPIError
+    except MastodonUnauthorizedError:
+        return err_response("Unothorized")
     except MastodonAPIError:
         # We weren't able to follow the user. Maybe the account was moved?
         try:
             local_account = mastodon.account_lookup(acct=account.username_at_instance)
         except MastodonNotFoundError:
             logging.warning("Account not found on instance %s", account.username_at_instance)
-            return HttpResponse(
-                status=200,
-                content="""<span
-        class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
-        Account not found
-        </span>""",
-            )
+            return err_response("Account not found")
         if moved := local_account.get("moved"):
             account.moved = moved
             account.save(update_fields=("moved",))
             logging.warning("Account %s moved", account.username_at_instance)
-            return HttpResponse(
-                status=200,
-                content="""<span
-        class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
-        Account has moved
-        </span>""",
-            )
+            return err_response("Account has moved")
+
+        logging.error("Unknown error when following %s", account.username_at_instance)
+        return err_response("Failed to follow")
 
     AccountFollowing.objects.get_or_create(account=request.user.accountaccess.account, url=account.url)
     FollowClick.objects.create(user=request.user, url=account.url)
