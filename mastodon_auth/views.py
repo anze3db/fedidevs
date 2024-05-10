@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timezone
 from uuid import uuid4
 
@@ -13,6 +14,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 from mastodon import Mastodon, MastodonNetworkError
+from mastodon.errors import MastodonAPIError, MastodonNotFoundError
 
 from accounts.models import Account
 from mastodon_auth.models import AccountAccess, AccountFollowing, Instance
@@ -228,10 +230,46 @@ def follow(request, account_id: int):
     if account.instance == instance.url:
         account_id = account.account_id
     else:
-        local_account = mastodon.account_lookup(acct=account.username_at_instance)
+        try:
+            local_account = mastodon.account_lookup(acct=account.username_at_instance)
+        except MastodonNotFoundError:
+            logging.warning("Account not found on instance %s", account.username_at_instance)
+            return HttpResponse(
+                status=200,
+                content="""<span
+        class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
+        Account not found
+        </span>""",
+            )
         account_id = local_account["id"]
 
-    mastodon.account_follow(account_id)
+    try:
+        mastodon.account_follow(account_id)
+    except MastodonAPIError:
+        # We weren't able to follow the user. Maybe the account was moved?
+        try:
+            local_account = mastodon.account_lookup(acct=account.username_at_instance)
+        except MastodonNotFoundError:
+            logging.warning("Account not found on instance %s", account.username_at_instance)
+            return HttpResponse(
+                status=200,
+                content="""<span
+        class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
+        Account not found
+        </span>""",
+            )
+        if moved := local_account.get("moved"):
+            account.moved = moved
+            account.save(update_fields=("moved",))
+            logging.warning("Account %s moved", account.username_at_instance)
+            return HttpResponse(
+                status=200,
+                content="""<span
+        class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
+        Account has moved
+        </span>""",
+            )
+
     AccountFollowing.objects.get_or_create(account=request.user.accountaccess.account, url=account.url)
     FollowClick.objects.create(user=request.user, url=account.url)
 

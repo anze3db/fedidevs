@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import timedelta
 
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils import timezone
 
@@ -141,6 +142,7 @@ class Account(models.Model):
     emojis = models.JSONField()
     roles = models.JSONField()
     fields = models.JSONField()
+    moved = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
 
     class Meta:
         unique_together = (
