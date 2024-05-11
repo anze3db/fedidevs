@@ -10,8 +10,7 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db import transaction
-from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 from mastodon import Mastodon, MastodonNetworkError
 from mastodon.errors import MastodonAPIError, MastodonNotFoundError, MastodonUnauthorizedError
@@ -218,12 +217,10 @@ def sync_following(user_id: int):
 
 def follow(request, account_id: int):
     def err_response(msg):
-        return HttpResponse(
-            status=200,
-            content=f"""<span
-        class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
-        {msg}
-        </span>""",
+        return render(
+            request,
+            "v2/follow_response.html",
+            {"err_msg": msg},
         )
 
     account_access = request.user.accountaccess
@@ -275,10 +272,7 @@ def follow(request, account_id: int):
     AccountFollowing.objects.get_or_create(account=request.user.accountaccess.account, url=account.url)
     FollowClick.objects.create(user=request.user, url=account.url)
 
-    return HttpResponse(
-        status=200,
-        content="""<button disable
-        class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
-        Following
-        </button>""",
+    return render(
+        request,
+        "v2/follow_response.html",
     )
