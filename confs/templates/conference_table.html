@@ -3,23 +3,14 @@
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
             {{ conference_title }}
-            <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
-                {{ conference_subtitle }}
-            </p>
+            <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">{{ conference_subtitle }}</p>
         </caption>
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-                <th class="w-20">
-                </th>
-                <th class="px-6 py-3">
-                    Conference
-                </th>
-                <th class="px-6 py-3">
-                    Location
-                </th>
-                <th class="px-6 py-3 text-right">
-                    Posts
-                </th>
+                <th class="w-20"></th>
+                <th class="px-6 py-3">Conference</th>
+                <th class="px-6 py-3">Location</th>
+                <th class="px-6 py-3 text-right">Posts</th>
             </tr>
         </thead>
         <tbody>
@@ -40,15 +31,11 @@
                         <div class="font-medium text-gray-900  dark:text-white">
                             <a href="{% url 'conference' conf.slug %}">{{ conf.name }}</a>
                         </div>
-                        <div>
-                            {{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}
-                        </div>
+                        <div>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</div>
                     </th>
-                    <td class="px-6 py-4">
-                        {{ conf.location }}
-                    </td>
+                    <td class="px-6 py-4">{{ conf.location }}</td>
                     <td class="px-6 py-4 text-right">
-                        <span class="flex gap-2 justify-end">{{ conf.posts_count }} {% heroicon_outline 'chat-bubble-bottom-center' %} </span>
+                        <span class="flex gap-2 justify-end">{{ conf.posts_count }} {% heroicon_outline 'chat-bubble-bottom-center' %}</span>
                     </td>
                 </tr>
             {% endfor %}

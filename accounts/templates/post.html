@@ -37,9 +37,7 @@
             <details class="group">
                 <summary class="flex justify-between items-center font-medium border border-gray-400 dark:border-gray-600 rounded-xl p-2 cursor-pointer list-none">
                     <span>Sensitive content
-                        {% if post.spoiler_text %}
-                            :
-                        {% endif %}
+                        {% if post.spoiler_text %}:{% endif %}
                     </span> {{ post.spoiler_text }}
                     <span class="transition group-open:rotate-180">
                         <svg fill="none"
@@ -51,14 +49,13 @@
                              stroke-width="1.5"
                              viewBox="0 0 24 24"
                              width="24">
-                            <path d="M6 9l6 6 6-6">
-                            </path>
+                            <path d="M6 9l6 6 6-6"></path>
                         </svg>
                     </span>
                 </summary>
-            <div class="my-4 mx-2 post text-gray-700 dark:text-gray-200 prose dark:prose-invert [&_img]:max-h-5 [&_img]:inline-block [&_img]:m-0">
-                {% render_emojis post.content post.emojis %}
-            </div>
+                <div class="my-4 mx-2 post text-gray-700 dark:text-gray-200 prose dark:prose-invert [&_img]:max-h-5 [&_img]:inline-block [&_img]:m-0">
+                    {% render_emojis post.content post.emojis %}
+                </div>
                 {% if post.media_attachments %}
                     <div class="grid grid-cols-2 gap-2 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl">
                         {% for media in post.media_attachments %}
@@ -102,9 +99,7 @@
                             {% endif %}
                             <div class="p-4">
                                 <a href="{{ post.card.url }}" target="_blank">
-                                    <h3 class="text-lg font-bold hover:underline">
-                                        {{ post.card.title }}
-                                    </h3>
+                                    <h3 class="text-lg font-bold hover:underline">{{ post.card.title }}</h3>
                                     <small class="line-clamp-4 text-gray-700 dark:text-gray-400">{{ post.card.description }}</small>
                                 </div>
                             </a>
@@ -159,9 +154,7 @@
                         {% endif %}
                         <div class="p-4">
                             <a href="{{ post.card.url }}" target="_blank">
-                                <h3 class="text-lg font-bold hover:underline">
-                                    {{ post.card.title }}
-                                </h3>
+                                <h3 class="text-lg font-bold hover:underline">{{ post.card.title }}</h3>
                                 <small class="line-clamp-4 text-gray-700 dark:text-gray-400">{{ post.card.description }}</small>
                             </div>
                         </a>
