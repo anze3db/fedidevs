@@ -21,19 +21,19 @@
     <main>
         <article>
             {% if live_conferences %}
-                    {% with conferences=live_conferences conference_title="🔴 Live Conferences" conference_subtitle="Happening right now! You can join the discussion even if you are not attending!" %}
-                        {% include "conference_table.html" %}
-                    {% endwith %}
+                {% with conferences=live_conferences conference_title="🔴 Live Conferences" conference_subtitle="Happening right now! You can join the discussion even if you are not attending!" %}
+                    {% include "conference_table.html" %}
+                {% endwith %}
             {% endif %}
             {% if upcoming_conferences %}
                 {% with conferences=upcoming_conferences conference_title="Upcoming Conferences" conference_subtitle="Join the discussion and get hyped for the upcoming conferences." %}
                     {% include "conference_table.html" %}
                 {% endwith %}
             {% endif %}
-                {% if past_conferences %}
-                    {% with conferences=past_conferences conference_title="Past Conferences" conference_subtitle="See an archive of past conferences and all the top posts from each event." %}
-                        {% include "conference_table.html" %}
-                    {% endwith %}
+            {% if past_conferences %}
+                {% with conferences=past_conferences conference_title="Past Conferences" conference_subtitle="See an archive of past conferences and all the top posts from each event." %}
+                    {% include "conference_table.html" %}
+                {% endwith %}
             {% endif %}
             <footer class="prose dark:prose-invert m-6">
                 <p>
