@@ -49,7 +49,7 @@ class Daily(models.Model):
     php_accounts = models.IntegerField()
     julia_accounts = models.IntegerField(default=0)
     css_accounts = models.IntegerField(default=0)
-    r_accounts = models.IntegerField(default=0)
+    rstats_accounts = models.IntegerField(default=0)
 
     dotnet_accounts = models.IntegerField()
     django_accounts = models.IntegerField(default=0)
@@ -92,7 +92,7 @@ class Daily(models.Model):
     php_posts = models.IntegerField(default=0)
     julia_posts = models.IntegerField(default=0)
     css_posts = models.IntegerField(default=0)
-    r_posts = models.IntegerField(default=0)
+    rstats_posts = models.IntegerField(default=0)
 
     django_posts = models.IntegerField(default=0)
     flask_posts = models.IntegerField(default=0)
