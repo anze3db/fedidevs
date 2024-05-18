@@ -79,10 +79,11 @@ class Command(RichCommand):
     def add_arguments(self, parser):
         parser.add_argument("--offset", type=int, nargs="?", default=0)
         parser.add_argument("--instances", type=str, nargs="?", default=None)
-        parser.add_argument("--skip-inactive-for", type=int, nargs="?", default=90)
+        parser.add_argument("--skip-inactive-for", type=int, nargs="?", default=3)
         parser.add_argument(
             "--pre-filter",
             action="store_true",
+            default=True,
             help="Don't insert accounts that would be deleted by optimizer",
         )
 
@@ -91,8 +92,8 @@ class Command(RichCommand):
         *args,
         offset=0,
         instances=None,
-        skip_inactive_for: int = 0,
-        pre_filter: bool = False,
+        skip_inactive_for: int = 3,
+        pre_filter: bool = True,
         **options,
     ):
         self.main(
