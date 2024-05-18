@@ -36,6 +36,7 @@ INSTANCES = [
     "kolektiva.social",
     "mas.to",
     "masto.ai",
+    "masto.machlis.com",
     "mastodon.cloud",
     "mastodon.gamedev.place",
     "mastodon.online",

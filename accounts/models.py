@@ -88,6 +88,7 @@ LANGUAGES = [
     Language("kotlin", "Kotlin", "🤖", r"kotlin", "languages/kotlin.png"),
     Language("scala", "Scala", "🧪", r"[^e]scala[^b]", "languages/scala.png"),
     Language("swift", "Swift", "🐦", r"swift", "languages/swift.png"),
+    Language("r", "R", "R", r"rstats", "languages/r.png"),
     Language("csharp", "C#", "♫", r"csharp|c#", "languages/csharp.png"),
     Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
     Language("cpp", "C++", "🐯", r"c\+\+|cpp", "languages/cpp.png"),
