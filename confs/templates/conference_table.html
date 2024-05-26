@@ -10,7 +10,7 @@
                 <th class="w-20"></th>
                 <th class="px-6 py-3">Conference</th>
                 <th class="px-6 py-3">Location</th>
-                <th class="px-6 py-3 text-right">Posts</th>
+                <th class="px-6 py-3 text-right hidden md:table-cell">Posts</th>
             </tr>
         </thead>
         <tbody>
@@ -34,7 +34,7 @@
                         <div>{{ conf.start_date | date:"M j" }} - {{ conf.end_date| date:"j, Y" }}</div>
                     </th>
                     <td class="px-6 py-4">{{ conf.location }}</td>
-                    <td class="px-6 py-4 text-right">
+                    <td class="px-6 py-4 text-right hidden md:table-cell">
                         <span class="flex gap-2 justify-end">{{ conf.posts_count }} {% heroicon_outline 'chat-bubble-bottom-center' %}</span>
                     </td>
                 </tr>
