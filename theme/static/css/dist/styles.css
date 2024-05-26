@@ -2624,6 +2624,10 @@ select {
     display: block;
   }
 
+  .sm\:inline-flex {
+    display: inline-flex;
+  }
+
   .sm\:hidden {
     display: none;
   }
