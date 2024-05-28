@@ -1,5 +1,5 @@
 # Prod
-django
+django==5.1a1
 django-dramatiq
 django-environ
 django-tailwind
