@@ -12,7 +12,7 @@
                 <div class="relative rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 min-h-24 -z-0">
                     <div class="absolute flex flex-row gap-4 p-3 bg-white rounded-bl-xl dark:bg-gray-800 -top-2 -right-2">
                         {% for language in account.languages %}
-                            <a href="{% url language.code %}?q={{ query }}&o={{ order }}"
+                            <a href="{% url language.code %}{% query_string %}"
                                class="text-sm text-gray-500">
                                 <img src="{% static language.image %}"
                                      alt="{{ language.code }}"
@@ -71,7 +71,7 @@
             <ul class="inline-flex h-10 -space-x-px text-base">
                 {% if accounts.has_previous %}
                     <li>
-                        <a href="?page={{ accounts.previous_page_number }}&q={{ query }}&o={{ order }}"
+                        <a href="{% query_string page=accounts.previous_page_number %}"
                            class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white ms-0 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                             Previous
                         </a>
@@ -86,7 +86,7 @@
                 {% endif %}
                 {% if accounts.has_next %}
                     <li>
-                        <a href="?page={{ accounts.next_page_number }}&q={{ query }}&o={{ order }}"
+                        <a href="{% query_string page=accounts.next_page_number %}"
                            class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                             Next
                         </a>
@@ -129,6 +129,7 @@
                        class="block w-full p-4 pr-16 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                        placeholder="Filter by name, bio, or instance..."
                        value="{{ query }}" />
+                <input type="hidden" name="o" value="{{ order }}" />
             </div>
         </form>
         <section class="mb-8">
@@ -140,7 +141,7 @@
             <ul class="px-4 -mx-4 text-small ">
                 {% for language in languages %}
                     <li class="m-1 inline-block">
-                        <a href="{% if selected_lang.code != language.code %}{% url language.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
+                        <a href="{% if selected_lang.code != language.code %}{% url language.code %}{% else %}{% url "index" %}{% endif %}{% query_string %}"
                            class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 {% if selected_lang.code == language.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
                            role="button">
                             <span class="flex gap-2">
@@ -196,7 +197,7 @@
             <input type="hidden" name="o" value="{{ order }}" />
             <ul class="px-4 -mx-4 overflow-hidden overflow-y-auto text-small max-h-64">
                 <li>
-                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-followers_count">
+                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% query_string o='-followers_count' %}">
                         {% if order == '-followers_count' %}
                             <strong>Followers Count</strong>
                         {% else %}
@@ -205,7 +206,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-last_status_at">
+                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% query_string o='-last_status_at' %}">
                         {% if order == '-last_status_at' %}
                             <strong>Post Status</strong>
                         {% else %}
@@ -214,7 +215,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=-statuses_count">
+                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% query_string o='-statuses_count' %}">
                         {% if order == '-statuses_count' %}
                             <strong>Post Count</strong>
                         {% else %}
@@ -223,7 +224,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o=url">
+                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% query_string o='url' %}">
                         {% if order == 'url' %}
                             <strong>Source Instance</strong>
                         {% else %}
