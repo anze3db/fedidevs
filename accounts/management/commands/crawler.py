@@ -40,6 +40,7 @@ INSTANCES = [
     "masto.machlis.com",
     "mastodon.cloud",
     "mastodon.gamedev.place",
+    "mastodon.nl",
     "mastodon.online",
     "mastodon.social",
     "mastodon.world",
