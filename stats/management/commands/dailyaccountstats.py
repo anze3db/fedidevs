@@ -117,8 +117,7 @@ class Command(RichCommand):
         send_mail(
             f"Fedidevs daily stats for {todays_date.date().isoformat()}",
             dedent(
-                f"""
-
+                f"""\
                     Total users {auth_users_cnt}, joined since yesterday {yesterday_auth_users_cnt}
                     Weekly active users {User.objects.filter(is_active=True, last_login__gte=week_ago).count()}
                     Monthly active users {User.objects.filter(is_active=True, last_login__gte=month_ago).count()}
