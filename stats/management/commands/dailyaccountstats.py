@@ -99,8 +99,10 @@ class Command(RichCommand):
         self.send_email_report()
 
     def send_email_report(self):
-        todays_date = timezone.now().date()
+        todays_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
         yesterdays_date = todays_date - timezone.timedelta(days=1)
+        week_ago = todays_date - timezone.timedelta(days=7)
+        month_ago = todays_date - timezone.timedelta(days=30)
         today, yesterday = Daily.objects.filter().order_by("-date")[:2]
         top_growing = DailyAccountChange.objects.select_related("account").order_by("-followers_count")[:5]
         top_growing = "\n".join(
@@ -108,18 +110,18 @@ class Command(RichCommand):
         )
 
         auth_users_cnt = User.objects.filter(is_active=True).count()
-        yesterday_auth_users_cnt = User.objects.filter(
-            is_staff=True, is_active=True, date_joined__gte=yesterdays_date
-        ).count()
+        yesterday_auth_users_cnt = User.objects.filter(is_active=True, date_joined__gte=yesterdays_date).count()
         total_follows = FollowClick.objects.count()
         yesterday_total_follows = FollowClick.objects.filter(created_at__gte=yesterdays_date).count()
 
         send_mail(
-            f"Fedidevs daily stats for {todays_date.isoformat()}",
+            f"Fedidevs daily stats for {todays_date.date().isoformat()}",
             dedent(
                 f"""
 
                     Total users {auth_users_cnt}, joined since yesterday {yesterday_auth_users_cnt}
+                    Weekly active users {User.objects.filter(is_active=True, last_login__gte=week_ago).count()}
+                    Monthly active users {User.objects.filter(is_active=True, last_login__gte=month_ago).count()}
                     Total follows {total_follows}, followed since yesterday {yesterday_total_follows}
 
                     Number of accounts today {today.total_accounts} ({today.total_accounts - yesterday.total_accounts:+})
