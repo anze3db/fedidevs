@@ -145,7 +145,10 @@ def conference(request, slug: str):
         search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
 
     if order not in ("-favourites_count", "-reblogs_count", "-replies_count", "-created_at"):
-        order = "-favourites_count"
+        if conference.start_date >= timezone.now().date() <= conference.end_date:
+            order = "-created_at"
+        else:
+            order = "-favourites_count"
 
     counts = (
         ConferencePost.objects.filter(
