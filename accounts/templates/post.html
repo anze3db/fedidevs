@@ -13,6 +13,7 @@
 <div class="p-5 my-8 mx-2  bg-white shadow-md rounded-2xl md:flex-row   dark:bg-gray-800 ">
     <div class="flex items-start gap-2.5">
         <img class="h-16 w-16 rounded-xl"
+             loading="lazy"
              src="{{ post.account.avatar }}"
              alt="{{ post.account.login }}" />
         <div>
@@ -63,6 +64,7 @@
                                 {% if media.type == "image" %}
                                     <a href="{{ media.url }}">
                                         <img src="{{ media.preview_url }}"
+                                             loading="lazy"
                                              alt="{{ media.description }}"
                                              class="h-auto max-w-full rounded-lg" />
                                     </a>
@@ -93,6 +95,7 @@
                                              alt="{{ post.card.title }}"
                                              width="100%"
                                              class="rounded-t-lg"
+                                             loading="lazy"
                                              height="auto" />
                                     </a>
                                 </div>
@@ -119,6 +122,7 @@
                                 <a href="{{ media.url }}">
                                     <img src="{{ media.preview_url }}"
                                          alt="{{ media.description }}"
+                                         loading="lazy"
                                          class="h-auto max-w-full rounded-lg" />
                                 </a>
                             {% endif %}
@@ -147,6 +151,7 @@
                                     <img src="{{ post.card.image }}"
                                          alt="{{ post.card.title }}"
                                          width="100%"
+                                         loading="lazy"
                                          class="rounded-t-lg"
                                          height="auto" />
                                 </a>
