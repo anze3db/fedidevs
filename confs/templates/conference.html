@@ -88,6 +88,7 @@
                     <img src="{{ account_count.account.avatar }}"
                          alt="{{ account_count.account.login }}"
                          width="50"
+                         loading="lazy"
                          height="50"
                          class="h-6 w-6 rounded-full mr-1" />
                     <span class="flex gap-1 [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1">{% render_emojis account_count.account.name account_count.account.emojis %} ({{ account_count.count }})</span>

@@ -59,6 +59,7 @@
                         <span class="flex gap-2">
                             <img src="{% static language.image %}"
                                  alt="{{ language.code }}"
+                                 loading="lazy"
                                  class="object-contain w-4" />
                             <span class="leading-loose">
                                 {{ language.name }} <small class="text-xs">({{ language.count }})</small>
@@ -87,6 +88,7 @@
                         <span class="flex gap-2">
                             <img src="{% static framework.image %}"
                                  alt="{{ framework.code }}"
+                                 loading="lazy"
                                  class="object-contain w-4" />
                             <span class="leading-loose">
                                 {{ framework.name }} <small class="text-xs">({{ framework.count }})</small>
