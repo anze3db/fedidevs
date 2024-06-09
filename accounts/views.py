@@ -17,49 +17,55 @@ def index(request, lang: str | None = None):
     frameworks_map = {f.code: f for f in FRAMEWORKS}
 
     # Get a dict of languages and their counts
-    language_count_dict = {
-        al["language"]: al["count"]
-        for al in AccountLookup.objects.values("language").annotate(count=Count("language")).order_by("-count")
-    }
-
-    languages = (
-        {
-            "code": lng.code,
-            "name": lng.name,
-            "emoji": lng.emoji,
-            "regex": lng.regex,
-            "image": lng.image,
-            "post_code": lng.post_code,
-            "count": language_count_dict.get(lng.code, 0),
+    if "HX-Request" in request.headers:
+        languages = []
+        frameworks = []
+        selected_lang = None
+        selected_framework = None
+    else:
+        language_count_dict = {
+            al["language"]: al["count"]
+            for al in AccountLookup.objects.values("language").annotate(count=Count("language")).order_by("-count")
         }
-        for lng in LANGUAGES
-    )
 
-    frameworks = (
-        {
-            "code": framework.code,
-            "name": framework.name,
-            "emoji": framework.emoji,
-            "regex": framework.regex,
-            "image": framework.image,
-            "post_code": framework.post_code,
-            "count": language_count_dict.get(framework.code, 0),
-        }
-        for framework in FRAMEWORKS
-    )
+        languages = (
+            {
+                "code": lng.code,
+                "name": lng.name,
+                "emoji": lng.emoji,
+                "regex": lng.regex,
+                "image": lng.image,
+                "post_code": lng.post_code,
+                "count": language_count_dict.get(lng.code, 0),
+            }
+            for lng in LANGUAGES
+        )
 
-    selected_lang = langs_map.get(lang)
-    selected_framework = frameworks_map.get(lang)
-    frameworks = sorted(
-        frameworks,
-        key=lambda framework: (framework["count"]),
-        reverse=True,
-    )
-    languages = sorted(
-        languages,
-        key=lambda lng: lng["count"],
-        reverse=True,
-    )
+        frameworks = (
+            {
+                "code": framework.code,
+                "name": framework.name,
+                "emoji": framework.emoji,
+                "regex": framework.regex,
+                "image": framework.image,
+                "post_code": framework.post_code,
+                "count": language_count_dict.get(framework.code, 0),
+            }
+            for framework in FRAMEWORKS
+        )
+
+        selected_lang = langs_map.get(lang)
+        selected_framework = frameworks_map.get(lang)
+        frameworks = sorted(
+            frameworks,
+            key=lambda framework: (framework["count"]),
+            reverse=True,
+        )
+        languages = sorted(
+            languages,
+            key=lambda lng: lng["count"],
+            reverse=True,
+        )
 
     search_query = Q(discoverable=True, noindex=False)
     if selected_lang:
@@ -87,14 +93,14 @@ def index(request, lang: str | None = None):
                 AccountFollowing.objects.filter(account=request.user.accountaccess.account, url=OuterRef("url")),
             )
         )
-    paginator = Paginator(accounts, 10)
+    paginator = Paginator(accounts, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     accounts_count = Account.objects.filter(discoverable=True, noindex=False).count()
 
     return render(
         request,
-        "v2/index.html",
+        "v2/accounts.html" if "HX-Request" in request.headers else "v2/index.html",
         {
             "page": "accounts",
             "page_title": "FediDevs | List of software developers on Mastodon"
