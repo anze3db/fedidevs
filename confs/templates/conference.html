@@ -48,17 +48,6 @@
                     </nav>
                 </footer>
             </section>
-            <footer class="prose dark:prose-invert">
-                <p>
-                    These results were aggregated by indexing <b>{{ conference.tags }}</b> on <b>{{ conference.instances }}</b>.
-                </p>
-                <p>
-                    If you want your posts or instance removed, please <a href="mailto:hello@fedidevs.com">let me know</a> and I will remove them ASAP.
-                </p>
-                <p>
-                    <a href="https://sboots.ca/2023/10/27/twitter-is-dead-lets-start-live-tweeting-conferences-on-mastodon-instead/">Twitter is dead. Let's start live-tweeting conferences on Mastodon instead.</a>
-                </p>
-            </footer>
         </article>
     </main>
 {% endblock content %}
@@ -132,4 +121,13 @@
                href="{% url 'conference' slug %}{% query_string order='-created_at' %}">Created Date</a>
         </li>
     </ul>
+    <h2 class="flex items-center gap-2 pb-2 mb-2 font-semibold align-middle border-b">Info</h2>
+    <footer class="prose dark:prose-invert pb-8 text-sm">
+        <p>
+            These results were aggregated by indexing <b>{{ conference.tags }}</b> on <b>{{ conference.instances }}</b>.
+        </p>
+        <p>
+            If you want your posts or instance removed, please <a href="mailto:hello@fedidevs.com">let me know</a> and I will remove them ASAP.
+        </p>
+    </footer>
 {% endblock sidebar %}

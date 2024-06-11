@@ -2126,6 +2126,10 @@ select {
   padding-top: 1.25rem;
 }
 
+.pb-8 {
+  padding-bottom: 2rem;
+}
+
 .text-left {
   text-align: left;
 }
