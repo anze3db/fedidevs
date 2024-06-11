@@ -1,6 +1,7 @@
 {% extends "v2/layout.html" %}
 {% load account_extras %}
 {% load static %}
+{% load partials %}
 {% block head %}
     {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
 {% endblock head %}
@@ -8,6 +9,7 @@
     <main class="flex justify-center">
         <article>
             <section data-nosnippet class="max-w-3xl">
+                {% partialdef posts-partial inline=True %}
                 {% for conf_post in conf_posts %}
                     {% with post=conf_post.post conference_subtitle="Join the discussion and get hyped for the upcoming conferences." conference_title="Upcoming Conferences" %}
                         {% include "post.html" %}
@@ -18,38 +20,12 @@
                         No results, create a post with <b>{{ conference.tags }}</b> hashtag on Mastodon and it will show up here!
                     </p>
                 {% endfor %}
-                <footer class="mt-16 mb-16 text-center">
-                    <nav aria-label="Pagination">
-                        <ul class="inline-flex h-10 -space-x-px text-base">
-                            {% if conf_posts.has_previous %}
-                                <li>
-                                    <a href="{% query_string page=conf_posts.previous_page_number %}"
-                                       class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white ms-0 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                        Previous
-                                    </a>
-                                </li>
-                            {% endif %}
-                            {% if conf_posts %}
-                                <li>
-                                    <span class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                        Page {{ conf_posts.number }} of {{ conf_posts.paginator.num_pages }}
-                                    </span>
-                                </li>
-                            {% endif %}
-                            {% if conf_posts.has_next %}
-                                <li>
-                                    <a href="{% query_string page=conf_posts.next_page_number %}"
-                                       class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                        Next
-                                    </a>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-                </footer>
-            </section>
-        </article>
-    </main>
+                <div {% if conf_posts.has_next %} class="mt-12" hx-get="{% query_string page=conf_posts.next_page_number %}" hx-trigger="intersect once" hx-swap="afterend" {% endif %}>
+                </div>
+            {% endpartialdef %}
+        </section>
+    </article>
+</main>
 {% endblock content %}
 {% block sidebar %}
     <h1 class="mb-4 text-3xl font-extrabold">{{ conference.name }}</h1>

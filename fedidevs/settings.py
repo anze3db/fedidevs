@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django_dramatiq",
     "django_tui",
+    "template_partials",
     "tailwind",
     "theme",
     "mastodon_auth",

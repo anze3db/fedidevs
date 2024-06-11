@@ -192,7 +192,7 @@ def conference(request, slug: str):
     page_obj = paginator.get_page(page_number)
     return render(
         request,
-        "conference.html",
+        "conference.html" if "HX-Request" not in request.headers else "conference.html#posts-partial",
         {
             "page_title": f"{conference.name} | Fediverse Developers",
             "page": "conferences",

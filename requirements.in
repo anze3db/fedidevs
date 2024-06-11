@@ -3,6 +3,7 @@ django==5.1a1
 django-dramatiq
 django-environ
 django-tailwind
+django-template-partials
 dramatiq[redis, watch]
 gunicorn
 heroicons[django]
