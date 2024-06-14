@@ -66,5 +66,9 @@
         </div>
     {% endfor %}
 </div>
-<div {% if accounts.has_next %} class="mt-12" hx-get="{% query_string page=accounts.next_page_number %}" hx-trigger="intersect once" hx-swap="afterend" {% endif %}>
-</div>
+{% if accounts.has_next %}
+    <div class="mt-12"
+         hx-get="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}{% query_string page=accounts.next_page_number %} "
+         hx-trigger="intersect once"
+         hx-swap="afterend"></div>
+{% endif %}
