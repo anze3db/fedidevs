@@ -89,7 +89,7 @@ class Conference(models.Model):
     archived_date = models.DateField(null=True, blank=True)
 
     website = models.URLField(default="")
-    mastodon = models.URLField(default="")
+    mastodon = models.URLField(default="", blank=True)
 
     description = models.TextField()
 
