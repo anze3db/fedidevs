@@ -17,55 +17,49 @@ def index(request, lang: str | None = None):
     frameworks_map = {f.code: f for f in FRAMEWORKS}
 
     # Get a dict of languages and their counts
-    if "HX-Request" in request.headers:
-        languages = []
-        frameworks = []
-        selected_lang = None
-        selected_framework = None
-    else:
-        language_count_dict = {
-            al["language"]: al["count"]
-            for al in AccountLookup.objects.values("language").annotate(count=Count("language")).order_by("-count")
+    language_count_dict = {
+        al["language"]: al["count"]
+        for al in AccountLookup.objects.values("language").annotate(count=Count("language")).order_by("-count")
+    }
+
+    languages = (
+        {
+            "code": lng.code,
+            "name": lng.name,
+            "emoji": lng.emoji,
+            "regex": lng.regex,
+            "image": lng.image,
+            "post_code": lng.post_code,
+            "count": language_count_dict.get(lng.code, 0),
         }
+        for lng in LANGUAGES
+    )
 
-        languages = (
-            {
-                "code": lng.code,
-                "name": lng.name,
-                "emoji": lng.emoji,
-                "regex": lng.regex,
-                "image": lng.image,
-                "post_code": lng.post_code,
-                "count": language_count_dict.get(lng.code, 0),
-            }
-            for lng in LANGUAGES
-        )
+    frameworks = (
+        {
+            "code": framework.code,
+            "name": framework.name,
+            "emoji": framework.emoji,
+            "regex": framework.regex,
+            "image": framework.image,
+            "post_code": framework.post_code,
+            "count": language_count_dict.get(framework.code, 0),
+        }
+        for framework in FRAMEWORKS
+    )
 
-        frameworks = (
-            {
-                "code": framework.code,
-                "name": framework.name,
-                "emoji": framework.emoji,
-                "regex": framework.regex,
-                "image": framework.image,
-                "post_code": framework.post_code,
-                "count": language_count_dict.get(framework.code, 0),
-            }
-            for framework in FRAMEWORKS
-        )
-
-        selected_lang = langs_map.get(lang)
-        selected_framework = frameworks_map.get(lang)
-        frameworks = sorted(
-            frameworks,
-            key=lambda framework: (framework["count"]),
-            reverse=True,
-        )
-        languages = sorted(
-            languages,
-            key=lambda lng: lng["count"],
-            reverse=True,
-        )
+    selected_lang = langs_map.get(lang)
+    selected_framework = frameworks_map.get(lang)
+    frameworks = sorted(
+        frameworks,
+        key=lambda framework: (framework["count"]),
+        reverse=True,
+    )
+    languages = sorted(
+        languages,
+        key=lambda lng: lng["count"],
+        reverse=True,
+    )
 
     search_query = Q(discoverable=True, noindex=False)
     if selected_lang:
