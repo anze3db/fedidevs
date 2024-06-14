@@ -46,6 +46,9 @@
         {% block head %}
         {% endblock head %}
         <script src="{% static "src/components.js" %}"></script>
+        <script defer
+                data-domain="fedidevs.com"
+                src="https://plausible.io/js/script.js"></script>
     </head>
     <body class="min-h-screen bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-white"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
