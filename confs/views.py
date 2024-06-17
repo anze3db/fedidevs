@@ -192,7 +192,8 @@ def conference(request, slug: str):
     page_obj = paginator.get_page(page_number)
     user_instance = None
     if request.user.is_authenticated:
-        user_instance = request.user.accountaccess.instance
+        user_instance = str(request.user.accountaccess.instance)
+
     return render(
         request,
         "conference.html" if "HX-Request" not in request.headers else "conference.html#posts-partial",

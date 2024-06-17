@@ -94,7 +94,7 @@ def index(request, lang: str | None = None):
 
     user_instance = None
     if request.user.is_authenticated:
-        user_instance = request.user.accountaccess.instance
+        user_instance = str(request.user.accountaccess.instance)
 
     return render(
         request,
