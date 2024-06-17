@@ -92,6 +92,10 @@ def index(request, lang: str | None = None):
     page_obj = paginator.get_page(page_number)
     accounts_count = Account.objects.filter(discoverable=True, noindex=False).count()
 
+    user_instance = None
+    if request.user.is_authenticated:
+        user_instance = request.user.accountaccess.instance
+
     return render(
         request,
         "v2/accounts.html" if "HX-Request" in request.headers else "v2/index.html",
@@ -115,7 +119,7 @@ def index(request, lang: str | None = None):
             "instances": INSTANCES,
             "instances_count": len(INSTANCES),
             "accounts_count": accounts_count,  # TODO might be slow
-            "selected_instance": request.session.get("selected_instance") or request.user.accountaccess.instance,
+            "selected_instance": request.session.get("selected_instance") or user_instance,
             "query": query,
             "order": order,
             "user": request.user,
