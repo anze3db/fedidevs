@@ -8,6 +8,33 @@ class Instance(models.Model):
     client_secret = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    scopes = models.JSONField(
+        default=[
+            "read:accounts",
+            "read:blocks",
+            "read:favourites",
+            "read:filters",
+            "read:follows",
+            "read:lists",
+            "read:mutes",
+            "read:notifications",
+            "read:search",
+            "read:statuses",
+            "read:bookmarks",
+            "write:accounts",
+            "write:blocks",
+            "write:favourites",
+            "write:filters",
+            "write:follows",
+            "write:lists",
+            "write:media",
+            "write:mutes",
+            "write:notifications",
+            "write:reports",
+            "write:statuses",
+            "write:bookmarks",
+        ]
+    )
 
     def __str__(self):
         return self.url

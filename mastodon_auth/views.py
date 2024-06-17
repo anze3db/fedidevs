@@ -19,30 +19,10 @@ from accounts.models import Account
 from mastodon_auth.models import AccountAccess, AccountFollowing, Instance
 from stats.models import FollowClick
 
-app_scopes = (
+login_scopes = app_scopes = (
     "read:accounts",
-    "read:blocks",
-    "read:favourites",
-    "read:filters",
     "read:follows",
-    "read:lists",
-    "read:mutes",
-    "read:notifications",
-    "read:search",
-    "read:statuses",
-    "read:bookmarks",
-    "write:accounts",
-    "write:blocks",
-    "write:favourites",
-    "write:filters",
     "write:follows",
-    "write:lists",
-    "write:media",
-    "write:mutes",
-    "write:notifications",
-    "write:reports",
-    "write:statuses",
-    "write:bookmarks",
 )
 login_scopes = ("read:accounts", "read:follows", "write:follows")
 
@@ -78,6 +58,7 @@ def login(request):
             url=api_base_url,
             client_id=client_id,
             client_secret=client_secret,
+            app_scopes=app_scopes,
         )
         instance.save()
 
