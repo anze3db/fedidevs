@@ -115,7 +115,7 @@ def index(request, lang: str | None = None):
             "instances": INSTANCES,
             "instances_count": len(INSTANCES),
             "accounts_count": accounts_count,  # TODO might be slow
-            "selected_instance": request.session.get("selected_instance"),
+            "selected_instance": request.session.get("selected_instance") or request.user.accountaccess.instance,
             "query": query,
             "order": order,
             "user": request.user,
