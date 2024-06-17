@@ -36,12 +36,12 @@
                     {% if selected_instance and selected_instance != account.source %}
                         <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}"
                            class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2"
-                           target="_blank">@{{ account.username }}</a>
+                           target="_blank">@{{ account.username }}@{{ account.source }}</a>
                     {% else %}
                         <a href="https://{{ account.source }}/@{{ account.username }}"
                            target="_blank"
                            class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2">
-                            @{{ account.username }}
+                            @{{ account.username }}@{{ account.source }}
                         </a>
                     {% endif %}
                 </div>
