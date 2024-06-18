@@ -43,6 +43,7 @@ INSTANCES = [
     "mastodon.nl",
     "mastodon.online",
     "mastodon.social",
+    "mastodon.theorangeone.net",
     "mastodon.world",
     "mastodonapp.uk",
     "mathstodon.xyz",
