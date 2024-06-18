@@ -47,6 +47,7 @@ INSTANCES = [
     "mastodon.world",
     "mastodonapp.uk",
     "mathstodon.xyz",
+    "mementomori.social",
     "mozilla.social",
     "mstdn.party",
     "mstdn.social",
