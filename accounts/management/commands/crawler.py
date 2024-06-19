@@ -13,6 +13,7 @@ INSTANCES = [
     "aus.social",
     "awscommunity.social",
     "c.im",
+    "c3d2.social",
     "chaos.social",
     "cloud-native.social",
     "cyberplace.social",
