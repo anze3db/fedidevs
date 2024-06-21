@@ -1,7 +1,8 @@
 {% if type == "login" %}
     <button data-modal-target="authentication-modal"
             data-modal-toggle="authentication-modal"
-            class="text-white absolute end-2 -bottom-12 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            data-umami-event="follow-signup-modal"
+            class="plausible-event-name=follow-signup-modal text-white absolute end-2 -bottom-12 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
         Follow
     </button>
 {% elif type == "unfollow" %}
@@ -13,7 +14,8 @@
     <button hx-post="{% url 'follow' account.pk %}"
             hx-swap="outerHTML"
             onclick="this.innerText = 'Following...'; this.disabled = true; this.classList.add('opacity-50');"
-            class="absolute -bottom-12 end-2 rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ">
+            data-umami-event="follow"
+            class="plausible-event-name=follow absolute -bottom-12 end-2 rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
         Follow
     </button>
 {% endif %}

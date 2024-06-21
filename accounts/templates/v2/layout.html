@@ -51,7 +51,7 @@
                 data-website-id="2e7e24fc-6112-4eae-a685-4b05c1af52da"></script>
         <script defer
                 data-domain="fedidevs.com"
-                src="https://plausible.io/js/script.js"></script>
+                src="https://plausible.io/js/script.tagged-events.js"></script>
     </head>
     <body class="min-h-screen bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-white"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
@@ -124,7 +124,8 @@
                                 <li>
                                     <a data-modal-target="authentication-modal"
                                        data-modal-toggle="authentication-modal"
-                                       class="block px-4 py-2  hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                       data-umami-event="signin-modal"
+                                       class="block px-4 py-2  hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white plausible-event-name=signin-modal">
                                         Sign in
                                     </a>
                                 </li>
@@ -246,7 +247,8 @@
                                         <strong>Write</strong> permissions will be requested to be able to follow accounts on your behalf.
                                     </p>
                                     <button type="submit"
-                                            class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                            data-umami-event="authorize"
+                                            class="plausible-event-name=authorize w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                         Authorize
                                     </button>
                                 </div>
