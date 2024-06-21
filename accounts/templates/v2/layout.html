@@ -230,9 +230,8 @@
                         <div class="p-4 md:p-5">
                             <form method="post"
                                   action="{% url 'mastodon_login' %}"
-                                  class="space-y-4"
-                                  action="#"
-                                  class="plausible-event-name=authorize">
+                                  class="plausible-event-name=authorize space-y-4"
+                                  action="#">
                                 {% csrf_token %}
                                 <div>
                                     <label for="email" class="block mb-2 text-sm font-medium">Your instance</label>
