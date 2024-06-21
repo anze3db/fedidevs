@@ -6,7 +6,7 @@ from django.utils import timezone
 from django_rich.management import RichCommand
 
 from accounts.models import Account
-from stats.models import Daily, DailyAccount, DailyAccountChange, FollowClick
+from stats.models import Daily, DailyAccount, DailyAccountChange, DailySite, FollowClick
 
 
 class Command(RichCommand):
@@ -111,17 +111,38 @@ class Command(RichCommand):
 
         auth_users_cnt = User.objects.filter(is_active=True).count()
         yesterday_auth_users_cnt = User.objects.filter(is_active=True, date_joined__gte=yesterdays_date).count()
+        weekly_users_cnt = User.objects.filter(is_active=True, last_login__gte=week_ago).count()
+        monthly_users_cnt = User.objects.filter(is_active=True, last_login__gte=month_ago).count()
+
         total_follows = FollowClick.objects.count()
         yesterday_total_follows = FollowClick.objects.filter(created_at__gte=yesterdays_date).count()
+        weekly_follows_cnt = FollowClick.objects.filter(created_at__gte=week_ago).count()
+        monthly_follows_cnt = FollowClick.objects.filter(created_at__gte=month_ago).count()
+
+        DailySite.objects.update_or_create(
+            date=todays_date,
+            defaults={
+                "total_users": auth_users_cnt,
+                "daily_active_users": yesterday_auth_users_cnt,
+                "weekly_active_users": weekly_users_cnt,
+                "monthly_active_users": monthly_users_cnt,
+                "total_follows": total_follows,
+                "daily_follows": yesterday_total_follows,
+                "weekly_follows": weekly_follows_cnt,
+                "monthly_follows": monthly_follows_cnt,
+            },
+        )
 
         send_mail(
             f"Fedidevs daily stats for {todays_date.date().isoformat()}",
             dedent(
                 f"""\
                     Total users {auth_users_cnt}, joined since yesterday {yesterday_auth_users_cnt}
-                    Weekly active users {User.objects.filter(is_active=True, last_login__gte=week_ago).count()}
-                    Monthly active users {User.objects.filter(is_active=True, last_login__gte=month_ago).count()}
+                    Weekly active users {weekly_users_cnt}
+                    Monthly active users {monthly_users_cnt}
                     Total follows {total_follows}, followed since yesterday {yesterday_total_follows}
+                    Weekly follows {weekly_follows_cnt}
+                    Monthly follows {monthly_follows_cnt}
 
                     Number of accounts today {today.total_accounts} ({today.total_accounts - yesterday.total_accounts:+})
                     Number of posts today {today.total_posts} ({today.total_posts - yesterday.total_posts:+})

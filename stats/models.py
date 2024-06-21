@@ -144,3 +144,17 @@ class FollowClick(models.Model):
     user = models.ForeignKey("auth.User", on_delete=models.CASCADE)
     url = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class DailySite(models.Model):
+    date = models.DateField(unique=True, db_index=True)
+
+    total_users = models.IntegerField()
+    daily_active_users = models.IntegerField()
+    weekly_active_users = models.IntegerField()
+    monthly_active_users = models.IntegerField()
+
+    total_follows = models.IntegerField()
+    daily_follows = models.IntegerField()
+    weekly_follows = models.IntegerField()
+    monthly_follows = models.IntegerField()
