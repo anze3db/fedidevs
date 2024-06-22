@@ -140,6 +140,7 @@ class Command(RichCommand):
                     Total users {auth_users_cnt}, joined since yesterday {yesterday_auth_users_cnt}
                     Weekly active users {weekly_users_cnt}
                     Monthly active users {monthly_users_cnt}
+
                     Total follows {total_follows}, followed since yesterday {yesterday_total_follows}
                     Weekly follows {weekly_follows_cnt}
                     Monthly follows {monthly_follows_cnt}
