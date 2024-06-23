@@ -28,7 +28,7 @@
                 </div>
             </div>
         </div>
-        <a href="{{ post.uri }}"
+        <a href="{% url 'redirect' query=post.uri %}"
            class="overflow-hidden ml-auto mt-1 text-sm text-gray-500 dark:text-gray-200">
             <span class="underline">{{ post.created_at |naturalday }}</span>
         </a>

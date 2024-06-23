@@ -57,6 +57,7 @@ urlpatterns = (
         path("robots.txt", robots_txt),
         path("", views.index, name="index"),
         path("follow/<int:account_id>", mastodon_views.follow, name="follow"),
+        path("redirect/<path:query>", mastodon_views.redirect_to_local, name="redirect"),
         path("mastodon_login/", mastodon_views.login, name="mastodon_login"),
         path("mastodon_logout/", mastodon_views.logout, name="mastodon_logout"),
         path("mastodon_auth/", mastodon_views.auth, name="mastodon_auth"),

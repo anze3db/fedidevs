@@ -44,7 +44,7 @@ app_scopes = (
     "write:statuses",
     "write:bookmarks",
 )
-login_scopes = ("read:accounts", "read:follows", "write:follows")
+login_scopes = ("read:accounts", "read:follows", "write:follows", "read:search")
 
 
 @require_POST
@@ -276,3 +276,26 @@ def follow(request, account_id: int):
         request,
         "v2/follow_response.html",
     )
+
+
+def redirect_to_local(request, query: str):
+    if not request.user.is_authenticated:
+        return redirect(query)
+
+    account_access = request.user.accountaccess
+    instance = account_access.instance
+    mastodon = Mastodon(
+        api_base_url=instance.url,
+        client_id=instance.client_id,
+        client_secret=instance.client_secret,
+        access_token=account_access.access_token,
+        user_agent="fedidevs",
+    )
+    try:
+        res = mastodon.search_v2(q=query)
+        status = res.statuses[0]
+    except:  # noqa
+        logging.warning("Failed to redirect", exc_info=True)
+        # TODO: Handle scope error by asking for an additional scope
+        return redirect(query)
+    return redirect(f"https://{instance.url}/@{status['account']['acct']}/{status['id']}")
