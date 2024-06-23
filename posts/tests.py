@@ -56,6 +56,7 @@ class TestPostView(TestCase):
             favourites_count=1,
             reblogs_count=0,
             replies_count=0,
+            uri="https://mastodon.social/@test/1",
             created_at="2021-01-01T00:00:00.000000+00:00",
         )
         result = self.client.get("/posts/2021-01-01/")
