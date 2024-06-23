@@ -10,12 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import logging
 import sys
 from pathlib import Path
 
 import environ
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -248,6 +250,10 @@ if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         integrations=[
+            LoggingIntegration(
+                level=logging.INFO,  # Capture info and above as breadcrumbs (this is the default)
+                event_level=logging.WARNING,  # Send warnings as events (default is logging.ERROR)
+            ),
             DjangoIntegration(),
         ],
         # Set traces_sample_rate to 1.0 to capture 100%
