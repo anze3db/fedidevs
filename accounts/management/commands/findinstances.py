@@ -12,13 +12,21 @@ from confs.models import Conference
 class Command(RichCommand):
     help = "Get instances that tooted about a particular tag"
 
-    def handle(self, *args, **options):
-        self.main()
+    def add_arguments(self, parser):
+        parser.add_argument("--slug", type=str, nargs="?", default="")
+
+    def handle(self, slug: str = "", *args, **options):
+        self.main(slug)
 
     @async_to_sync
-    async def main(self):
+    async def main(self, slug: str = ""):
         async with httpx.AsyncClient() as client:
-            async for conference in Conference.objects.all():
+            if slug:
+                conferences = Conference.objects.filter(slug=slug)
+            else:
+                conferences = Conference.objects.all()
+
+            async for conference in conferences:
                 tags = [tag.strip().replace("#", "") for tag in conference.tags.split(",")]
                 posts = await self.fetch_and_handle_fail(client, "mastodon.social", list(tags))
                 if not posts:
