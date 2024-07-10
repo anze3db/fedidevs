@@ -18,9 +18,9 @@ class ConferenceAdmin(admin.ModelAdmin):
         "website",
         "mastodon",
         "description",
-        "posts_after",
         "instances",
         "tags",
+        "days",
     )
 
 

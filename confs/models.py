@@ -94,8 +94,15 @@ class Conference(models.Model):
     description = models.TextField()
 
     posts_after = models.DateField(null=True, blank=True)
-    instances = models.TextField(default="")
-    tags = models.TextField(default="")  # hashtags
+    instances = models.TextField(
+        default="",
+        help_text="Comma seperated list of instances, e.g. fosstodon.org, mastodon.social. Automatically computed",
+    )
+    tags = models.TextField(default="", help_text="Comma seperated list of tags, e.g. #djangocon")  # hashtags
+    days = models.TextField(
+        default="",
+        help_text="Comma seperated list of conference day names, e.g. Tutorials Day 1, Tutorials Day 2, Conference Day 1",
+    )  # names for conference days
 
     accounts = models.ManyToManyField("accounts.Account", blank=True, through="ConferenceAccount")
     posts = models.ManyToManyField("posts.Post", blank=True, through="ConferencePost")

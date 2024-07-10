@@ -165,10 +165,14 @@ def conference(request, slug: str):
         conference.start_date + dt.timedelta(days=i)
         for i in range((conference.end_date - conference.start_date).days + 1)
     ]
+    if conference.days.strip():
+        day_names = {i: n.strip() for i, n in enumerate(conference.days.strip().split(","))}
+    else:
+        day_names = {}
     dates = [
         {
             "value": date,
-            "pre_display": f"Day {i+1}",
+            "pre_display": day_names.get(i, f"Day {i+1}"),
             "display": date,
             "count": counts_dict.get(date, 0),
         }
