@@ -172,7 +172,7 @@ def conference(request, slug: str):
     dates = [
         {
             "value": date,
-            "pre_display": day_names.get(i, f"Day {i+1}"),
+            "pre_display": f"Day {i + 1}" + f": {day_names[i]}" if day_names.get(i) else "",
             "display": date,
             "count": counts_dict.get(date, 0),
         }
