@@ -177,6 +177,7 @@ def conference(request, slug: str):
             "count": counts_dict.get(date, 0),
         }
         for i, date in enumerate(dates)
+        if counts_dict.get(date, 0) > 0
     ]
     conf_posts = (
         ConferencePost.objects.filter(search_query)

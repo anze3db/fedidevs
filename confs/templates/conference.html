@@ -43,41 +43,45 @@
     {% if is_superuser %}
         <a href="{% url 'admin:confs_conference_change' conference.id %}">Edit</a>
     {% endif %}
-    <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">Filter by most active accounts</h2>
-    <ul class="px-4 -mx-4 mb-8">
-        {% for account_count in account_counts %}
-            <li class="m-1 inline-block">
-                <a href="{% if account_id != account_count.account.id %}{% url 'conference' slug %}{% query_string account=account_count.account.id %}{% else %}{% url 'conference' slug %}{% query_string account=None %}{% endif %}"
-                   role="button"
-                   class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if account_id == account_count.account.id %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center">
-                    <img src="{{ account_count.account.avatar }}"
-                         alt="{{ account_count.account.login }}"
-                         width="50"
-                         loading="lazy"
-                         height="50"
-                         class="h-6 w-6 rounded-full mr-1" />
-                    <span class="flex gap-1 [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1">{% render_emojis account_count.account.name account_count.account.emojis %} ({{ account_count.count }})</span>
-                    {% if account_id == account_count.account.id %}
-                        <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
-                    {% endif %}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
-    <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">Filter by conference day</h2>
-    <ul class="px-4 -mx-4 mb-8">
-        {% for date in dates %}
-            <li class="m-1 inline-block">
-                <a href="{% if posts_date == date.value %}{% url 'conference' slug %}{% query_string date=None %}{% else %}{% url 'conference' slug %}{% query_string date=date.value %}{% endif %}"
-                   class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if posts_date == date.value %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
-                   role="button">{{ date.pre_display }} ({{ date.count }})
-                    {% if posts_date == date.value %}
-                        <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
-                    {% endif %}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+    {% if account_counts %}
+        <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">Filter by most active accounts</h2>
+        <ul class="px-4 -mx-4 mb-8">
+            {% for account_count in account_counts %}
+                <li class="m-1 inline-block">
+                    <a href="{% if account_id != account_count.account.id %}{% url 'conference' slug %}{% query_string account=account_count.account.id %}{% else %}{% url 'conference' slug %}{% query_string account=None %}{% endif %}"
+                       role="button"
+                       class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if account_id == account_count.account.id %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center">
+                        <img src="{{ account_count.account.avatar }}"
+                             alt="{{ account_count.account.login }}"
+                             width="50"
+                             loading="lazy"
+                             height="50"
+                             class="h-6 w-6 rounded-full mr-1" />
+                        <span class="flex gap-1 [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1">{% render_emojis account_count.account.name account_count.account.emojis %} ({{ account_count.count }})</span>
+                        {% if account_id == account_count.account.id %}
+                            <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if dates %}
+        <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">Filter by conference day</h2>
+        <ul class="px-4 -mx-4 mb-8">
+            {% for date in dates %}
+                <li class="m-1 inline-block">
+                    <a href="{% if posts_date == date.value %}{% url 'conference' slug %}{% query_string date=None %}{% else %}{% url 'conference' slug %}{% query_string date=date.value %}{% endif %}"
+                       class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if posts_date == date.value %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
+                       role="button">{{ date.pre_display }} ({{ date.count }})
+                        {% if posts_date == date.value %}
+                            <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
     <h2 class="flex items-center gap-2 pb-2 mb-2 font-semibold align-middle border-b">Order by</h2>
     <ul class="mb-8">
         <li>
