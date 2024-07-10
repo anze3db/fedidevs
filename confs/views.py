@@ -169,15 +169,19 @@ def conference(request, slug: str):
         day_names = {i: n.strip() for i, n in enumerate(conference.days.strip().split(","))}
     else:
         day_names = {}
+    if conference.day_styles.strip():
+        day_styles = {i: s.strip() for i, s in enumerate(conference.day_styles.strip().split(","))}
+    else:
+        day_styles = {}
     dates = [
         {
             "value": date,
-            "pre_display": f"Day {i + 1}" + f": {day_names[i]}" if day_names.get(i) else "",
+            "pre_display": f"Day {i + 1}" + (f": {day_names[i]}" if day_names.get(i) else ""),
             "display": date,
+            "day_style": day_styles.get(i, ""),
             "count": counts_dict.get(date, 0),
         }
         for i, date in enumerate(dates)
-        if counts_dict.get(date, 0) > 0
     ]
     conf_posts = (
         ConferencePost.objects.filter(search_query)

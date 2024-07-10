@@ -72,11 +72,11 @@
             {% for date in dates %}
                 <li class="m-1 inline-block">
                     <a href="{% if posts_date == date.value %}{% url 'conference' slug %}{% query_string date=None %}{% else %}{% url 'conference' slug %}{% query_string date=date.value %}{% endif %}"
-                       class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if posts_date == date.value %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
-                       role="button">{{ date.pre_display }} ({{ date.count }})
-                        {% if posts_date == date.value %}
-                            <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
-                        {% endif %}
+                       class="relative inline-flex items-center justify-center p-0.5 mb-1 me-1 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br {% if date.count == 0 %} from-gray-400 to-gray-600 dark:from-gray-600 dark:to-gray-800 group-hover:from-gray-500 group-hover:to-gray-500 focus:ring-gray-200 dark:focus:ring-gray-800 {% else %} {% if date.day_style == 'blue' %} from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 focus:ring-cyan-200 dark:focus:ring-cyan-800 {% elif date.day_style == 'red' %} from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400  focus:ring-pink-200 dark:focus:ring-pink-800 {% elif date.day_style == 'green' %} from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600  focus:ring-green-200 dark:focus:ring-green-800 {% else %} from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500  focus:ring-purple-200 dark:focus:ring-purple-800 {% endif %} {% endif %} hover:text-white dark:text-white focus:ring-4 focus:outline-none text-xs">
+                        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 {% if date.value != posts_date %}bg-white dark:bg-gray-900{% endif %} rounded-md group-hover:bg-opacity-0">
+                            {{ date.pre_display }} ({{ date.count }})
+                            {% if posts_date == date.value %}{% endif %}
+                        </span>
                     </a>
                 </li>
             {% endfor %}

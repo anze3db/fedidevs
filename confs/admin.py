@@ -21,6 +21,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         "instances",
         "tags",
         "days",
+        "day_styles",
     )
 
 
