@@ -101,7 +101,7 @@ class Conference(models.Model):
     tags = models.TextField(default="", help_text="Comma seperated list of tags, e.g. #djangocon")  # hashtags
     days = models.TextField(
         default="",
-        help_text="Comma seperated list of conference day names, e.g. Tutorials Day 1, Tutorials Day 2, Conference Day 1",
+        help_text="Comma seperated list of conference day names, e.g. Tutorials, Tutorials, Talks, Talks",
     )  # names for conference days
 
     accounts = models.ManyToManyField("accounts.Account", blank=True, through="ConferenceAccount")
