@@ -76,10 +76,13 @@
                     <h1 class="text-3xl font-bold w-8 hidden md:block md:w-60">
                         <a class="flex gap-4" href="{% url 'index' %}">
                             <img src="{% static 'logo.png' %}" alt="logo" width="32">
-                            <span class="hidden md:block">{{ page_header }}</span>
+                            <span class="hidden md:block">FEDIDEVS</span>
                         </a>
                     </h1>
-                    <nav class="flex gap-2 sm:gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
+                    <h2 class="block md:hidden text-3xl font-semibold text-transparent bg-clip-text {% if page_header_color == 'red' %} bg-gradient-to-r from-pink-500 to-orange-400 {% elif page_header_color == 'green' %} bg-gradient-to-r from-green-400 to-blue-600 {% elif page_header_color == 'blue' %} bg-gradient-to-r from-cyan-500 to-blue-500 {% else %} text-black dark:text-white {% endif %} ">
+                        {{ page_header }}
+                    </h2>
+                    <nav class="hidden md:flex gap-2 sm:gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
                         <a href="{% url 'index' %}"><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Accounts</span></a>
                         <a class="pl-4" href="{% url 'conferences' %}"><span class="{% if page == 'conferences' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Conferences</span></a>
                     </nav>
@@ -141,7 +144,17 @@
         <aside id="logo-sidebar"
                class="fixed top-0 left-0 z-40 min-w-[10rem] max-w-[35rem] h-screen mt-20 transition-transform -translate-x-full md:translate-x-0  bg-gray-100 dark:bg-gray-950"
                aria-label="Sidebar">
-            <div class="flex flex-col justify-between p-12 pr-8 overflow-y-auto text-gray-900 min-w-60 max-w-[25rem] dark:text-white max-h-svh">
+            <div class="flex flex-col justify-between p-12 pt-4 md:pt-8 pr-8 overflow-y-auto text-gray-900 min-w-60 max-w-[25rem] dark:text-white max-h-svh">
+                <nav class="flex md:hidden gap-2 sm:gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
+                    <ul class="pb-1">
+                        <li>
+                            <a href="{% url 'index' %}"><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Accounts</span></a>
+                        </li>
+                        <li>
+                            <a class="pt-4" href="{% url 'conferences' %}"><span class="{% if page == 'conferences' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Conferences</span></a>
+                        </li>
+                    </ul>
+                </nav>
                 <div class="align-top">
                     {% block sidebar %}
                     {% endblock sidebar %}

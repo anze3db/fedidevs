@@ -28,7 +28,9 @@
 </main>
 {% endblock content %}
 {% block sidebar %}
-    <h1 class="mb-4 text-3xl font-extrabold">{{ conference.name }}</h1>
+    <h1 class="hidden md:block mb-4 text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-orange-400">
+        {{ conference.name }}
+    </h1>
     <p class="mt-4 mb-4 prose dark:prose-invert">{{ conference.description | safe }}</p>
     <p class="mt-4 mb-4">
         {% if conference.website %}
