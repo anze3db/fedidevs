@@ -209,7 +209,8 @@ def conference(request, slug: str):
         {
             "page_title": f"{conference.name} | Fediverse Developers",
             "page": "conferences",
-            "page_header": conference.name,
+            # Conference header is conference.name and year
+            "page_header": conference.name + " " + conference.start_date.strftime("%Y"),
             "page_header_color": "red",
             "page_subheader": f"{conference.start_date.strftime('%b %d')} - {conference.end_date.strftime('%b %d, %Y')}",
             "page_description": "Aggregated posts from the Fediverse about " + conference.name,
