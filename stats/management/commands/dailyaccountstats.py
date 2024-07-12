@@ -84,20 +84,8 @@ class Command(RichCommand):
         to_update = []
         to_create = []
         for daily_account in daily_accounts:
-            if daily_account.account_id not in daily_change_counts:
-                daily_account_change = acc_change_class(
-                    account_id=daily_account.account_id,
-                    followers_count=0,
-                    following_count=0,
-                    statuses_count=0,
-                )
-                to_create.append(daily_account_change)
-                continue
-
-            daily_account_change = daily_change_counts[daily_account.account_id]
-
             prev_date_count = prev_date_account_counts.get(
-                daily_account_change.account_id,
+                daily_account.account_id,
                 {
                     "followers_count": daily_account.followers_count,
                     "following_count": daily_account.following_count,
@@ -108,6 +96,18 @@ class Command(RichCommand):
             prev_followers_count = prev_date_count["followers_count"]
             prev_following_count = prev_date_count["following_count"]
             prev_statuses_count = prev_date_count["statuses_count"]
+
+            if daily_account.account_id not in daily_change_counts:
+                daily_account_change = acc_change_class(
+                    account_id=daily_account.account_id,
+                    followers_count=daily_account.followers_count - prev_followers_count,
+                    following_count=daily_account.following_count - prev_following_count,
+                    statuses_count=daily_account.statuses_count - prev_statuses_count,
+                )
+                to_create.append(daily_account_change)
+                continue
+
+            daily_account_change = daily_change_counts[daily_account.account_id]
 
             if (
                 daily_account.followers_count == prev_followers_count
