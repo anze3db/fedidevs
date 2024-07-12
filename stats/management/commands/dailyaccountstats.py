@@ -1,3 +1,5 @@
+import datetime as dt
+
 from textwrap import dedent
 
 from django.contrib.auth.models import User
@@ -103,7 +105,12 @@ class Command(RichCommand):
         yesterdays_date = todays_date - timezone.timedelta(days=1)
         week_ago = todays_date - timezone.timedelta(days=7)
         month_ago = todays_date - timezone.timedelta(days=30)
-        today, yesterday = Daily.objects.filter().order_by("-date")[:2]
+        latest_daily = Daily.objects.filter().order_by("-date")
+        if len(latest_daily) < 2:
+            yesterday = self.create_yesterday()
+            today = Daily.objects.filter().order_by("-date")[0]
+        else:
+            today, yesterday = latest_daily[:2]
         top_growing = DailyAccountChange.objects.select_related("account").order_by("-followers_count")[:5]
         top_growing = "\n".join(
             [f"{dac.followers_count:>6} {dac.account.username} {dac.account.url}" for dac in top_growing]
@@ -157,4 +164,32 @@ class Command(RichCommand):
             "anze@fedidevs.com",
             ["anze@pecar.me"],
             fail_silently=False,
+        )
+
+    def create_yesterday(self):
+        self.console.print("Manually creating empty Daily object for yesterday")
+        todays_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        yesterdays_date = todays_date - timezone.timedelta(days=1)
+        return Daily(
+            date=yesterdays_date.date(),
+            total_accounts=0,
+            python_accounts=0,
+            javascript_accounts=0,
+            rust_accounts=0,
+            ruby_accounts=0,
+            golang_accounts=0,
+            java_accounts=0,
+            kotlin_accounts=0,
+            scala_accounts=0,
+            swift_accounts=0,
+            csharp_accounts=0,
+            fsharp_accounts=0,
+            dotnet_accounts=0,
+            cpp_accounts=0,
+            linux_accounts=0,
+            haskell_accounts=0,
+            ocaml_accounts=0,
+            nix_accounts=0,
+            opensource_accounts=0,
+            php_accounts=0,
         )

@@ -67,7 +67,7 @@ class TestStats(TestCase):
             date=yesterday.date(),
             total_accounts=2,
             python_accounts=1,
-            javascript_accounts=0,
+            javascript_accounts=1,
             rust_accounts=0,
             ruby_accounts=0,
             golang_accounts=0,
