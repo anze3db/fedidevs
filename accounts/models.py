@@ -7,6 +7,7 @@ from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils import timezone
+from enum import Enum
 
 
 @dataclass
@@ -208,3 +209,9 @@ class AccountLookup(models.Model):
         max_length=55,
         choices=[(lang.code, lang.name) for lang in LANGUAGES],
     )
+
+
+class AccountStatsPeriod(Enum):
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
