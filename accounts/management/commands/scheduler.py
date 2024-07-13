@@ -2,9 +2,10 @@ import time
 
 import schedule
 from django.core import management
+from django.utils import timezone
 from django_rich.management import RichCommand
+
 from accounts.models import AccountStatsPeriod
-from datetime import date
 
 
 class Command(RichCommand):
@@ -42,7 +43,7 @@ class Command(RichCommand):
 
         # Check if it is the first date of the month every day and run monthly job
         # if it is since schedule does not have a built-in way to do so.
-        if date.today().day == 1:
+        if timezone.now().day == 1:
             self.monthly_job()
 
     def hourly_job(self):
