@@ -111,8 +111,8 @@ class Command(RichCommand):
 
             if (
                 daily_account.followers_count == prev_followers_count
-                or daily_account.following_count == prev_following_count
-                or daily_account.statuses_count == prev_statuses_count
+                and daily_account.following_count == prev_following_count
+                and daily_account.statuses_count == prev_statuses_count
             ):
                 # no change
                 continue
