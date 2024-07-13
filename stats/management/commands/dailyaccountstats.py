@@ -9,17 +9,25 @@ from django_rich.management import RichCommand
 from typing import List
 
 from accounts.models import Account, AccountStatsPeriod
-from stats.models import Daily, DailyAccount, DailyAccountChange, WeeklyAccountChange, MonthlyAccountChange, DailySite, FollowClick
+from stats.models import (
+    Daily,
+    DailyAccount,
+    DailyAccountChange,
+    WeeklyAccountChange,
+    MonthlyAccountChange,
+    DailySite,
+    FollowClick,
+)
 
 
 class Command(RichCommand):
     help = "Insert daily account stats"
 
     def add_arguments(self, parser):
-        parser.add_argument('period', type=str, help='Account stats period')
+        parser.add_argument("period", type=str, help="Account stats period")
 
     def handle(self, *args, **options):
-        period = options['period']
+        period = options["period"]
 
         self.console.print(f"Insert account stats for {period} period")
         accounts = Account.objects.all().only(
@@ -52,12 +60,12 @@ class Command(RichCommand):
                 self.calculate_period_stats(daily_accounts, self.get_prev_date(30), MonthlyAccountChange)
 
     def get_prev_date(self, days_ago: int):
-        '''
+        """
         Return date from 'days_ago' days back if Daily object for that date exists,
         else return closest possible date.
-        '''
+        """
         todays_date = timezone.now().date()
-        dates_count = DailyAccount.objects.values('date').distinct().count()
+        dates_count = DailyAccount.objects.values("date").distinct().count()
         if dates_count < 2:
             return todays_date - timezone.timedelta(days=1)
         if dates_count < days_ago:
@@ -68,7 +76,7 @@ class Command(RichCommand):
         self,
         daily_accounts: List[DailyAccount],
         prev_date: dt.date,
-        acc_change_class: DailyAccountChange | WeeklyAccountChange | MonthlyAccountChange
+        acc_change_class: DailyAccountChange | WeeklyAccountChange | MonthlyAccountChange,
     ):
         prev_date_account_counts = {
             da["account_id"]: da
