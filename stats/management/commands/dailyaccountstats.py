@@ -1,4 +1,6 @@
+import datetime as dt
 from textwrap import dedent
+from typing import List
 
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -6,7 +8,15 @@ from django.utils import timezone
 from django_rich.management import RichCommand
 
 from accounts.models import Account
-from stats.models import Daily, DailyAccount, DailyAccountChange, DailySite, FollowClick
+from stats.models import (
+    Daily,
+    DailyAccount,
+    DailyAccountChange,
+    DailySite,
+    FollowClick,
+    MonthlyAccountChange,
+    WeeklyAccountChange,
+)
 
 
 class Command(RichCommand):
@@ -35,10 +45,33 @@ class Command(RichCommand):
         DailyAccount.objects.bulk_create(daily_accounts, batch_size=5000)
         self.console.print(f"{len(daily_accounts)} daily account stats created")
 
-        yesterdays_date = todays_date - timezone.timedelta(days=1)
-        yesterdays_account_counts = {
+        self.calculate_period_stats(daily_accounts, self.get_prev_date(1), DailyAccountChange)
+        self.calculate_period_stats(daily_accounts, self.get_prev_date(7), WeeklyAccountChange)
+        self.calculate_period_stats(daily_accounts, self.get_prev_date(30), MonthlyAccountChange)
+        self.send_email_report()
+
+    def get_prev_date(self, days_ago: int):
+        """
+        Return date from 'days_ago' days back if Daily object for that date exists,
+        else return closest possible date.
+        """
+        todays_date = timezone.now().date()
+        dates_count = DailyAccount.objects.values("date").distinct().count()
+        if dates_count < 2:
+            return todays_date - timezone.timedelta(days=1)
+        if dates_count < days_ago:
+            return todays_date - timezone.timedelta(days=dates_count - 1)
+        return todays_date - timezone.timedelta(days=days_ago)
+
+    def calculate_period_stats(
+        self,
+        daily_accounts: List[DailyAccount],
+        prev_date: dt.date,
+        acc_change_class: type[DailyAccountChange] | type[WeeklyAccountChange] | type[MonthlyAccountChange],
+    ):
+        prev_date_account_counts = {
             da["account_id"]: da
-            for da in DailyAccount.objects.filter(date=yesterdays_date).values(
+            for da in DailyAccount.objects.filter(date=prev_date).values(
                 "account_id",
                 "followers_count",
                 "following_count",
@@ -46,24 +79,12 @@ class Command(RichCommand):
             )
         }
 
-        daily_change_counts = {dac.account_id: dac for dac in DailyAccountChange.objects.all()}
+        daily_change_counts = {dac.account_id: dac for dac in acc_change_class.objects.all()}
         to_update = []
         to_create = []
         for daily_account in daily_accounts:
-            if daily_account.account_id not in daily_change_counts:
-                daily_account_change = DailyAccountChange(
-                    account_id=daily_account.account_id,
-                    followers_count=0,
-                    following_count=0,
-                    statuses_count=0,
-                )
-                to_create.append(daily_account_change)
-                continue
-
-            daily_account_change = daily_change_counts[daily_account.account_id]
-
-            yesterday_count = yesterdays_account_counts.get(
-                daily_account_change.account_id,
+            prev_date_count = prev_date_account_counts.get(
+                daily_account.account_id,
                 {
                     "followers_count": daily_account.followers_count,
                     "following_count": daily_account.following_count,
@@ -71,14 +92,26 @@ class Command(RichCommand):
                 },
             )
 
-            prev_followers_count = yesterday_count["followers_count"]
-            prev_following_count = yesterday_count["following_count"]
-            prev_statuses_count = yesterday_count["statuses_count"]
+            prev_followers_count = prev_date_count["followers_count"]
+            prev_following_count = prev_date_count["following_count"]
+            prev_statuses_count = prev_date_count["statuses_count"]
+
+            if daily_account.account_id not in daily_change_counts:
+                daily_account_change = acc_change_class(
+                    account_id=daily_account.account_id,
+                    followers_count=daily_account.followers_count - prev_followers_count,
+                    following_count=daily_account.following_count - prev_following_count,
+                    statuses_count=daily_account.statuses_count - prev_statuses_count,
+                )
+                to_create.append(daily_account_change)
+                continue
+
+            daily_account_change = daily_change_counts[daily_account.account_id]
 
             if (
                 daily_account.followers_count == prev_followers_count
-                or daily_account.following_count == prev_following_count
-                or daily_account.statuses_count == prev_statuses_count
+                and daily_account.following_count == prev_following_count
+                and daily_account.statuses_count == prev_statuses_count
             ):
                 # no change
                 continue
@@ -88,25 +121,33 @@ class Command(RichCommand):
             to_update.append(daily_account_change)
 
         if to_create:
-            DailyAccountChange.objects.bulk_create(to_create, batch_size=5000)
-            self.console.print(f"{len(to_create)} new daily account changes created")
+            acc_change_class.objects.bulk_create(to_create, batch_size=5000)
+            self.console.print(f"{len(to_create)} new account changes created")
         if to_update:
-            DailyAccountChange.objects.bulk_update(
+            acc_change_class.objects.bulk_update(
                 to_update, ["followers_count", "following_count", "statuses_count"], batch_size=5000
             )
-            self.console.print(f"{len(to_update)} daily account changes updated")
-
-        self.send_email_report()
+            self.console.print(f"{len(to_update)} account changes updated")
 
     def send_email_report(self):
         todays_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
         yesterdays_date = todays_date - timezone.timedelta(days=1)
         week_ago = todays_date - timezone.timedelta(days=7)
         month_ago = todays_date - timezone.timedelta(days=30)
-        today, yesterday = Daily.objects.filter().order_by("-date")[:2]
-        top_growing = DailyAccountChange.objects.select_related("account").order_by("-followers_count")[:5]
-        top_growing = "\n".join(
-            [f"{dac.followers_count:>6} {dac.account.username} {dac.account.url}" for dac in top_growing]
+        latest_daily = Daily.objects.filter().order_by("-date")
+        if len(latest_daily) < 2:
+            yesterday = self.create_yesterday()
+            today = Daily.objects.filter().order_by("-date")[0]
+        else:
+            today, yesterday = latest_daily[:2]
+        top_growing_daily = DailyAccountChange.objects.select_related("account").order_by("-followers_count")[:5]
+        top_growing_daily = "\n".join(
+            [f"{dac.followers_count:>6} {dac.account.username} {dac.account.url}" for dac in top_growing_daily]
+        )
+
+        top_growing_monthly = MonthlyAccountChange.objects.select_related("account").order_by("-followers_count")[:5]
+        top_growing_monthly = "\n".join(
+            [f"{mac.followers_count:>6} {mac.account.username} {mac.account.url}" for mac in top_growing_monthly]
         )
 
         auth_users_cnt = User.objects.filter(is_active=True).count()
@@ -150,11 +191,41 @@ class Command(RichCommand):
                     Number of python accounts today {today.python_accounts} ({today.python_accounts - yesterday.python_accounts:+})
                     Number of python posts today {today.python_posts} ({today.python_posts - yesterday.python_posts:+})
 
-                    Top growing accounts:
+                    Top growing daily accounts:
                     """
             )
-            + top_growing,
+            + top_growing_daily
+            + "\n\nTop growing monthly accounts:\n"
+            + top_growing_monthly,
             "anze@fedidevs.com",
             ["anze@pecar.me"],
             fail_silently=False,
+        )
+
+    def create_yesterday(self):
+        self.console.print("Manually creating empty Daily object for yesterday")
+        todays_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        yesterdays_date = todays_date - timezone.timedelta(days=1)
+        return Daily(
+            date=yesterdays_date.date(),
+            total_accounts=0,
+            python_accounts=0,
+            javascript_accounts=0,
+            rust_accounts=0,
+            ruby_accounts=0,
+            golang_accounts=0,
+            java_accounts=0,
+            kotlin_accounts=0,
+            scala_accounts=0,
+            swift_accounts=0,
+            csharp_accounts=0,
+            fsharp_accounts=0,
+            dotnet_accounts=0,
+            cpp_accounts=0,
+            linux_accounts=0,
+            haskell_accounts=0,
+            ocaml_accounts=0,
+            nix_accounts=0,
+            opensource_accounts=0,
+            php_accounts=0,
         )

@@ -140,6 +140,26 @@ class DailyAccountChange(models.Model):
         return f"{self.account.username}"
 
 
+class WeeklyAccountChange(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    statuses_count = models.IntegerField(default=0)
+    followers_count = models.IntegerField(default=0)
+    following_count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.account.username}"
+
+
+class MonthlyAccountChange(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    statuses_count = models.IntegerField(default=0)
+    followers_count = models.IntegerField(default=0)
+    following_count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.account.username}"
+
+
 class FollowClick(models.Model):
     user = models.ForeignKey("auth.User", on_delete=models.CASCADE)
     url = models.TextField()

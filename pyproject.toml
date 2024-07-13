@@ -57,6 +57,7 @@ lint.ignore = [
   # May cause conflicts with formatter:
   "ISC001",
   "S101",   # I like asserts
+  "S113", # Default timeout is 5s, why are you asking me to override?
 ]
 
 [tool.ruff.format]
