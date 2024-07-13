@@ -2,12 +2,12 @@ import json
 import re
 from dataclasses import dataclass
 from datetime import timedelta
+from enum import Enum
 
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils import timezone
-from enum import Enum
 
 
 @dataclass
