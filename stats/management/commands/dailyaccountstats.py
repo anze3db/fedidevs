@@ -1,22 +1,21 @@
 import datetime as dt
-
 from textwrap import dedent
+from typing import List
 
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.utils import timezone
 from django_rich.management import RichCommand
-from typing import List
 
 from accounts.models import Account, AccountStatsPeriod
 from stats.models import (
     Daily,
     DailyAccount,
     DailyAccountChange,
-    WeeklyAccountChange,
-    MonthlyAccountChange,
     DailySite,
     FollowClick,
+    MonthlyAccountChange,
+    WeeklyAccountChange,
 )
 
 
