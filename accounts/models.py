@@ -2,7 +2,6 @@ import json
 import re
 from dataclasses import dataclass
 from datetime import timedelta
-from enum import Enum
 
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.serializers.json import DjangoJSONEncoder
@@ -209,9 +208,3 @@ class AccountLookup(models.Model):
         max_length=55,
         choices=[(lang.code, lang.name) for lang in LANGUAGES],
     )
-
-
-class AccountStatsPeriod(Enum):
-    DAILY = "daily"
-    WEEKLY = "weekly"
-    MONTHLY = "monthly"

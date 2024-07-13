@@ -2,24 +2,11 @@ import time
 
 import schedule
 from django.core import management
-from django.utils import timezone
 from django_rich.management import RichCommand
-
-from accounts.models import AccountStatsPeriod
 
 
 class Command(RichCommand):
     help = "Starts the scheduler"
-
-    def monthly_job(self):
-        self.console.print("Starting monthly job")
-        management.call_command("dailyaccountstats", AccountStatsPeriod.MONTHLY.value)
-        self.console.print("All done! 🎉")
-
-    def weekly_job(self):
-        self.console.print("Starting weekly job")
-        management.call_command("dailyaccountstats", AccountStatsPeriod.WEEKLY.value)
-        self.console.print("All done! 🎉")
 
     def daily_job(self):
         self.console.print("Starting daily job")
@@ -38,13 +25,8 @@ class Command(RichCommand):
         management.call_command("stattag")
         self.console.print("Running stats")
         management.call_command("dailystats")
-        management.call_command("dailyaccountstats", AccountStatsPeriod.DAILY.value)
+        management.call_command("dailyaccountstats")
         self.console.print("All done! 🎉")
-
-        # Check if it is the first date of the month every day and run monthly job
-        # if it is since schedule does not have a built-in way to do so.
-        if timezone.now().day == 1:
-            self.monthly_job()
 
     def hourly_job(self):
         self.console.print("Starting hourly job")
@@ -66,12 +48,9 @@ class Command(RichCommand):
             self.console.print("Running job(s) now 🏃‍♂️")
             self.hourly_job()
             self.daily_job()
-            self.weekly_job()
-            self.monthly_job()
             return
 
         self.console.print("Starting scheduler 🕐")
-        schedule.every().monday.at("01:00").do(self.weekly_job)
         schedule.every().day.at("01:00").do(self.daily_job)
         schedule.every().hour.do(self.hourly_job)
 

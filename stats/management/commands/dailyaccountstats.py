@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from django_rich.management import RichCommand
 
-from accounts.models import Account, AccountStatsPeriod
+from accounts.models import Account
 from stats.models import (
     Daily,
     DailyAccount,
@@ -22,13 +22,8 @@ from stats.models import (
 class Command(RichCommand):
     help = "Insert daily account stats"
 
-    def add_arguments(self, parser):
-        parser.add_argument("period", type=str, help="Account stats period")
-
     def handle(self, *args, **options):
-        period = options["period"]
-
-        self.console.print(f"Insert account stats for {period} period")
+        self.console.print("Insert account stats")
         accounts = Account.objects.all().only(
             "id",
             "followers_count",
@@ -50,13 +45,10 @@ class Command(RichCommand):
         DailyAccount.objects.bulk_create(daily_accounts, batch_size=5000)
         self.console.print(f"{len(daily_accounts)} daily account stats created")
 
-        match period:
-            case AccountStatsPeriod.DAILY.value:
-                self.calculate_period_stats(daily_accounts, self.get_prev_date(1), DailyAccountChange)
-            case AccountStatsPeriod.WEEKLY.value:
-                self.calculate_period_stats(daily_accounts, self.get_prev_date(7), WeeklyAccountChange)
-            case AccountStatsPeriod.MONTHLY.value:
-                self.calculate_period_stats(daily_accounts, self.get_prev_date(30), MonthlyAccountChange)
+        self.calculate_period_stats(daily_accounts, self.get_prev_date(1), DailyAccountChange)
+        self.calculate_period_stats(daily_accounts, self.get_prev_date(7), WeeklyAccountChange)
+        self.calculate_period_stats(daily_accounts, self.get_prev_date(30), MonthlyAccountChange)
+        self.send_email_report()
 
     def get_prev_date(self, days_ago: int):
         """
@@ -75,7 +67,7 @@ class Command(RichCommand):
         self,
         daily_accounts: List[DailyAccount],
         prev_date: dt.date,
-        acc_change_class: DailyAccountChange | WeeklyAccountChange | MonthlyAccountChange,
+        acc_change_class: type[DailyAccountChange] | type[WeeklyAccountChange] | type[MonthlyAccountChange],
     ):
         prev_date_account_counts = {
             da["account_id"]: da
@@ -136,8 +128,6 @@ class Command(RichCommand):
                 to_update, ["followers_count", "following_count", "statuses_count"], batch_size=5000
             )
             self.console.print(f"{len(to_update)} account changes updated")
-
-        self.send_email_report()
 
     def send_email_report(self):
         todays_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
