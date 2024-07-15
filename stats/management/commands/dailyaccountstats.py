@@ -18,6 +18,9 @@ from stats.models import (
     WeeklyAccountChange,
 )
 
+UPDATE_BATCH_SIZE = 100
+CREATE_BATCH_SIZE = 1000
+
 
 class Command(RichCommand):
     help = "Insert daily account stats"
@@ -42,7 +45,7 @@ class Command(RichCommand):
             )
             for account in accounts
         ]
-        DailyAccount.objects.bulk_create(daily_accounts, batch_size=500)
+        DailyAccount.objects.bulk_create(daily_accounts, batch_size=CREATE_BATCH_SIZE)
         self.console.print(f"{len(daily_accounts)} daily account stats created")
 
         self.calculate_period_stats(daily_accounts, self.get_prev_date(1), DailyAccountChange)
@@ -121,11 +124,11 @@ class Command(RichCommand):
             to_update.append(daily_account_change)
 
         if to_create:
-            acc_change_class.objects.bulk_create(to_create, batch_size=500)
+            acc_change_class.objects.bulk_create(to_create, batch_size=CREATE_BATCH_SIZE)
             self.console.print(f"{len(to_create)} new account changes created")
         if to_update:
             acc_change_class.objects.bulk_update(
-                to_update, ["followers_count", "following_count", "statuses_count"], batch_size=500
+                to_update, ["followers_count", "following_count", "statuses_count"], batch_size=UPDATE_BATCH_SIZE
             )
             self.console.print(f"{len(to_update)} account changes updated")
 
