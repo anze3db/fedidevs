@@ -122,7 +122,7 @@
                 <li>
                     <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% query_string o='-last_status_at' %}">
                         {% if order == '-last_status_at' %}
-                            <strong>Post Status</strong>
+                            <strong>Last Post</strong>
                         {% else %}
                             Last Post
                         {% endif %}
