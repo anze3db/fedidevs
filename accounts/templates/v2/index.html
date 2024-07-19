@@ -120,6 +120,15 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% query_string o='-new_followers' %}">
+                        {% if order == '-new_followers' %}
+                            <strong>New Followers</strong>
+                        {% else %}
+                            New Followers
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
                     <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% query_string o='-last_status_at' %}">
                         {% if order == '-last_status_at' %}
                             <strong>Last Post</strong>

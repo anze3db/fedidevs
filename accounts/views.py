@@ -1,9 +1,10 @@
 from django.core.paginator import Paginator
-from django.db.models import Count, Exists, OuterRef, Q
+from django.db.models import Count, Exists, IntegerField, OuterRef, Q, Subquery
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 
 from mastodon_auth.models import AccountFollowing
+from stats.models import WeeklyAccountChange
 
 from .management.commands.crawler import INSTANCES
 from .models import FRAMEWORKS, LANGUAGES, Account, AccountLookup
@@ -69,7 +70,7 @@ def index(request, lang: str | None = None):
 
     query = request.GET.get("q", "").strip()
     order = request.GET.get("o", "-followers_count")
-    if order not in ("-followers_count", "url", "-last_status_at", "-statuses_count"):
+    if order not in ("-followers_count", "url", "-last_status_at", "-statuses_count", "-new_followers"):
         order = "-followers_count"
     if query:
         search_query &= (
@@ -79,7 +80,14 @@ def index(request, lang: str | None = None):
             | Q(url__icontains=query)
         )
 
-    accounts = Account.objects.filter(search_query).prefetch_related("accountlookup_set").order_by(order)
+    # Annotate the Account model with weekly followers gained from WeeklyAccountChange
+    weekly_followers_gained = (
+        WeeklyAccountChange.objects.filter(account=OuterRef("pk")).order_by("-id").values("followers_count")[:1]
+    )
+    accounts = Account.objects.filter(search_query).annotate(
+        new_followers=Subquery(weekly_followers_gained, output_field=IntegerField())
+    )
+    accounts = accounts.prefetch_related("accountlookup_set").order_by(order)
     if request.user.is_authenticated:
         # Annotate whether the current request user is following the account:
         accounts = accounts.annotate(
