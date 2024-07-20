@@ -1,4 +1,6 @@
+from django.core import management
 from django.test import TestCase
+from django.utils import timezone
 
 from accounts.models import Account
 
@@ -19,12 +21,12 @@ class TestSelectedInstance(TestCase):
             noindex=False,
             group=False,
             created_at="2021-01-01T00:00:00.000000+00:00",
-            last_status_at="2021-01-01T00:00:00.000000+00:00",
+            last_status_at=timezone.now(),
             last_sync_at="2021-01-01T00:00:00.000000+00:00",
             followers_count=0,
             following_count=0,
             statuses_count=0,
-            note="",
+            note="python",
             url="https://mastodon.social/@test",
             avatar="https://mastodon.social/@test/avatar",
             avatar_static="https://mastodon.social/@test/avatar",
@@ -46,12 +48,12 @@ class TestSelectedInstance(TestCase):
             noindex=False,
             group=False,
             created_at="2021-01-01T00:00:00.000000+00:00",
-            last_status_at="2021-01-01T00:00:00.000000+00:00",
+            last_status_at=timezone.now(),
             last_sync_at="2021-01-01T00:00:00.000000+00:00",
             followers_count=0,
             following_count=0,
             statuses_count=0,
-            note="",
+            note="python",
             url="https://fosstodon.org/@fosstest",
             avatar="https://fosstodon.org/@fosstest/avatar",
             avatar_static="https://fosstodon.org/@fosstest/avatar",
@@ -61,6 +63,7 @@ class TestSelectedInstance(TestCase):
             roles=[],
             fields=[],
         )
+        management.call_command("indexer")
 
     def test_no_selected_instance(self):
         response = self.client.get("/")

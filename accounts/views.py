@@ -1,10 +1,10 @@
 from django.core.paginator import Paginator
-from django.db.models import Count, Exists, IntegerField, OuterRef, Q, Subquery
+from django.db.models import Count, Exists, OuterRef, Q
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 
 from mastodon_auth.models import AccountFollowing
-from stats.models import WeeklyAccountChange
+from stats.models import Daily
 
 from .management.commands.crawler import INSTANCES
 from .models import FRAMEWORKS, LANGUAGES, Account, AccountLookup
@@ -18,11 +18,13 @@ def index(request, lang: str | None = None):
     frameworks_map = {f.code: f for f in FRAMEWORKS}
 
     # Get a dict of languages and their counts
-    language_count_dict = {
-        al["language"]: al["count"]
-        for al in AccountLookup.objects.values("language").annotate(count=Count("language")).order_by("-count")
-    }
-
+    language_counts = Daily.objects.order_by("date").last()
+    if language_counts:
+        language_count_dict = {
+            lang.code: getattr(language_counts, f"{lang.code}_accounts") for lang in LANGUAGES + FRAMEWORKS
+        }
+    else:
+        language_count_dict = {}
     languages = (
         {
             "code": lng.code,
@@ -62,32 +64,30 @@ def index(request, lang: str | None = None):
         reverse=True,
     )
 
-    search_query = Q(discoverable=True, noindex=False)
+    search_query = Q(accountlookup__isnull=False)
     if selected_lang:
-        search_query &= Q(accountlookup__language=selected_lang.code)
+        search_query &= Q(accountlookup__language__icontains=selected_lang.code)
     if selected_framework:
-        search_query &= Q(accountlookup__language=selected_framework.code)
+        search_query &= Q(accountlookup__language__icontains=selected_framework.code)
 
     query = request.GET.get("q", "").strip()
     order = request.GET.get("o", "-followers_count")
-    if order not in ("-followers_count", "url", "-last_status_at", "-statuses_count", "-new_followers"):
+    if order not in (
+        "-followers_count",
+        "-last_status_at",
+        "-statuses_count",
+        "-daily_followers_count",
+        "-weekly_followers_count",
+        "-monthly_followers_count",
+    ):
         order = "-followers_count"
+    sort_order = f"-accountlookup__{order[1:]}"
     if query:
-        search_query &= (
-            Q(note__icontains=query)
-            | Q(display_name__icontains=query)
-            | Q(username__icontains=query)
-            | Q(url__icontains=query)
-        )
+        search_query &= Q(accountlookup__text__icontains=query)
 
     # Annotate the Account model with weekly followers gained from WeeklyAccountChange
-    weekly_followers_gained = (
-        WeeklyAccountChange.objects.filter(account=OuterRef("pk")).order_by("-id").values("followers_count")[:1]
-    )
-    accounts = Account.objects.filter(search_query).annotate(
-        new_followers=Subquery(weekly_followers_gained, output_field=IntegerField())
-    )
-    accounts = accounts.prefetch_related("accountlookup_set").order_by(order)
+    accounts = Account.objects.select_related("accountlookup").filter(search_query)
+    accounts = accounts.order_by(sort_order)
     if request.user.is_authenticated:
         # Annotate whether the current request user is following the account:
         accounts = accounts.annotate(
@@ -98,7 +98,7 @@ def index(request, lang: str | None = None):
     paginator = Paginator(accounts, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    accounts_count = Account.objects.filter(discoverable=True, noindex=False).count()
+    accounts_count = AccountLookup.objects.filter().count()
 
     user_instance = None
     if request.user.is_authenticated:

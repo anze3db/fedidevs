@@ -185,7 +185,7 @@ class Account(models.Model):
     @property
     def languages(self):
         lang_lookup = {lang.code: lang for lang in LANGUAGES + FRAMEWORKS}
-        return [lang_lookup[lang.language] for lang in self.accountlookup_set.all()]
+        return [lang_lookup[lang] for lang in self.accountlookup.language.split("\n")]
 
     def should_index(self):
         if self.noindex or not self.discoverable:
@@ -203,8 +203,23 @@ class Account(models.Model):
 
 
 class AccountLookup(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    language = models.CharField(
-        max_length=55,
-        choices=[(lang.code, lang.name) for lang in LANGUAGES],
-    )
+    account = models.OneToOneField(Account, on_delete=models.CASCADE)
+    language = models.TextField(default="")
+    text = models.TextField(default="")
+    last_status_at = models.DateTimeField(default=timezone.now)
+
+    statuses_count = models.IntegerField(default=0)
+    followers_count = models.IntegerField(default=0)
+    following_count = models.IntegerField(default=0)
+
+    daily_followers_count = models.IntegerField(default=0)
+    daily_following_count = models.IntegerField(default=0)
+    daily_statuses_count = models.IntegerField(default=0)
+
+    weekly_followers_count = models.IntegerField(default=0)
+    weekly_following_count = models.IntegerField(default=0)
+    weekly_statuses_count = models.IntegerField(default=0)
+
+    monthly_followers_count = models.IntegerField(default=0)
+    monthly_following_count = models.IntegerField(default=0)
+    monthly_statuses_count = models.IntegerField(default=0)

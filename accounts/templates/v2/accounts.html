@@ -59,8 +59,14 @@
                     </div>
                     <div class="flex flex-col gap-0 text-center" title="Followers">
                         <span class="text-xs">Followers</span>
-                        <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">{{ account.followers_count | intcomma }}
-                            <span class="text-xs">({{ account.new_followers }} new)</span>
+                        <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">{{ account.accountlookup.followers_count | intcomma }}
+                            {% if order == '-daily_followers_count' %}
+                                <span class="text-xs">({{ account.accountlookup.daily_followers_count | intcomma }} new)</span>
+                            {% elif order == '-weekly_followers_count' %}
+                                <span class="text-xs">({{ account.accountlookup.weekly_followers_count | intcomma }} new)</span>
+                            {% elif order == '-monthly_followers_count' %}
+                                <span class="text-xs">({{ account.accountlookup.monthly_followers_count | intcomma }} new)</span>
+                            {% endif %}
                         </span>
                     </div>
                 </div>

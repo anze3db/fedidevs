@@ -120,11 +120,29 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% query_string o='-new_followers' %}">
-                        {% if order == '-new_followers' %}
-                            <strong>New Followers</strong>
+                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% query_string o='-daily_followers_count' %}">
+                        {% if order == '-daily_followers_count' %}
+                            <strong>Daily Followers</strong>
                         {% else %}
-                            New Followers
+                            Daily Followers
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% query_string o='-weekly_followers_count' %}">
+                        {% if order == '-weekly_followers_count' %}
+                            <strong>Weekly Followers</strong>
+                        {% else %}
+                            Weekly Followers
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% query_string o='-monthly_followers_count' %}">
+                        {% if order == '-monthly_followers_count' %}
+                            <strong>Monthly Followers</strong>
+                        {% else %}
+                            Monthly Followers
                         {% endif %}
                     </a>
                 </li>
@@ -143,15 +161,6 @@
                             <strong>Post Count</strong>
                         {% else %}
                             Post Count
-                        {% endif %}
-                    </a>
-                </li>
-                <li>
-                    <a href="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% query_string o='url' %}">
-                        {% if order == 'url' %}
-                            <strong>Source Instance</strong>
-                        {% else %}
-                            Source Instance
                         {% endif %}
                     </a>
                 </li>
