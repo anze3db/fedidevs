@@ -61,11 +61,11 @@
                         <span class="text-xs">Followers</span>
                         <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">{{ account.accountlookup.followers_count | intcomma }}
                             {% if order == '-daily_followers_count' %}
-                                <span class="text-xs">({{ account.accountlookup.daily_followers_count | intcomma }} new)</span>
+                                <span class=" font-light text-xs">{{ account.accountlookup.daily_followers_count | intcomma }}</span>
                             {% elif order == '-weekly_followers_count' %}
-                                <span class="text-xs">({{ account.accountlookup.weekly_followers_count | intcomma }} new)</span>
+                                <span class="  text-green-600 ">▲ {{ account.accountlookup.weekly_followers_count | intcomma }}</span>
                             {% elif order == '-monthly_followers_count' %}
-                                <span class="text-xs">({{ account.accountlookup.monthly_followers_count | intcomma }} new)</span>
+                                <span class="text-xs">{{ account.accountlookup.monthly_followers_count | intcomma }}</span>
                             {% endif %}
                         </span>
                     </div>
