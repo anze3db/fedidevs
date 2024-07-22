@@ -1,6 +1,115 @@
 {% load account_extras %}
 {% load static %}
 {% load humanize %}
+<section class="mb-8 mr-2 flex gap-4 justify-end">
+    {% if selected_lang_or_framework %}
+        <a href="{% url "index" %}{% query_string %}"
+           class="inline-flex text-sm gap-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 bg-white shadow-sm dark:bg-gray-800 justify-between items-center px-3 py-1.5"
+           role="button">
+            <span class="flex gap-2">
+                <img src="{% static selected_lang_or_framework.image %}"
+                     alt="{{ selected_lang_or_framework.code }}"
+                     loading="lazy"
+                     class="object-contain w-4" />
+                <span class="leading-loose">
+                    {{ selected_lang_or_framework.name }} <small class="text-xs"></small>
+                </span>
+            </span>
+            <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+        </a>
+    {% endif %}
+    <div class="inline-flex rounded-md shadow-sm" role="group">
+        <button id="orderByDropdown"
+                data-dropdown-toggle="orderByMenu"
+                class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-s-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                type="button">
+            Order by Followers
+            <svg class="w-2.5 h-2.5 ms-2.5"
+                 aria-hidden="true"
+                 xmlns="http://www.w3.org/2000/svg"
+                 fill="none"
+                 viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+            </svg>
+        </button>
+        <!-- Dropdown menu -->
+        <div id="orderByMenu"
+             class="z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+             data-popper-reference-hidden=""
+             data-popper-escaped=""
+             data-popper-placement="top"
+             style="position: absolute;
+                    inset: auto auto 0px 0px;
+                    margin: 0px;
+                    transform: translate3d(522.5px, 3847.5px, 0px)">
+            <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
+                aria-labelledby="orderByDropdown">
+                <li>
+                    <a href="#"
+                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Followers</a>
+                </li>
+                <li>
+                    <a href="#"
+                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Posts</a>
+                </li>
+                <li>
+                    <a href="#"
+                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Date of last Post</a>
+                </li>
+            </ul>
+        </div>
+        <button id="dropdownRadioButton"
+                data-dropdown-toggle="dropdownRadio"
+                class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-e-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                type="button">
+            <svg class="w-3 h-3 text-gray-500 dark:text-gray-400 me-3"
+                 aria-hidden="true"
+                 xmlns="http://www.w3.org/2000/svg"
+                 fill="currentColor"
+                 viewBox="0 0 20 20">
+                <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+            </svg>
+            Last 7 days
+            <svg class="w-2.5 h-2.5 ms-2.5"
+                 aria-hidden="true"
+                 xmlns="http://www.w3.org/2000/svg"
+                 fill="none"
+                 viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+            </svg>
+        </button>
+        <!-- Dropdown menu -->
+        <div id="dropdownRadio"
+             class="z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+             data-popper-reference-hidden=""
+             data-popper-escaped=""
+             data-popper-placement="top"
+             style="position: absolute;
+                    inset: auto auto 0px 0px;
+                    margin: 0px;
+                    transform: translate3d(522.5px, 3847.5px, 0px)">
+            <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
+                aria-labelledby="dropdownRadioButton">
+                <li>
+                    <a href="#"
+                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last day</a>
+                </li>
+                <li>
+                    <a href="#"
+                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 7 days</a>
+                </li>
+                <li>
+                    <a href="#"
+                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 30 days</a>
+                </li>
+                <li>
+                    <a href="#"
+                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">All time</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
 <div class="gap-12 columns-1 xl:columns-3 lg:columns-2">
     {% for account in accounts %}
         <div class="w-full p-3 mb-12 bg-white shadow-md rounded-2xl dark:bg-gray-800 break-inside-avoid-column">
@@ -59,7 +168,7 @@
                     </div>
                     <div class="flex flex-col gap-0 text-center" title="Followers">
                         <span class="text-xs">Followers</span>
-                        <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">{{ account.accountlookup.followers_count | intcomma }}
+                        <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
                             {% if order == '-daily_followers_count' %}
                                 <span class=" font-light text-xs">{{ account.accountlookup.daily_followers_count | intcomma }}</span>
                             {% elif order == '-weekly_followers_count' %}
