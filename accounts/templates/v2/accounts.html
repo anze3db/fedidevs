@@ -23,7 +23,7 @@
                 data-dropdown-toggle="orderByMenu"
                 class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-s-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                 type="button">
-            Order by Followers
+            Order by: {{ display_strings.order }}
             <svg class="w-2.5 h-2.5 ms-2.5"
                  aria-hidden="true"
                  xmlns="http://www.w3.org/2000/svg"
@@ -45,16 +45,16 @@
             <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
                 aria-labelledby="orderByDropdown">
                 <li>
-                    <a href="#"
+                    <a href="{% query_string o='followers' %}"
                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Followers</a>
                 </li>
                 <li>
-                    <a href="#"
+                    <a href="{% query_string o='statuses' %}"
                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Posts</a>
                 </li>
                 <li>
-                    <a href="#"
-                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Date of last Post</a>
+                    <a href="{% query_string o='last_status_at' %}"
+                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Date of Last Post</a>
                 </li>
             </ul>
         </div>
@@ -69,7 +69,7 @@
                  viewBox="0 0 20 20">
                 <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
             </svg>
-            Last 7 days
+            {{ display_strings.period }}
             <svg class="w-2.5 h-2.5 ms-2.5"
                  aria-hidden="true"
                  xmlns="http://www.w3.org/2000/svg"
@@ -88,24 +88,26 @@
                     inset: auto auto 0px 0px;
                     margin: 0px;
                     transform: translate3d(522.5px, 3847.5px, 0px)">
+                {% if order != '-last_status_at' %}
             <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
                 aria-labelledby="dropdownRadioButton">
-                <li>
-                    <a href="#"
-                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last day</a>
-                </li>
-                <li>
-                    <a href="#"
-                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 7 days</a>
-                </li>
-                <li>
-                    <a href="#"
-                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 30 days</a>
-                </li>
-                <li>
-                    <a href="#"
-                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">All time</a>
-                </li>
+                    <li>
+                        <a href="{% query_string p='daily' %}"
+                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last day</a>
+                    </li>
+                    <li>
+                        <a href="{% query_string p='weekly' %}"
+                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 7 days</a>
+                    </li>
+                    <li>
+                        <a href="{% query_string p='monthly' %}"
+                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 30 days</a>
+                    </li>
+                    <li>
+                        <a href="{% query_string p='all' %}"
+                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">All time</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>
@@ -164,17 +166,29 @@
                     </div>
                     <div class="flex flex-col gap-0 text-center" title="Statuses">
                         <span class="text-xs">Posts</span>
-                        <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">{{ account.statuses_count | intcomma }}</span>
+                        <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
+                            {% if sort_order == '-accountlookup__daily_statuses_count' %}
+                                <span class="text-green-600">▲ {{ account.accountlookup.daily_statuses_count | intcomma }}</span>
+                            {% elif sort_order == '-accountlookup__weekly_statuses_count' %}
+                                <span class="text-green-600">▲ {{ account.accountlookup.weekly_statuses_count | intcomma }}</span>
+                            {% elif sort_order == '-accountlookup__monthly_statuses_count' %}
+                                <span class="text-green-600">▲ {{ account.accountlookup.monthly_statuses_count | intcomma }}</span>
+                            {% else %}
+                                <span>{{ account.accountlookup.statuses_count | intcomma }}</span>
+                            {% endif %}
+                        </span>
                     </div>
                     <div class="flex flex-col gap-0 text-center" title="Followers">
                         <span class="text-xs">Followers</span>
                         <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
-                            {% if order == '-daily_followers_count' %}
-                                <span class=" font-light text-xs">{{ account.accountlookup.daily_followers_count | intcomma }}</span>
-                            {% elif order == '-weekly_followers_count' %}
-                                <span class="  text-green-600 ">▲ {{ account.accountlookup.weekly_followers_count | intcomma }}</span>
-                            {% elif order == '-monthly_followers_count' %}
-                                <span class="text-xs">{{ account.accountlookup.monthly_followers_count | intcomma }}</span>
+                            {% if sort_order == '-accountlookup__daily_followers_count' %}
+                                <span class="text-green-600">▲ {{ account.accountlookup.daily_followers_count | intcomma }}</span>
+                            {% elif sort_order == '-accountlookup__weekly_followers_count' %}
+                                <span class="text-green-600">▲ {{ account.accountlookup.weekly_followers_count | intcomma }}</span>
+                            {% elif sort_order == '-accountlookup__monthly_followers_count' %}
+                                <span class="text-green-600">▲ {{ account.accountlookup.monthly_followers_count | intcomma }}</span>
+                            {% else %}
+                                <span>{{ account.accountlookup.followers_count | intcomma }}</span>
                             {% endif %}
                         </span>
                     </div>

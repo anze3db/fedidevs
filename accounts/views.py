@@ -10,6 +10,49 @@ from .management.commands.crawler import INSTANCES
 from .models import FRAMEWORKS, LANGUAGES, Account, AccountLookup
 
 
+def get_lookup_sort_order(order: str, period: str):
+    prefix = "-accountlookup__"
+    if order == "last_status_at":
+        return f"{prefix}last_status_at"
+
+    if order not in (
+        "followers",
+        "statuses",
+    ) or period not in (
+        "daily",
+        "weekly",
+        "monthly",
+        "all",
+    ):
+        return f"{prefix}followers_count"
+
+    if period == "all":
+        return f"{prefix}{order}_count"
+
+    return f"{prefix}{period}_{order}_count"
+
+
+def get_display_strings(order: str, period: str):
+    res = {}
+    if order == "last_status_at":
+        res["order"] = "Date of Last Post"
+    elif order == "statuses":
+        res["order"] = "Posts"
+    else:
+        res["order"] = "Followers"
+
+    if period == "daily":
+        res["period"] = "Last day"
+    elif period == "weekly":
+        res["period"] = "Last 7 days"
+    elif period == "monthly":
+        res["period"] = "Last 30 days"
+    else:
+        res["period"] = "All time"
+
+    return res
+
+
 def index(request, lang: str | None = None):
     if "selected_instance" in request.GET:
         request.session["selected_instance"] = parse_instance(request.GET.get("selected_instance"))
@@ -70,18 +113,11 @@ def index(request, lang: str | None = None):
     if selected_framework:
         search_query &= Q(accountlookup__language__icontains=selected_framework.code)
 
+    order = request.GET.get("o", "followers")
+    period = request.GET.get("p", "all")
     query = request.GET.get("q", "").strip()
-    order = request.GET.get("o", "-followers_count")
-    if order not in (
-        "-followers_count",
-        "-last_status_at",
-        "-statuses_count",
-        "-daily_followers_count",
-        "-weekly_followers_count",
-        "-monthly_followers_count",
-    ):
-        order = "-followers_count"
-    sort_order = f"-accountlookup__{order[1:]}"
+
+    sort_order = get_lookup_sort_order(order, period)
     if query:
         search_query &= Q(accountlookup__text__icontains=query)
 
@@ -129,7 +165,8 @@ def index(request, lang: str | None = None):
             "accounts_count": accounts_count,  # TODO might be slow
             "selected_instance": request.session.get("selected_instance") or user_instance,
             "query": query,
-            "order": order,
+            "sort_order": sort_order,
+            "display_strings": get_display_strings(order, period),
             "user": request.user,
             "adjectives": [
                 "great",
