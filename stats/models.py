@@ -9,14 +9,14 @@ def store_daily_stats():
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
     account_defaults = {
-        f"{lang.code}_accounts": AccountLookup.objects.filter(language=lang.code).count()
+        f"{lang.code}_accounts": AccountLookup.objects.filter(language__icontains=lang.code).count()
         for lang in LANGUAGES + FRAMEWORKS
     }
     account_defaults["total_accounts"] = Account.objects.count()
 
     post_defaults = {
         f"{lang.code}_posts": Post.objects.filter(
-            account__accountlookup__language=lang.code,
+            account__accountlookup__language__icontains=lang.code,
         ).count()
         for lang in LANGUAGES + FRAMEWORKS
     }
@@ -128,36 +128,6 @@ class DailyAccount(models.Model):
 
     def __str__(self):
         return f"{self.account.username} - {self.date}"
-
-
-class DailyAccountChange(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    statuses_count = models.IntegerField(default=0)
-    followers_count = models.IntegerField(default=0)
-    following_count = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.account.username}"
-
-
-class WeeklyAccountChange(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    statuses_count = models.IntegerField(default=0)
-    followers_count = models.IntegerField(default=0)
-    following_count = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.account.username}"
-
-
-class MonthlyAccountChange(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    statuses_count = models.IntegerField(default=0)
-    followers_count = models.IntegerField(default=0)
-    following_count = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.account.username}"
 
 
 class FollowClick(models.Model):

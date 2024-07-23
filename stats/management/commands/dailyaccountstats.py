@@ -1,21 +1,17 @@
 import datetime as dt
 from textwrap import dedent
-from typing import List
 
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.utils import timezone
 from django_rich.management import RichCommand
 
-from accounts.models import Account
+from accounts.models import Account, AccountLookup
 from stats.models import (
     Daily,
     DailyAccount,
-    DailyAccountChange,
     DailySite,
     FollowClick,
-    MonthlyAccountChange,
-    WeeklyAccountChange,
 )
 
 UPDATE_BATCH_SIZE = 100
@@ -48,9 +44,27 @@ class Command(RichCommand):
         DailyAccount.objects.bulk_create(daily_accounts, batch_size=CREATE_BATCH_SIZE)
         self.console.print(f"{len(daily_accounts)} daily account stats created")
 
-        self.calculate_period_stats(daily_accounts, self.get_prev_date(1), DailyAccountChange)
-        self.calculate_period_stats(daily_accounts, self.get_prev_date(7), WeeklyAccountChange)
-        self.calculate_period_stats(daily_accounts, self.get_prev_date(30), MonthlyAccountChange)
+        account_lookups = AccountLookup.objects.all()
+        account_lookups_dict: dict[int, AccountLookup] = {lookup.account_id: lookup for lookup in account_lookups}
+
+        self.calculate_period_stats(daily_accounts, self.get_prev_date(days_ago=1), account_lookups_dict, "daily")
+        self.calculate_period_stats(daily_accounts, self.get_prev_date(days_ago=7), account_lookups_dict, "weekly")
+        self.calculate_period_stats(daily_accounts, self.get_prev_date(days_ago=30), account_lookups_dict, "monthly")
+        AccountLookup.objects.bulk_update(
+            account_lookups,
+            [
+                "daily_statuses_count",
+                "daily_followers_count",
+                "daily_following_count",
+                "weekly_statuses_count",
+                "weekly_followers_count",
+                "weekly_following_count",
+                "monthly_statuses_count",
+                "monthly_followers_count",
+                "monthly_following_count",
+            ],
+            batch_size=100,
+        )
         self.send_email_report()
 
     def get_prev_date(self, days_ago: int):
@@ -68,9 +82,10 @@ class Command(RichCommand):
 
     def calculate_period_stats(
         self,
-        daily_accounts: List[DailyAccount],
+        daily_accounts: list[DailyAccount],
         prev_date: dt.date,
-        acc_change_class: type[DailyAccountChange] | type[WeeklyAccountChange] | type[MonthlyAccountChange],
+        account_lookups: dict[int, AccountLookup],
+        prefix: str,
     ):
         prev_date_account_counts = {
             da["account_id"]: da
@@ -82,10 +97,10 @@ class Command(RichCommand):
             )
         }
 
-        daily_change_counts = {dac.account_id: dac for dac in acc_change_class.objects.all()}
-        to_update = []
-        to_create = []
         for daily_account in daily_accounts:
+            if (lookup := account_lookups.get(daily_account.account_id, None)) is None:
+                continue
+
             prev_date_count = prev_date_account_counts.get(
                 daily_account.account_id,
                 {
@@ -94,43 +109,13 @@ class Command(RichCommand):
                     "statuses_count": daily_account.statuses_count,
                 },
             )
-
             prev_followers_count = prev_date_count["followers_count"]
             prev_following_count = prev_date_count["following_count"]
             prev_statuses_count = prev_date_count["statuses_count"]
 
-            if daily_account.account_id not in daily_change_counts:
-                daily_account_change = acc_change_class(
-                    account_id=daily_account.account_id,
-                    followers_count=daily_account.followers_count - prev_followers_count,
-                    following_count=daily_account.following_count - prev_following_count,
-                    statuses_count=daily_account.statuses_count - prev_statuses_count,
-                )
-                to_create.append(daily_account_change)
-                continue
-
-            daily_account_change = daily_change_counts[daily_account.account_id]
-
-            if (
-                daily_account.followers_count == prev_followers_count
-                and daily_account.following_count == prev_following_count
-                and daily_account.statuses_count == prev_statuses_count
-            ):
-                # no change
-                continue
-            daily_account_change.followers_count = daily_account.followers_count - prev_followers_count
-            daily_account_change.following_count = daily_account.following_count - prev_following_count
-            daily_account_change.statuses_count = daily_account.statuses_count - prev_statuses_count
-            to_update.append(daily_account_change)
-
-        if to_create:
-            acc_change_class.objects.bulk_create(to_create, batch_size=CREATE_BATCH_SIZE)
-            self.console.print(f"{len(to_create)} new account changes created")
-        if to_update:
-            acc_change_class.objects.bulk_update(
-                to_update, ["followers_count", "following_count", "statuses_count"], batch_size=UPDATE_BATCH_SIZE
-            )
-            self.console.print(f"{len(to_update)} account changes updated")
+            setattr(lookup, f"{prefix}_followers_count", daily_account.followers_count - prev_followers_count)
+            setattr(lookup, f"{prefix}_following_count", daily_account.following_count - prev_following_count)
+            setattr(lookup, f"{prefix}_statuses_count", daily_account.statuses_count - prev_statuses_count)
 
     def send_email_report(self):
         todays_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -143,14 +128,22 @@ class Command(RichCommand):
             today = Daily.objects.filter().order_by("-date")[0]
         else:
             today, yesterday = latest_daily[:2]
-        top_growing_daily = DailyAccountChange.objects.select_related("account").order_by("-followers_count")[:5]
+        top_growing_daily = AccountLookup.objects.select_related("account").order_by("-daily_followers_count")[:5]
         top_growing_daily = "\n".join(
-            [f"{dac.followers_count:>6} {dac.account.username} {dac.account.url}" for dac in top_growing_daily]
+            [f"{dac.daily_followers_count:>6} {dac.account.username} {dac.account.url}" for dac in top_growing_daily]
         )
 
-        top_growing_monthly = MonthlyAccountChange.objects.select_related("account").order_by("-followers_count")[:5]
+        top_growing_weekly = AccountLookup.objects.select_related("account").order_by("-weekly_followers_count")[:5]
+        top_growing_weekly = "\n".join(
+            [f"{wac.weekly_followers_count:>6} {wac.account.username} {wac.account.url}" for wac in top_growing_weekly]
+        )
+
+        top_growing_monthly = AccountLookup.objects.select_related("account").order_by("-monthly_followers_count")[:5]
         top_growing_monthly = "\n".join(
-            [f"{mac.followers_count:>6} {mac.account.username} {mac.account.url}" for mac in top_growing_monthly]
+            [
+                f"{mac.monthly_followers_count:>6} {mac.account.username} {mac.account.url}"
+                for mac in top_growing_monthly
+            ]
         )
 
         auth_users_cnt = User.objects.filter(is_active=True).count()
@@ -198,6 +191,8 @@ class Command(RichCommand):
                     """
             )
             + top_growing_daily
+            + "\n\nTop growing weekly accounts:\n"
+            + top_growing_weekly
             + "\n\nTop growing monthly accounts:\n"
             + top_growing_monthly,
             "anze@fedidevs.com",

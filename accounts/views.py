@@ -4,9 +4,53 @@ from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 
 from mastodon_auth.models import AccountFollowing
+from stats.models import Daily
 
 from .management.commands.crawler import INSTANCES
 from .models import FRAMEWORKS, LANGUAGES, Account, AccountLookup
+
+
+def get_lookup_sort_order(order: str, period: str):
+    prefix = "-accountlookup__"
+    if order == "last_status_at":
+        return f"{prefix}last_status_at"
+
+    if order not in (
+        "followers",
+        "statuses",
+    ) or period not in (
+        "daily",
+        "weekly",
+        "monthly",
+        "all",
+    ):
+        return f"{prefix}followers_count"
+
+    if period == "all":
+        return f"{prefix}{order}_count"
+
+    return f"{prefix}{period}_{order}_count"
+
+
+def get_display_strings(order: str, period: str):
+    res = {}
+    if order == "last_status_at":
+        res["order"] = "Date of Last Post"
+    elif order == "statuses":
+        res["order"] = "Posts"
+    else:
+        res["order"] = "Followers"
+
+    if period == "daily":
+        res["period"] = "Last day"
+    elif period == "weekly":
+        res["period"] = "Last 7 days"
+    elif period == "monthly":
+        res["period"] = "Last 30 days"
+    else:
+        res["period"] = "All time"
+
+    return res
 
 
 def index(request, lang: str | None = None):
@@ -17,11 +61,13 @@ def index(request, lang: str | None = None):
     frameworks_map = {f.code: f for f in FRAMEWORKS}
 
     # Get a dict of languages and their counts
-    language_count_dict = {
-        al["language"]: al["count"]
-        for al in AccountLookup.objects.values("language").annotate(count=Count("language")).order_by("-count")
-    }
-
+    language_counts = Daily.objects.order_by("date").last()
+    if language_counts:
+        language_count_dict = {
+            lang.code: getattr(language_counts, f"{lang.code}_accounts") for lang in LANGUAGES + FRAMEWORKS
+        }
+    else:
+        language_count_dict = {}
     languages = (
         {
             "code": lng.code,
@@ -61,25 +107,24 @@ def index(request, lang: str | None = None):
         reverse=True,
     )
 
-    search_query = Q(discoverable=True, noindex=False)
+    search_query = Q(accountlookup__isnull=False)
     if selected_lang:
-        search_query &= Q(accountlookup__language=selected_lang.code)
+        search_query &= Q(accountlookup__language__icontains=selected_lang.code)
     if selected_framework:
-        search_query &= Q(accountlookup__language=selected_framework.code)
+        search_query &= Q(accountlookup__language__icontains=selected_framework.code)
 
+    order = request.GET.get("o", "followers")
+    period = request.GET.get("p", "all")
     query = request.GET.get("q", "").strip()
-    order = request.GET.get("o", "-followers_count")
-    if order not in ("-followers_count", "url", "-last_status_at", "-statuses_count"):
-        order = "-followers_count"
-    if query:
-        search_query &= (
-            Q(note__icontains=query)
-            | Q(display_name__icontains=query)
-            | Q(username__icontains=query)
-            | Q(url__icontains=query)
-        )
 
-    accounts = Account.objects.filter(search_query).prefetch_related("accountlookup_set").order_by(order)
+    show_period_dropdown = order != "last_status_at"
+    sort_order = get_lookup_sort_order(order, period)
+    if query:
+        search_query &= Q(accountlookup__text__icontains=query)
+
+    # Annotate the Account model with weekly followers gained from WeeklyAccountChange
+    accounts = Account.objects.select_related("accountlookup").filter(search_query)
+    accounts = accounts.order_by(sort_order)
     if request.user.is_authenticated:
         # Annotate whether the current request user is following the account:
         accounts = accounts.annotate(
@@ -90,7 +135,7 @@ def index(request, lang: str | None = None):
     paginator = Paginator(accounts, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    accounts_count = Account.objects.filter(discoverable=True, noindex=False).count()
+    accounts_count = AccountLookup.objects.filter().count()
 
     user_instance = None
     if request.user.is_authenticated:
@@ -121,7 +166,9 @@ def index(request, lang: str | None = None):
             "accounts_count": accounts_count,  # TODO might be slow
             "selected_instance": request.session.get("selected_instance") or user_instance,
             "query": query,
-            "order": order,
+            "sort_order": sort_order,
+            "show_period_dropdown": show_period_dropdown,
+            "display_strings": get_display_strings(order, period),
             "user": request.user,
             "adjectives": [
                 "great",

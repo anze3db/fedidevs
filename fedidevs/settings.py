@@ -246,6 +246,26 @@ else:  # no cov
 DRAMATIQ_TASKS_DATABASE = "default"
 DRAMATIQ_AUTODISCOVER_MODULES = ["tasks", "views"]
 
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django.db.backends": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+    },
+}
+
+
 if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
     sentry_sdk.init(
         dsn=SENTRY_DSN,

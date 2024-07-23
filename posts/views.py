@@ -75,14 +75,14 @@ def index(
     frameworks = sorted(frameworks, key=lambda framework: framework["count"], reverse=True)
 
     if selected_lang:
-        search_query &= Q(account__accountlookup__language=selected_lang.code)
+        search_query &= Q(account__accountlookup__language__icontains=selected_lang.code)
     if selected_framework:
-        search_query &= Q(account__accountlookup__language=selected_framework.code)
+        search_query &= Q(account__accountlookup__language__icontains=selected_framework.code)
 
     posts = (
         Post.objects.filter(search_query)
         .order_by("-favourites_count")
-        .prefetch_related("account", "account__accountlookup_set")
+        .prefetch_related("account", "account__accountlookup")
     )
     paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
