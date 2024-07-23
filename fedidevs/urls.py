@@ -68,12 +68,6 @@ urlpatterns = (
             name="developers-on-mastodon",
         ),
         path("conferences/", confs_views.conferences, name="conferences"),
-        path("posts/subscribe", post_views.subscribe, name="posts_subscribe"),
-        path(
-            "posts/subscribe/success/",
-            post_views.subscribe_success,
-            name="posts_subscribe_success",
-        ),
     ]
     + [
         path(
@@ -87,33 +81,11 @@ urlpatterns = (
     + [path(f"{lang.code}/", views.index, name=lang.code, kwargs={"lang": lang.code}) for lang in LANG_OR_FRAMEWORK]
     + [
         path(
-            f"posts/<date:date>/{lang.code}/",
-            post_views.index,
-            name=f"{lang.code}-posts",
-            kwargs={"lang": lang.code},
-        )
-        for lang in LANG_OR_FRAMEWORK
-    ]
-    + [
-        path(
             "posts/<date:date>/djangoconus23/",
             post_views.djangoconus,
             name="djangoconus",
         ),
         path("posts/djangoconus23/", post_views.djangoconus, name="djangoconus"),
-    ]
-    + [
-        path(
-            f"posts/{lang.code}/",
-            post_views.index,
-            name=f"{lang.code}-posts",
-            kwargs={"lang": lang.code},
-        )
-        for lang in LANG_OR_FRAMEWORK
-    ]
-    + [
-        path("posts/<date:date>/", post_views.index, name="posts"),
-        path("posts/", post_views.index, name="posts"),
     ]
     + [
         path("fwd50/", confs_views.fwd50, name="fwd50"),
