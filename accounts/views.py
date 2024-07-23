@@ -117,6 +117,7 @@ def index(request, lang: str | None = None):
     period = request.GET.get("p", "all")
     query = request.GET.get("q", "").strip()
 
+    show_period_dropdown = order != "last_status_at"
     sort_order = get_lookup_sort_order(order, period)
     if query:
         search_query &= Q(accountlookup__text__icontains=query)
@@ -166,6 +167,7 @@ def index(request, lang: str | None = None):
             "selected_instance": request.session.get("selected_instance") or user_instance,
             "query": query,
             "sort_order": sort_order,
+            "show_period_dropdown": show_period_dropdown,
             "display_strings": get_display_strings(order, period),
             "user": request.user,
             "adjectives": [
