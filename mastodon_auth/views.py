@@ -70,9 +70,8 @@ def login(request):
                 api_base_url=api_base_url,
             )
         except MastodonNetworkError:
-            return {
-                "error": f"Invalid instance url: {api_base_url}",
-            }
+            messages.error(request, f"Network error, is the instance url correct? `{api_base_url}`")
+            return redirect("/")
 
         instance = Instance(
             url=api_base_url,
@@ -182,7 +181,6 @@ def auth(request):
     auth_login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])
 
     transaction.on_commit(lambda: sync_following.send(user.id))
-    messages.success(request, "Login successful, your following list is syncing...")
 
     return redirect("index")
 
