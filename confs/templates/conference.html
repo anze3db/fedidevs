@@ -8,6 +8,63 @@
 {% block content %}
     <main class="flex justify-center">
         <article>
+            <section class="mb-8 mr-2 flex gap-4 justify-end">
+                {% comment %} {% if posts_date %}
+            <a href="{% url 'conference' slug %}{% query_string date=None %}" class="inline-flex text-sm gap-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 bg-white shadow-sm dark:bg-gray-800 justify-between items-center px-3 py-1.5" role="button">
+                <span class="flex gap-2">
+                    <span class="leading-loose">
+                        {{ posts_date }} <small class="text-xs"></small>
+                    </span>
+                </span>
+                <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+            </a>
+                {% endif %} {% endcomment %}
+                <div class="inline-flex rounded-md shadow-sm" role="group">
+                    <button id="orderByDropdown"
+                            data-dropdown-toggle="orderByMenu"
+                            class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium {% if show_period_dropdown %} rounded-s-lg {% else %} rounded-lg {% endif %} text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                            type="button">
+                        Order by: {{ order_display }}
+                        <svg class="w-2.5 h-2.5 ms-2.5"
+                             aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                        </svg>
+                    </button>
+                    <!-- Dropdown menu -->
+                    <div id="orderByMenu"
+                         class="z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+                         data-popper-reference-hidden=""
+                         data-popper-escaped=""
+                         data-popper-placement="top"
+                         style="position: absolute;
+                                inset: auto auto 0px 0px;
+                                margin: 0px;
+                                transform: translate3d(522.5px, 3847.5px, 0px)">
+                        <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
+                            aria-labelledby="orderByDropdown">
+                            <li>
+                                <a href="{% query_string o='-favourites_count' %}"
+                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Favorites</a>
+                            </li>
+                            <li>
+                                <a href="{% query_string o='-reblogs_count' %}"
+                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Boosts</a>
+                            </li>
+                            <li>
+                                <a href="{% query_string o='-replies_count' %}"
+                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Replies</a>
+                            </li>
+                            <li>
+                                <a href="{% query_string o='-created_at' %}"
+                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Created Date</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
             <section data-nosnippet class="max-w-3xl">
                 {% partialdef posts-partial inline=True %}
                 {% for conf_post in conf_posts %}
@@ -84,25 +141,6 @@
             {% endfor %}
         </ul>
     {% endif %}
-    <h2 class="flex items-center gap-2 pb-2 mb-2 font-semibold align-middle border-b">Order by</h2>
-    <ul class="mb-8">
-        <li>
-            <a class="text-sm {% if order == "-favourites_count" %}font-bold{% endif %}"
-               href="{% url 'conference' slug %}{% query_string order='-favourites_count' %}">Number of Favourites</a>
-        </li>
-        <li>
-            <a class="text-sm {% if order == "-reblogs_count" %}font-bold{% endif %}"
-               href="{% url 'conference' slug %}{% query_string order='-reblogs_count' %}">Number of Boosts</a>
-        </li>
-        <li>
-            <a class="text-sm {% if order == "-replies_count" %}font-bold{% endif %}"
-               href="{% url 'conference' slug %}{% query_string order='-replies_count' %}">Number of Replies</a>
-        </li>
-        <li>
-            <a class="text-sm {% if order == "-created_at" %}font-bold{% endif %}"
-               href="{% url 'conference' slug %}{% query_string order='-created_at' %}">Created Date</a>
-        </li>
-    </ul>
     <h2 class="flex items-center gap-2 pb-2 mb-2 font-semibold align-middle border-b">Info</h2>
     <footer class="prose dark:prose-invert pb-8 text-sm">
         <p>

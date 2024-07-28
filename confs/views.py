@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import Literal
 
 from django.core.paginator import Paginator
 from django.db.models import Count, Q, Sum
@@ -121,6 +122,18 @@ def conferences(request, lang: str | None = None):
     )
 
 
+def get_order_display(order: Literal["-favourites_count", "-reblogs_count", "-replies_count", "-created_at"]):
+    match order:
+        case "-favourites_count":
+            return "Favorites"
+        case "-reblogs_count":
+            return "Boosts"
+        case "-replies_count":
+            return "Replies"
+        case "-created_at":
+            return "Created Date"
+
+
 def conference(request, slug: str):
     conference = get_object_or_404(Conference, slug=slug)
     if conference.posts_after:
@@ -129,7 +142,9 @@ def conference(request, slug: str):
         search_query = Q(
             conference=conference,
         )
-    order = request.GET.get("order")
+    order = request.GET.get("o")
+    if not order:
+        order = request.GET.get("order")
 
     try:
         account_id = int(request.GET.get("account"))
@@ -221,8 +236,8 @@ def conference(request, slug: str):
             "account_counts": account_counts,
             "selected_instance": user_instance,
             "slug": slug,
-            "post_date": date,
             "account_id": account_id,
+            "order_display": get_order_display(order),
             "dates": dates,
             "all_conf_posts_count": all_conf_posts_count,
             "posts_date": date,
