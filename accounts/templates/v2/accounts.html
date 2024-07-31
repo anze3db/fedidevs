@@ -7,7 +7,7 @@
             <div class="relative rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 min-h-24 -z-0">
                 <div class="absolute flex flex-row gap-4 p-3 bg-white rounded-bl-xl dark:bg-gray-800 -top-2 -right-2">
                     {% for language in account.languages %}
-                        <a href="{% url language.code %}{% query_string %}"
+                        <a href="{% url language.code %}{% querystring %}"
                            class="text-sm text-gray-500">
                             <img src="{% static language.image %}"
                                  alt="{{ language.code }}"
@@ -94,7 +94,7 @@
 </div>
 {% if accounts.has_next %}
     <div class="mt-12"
-         hx-get="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}{% query_string page=accounts.next_page_number %} "
+         hx-get="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}{% querystring page=accounts.next_page_number %} "
          hx-trigger="intersect once"
          hx-swap="afterend"></div>
 {% endif %}

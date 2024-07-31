@@ -8,7 +8,7 @@
 {% block content %}
     <section class="mb-8 mr-2 flex gap-4 justify-end">
         {% if selected_lang_or_framework %}
-            <a href="{% url "index" %}{% query_string %}"
+            <a href="{% url "index" %}{% querystring %}"
                class="inline-flex text-sm gap-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 bg-white shadow-sm dark:bg-gray-800 justify-between items-center px-3 py-1.5"
                role="button">
                 <span class="flex gap-2">
@@ -50,15 +50,15 @@
                 <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
                     aria-labelledby="orderByDropdown">
                     <li>
-                        <a href="{% query_string o='followers' %}"
+                        <a href="{% querystring o='followers' %}"
                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Followers</a>
                     </li>
                     <li>
-                        <a href="{% query_string o='statuses' %}"
+                        <a href="{% querystring o='statuses' %}"
                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Posts</a>
                     </li>
                     <li>
-                        <a href="{% query_string o='last_status_at' %}"
+                        <a href="{% querystring o='last_status_at' %}"
                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Date of Last Post</a>
                     </li>
                 </ul>
@@ -98,19 +98,19 @@
                         <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
                             aria-labelledby="dropdownRadioButton">
                             <li>
-                                <a href="{% query_string p='daily' %}"
+                                <a href="{% querystring p='daily' %}"
                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last day</a>
                             </li>
                             <li>
-                                <a href="{% query_string p='weekly' %}"
+                                <a href="{% querystring p='weekly' %}"
                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 7 days</a>
                             </li>
                             <li>
-                                <a href="{% query_string p='monthly' %}"
+                                <a href="{% querystring p='monthly' %}"
                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 30 days</a>
                             </li>
                             <li>
-                                <a href="{% query_string p='all' %}"
+                                <a href="{% querystring p='all' %}"
                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">All time</a>
                             </li>
                         {% endif %}
@@ -166,7 +166,7 @@
             <ul class="px-4 -mx-4 text-small ">
                 {% for language in languages %}
                     <li class="m-1 inline-block">
-                        <a href="{% if selected_lang.code != language.code %}{% url language.code %}{% else %}{% url "index" %}{% endif %}{% query_string %}"
+                        <a href="{% if selected_lang.code != language.code %}{% url language.code %}{% else %}{% url "index" %}{% endif %}{% querystring %}"
                            class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 {% if selected_lang.code == language.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
                            role="button">
                             <span class="flex gap-2">
