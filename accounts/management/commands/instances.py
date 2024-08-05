@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from datetime import datetime
 
 import httpx
 from asgiref.sync import async_to_sync
@@ -163,13 +162,54 @@ INSTANCES = {
 logger = logging.getLogger(__name__)
 
 
-def replace_datetime_with_isoformat(data):
-    for key, value in data.items():
-        if isinstance(value, dict):
-            data[key] = replace_datetime_with_isoformat(value)
-        if isinstance(value, datetime):
-            data[key] = value.isoformat()
-    return data
+async def process_instances(instances):
+    async with httpx.AsyncClient() as client:
+        results = await asyncio.gather(*[fetch(client, instance) for instance in instances])
+        for model_instance, instance in results:
+            if not model_instance:
+                continue
+            await Instance.objects.aupdate_or_create(
+                instance=instance,
+                defaults={
+                    k: v
+                    for k, v in model_instance.items()
+                    if k
+                    in {
+                        # Allowlist fields to store:
+                        "domain",
+                        "title",
+                        "version",
+                        "source_url",
+                        "description",
+                        "usage",
+                        "thumbnail",
+                        "languages",
+                        "configuration",
+                        "registrations",
+                        "contact",
+                        "rules",
+                    }
+                },
+            )
+            logger.info("%s ok", instance)
+
+
+async def fetch(client, instance) -> tuple[dict | None, str]:
+    try:
+        response = await client.get(
+            f"https://{instance}/api/v2/instance",
+            timeout=5,
+        )
+    except httpx.HTTPError:
+        logger.error("Http error when indexing %s", instance)
+        return None, instance
+    except Exception as e:
+        logger.error("Unknown error when indexing %s, %s", instance, e)
+        return None, instance
+    if response.status_code != 200:
+        logger.error("Error status code for %s", instance)
+        return None, instance
+    return response.json(), instance
 
 
 class Command(RichCommand):
@@ -193,50 +233,4 @@ class Command(RichCommand):
 
     @async_to_sync
     async def main(self, to_index):
-        async with httpx.AsyncClient() as client:
-            results = await asyncio.gather(*[self.fetch(client, instance) for instance in to_index])
-            for model_instance, instance in results:
-                if not model_instance:
-                    continue
-                await Instance.objects.aupdate_or_create(
-                    instance=instance,
-                    defaults={
-                        k: v
-                        for k, v in model_instance.items()
-                        if k
-                        in {
-                            # Allowlist fields to store:
-                            "domain",
-                            "title",
-                            "version",
-                            "source_url",
-                            "description",
-                            "usage",
-                            "thumbnail",
-                            "languages",
-                            "configuration",
-                            "registrations",
-                            "contact",
-                            "rules",
-                        }
-                    },
-                )
-                logger.info("%s ok", instance)
-
-    async def fetch(self, client, instance) -> tuple[dict | None, str]:
-        try:
-            response = await client.get(
-                f"https://{instance}/api/v2/instance",
-                timeout=5,
-            )
-        except httpx.HTTPError:
-            self.console.print(f"Http error when indexing {instance}")
-            return None, instance
-        except Exception as e:
-            self.console.print(f"Unknown error when indexing {instance}", e)
-            return None, instance
-
-        if response.status_code != 200:
-            self.console.print(f"[bold red]Error status code[/bold red] for {instance}")
-            return None, instance
-        return response.json(), instance
+        await process_instances(to_index)

@@ -8,7 +8,8 @@ from django.db.models.functions import Coalesce
 from django.utils.timezone import make_aware
 from django_rich.management import RichCommand
 
-from accounts.models import Account
+from accounts.management.commands.instances import process_instances
+from accounts.models import Account, Instance
 from confs.models import Conference, ConferenceAccount, ConferencePost, MinId
 from posts.models import Post
 
@@ -48,6 +49,13 @@ class Command(RichCommand):
 
     async def handle_instance(self, instance, conference):
         self.console.print(f"Starting {instance}, {conference.slug}")
+
+        try:
+            instance_model = await Instance.objects.aget(instance=instance)
+        except Instance.DoesNotExist:
+            await process_instances([instance])
+            instance_model = await Instance.objects.aget(instance=instance)
+
         tags = list({tag.strip().replace("#", "").lower() for tag in conference.tags.split(",") if conference.tags})
         min_ids = MinId.objects.filter(conference=conference, instance=instance)
         min_id = min([min_id.min_id async for min_id in min_ids], default="111054552104295026")
@@ -65,7 +73,7 @@ class Command(RichCommand):
                         datetime.now(tz=timezone.utc) - timedelta(days=3)
                     ):
                         min_id_to_save = min_id
-                    await self.process_posts(posts, conference)
+                    await self.process_posts(posts, conference, instance_model)
 
         min_ids = []
         min_ids.append(MinId(conference=conference, instance=instance, min_id=min_id_to_save))
@@ -102,7 +110,7 @@ class Command(RichCommand):
             self.console.print(f"[bold red]Error Unknown[/bold red] for {instance}", e)
             return []
 
-    async def process_posts(self, posts, conference):
+    async def process_posts(self, posts, conference, instance_model):
         unique_accounts = []
         seen_account_ids = set()
         for post in posts:
@@ -140,6 +148,7 @@ class Command(RichCommand):
                     "emojis": account["emojis"],
                     "roles": account.get("roles", []),
                     "fields": account["fields"],
+                    "instance_model": instance_model,
                 }
             )
             for account in unique_accounts
@@ -147,7 +156,7 @@ class Command(RichCommand):
         accounts = await Account.objects.abulk_create(
             accounts,
             update_conflicts=True,
-            update_fields=["last_sync_at", "followers_count", "following_count", "statuses_count"],
+            update_fields=["last_sync_at", "followers_count", "following_count", "statuses_count", "instance_model"],
             unique_fields=["account_id", "instance"],
         )
         account_map = {account.url: account for account in accounts}
