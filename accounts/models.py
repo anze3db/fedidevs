@@ -116,6 +116,7 @@ LANGUAGES = [
 class Account(models.Model):
     account_id = models.TextField()
     instance = models.TextField()
+    instance_model = models.ForeignKey("Instance", on_delete=models.CASCADE, null=True, blank=True)
 
     username = models.TextField()
     acct = models.TextField()
@@ -180,6 +181,8 @@ class Account(models.Model):
 
     @property
     def username_at_instance(self):
+        if self.instance_model:
+            return f"@{self.username}@{self.instance_model.domain}"
         return f"@{self.username}@{self.source}"
 
     @property
@@ -223,3 +226,21 @@ class AccountLookup(models.Model):
     monthly_followers_count = models.IntegerField(default=0)
     monthly_following_count = models.IntegerField(default=0)
     monthly_statuses_count = models.IntegerField(default=0)
+
+
+class Instance(models.Model):
+    instance = models.TextField(unique=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    domain = models.TextField()
+    title = models.TextField()
+    version = models.TextField()
+    source_url = models.URLField(null=True, blank=True)
+    description = models.TextField()
+    usage = models.JSONField(null=True, blank=True)
+    thumbnail = models.JSONField()
+    languages = models.JSONField()
+    configuration = models.JSONField()
+    registrations = models.JSONField()
+    contact = models.JSONField(null=True, blank=True)
+    rules = models.JSONField()

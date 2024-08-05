@@ -6,8 +6,7 @@ from django.views.decorators.cache import cache_page
 from mastodon_auth.models import AccountFollowing
 from stats.models import Daily
 
-from .management.commands.crawler import INSTANCES
-from .models import FRAMEWORKS, LANGUAGES, Account, AccountLookup
+from .models import FRAMEWORKS, LANGUAGES, Account, AccountLookup, Instance
 
 
 def get_lookup_sort_order(order: str, period: str):
@@ -123,7 +122,7 @@ def index(request, lang: str | None = None):
         search_query &= Q(accountlookup__text__icontains=query)
 
     # Annotate the Account model with weekly followers gained from WeeklyAccountChange
-    accounts = Account.objects.select_related("accountlookup").filter(search_query)
+    accounts = Account.objects.select_related("accountlookup", "instance_model").filter(search_query)
     accounts = accounts.order_by(sort_order)
     if request.user.is_authenticated:
         # Annotate whether the current request user is following the account:
@@ -140,6 +139,8 @@ def index(request, lang: str | None = None):
     user_instance = None
     if request.user.is_authenticated:
         user_instance = str(request.user.accountaccess.instance)
+
+    instances = Instance.objects.values_list("instance", flat=True)
 
     return render(
         request,
@@ -161,8 +162,8 @@ def index(request, lang: str | None = None):
             "selected_lang_or_framework": selected_lang or selected_framework,
             "languages": languages,
             "frameworks": frameworks,
-            "instances": INSTANCES,
-            "instances_count": len(INSTANCES),
+            "instances": instances,
+            "instances_count": len(instances),
             "accounts_count": accounts_count,  # TODO might be slow
             "selected_instance": request.session.get("selected_instance") or user_instance,
             "query": query,
@@ -194,6 +195,7 @@ def index(request, lang: str | None = None):
 
 @cache_page(60 * 60 * 24, cache="memory")
 def faq(request):
+    instances = Instance.objects.values_list("instance", flat=True)
     return render(
         request,
         "faq.html",
@@ -202,7 +204,7 @@ def faq(request):
             "page_header": "FEDIDEVS FAQ",
             "page_description": "Frequently Asked Questions",
             "page_image": "faq.png",
-            "instances": INSTANCES,
+            "instances": instances,
             "languages": LANGUAGES,
             "frameworks": FRAMEWORKS,
         },

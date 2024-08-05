@@ -7,76 +7,7 @@ from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils.timezone import make_aware
 from django_rich.management import RichCommand
 
-from accounts.models import Account
-
-INSTANCES = [
-    "aus.social",
-    "awscommunity.social",
-    "c.im",
-    "c3d2.social",
-    "chaos.social",
-    "cloud-native.social",
-    "cyberplace.social",
-    "defcon.social",
-    "discuss.systems",
-    "dotnet.social",
-    "drupal.community",
-    "emacs.ch",
-    "floss.social",
-    "fosstodon.org",
-    "front-end.social",
-    "functional.cafe",
-    "furry.engineer",
-    "genomic.social",
-    "graphics.social",
-    "hachyderm.io",
-    "hometech.social",
-    "indieweb.social",
-    "infosec.exchange",
-    "jvm.social",
-    "k8s.social",
-    "kolektiva.social",
-    "mas.to",
-    "masto.ai",
-    "masto.machlis.com",
-    "mastodon.cloud",
-    "mastodon.gamedev.place",
-    "mastodon.nl",
-    "mastodon.online",
-    "mastodon.social",
-    "mastodon.theorangeone.net",
-    "mastodon.world",
-    "mastodonapp.uk",
-    "mathstodon.xyz",
-    "mementomori.social",
-    "mozilla.social",
-    "mstdn.party",
-    "mstdn.social",
-    "noc.social",
-    "novaloop.social",
-    "ohai.social",
-    "oldbytes.space",
-    "phpc.social",
-    "pouet.chapril.org",
-    "rstats.me",
-    "ruby.social",
-    "scicomm.xyz",
-    "seocommunity.social",
-    "sfba.social",
-    "social.jacklinke.com",
-    "social.juanlu.space",
-    "social.rochacbruno.com",
-    "tech.lgbt",
-    "techhub.social",
-    "technews.social",
-    "techtoots.com",
-    "toot.cafe",
-    "toot.works",
-    "universeodon.com",
-    "vmst.io",
-    # "g33ks.coffee",
-    # "social.kernel.org",
-]
+from accounts.models import Account, Instance
 
 
 class Command(RichCommand):
@@ -119,10 +50,11 @@ class Command(RichCommand):
     ):
         async with httpx.AsyncClient() as client:
             start_time = datetime.now(tz=timezone.utc)
+            instance_models = await Instance.objects.ain_bulk(field_name="instance")
             if instances:
                 to_index = instances.split(",")
             else:
-                to_index = INSTANCES.copy()
+                to_index = [i async for i in Instance.objects.values_list("instance", flat=True)]
             while to_index:
                 now = datetime.now(tz=timezone.utc)
                 results = await asyncio.gather(
@@ -138,6 +70,7 @@ class Command(RichCommand):
                         Account(
                             account_id=account["id"],
                             instance=account["url"].split("/")[2],
+                            instance_model=instance_models.get(instance),
                             username=account["username"],
                             acct=account["acct"],
                             display_name=account["display_name"],
@@ -199,6 +132,7 @@ class Command(RichCommand):
                         "emojis",
                         "roles",
                         "fields",
+                        "instance_model",
                     ],
                 )
                 if fetched_accounts:

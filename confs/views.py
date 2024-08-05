@@ -201,7 +201,7 @@ def conference(request, slug: str):
     conf_posts = (
         ConferencePost.objects.filter(search_query)
         .order_by(order)
-        .prefetch_related("post", "post__account", "post__account__accountlookup")
+        .prefetch_related("post", "post__account", "post__account__accountlookup", "post__account__instance_model")
     )
 
     account_counts = (

@@ -1,7 +1,7 @@
 from django import template
 from django.utils.safestring import mark_safe
 
-from accounts.management.commands.crawler import INSTANCES
+from accounts.models import Instance
 
 register = template.Library()
 
@@ -17,17 +17,10 @@ def render_emojis(msg: str, emoji_list: list[str]):
 
 
 @register.simple_tag
-def render_username_at_instance(account_url: str):
-    # account_url: https://fosstodon.org/@djangocon
-    # return: @djangocon@fosstodon.org
-    instance, username = account_url.replace("https://", "").split("/")
-    return f"{username}@{instance}"
-
-
-@register.simple_tag
 def instances_datalist():
+    instances = Instance.objects.values_list("domain", flat=True)
     res = "<datalist id='instances'>"
-    for instance in INSTANCES:
+    for instance in instances:
         res += f"<option value='{instance}'>"
     res += "</datalist>"
     return mark_safe(res)  # noqa: S308)

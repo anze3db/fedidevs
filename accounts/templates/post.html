@@ -23,7 +23,7 @@
                        class="font-semibold"
                        target="_blank">
                         <span class="flex gap-1 text-ellipsis [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1 text-lg">{% render_emojis post.account.name post.account.emojis %}</span>
-                        <span class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2">@{{ post.account.source }}@{{ post.account.username }}</span>
+                        <span class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2">{{ post.account.username_at_instance }}</span>
                     </a>
                 </div>
             </div>
