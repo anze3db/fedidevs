@@ -112,8 +112,8 @@ def index(request, lang: str | None = None):
     if selected_framework:
         search_query &= Q(accountlookup__language__icontains=selected_framework.code)
 
-    order = request.GET.get("o", "followers")
-    period = request.GET.get("p", "all")
+    order = request.GET.get("o") or "followers"
+    period = request.GET.get("p") or "all"
     query = request.GET.get("q", "").strip()
 
     show_period_dropdown = order != "last_status_at"
