@@ -15,3 +15,6 @@
 .warning {
     @apply  text-yellow-800 border border-yellow-300 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300 dark:border-yellow-800;
 }
+.invisible {
+    display: none;
+}
