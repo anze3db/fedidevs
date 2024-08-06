@@ -6,7 +6,31 @@
     {% if accounts.has_previous %}<meta name="robots" content="none">{% endif %}
 {% endblock head %}
 {% block content %}
-    <section class="mb-8 mr-2 flex gap-4 justify-end">
+    <section class="mb-8 mr-2 flex flex-wrap gap-4 justify-end">
+        {% if account_type == 'human' %}
+            <a href="{% querystring t='' %}"
+               class="inline-flex gap-2 text-sm hover:bg-white dark:hover:bg-gray-800 bg-white shadow-sm dark:bg-gray-800 justify-between items-center px-3 py-1.5 text-gray-900 rounded-lg group bg-gradient-to-br  from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400  focus:ring-pink-200 dark:focus:ring-pink-800 hover:text-white dark:text-white focus:ring-4 focus:outline-none"
+               role="button">
+                <span class="flex gap-2">
+                    <span class="leading-loose">
+                        Human <small class="text-xs"></small>
+                    </span>
+                </span>
+                <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+            </a>
+        {% endif %}
+        {% if account_type == 'project' %}
+            <a href="{% querystring t='' %}"
+               class="inline-flex gap-2 text-sm hover:bg-white dark:hover:bg-gray-800 bg-white shadow-sm dark:bg-gray-800 justify-between items-center px-3 py-1.5 font-medium text-gray-900 rounded-lg group bg-gradient-to-br  from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 focus:ring-cyan-200 dark:focus:ring-cyan-800 hover:text-white dark:text-white focus:ring-4 focus:outline-none"
+               role="button">
+                <span class="flex gap-2">
+                    <span class="leading-loose">
+                        Project <small class="text-xs"></small>
+                    </span>
+                </span>
+                <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+            </a>
+        {% endif %}
         {% if selected_lang_or_framework %}
             <a href="{% url "index" %}{% querystring %}"
                class="inline-flex text-sm gap-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 bg-white shadow-sm dark:bg-gray-800 justify-between items-center px-3 py-1.5"
@@ -162,6 +186,27 @@
             </div>
         </form>
         <section class="mb-8">
+            <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">AI Powered Filters ✨</h2>
+            <ul class="px-4 -mx-4 text-small">
+                <li class=" m-1 inline-block">
+                    <a href="{% if account_type == 'human' %}{% querystring t='' %}{% else %}{% querystring t='human' %}{% endif %}"
+                       class="relative inline-flex items-center justify-center p-0.5 mb-1 me-1 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br  from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400  focus:ring-pink-200 dark:focus:ring-pink-800 hover:text-white dark:text-white focus:ring-4 focus:outline-none text-xs">
+                        <span class="relative p-2.5 transition-all ease-in duration-75 {% if account_type != 'human' %}bg-white dark:bg-gray-900{% endif %} rounded-md group-hover:bg-opacity-0">
+                            Human
+                        </span>
+                    </a>
+                </li>
+                <li class="m-1 inline-block">
+                    <a href="{% if account_type == 'project' %}{% querystring t='' %}{% else %}{% querystring t='project' %}{% endif %}"
+                       class="relative inline-flex items-center justify-center p-0.5 mb-1 me-1 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br  from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 focus:ring-cyan-200 dark:focus:ring-cyan-800 hover:text-white dark:text-white focus:ring-4 focus:outline-none text-xs">
+                        <span class="relative p-2.5 transition-all ease-in duration-75 {% if account_type != 'project' %}bg-white dark:bg-gray-900{% endif %} rounded-md group-hover:bg-opacity-0">
+                            Project
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+        <section class="mb-8">
             <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
                 Programming Language
                 <span class="hidden">{% heroicon_outline 'plus' %}</span>
@@ -199,7 +244,7 @@
             <ul class="px-4 -mx-4">
                 {% for framework in frameworks %}
                     <li class="m-1 inline-block">
-                        <a href="{% if selected_framework.code != framework.code %}{% url framework.code %}{% else %}{% url "index" %}{% endif %}?q={{ query }}&o={{ order }}"
+                        <a href="{% if selected_framework.code != framework.code %}{% url framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring %}"
                            class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if selected_framework.code == framework.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
                            role="button">
                             <span class="flex gap-2">

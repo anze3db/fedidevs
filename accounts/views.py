@@ -171,6 +171,7 @@ def index(request, lang: str | None = None):
             "languages": languages,
             "frameworks": frameworks,
             "instances": instances,
+            "account_type": account_type,
             "instances_count": len(instances),
             "accounts_count": accounts_count,  # TODO might be slow
             "selected_instance": request.session.get("selected_instance") or user_instance,
