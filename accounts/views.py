@@ -116,6 +116,14 @@ def index(request, lang: str | None = None):
     period = request.GET.get("p") or "all"
     query = request.GET.get("q", "").strip()
 
+    account_type = request.GET.get("t") or "human"
+    if account_type == "human":
+        search_query &= Q(accountlookup__account_type="H")
+    elif account_type == "project":
+        search_query &= Q(accountlookup__account_type="P")
+    elif account_type == "unknown":
+        search_query &= Q(accountlookup__account_type="U")
+
     show_period_dropdown = order != "last_status_at"
     sort_order = get_lookup_sort_order(order, period)
     if query:

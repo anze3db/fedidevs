@@ -227,6 +227,14 @@ class AccountLookup(models.Model):
     monthly_following_count = models.IntegerField(default=0)
     monthly_statuses_count = models.IntegerField(default=0)
 
+    class AccountTypes(models.TextChoices):
+        HUMAN = "H"
+        PROJECT = "P"
+        UNKNOWN = "?"
+        NOT_PROCESSED = "!"
+
+    account_type = models.CharField(choices=AccountTypes.choices, default=AccountTypes.NOT_PROCESSED, max_length=1)
+
 
 class Instance(models.Model):
     instance = models.TextField(unique=True)

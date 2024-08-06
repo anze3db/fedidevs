@@ -262,9 +262,14 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": False,
         },
+        "accounts": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
     },
 }
 
+OPENAI_API_KEY = env.str("OPENAI_API_KEY", default=None)
 
 if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
     sentry_sdk.init(
