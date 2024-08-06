@@ -32,6 +32,7 @@ class Command(RichCommand):
         prompt_tokens = 0
         completion_token_price = 0.600 / 1_000_000
         prompt_token_price = 0.150 / 1_000_000
+        processed = 0
         while True:
             accounts_lookup = AccountLookup.objects.filter(account_type="!")[:20]
             if not accounts_lookup:
@@ -69,5 +70,7 @@ class Command(RichCommand):
                 pk_to_al[int(account_id)].account_type = account_type.strip()
                 to_update.add(pk_to_al[int(account_id)])
             AccountLookup.objects.bulk_update(accounts_lookup, ["account_type"])
+            processed += len(to_update)
             logger.info(cnt)
             current_cost(prompt_tokens, completion_tokens, prompt_token_price, completion_token_price)
+            logger.info("Processed %s accounts", processed)
