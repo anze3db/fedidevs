@@ -102,10 +102,12 @@ class Conference(models.Model):
     days = models.TextField(
         default="",
         help_text="Comma seperated list of conference day names, e.g. Tutorials, Tutorials, Talks, Talks",
+        blank=True,
     )  # names for conference days
     day_styles = models.TextField(
         default="",
         help_text="Comma seperated list of style names for each day, e.g. yellow, yellow, red, red, green, green",
+        blank=True,
     )
 
     accounts = models.ManyToManyField("accounts.Account", blank=True, through="ConferenceAccount")
