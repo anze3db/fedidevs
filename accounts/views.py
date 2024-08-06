@@ -116,7 +116,7 @@ def index(request, lang: str | None = None):
     period = request.GET.get("p") or "all"
     query = request.GET.get("q", "").strip()
 
-    account_type = request.GET.get("t") or "human"
+    account_type = request.GET.get("t")
     if account_type == "human":
         search_query &= Q(accountlookup__account_type="H")
     elif account_type == "project":
