@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from datetime import datetime, timedelta, timezone
 
 import httpx
@@ -12,6 +13,8 @@ from accounts.management.commands.instances import process_instances
 from accounts.models import Account, Instance
 from confs.models import Conference, ConferenceAccount, ConferencePost, MinId
 from posts.models import Post
+
+logger = logging.getLogger(__name__)
 
 
 class Command(RichCommand):
@@ -55,6 +58,8 @@ class Command(RichCommand):
         except Instance.DoesNotExist:
             await process_instances([instance])
             instance_model = await Instance.objects.filter(instance=instance).afirst()
+            if instance_model is None:
+                logger.warning("Instance %s not found", instance)
 
         tags = list({tag.strip().replace("#", "").lower() for tag in conference.tags.split(",") if conference.tags})
         min_ids = MinId.objects.filter(conference=conference, instance=instance)
