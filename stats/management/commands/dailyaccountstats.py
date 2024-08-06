@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from django_rich.management import RichCommand
 
-from accounts.models import Account, AccountLookup
+from accounts.models import Account, AccountLookup, Instance
 from stats.models import (
     Daily,
     DailyAccount,
@@ -169,6 +169,16 @@ class Command(RichCommand):
                 "monthly_follows": monthly_follows_cnt,
             },
         )
+        total_instances = Instance.objects.count()
+        instances_today = Instance.objects.filter(created_at__gte=yesterdays_date).count()
+        if instances_today > 0:
+            instances_str = " * " + (
+                "\n                     * ".join(
+                    [f"{instance.domain}" for instance in Instance.objects.filter(created_at__gte=yesterdays_date)]
+                )
+            )
+        else:
+            instances_str = ""
 
         send_mail(
             f"Fedidevs daily stats for {todays_date.date().isoformat()}",
@@ -181,6 +191,9 @@ class Command(RichCommand):
                     Total follows {total_follows}, followed since yesterday {yesterday_total_follows}
                     Weekly follows {weekly_follows_cnt}
                     Monthly follows {monthly_follows_cnt}
+
+                    Total instances {total_instances}, created since yesterday {instances_today}
+                    {instances_str}
 
                     Number of accounts today {today.total_accounts} ({today.total_accounts - yesterday.total_accounts:+})
                     Number of posts today {today.total_posts} ({today.total_posts - yesterday.total_posts:+})
