@@ -30,7 +30,7 @@ class Command(RichCommand):
         processed = 0
         total_accounts = AccountLookup.objects.count()
         while True:
-            accounts_lookup = AccountLookup.objects.filter(account_type="!")[:5]
+            accounts_lookup = AccountLookup.objects.filter(account_type="!").order_by("followers_count")[:5]
             if not accounts_lookup:
                 logger.info("All done!")
                 break
