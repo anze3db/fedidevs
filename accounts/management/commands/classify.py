@@ -41,7 +41,7 @@ class Command(RichCommand):
                     messages=[
                         {
                             "role": "system",
-                            "content": "You are a CSV classifier. The input is Mastodon account text data including a bio, name, and link. You have to figure out if the account is a human or project/company/bot. Classify it as a human (H) if it has a name, surname, hobbies, refers to themselves in singular, uses I or has pronounes set. Classify as project (P) if the account is a project/company/bot and it refers to itself in plural (we) and doesn't have a name/surname. Output only the classification letter nothing else.",
+                            "content": "The input is Mastodon account text data including a bio, name, and link. You have to figure out if the account is a human or project/company/bot. Classify it as a human (H) if it has a name, surname, hobbies, refers to themselves in singular, uses I or has pronounes set. Classify as project (P) if the account is a project/company/bot and it refers to itself in plural (we) and doesn't have a name/surname. Output only the classification letter nothing else.",
                         },
                         {
                             "role": "user",
