@@ -49,7 +49,7 @@ class Command(RichCommand):
             lookup.language = "\n".join(languages)
             lookup.last_status_at = account.last_status_at
             lookup.followers_count = account.followers_count
-            lookup.text = "\n".join([account.note, account.display_name, account.username, account.url])
+            lookup.text = "\n".join([account.display_name, account.username, account.url, account.note])
 
             lookup.statuses_count = account.statuses_count
             lookup.followers_count = account.followers_count
