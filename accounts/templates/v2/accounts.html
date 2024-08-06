@@ -45,10 +45,31 @@
                         </a>
                     {% endif %}
                 </div>
-                <div class="mt-6 mb-4 font-normal text-gray-700 dark:text-gray-400 prose dark:prose-invert text-balance break-words [&_img]:max-h-4 [&_img]:inline-block [&_img]:m-0 line-clamp-6">
+                <div class="mt-6 mb-2 font-normal text-gray-700 dark:text-gray-400 prose dark:prose-invert text-balance break-words [&_img]:max-h-4 [&_img]:inline-block [&_img]:m-0 line-clamp-6">
                     {% render_emojis account.note account.emojis %}
                 </div>
-                <div class="grid grid-cols-3 gap-2 pt-4 mt-8 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">
+                {% if user.is_superuser %}
+                    <div class="text-xs text-gray-600 dark:text-gray-500"
+                         id="switch_account_type">
+                        {% if account.accountlookup.account_type == 'H' %}
+                            <button hx-post="{% url 'switch_account_type' account.accountlookup.pk 'P' %}"
+                                    hx-target="#switch_account_type"
+                                    hx-swap="innerHTML">Switch to Project</button>
+                        {% elif account.accountlookup.account_type == 'P' %}
+                            <button hx-post="{% url 'switch_account_type' account.accountlookup.pk 'H' %}"
+                                    hx-target="#switch_account_type"
+                                    hx-swap="innerHTML">Switch to Human</button>
+                        {% elif account.accountlookup.account_type == '!' %}
+                            <button hx-post="{% url 'switch_account_type' account.accountlookup.pk 'P' %}"
+                                    hx-target="#switch_account_type"
+                                    hx-swap="innerHTML">Switch to Project</button>
+                            <button hx-post="{% url 'switch_account_type' account.accountlookup.pk 'H' %}"
+                                    hx-target="#switch_account_type"
+                                    hx-swap="innerHTML">Switch to Human</button>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                <div class="grid grid-cols-3 gap-2 pt-4 mt-4 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">
                     <div class="flex flex-col gap-0 text-center" title="Last status">
                         <span class="text-xs">Last posted</span>
                         <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">

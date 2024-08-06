@@ -1,6 +1,9 @@
+from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import Paginator
 from django.db.models import Count, Exists, OuterRef, Q
+from django.http import HttpResponse
 from django.shortcuts import render
+from django.urls import reverse
 from django.views.decorators.cache import cache_page
 
 from mastodon_auth.models import AccountFollowing
@@ -199,6 +202,21 @@ def index(request, lang: str | None = None):
                 "terrific",
             ],
         },
+    )
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def switch_account_type(_, accountlookup_id: int, account_type: str):
+    accountlookup = AccountLookup.objects.get(id=accountlookup_id)
+    accountlookup.account_type = account_type
+    accountlookup.save()
+    if account_type == "H":
+        to_switch = "P"
+    else:
+        to_switch = "H"
+
+    return HttpResponse(
+        f"""<button hx-post="{reverse("switch_account_type", args=[accountlookup_id, to_switch])}" hx-target="#switch_account_type" hx-swap="innerHTML">Switch to {"Human" if to_switch == 'H' else "Project"}</button>"""
     )
 
 
