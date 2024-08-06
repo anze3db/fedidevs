@@ -54,7 +54,7 @@ class Command(RichCommand):
             instance_model = await Instance.objects.aget(instance=instance)
         except Instance.DoesNotExist:
             await process_instances([instance])
-            instance_model = await Instance.objects.aget(instance=instance)
+            instance_model = await Instance.objects.filter(instance=instance).afirst()
 
         tags = list({tag.strip().replace("#", "").lower() for tag in conference.tags.split(",") if conference.tags})
         min_ids = MinId.objects.filter(conference=conference, instance=instance)
