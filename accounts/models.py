@@ -231,6 +231,7 @@ class AccountLookup(models.Model):
 class Instance(models.Model):
     instance = models.TextField(unique=True)
     updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     domain = models.TextField()
     title = models.TextField()
