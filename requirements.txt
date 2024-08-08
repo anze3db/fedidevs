@@ -29,7 +29,7 @@ click==8.1.7
     #   trogon
 colorama==0.4.6
     # via djlint
-coverage[toml]==7.6.0
+coverage[toml]==7.6.1
     # via
     #   django-coverage-plugin
     #   pytest-cov
@@ -37,7 +37,7 @@ cssbeautifier==1.15.1
     # via djlint
 decorator==5.1.1
     # via mastodon-py
-django==5.1rc1
+django==5.1
     # via
     #   -r requirements.in
     #   django-browser-reload
@@ -86,7 +86,7 @@ gunicorn==22.0.0
     # via -r requirements.in
 h11==0.14.0
     # via httpcore
-heroicons[django]==2.6.0
+heroicons[django]==2.7.0
     # via -r requirements.in
 html-tag-names==0.1.2
     # via djlint
@@ -161,7 +161,7 @@ python-dotenv==1.0.1
     # via flakytest
 python-magic==0.4.27
     # via mastodon-py
-pyyaml==6.0.1
+pyyaml==6.0.2
     # via djlint
 redis==5.0.8
     # via dramatiq
@@ -174,7 +174,7 @@ rich==13.7.1
     #   -r requirements.in
     #   django-rich
     #   textual
-ruff==0.5.5
+ruff==0.5.7
     # via -r requirements.in
 schedule==1.2.2
     # via -r requirements.in
@@ -196,11 +196,11 @@ sqlparse==0.5.1
     # via
     #   django
     #   django-debug-toolbar
-textual[syntax]==0.74.0
+textual[syntax]==0.75.1
     # via
     #   django-tui
     #   trogon
-tqdm==4.66.4
+tqdm==4.66.5
     # via djlint
 tree-sitter==0.20.4
     # via
@@ -227,13 +227,13 @@ watchdog==4.0.1
     #   watchdog-gevent
 watchdog-gevent==0.2.0
     # via dramatiq
-wheel==0.43.0
+wheel==0.44.0
     # via pip-tools
 whitenoise==6.7.0
     # via -r requirements.in
 zope-event==5.0
     # via gevent
-zope-interface==6.4.post2
+zope-interface==7.0.1
     # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:
