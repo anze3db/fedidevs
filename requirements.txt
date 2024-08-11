@@ -82,7 +82,7 @@ gevent==24.2.1
     # via watchdog-gevent
 greenlet==3.0.3
     # via gevent
-gunicorn==22.0.0
+gunicorn==23.0.0
     # via -r requirements.in
 h11==0.14.0
     # via httpcore
@@ -196,7 +196,7 @@ sqlparse==0.5.1
     # via
     #   django
     #   django-debug-toolbar
-textual[syntax]==0.75.1
+textual[syntax]==0.76.0
     # via
     #   django-tui
     #   trogon
@@ -221,7 +221,7 @@ urllib3==2.2.2
     #   flakytest
     #   requests
     #   sentry-sdk
-watchdog==4.0.1
+watchdog==4.0.2
     # via
     #   dramatiq
     #   watchdog-gevent
