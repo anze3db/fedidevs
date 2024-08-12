@@ -106,7 +106,7 @@ class Conference(models.Model):
     )  # names for conference days
     day_styles = models.TextField(
         default="",
-        help_text="Comma seperated list of style names for each day, e.g. yellow, yellow, red, red, green, green",
+        help_text="Comma seperated list of style names for each day, e.g. blue, blue, red, red, green, green (if not color is set the day will be purple)",
         blank=True,
     )
 
