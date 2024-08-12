@@ -3110,12 +3110,37 @@ select {
   text-align: right;
 }
 
+.\[\&\>img\]\:m-0>img {
+  margin: 0px;
+}
+
+.\[\&\>img\]\:m-1>img {
+  margin: 0.25rem;
+}
+
+.\[\&\>img\]\:my-1>img {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
 .\[\&\>img\]\:mt-1>img {
   margin-top: 0.25rem;
 }
 
+.\[\&\>img\]\:h-4>img {
+  height: 1rem;
+}
+
 .\[\&\>img\]\:max-h-4>img {
   max-height: 1rem;
+}
+
+.\[\&\>img\]\:max-h-1>img {
+  max-height: 0.25rem;
+}
+
+.\[\&\>img\]\:w-4>img {
+  width: 1rem;
 }
 
 .\[\&\>img\]\:max-w-4>img {
@@ -3124,6 +3149,14 @@ select {
 
 .\[\&\>img\]\:max-w-8>img {
   max-width: 2rem;
+}
+
+.\[\&\>img\]\:max-w-1>img {
+  max-width: 0.25rem;
+}
+
+.\[\&\>img\]\:pt-0>img {
+  padding-top: 0px;
 }
 
 .\[\&\>svg\]\:h-4>svg {

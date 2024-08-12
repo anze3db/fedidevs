@@ -142,7 +142,7 @@ def conference(request, slug: str):
         search_query = Q(
             conference=conference,
         )
-    all_conf_posts_count = ConferencePost.objects.filter(search_query).count()
+
     order = request.GET.get("o")
     if not order:
         order = request.GET.get("order")
@@ -158,6 +158,7 @@ def conference(request, slug: str):
     if date and (date := parse_date(date)):
         search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
 
+    all_conf_posts_count = ConferencePost.objects.filter(search_query).count()
     if order not in ("-favourites_count", "-reblogs_count", "-replies_count", "-created_at"):
         if conference.start_date <= timezone.now().date() <= conference.end_date:
             order = "-created_at"
@@ -221,14 +222,14 @@ def conference(request, slug: str):
         request,
         "conference.html" if "HX-Request" not in request.headers else "conference.html#posts-partial",
         {
-            "page_title": f"{conference.name}: Explore {all_conf_posts_count} Mastodon Posts & Conference Highlights",
+            "page_title": f"{conference.name}: Explore {ConferencePost.objects.filter(conference=conference).count()} Mastodon Posts & Conference Highlights",
             "page": "conferences",
             # Conference header is conference.name and year
             "page_header": conference.name + " " + conference.start_date.strftime("%Y"),
             "page_header_color": "red",
             "primary_tag": next(tag for tag in conference.tags.split(",") if tag),
             "page_subheader": f"{conference.start_date.strftime('%b %d')} - {conference.end_date.strftime('%b %d, %Y')}",
-            "page_description": "Aggregated posts from the Fediverse about " + conference.name,
+            "page_description": "Mastodon posts about " + conference.name,
             "page_image": "og-conferences.png",
             "page_url": reverse("conference", kwargs={"slug": conference.slug}),
             "conference": conference,
@@ -237,10 +238,12 @@ def conference(request, slug: str):
             "selected_instance": user_instance,
             "slug": slug,
             "account_id": account_id,
+            "current_account": next((account for account in account_counts if account.account.id == account_id), None),
             "order_display": get_order_display(order),
             "dates": dates,
             "all_conf_posts_count": all_conf_posts_count,
             "posts_date": date,
+            "current_date": next((d for d in dates if d["value"] == date), None),
             "order": order,
             "is_superuser": request.user.is_superuser,
         },
