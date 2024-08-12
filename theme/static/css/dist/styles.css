@@ -1747,6 +1747,10 @@ select {
   max-width: 42rem;
 }
 
+.max-w-xl {
+  max-width: 36rem;
+}
+
 .flex-1 {
   flex: 1 1 0%;
 }
@@ -1939,6 +1943,10 @@ select {
 
 .break-words {
   overflow-wrap: break-word;
+}
+
+.break-all {
+  word-break: break-all;
 }
 
 .rounded-2xl {
@@ -3177,4 +3185,12 @@ select {
 
 .\[\&_img\]\:max-h-5 img {
   max-height: 1.25rem;
+}
+
+.\[\&_p\]\:break-words p {
+  overflow-wrap: break-word;
+}
+
+.\[\&p\]\:break-wordsp {
+  overflow-wrap: break-word;
 }
