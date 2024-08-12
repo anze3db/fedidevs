@@ -142,6 +142,7 @@ def conference(request, slug: str):
         search_query = Q(
             conference=conference,
         )
+    all_conf_posts_count = ConferencePost.objects.filter(search_query).count()
     order = request.GET.get("o")
     if not order:
         order = request.GET.get("order")
@@ -152,8 +153,6 @@ def conference(request, slug: str):
         account_id = None
     if account_id:
         search_query &= Q(account_id=account_id)
-
-    all_conf_posts_count = ConferencePost.objects.filter(search_query).count()
 
     date = request.GET.get("date") or None
     if date and (date := parse_date(date)):
@@ -222,11 +221,12 @@ def conference(request, slug: str):
         request,
         "conference.html" if "HX-Request" not in request.headers else "conference.html#posts-partial",
         {
-            "page_title": f"{conference.name} | Fediverse Developers",
+            "page_title": f"{conference.name}: Explore {all_conf_posts_count} Mastodon Posts & Conference Highlights",
             "page": "conferences",
             # Conference header is conference.name and year
             "page_header": conference.name + " " + conference.start_date.strftime("%Y"),
             "page_header_color": "red",
+            "primary_tag": next(tag for tag in conference.tags.split(",") if tag),
             "page_subheader": f"{conference.start_date.strftime('%b %d')} - {conference.end_date.strftime('%b %d, %Y')}",
             "page_description": "Aggregated posts from the Fediverse about " + conference.name,
             "page_image": "og-conferences.png",
