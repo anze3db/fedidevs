@@ -8,17 +8,33 @@
 {% block content %}
     <main class="flex justify-center">
         <article>
-            <section class="mb-8 mr-2 flex gap-4 justify-end">
-                {% comment %} {% if posts_date %}
-            <a href="{% url 'conference' slug %}{% querystring date=None %}" class="inline-flex text-sm gap-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 bg-white shadow-sm dark:bg-gray-800 justify-between items-center px-3 py-1.5" role="button">
-                <span class="flex gap-2">
-                    <span class="leading-loose">
-                        {{ posts_date }} <small class="text-xs"></small>
-                    </span>
-                </span>
-                <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
-            </a>
-                {% endif %} {% endcomment %}
+            <section class="mb-8 mr-2 flex flex-wrap gap-4 justify-end">
+                {% if current_date %}
+                    <a href="{% url 'conference' slug %}{% querystring date=None %}"
+                       class="relative inline-flex items-center justify-center overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br {% if current_date.count == 0 %} from-gray-400 to-gray-300 dark:from-gray-600 dark:to-gray-800 group-hover:from-gray-500 group-hover:to-gray-500 focus:ring-gray-200 dark:focus:ring-gray-800 {% else %} {% if current_date.day_style == 'blue' %} from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 focus:ring-cyan-200 dark:focus:ring-cyan-800 {% elif current_date.day_style == 'red' %} from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400  focus:ring-pink-200 dark:focus:ring-pink-800 {% elif current_date.day_style == 'green' %} from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600  focus:ring-green-200 dark:focus:ring-green-800 {% else %} from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500  focus:ring-purple-200 dark:focus:ring-purple-800 {% endif %} {% endif %} hover:text-white dark:text-white focus:ring-4 focus:outline-none text-xs"
+                       role="button">
+                        <span class="relative p-2.5 transition-all ease-in duration-75 rounded-md group-hover:bg-opacity-0">
+                            {{ current_date.pre_display }} ({{ current_date.count }})
+                        </span>
+                        <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                    </a>
+                {% endif %}
+                {% if current_account %}
+                    <a href="{% url 'conference' slug %}{% querystring account=None %}"
+                       role="button"
+                       class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 bg-white shadow-sm dark:bg-gray-800 justify-between items-center">
+                        <img src="{{ current_account.account.avatar }}"
+                             alt="{{ current_account.account.login }}"
+                             width="50"
+                             loading="lazy"
+                             height="50"
+                             class="h-6 w-6 rounded-full mr-1" />
+                        <span class="flex gap-1 [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1">{% render_emojis current_account.account.name current_account.account.emojis %} ({{ current_account.count }})</span>
+                        {% if account_id == current_account.account.id %}
+                            <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                        {% endif %}
+                    </a>
+                {% endif %}
                 <div class="inline-flex rounded-md shadow-sm" role="group">
                     <button id="orderByDropdown"
                             data-dropdown-toggle="orderByMenu"
