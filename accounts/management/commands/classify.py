@@ -93,7 +93,7 @@ class Command(RichCommand):
             else:
                 account_lookup.follower_type = "P"
                 peasants += 1
-        AccountLookup.objects.bulk_update(to_update, ["follower_type"])
+        AccountLookup.objects.bulk_update(to_update, ["follower_type"], batch_size=100)
         logger.info(
             "Processed %s accounts\nCelebreties: %s\nBest: %s\nPeasants: %s\n",
             total_accounts_for_following,
