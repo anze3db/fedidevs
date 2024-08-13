@@ -28,9 +28,9 @@ class Command(RichCommand):
         completion_token_price = 0.600 / 1_000_000
         prompt_token_price = 0.150 / 1_000_000
         processed = 0
-        total_accounts = AccountLookup.objects.filter(account_type="s").count()
+        total_accounts = AccountLookup.objects.filter(account_type="!").count()
         while True:
-            accounts_lookup = AccountLookup.objects.filter(account_type="s").order_by("-followers_count")[:5]
+            accounts_lookup = AccountLookup.objects.filter(account_type="!").order_by("-followers_count")[:5]
             if not accounts_lookup:
                 logger.info("All done!")
                 break
