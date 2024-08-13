@@ -23,6 +23,8 @@ class Command(RichCommand):
         management.call_command("findinstances")
         self.console.print("Running stattag")
         management.call_command("stattag")
+        self.console.print("Running classify")
+        management.call_command("classify")
         self.console.print("Running stats")
         management.call_command("dailystats")
         management.call_command("dailyaccountstats")
