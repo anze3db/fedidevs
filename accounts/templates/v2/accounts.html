@@ -1,9 +1,9 @@
 {% load account_extras %}
 {% load static %}
 {% load humanize %}
-<div class="max-w-2xl">
+<div class="max-w-4xl">
     {% for account in accounts %}
-        <div class="w-full p-3 mb-12 bg-white shadow-md rounded-2xl dark:bg-gray-800 break-inside-avoid-column">
+        <div class="p-3 mb-12 bg-white shadow-md rounded-2xl dark:bg-gray-800 break-inside-avoid-column">
             <div class="relative rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 min-h-24 -z-0">
                 <div class="absolute flex flex-row gap-4 p-3 bg-white rounded-bl-xl dark:bg-gray-800 -top-2 -right-2">
                     {% for language in account.languages %}
@@ -69,7 +69,7 @@
                         {% endif %}
                     </div>
                 {% endif %}
-                <div class="grid grid-cols-3 gap-2 pt-4 mt-4 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">
+                <div class="grid grid-cols-4 gap-2 pt-4 mt-4 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">
                     <div class="flex flex-col gap-0 text-center" title="Last status">
                         <span class="text-xs">Last posted</span>
                         <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
@@ -108,8 +108,28 @@
                             {% endif %}
                         </span>
                     </div>
+                    <div class="flex flex-col gap-0 text-center" title="Following">
+                        <span class="text-xs">Following</span>
+                        <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
+                            {% if sort_order == '-accountlookup__daily_following_count' %}
+                                <span class="{% if account.accountlookup.daily_following_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.daily_following_count | intcomma }}</span>
+                            {% elif sort_order == '-accountlookup__weekly_following_count' %}
+                                <span class="{% if account.accountlookup.weekly_following_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.weekly_following_count | intcomma }}</span>
+                            {% elif sort_order == '-accountlookup__monthly_following_count' %}
+                                <span class="{% if account.accountlookup.monthly_following_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.monthly_following_count | intcomma }}</span>
+                            {% elif sort_order == '-accountlookup__following_count' %}
+                                <span>▼ {{ account.accountlookup.following_count | intcomma }}</span>
+                            {% else %}
+                                <span>{{ account.accountlookup.following_count | intcomma }}</span>
+                            {% endif %}
+                        </span>
+                    </div>
                 </div>
             </div>
+        </div>
+    {% empty %}
+        <div class="prose dark:prose-invert">
+            No accounts found. <a href="{% url 'index' %}">Reset the filters</a>.
         </div>
     {% endfor %}
 </div>

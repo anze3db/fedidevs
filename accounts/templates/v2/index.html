@@ -8,27 +8,45 @@
 {% block content %}
     <main class="flex justify-center">
         <article>
-            <section class="mb-8 mr-2 flex flex-wrap gap-4 justify-end">
+            <section class="mb-8 flex flex-wrap gap-4 justify-end">
+                {% if follower_type == 'best' %}
+                    <a href="{% if follower_type == 'best' %}{% querystring f='' %}{% else %}{% querystring f='best' %}{% endif %}"
+                       class="purple-to-blue-btn group"
+                       role="button">
+                        <span class="relative p-2.5 transition-all ease-in duration-75 rounded-md group-hover:bg-opacity-0">Best</span>
+                        <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                    </a>
+                {% endif %}
+                {% if follower_type == 'celebrity' %}
+                    <a href="{% querystring f='' %}"
+                       class="purple-to-pink-btn group"
+                       role="button">
+                        <span class="relative p-2.5 transition-all ease-in duration-75 rounded-md group-hover:bg-opacity-0">Celebrity</span>
+                        <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                    </a>
+                {% endif %}
                 {% if account_type == 'human' %}
                     <a href="{% querystring t='' %}"
-                       class="inline-flex gap-2 text-sm hover:bg-white dark:hover:bg-gray-800 bg-white shadow-sm dark:bg-gray-800 justify-between items-center px-3 py-1.5 text-gray-900 rounded-lg group bg-gradient-to-br  from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400  focus:ring-pink-200 dark:focus:ring-pink-800 hover:text-white dark:text-white focus:ring-4 focus:outline-none"
+                       class="pink-to-orange-btn group"
                        role="button">
-                        <span class="flex gap-2">
-                            <span class="leading-loose">
-                                Human <small class="text-xs"></small>
-                            </span>
-                        </span>
+                        <span class="relative p-2.5 transition-all ease-in duration-75 rounded-md group-hover:bg-opacity-0">Human</span>
                         <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
                     </a>
                 {% endif %}
                 {% if account_type == 'project' %}
                     <a href="{% querystring t='' %}"
-                       class="inline-flex gap-2 text-sm hover:bg-white dark:hover:bg-gray-800 bg-white shadow-sm dark:bg-gray-800 justify-between items-center px-3 py-1.5 font-medium text-gray-900 rounded-lg group bg-gradient-to-br  from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 focus:ring-cyan-200 dark:focus:ring-cyan-800 hover:text-white dark:text-white focus:ring-4 focus:outline-none"
+                       class="cyan-to-blue-btn group"
                        role="button">
-                        <span class="flex gap-2">
-                            <span class="leading-loose">
-                                Project <small class="text-xs"></small>
-                            </span>
+                        <span class="relative p-2.5 transition-all ease-in duration-75 rounded-md group-hover:bg-opacity-0">Project</span>
+                        <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                    </a>
+                {% endif %}
+                {% if posted == 'recently' %}
+                    <a href="{% querystring post='' %}"
+                       class="green-to-blue-btn group"
+                       role="button">
+                        <span class="relative p-2.5 transition-all ease-in duration-75 rounded-md group-hover:bg-opacity-0">
+                            Recently posted
                         </span>
                         <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
                     </a>
@@ -78,6 +96,10 @@
                             <li>
                                 <a href="{% querystring o='followers' %}"
                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Followers</a>
+                            </li>
+                            <li>
+                                <a href="{% querystring o='following' %}"
+                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Following</a>
                             </li>
                             <li>
                                 <a href="{% querystring o='statuses' %}"
@@ -190,21 +212,49 @@
             </div>
         </form>
         <section class="mb-8">
-            <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">AI Powered Filters ✨</h2>
+            <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">Smart Filters ✨</h2>
             <ul class="px-4 -mx-4 text-small">
-                <li class=" m-1 inline-block">
+                <li class="me-2 mb-2 inline-block">
+                    <a href="{% if follower_type == 'best' %}{% querystring f='' %}{% else %}{% querystring f='best' %}{% endif %}"
+                       class="purple-to-blue-btn group">
+                        <span class="relative p-2.5 transition-all ease-in duration-75 {% if follower_type != 'best' %}bg-white dark:bg-gray-900{% endif %} rounded-md group-hover:bg-opacity-0">
+                            Best
+                        </span>
+                    </a>
+                </li>
+                <li class="me-2 mb-2 inline-block">
+                    <a href="{% if follower_type == 'celebrity' %}{% querystring f='' %}{% else %}{% querystring f='celebrity' %}{% endif %}"
+                       class="purple-to-pink-btn group">
+                        <span class="relative p-2.5 transition-all ease-in duration-75 {% if follower_type != 'celebrity' %}bg-white dark:bg-gray-900{% endif %} rounded-md group-hover:bg-opacity-0">
+                            Celebrity
+                        </span>
+                    </a>
+                </li>
+            </ul>
+            <ul class="px-4 -mx-4 text-small">
+                <li class="me-2 mb-2 inline-block">
                     <a href="{% if account_type == 'human' %}{% querystring t='' %}{% else %}{% querystring t='human' %}{% endif %}"
-                       class="relative inline-flex items-center justify-center p-0.5 mb-1 me-1 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br  from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400  focus:ring-pink-200 dark:focus:ring-pink-800 hover:text-white dark:text-white focus:ring-4 focus:outline-none text-xs">
+                       class="pink-to-orange-btn group">
                         <span class="relative p-2.5 transition-all ease-in duration-75 {% if account_type != 'human' %}bg-white dark:bg-gray-900{% endif %} rounded-md group-hover:bg-opacity-0">
                             Human
                         </span>
                     </a>
                 </li>
-                <li class="m-1 inline-block">
+                <li class="me-2 mb-2 inline-block">
                     <a href="{% if account_type == 'project' %}{% querystring t='' %}{% else %}{% querystring t='project' %}{% endif %}"
-                       class="relative inline-flex items-center justify-center p-0.5 mb-1 me-1 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br  from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 focus:ring-cyan-200 dark:focus:ring-cyan-800 hover:text-white dark:text-white focus:ring-4 focus:outline-none text-xs">
+                       class="cyan-to-blue-btn group">
                         <span class="relative p-2.5 transition-all ease-in duration-75 {% if account_type != 'project' %}bg-white dark:bg-gray-900{% endif %} rounded-md group-hover:bg-opacity-0">
                             Project
+                        </span>
+                    </a>
+                </li>
+            </ul>
+            <ul>
+                <li class="me-2 mb-2 inline-block">
+                    <a href="{% if posted == 'recently' %}{% querystring post='' %}{% else %}{% querystring post='recently' %}{% endif %}"
+                       class="green-to-blue-btn mb-2 group">
+                        <span class="relative p-2.5 transition-all ease-in duration-75 {% if posted != 'recently' %}bg-white dark:bg-gray-900{% endif %} rounded-md group-hover:bg-opacity-0">
+                            Recently posted
                         </span>
                     </a>
                 </li>

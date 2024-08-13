@@ -235,6 +235,12 @@ class AccountLookup(models.Model):
 
     account_type = models.CharField(choices=AccountTypes.choices, default=AccountTypes.NOT_PROCESSED, max_length=1)
 
+    class FollowerTypes(models.TextChoices):
+        CELEBRITY = "C"
+        BEST = "B"
+
+    follower_type = models.CharField(choices=FollowerTypes.choices, default=FollowerTypes.BEST, max_length=1)
+
 
 class Instance(models.Model):
     instance = models.TextField(unique=True)

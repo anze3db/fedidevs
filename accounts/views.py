@@ -1,9 +1,12 @@
+import datetime as dt
+
 from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import Paginator
 from django.db.models import Count, Exists, OuterRef, Q
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.cache import cache_page
 
 from mastodon_auth.models import AccountFollowing
@@ -19,6 +22,7 @@ def get_lookup_sort_order(order: str, period: str):
 
     if order not in (
         "followers",
+        "following",
         "statuses",
     ) or period not in (
         "daily",
@@ -40,6 +44,8 @@ def get_display_strings(order: str, period: str):
         res["order"] = "Date of Last Post"
     elif order == "statuses":
         res["order"] = "Posts"
+    elif order == "following":
+        res["order"] = "Following"
     else:
         res["order"] = "Followers"
 
@@ -124,8 +130,16 @@ def index(request, lang: str | None = None):
         search_query &= Q(accountlookup__account_type="H")
     elif account_type == "project":
         search_query &= Q(accountlookup__account_type="P")
-    elif account_type == "unknown":
-        search_query &= Q(accountlookup__account_type="U")
+
+    follower_type = request.GET.get("f")
+    if follower_type == "celebrity":
+        search_query &= Q(accountlookup__follower_type="C")
+    elif follower_type == "best":
+        search_query &= Q(accountlookup__follower_type="B")
+
+    posted = request.GET.get("post")
+    if posted == "recently":
+        search_query &= Q(accountlookup__last_status_at__gte=timezone.now() - dt.timedelta(days=7))
 
     show_period_dropdown = order != "last_status_at"
     sort_order = get_lookup_sort_order(order, period)
@@ -175,6 +189,8 @@ def index(request, lang: str | None = None):
             "frameworks": frameworks,
             "instances": instances,
             "account_type": account_type,
+            "follower_type": follower_type,
+            "posted": posted,
             "instances_count": len(instances),
             "accounts_count": accounts_count,  # TODO might be slow
             "selected_instance": request.session.get("selected_instance") or user_instance,
