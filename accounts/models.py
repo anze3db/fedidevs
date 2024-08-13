@@ -238,8 +238,10 @@ class AccountLookup(models.Model):
     class FollowerTypes(models.TextChoices):
         CELEBRITY = "C"
         BEST = "B"
+        PEASANT = "P"
+        UNKNONW = "?"
 
-    follower_type = models.CharField(choices=FollowerTypes.choices, default=FollowerTypes.BEST, max_length=1)
+    follower_type = models.CharField(choices=FollowerTypes.choices, default=FollowerTypes.UNKNONW, max_length=1)
 
 
 class Instance(models.Model):

@@ -28,9 +28,9 @@ class Command(RichCommand):
         completion_token_price = 0.600 / 1_000_000
         prompt_token_price = 0.150 / 1_000_000
         processed = 0
-        total_accounts = AccountLookup.objects.count()
+        total_accounts = AccountLookup.objects.filter(account_type="s").count()
         while True:
-            accounts_lookup = AccountLookup.objects.filter(account_type="!").order_by("-followers_count")[:5]
+            accounts_lookup = AccountLookup.objects.filter(account_type="s").order_by("-followers_count")[:5]
             if not accounts_lookup:
                 logger.info("All done!")
                 break
@@ -64,9 +64,40 @@ class Command(RichCommand):
             cur_cst = current_cost(prompt_tokens, completion_tokens, prompt_token_price, completion_token_price)
 
             logger.info(
-                "Processed %s accounts\ntotal_cost: %.6f\ncost per account: %.6f\nExpected total cost: %.6f",
+                "Processed %s accounts\ntotal_cost: %.6f\nExpected total cost: %.6f",
                 processed,
                 cur_cst,
-                cur_cst / processed,
                 (cur_cst / processed) * total_accounts,
             )
+
+        total_accounts_for_following = AccountLookup.objects.filter(follower_type="?").count()
+        celebrities = 0
+        best = 0
+        peasants = 0
+        for account_lookup in (to_update := AccountLookup.objects.filter(follower_type="?")):
+            try:
+                follower_ratio = account_lookup.followers_count / account_lookup.following_count
+            except ZeroDivisionError:
+                follower_ratio = 0
+
+            if account_lookup.followers_count > 2000 and follower_ratio > 10:
+                account_lookup.follower_type = "C"
+                celebrities += 1
+            elif (
+                account_lookup.followers_count > 100
+                and account_lookup.following_count > 100
+                and 0.5 < follower_ratio < 4
+            ):
+                account_lookup.follower_type = "B"
+                best += 1
+            else:
+                account_lookup.follower_type = "P"
+                peasants += 1
+        AccountLookup.objects.bulk_update(to_update, ["follower_type"])
+        logger.info(
+            "Processed %s accounts\nCelebreties: %s\nBest: %s\nPeasants: %s\n",
+            total_accounts_for_following,
+            celebrities,
+            best,
+            peasants,
+        )
