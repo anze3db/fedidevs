@@ -1529,6 +1529,18 @@ select {
   margin-top: 1.5rem;
 }
 
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-0 {
+  margin-top: 0px;
+}
+
+.mt-0\.5 {
+  margin-top: 0.125rem;
+}
+
 .line-clamp-4 {
   overflow: hidden;
   display: -webkit-box;
@@ -2263,6 +2275,10 @@ select {
 
 .pt-8 {
   padding-top: 2rem;
+}
+
+.pt-2 {
+  padding-top: 0.5rem;
 }
 
 .text-left {
@@ -3421,6 +3437,10 @@ html {
 
   .md\:hidden {
     display: none;
+  }
+
+  .md\:h-60 {
+    height: 15rem;
   }
 
   .md\:w-60 {
