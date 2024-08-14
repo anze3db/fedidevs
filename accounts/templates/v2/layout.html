@@ -124,7 +124,7 @@
                             <span>FEDIDEVS</span>
                         </a>
                     </h1>
-                    <h2 class="block md:hidden text-3xl font-semibold text-transparent bg-clip-text {% if page_header_color == 'red' %} bg-gradient-to-r from-pink-500 to-orange-400 {% elif page_header_color == 'green' %} bg-gradient-to-r from-green-400 to-blue-600 {% elif page_header_color == 'blue' %} bg-gradient-to-r from-cyan-500 to-blue-500 {% else %} text-black dark:text-white {% endif %} ">
+                    <h2 class="block md:hidden text-3xl font-semibold {% if page_header_color %}text-transparent bg-clip-text{% endif %} {% if page_header_color == 'red' %} bg-gradient-to-r from-pink-500 to-orange-400 {% elif page_header_color == 'green' %} bg-gradient-to-r from-green-400 to-blue-600 {% elif page_header_color == 'blue' %} bg-gradient-to-r from-cyan-500 to-blue-500 {% else %} text-black dark:text-white {% endif %} ">
                         {{ page_header }}
                     </h2>
                     <nav class="hidden md:flex gap-2 sm:gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
