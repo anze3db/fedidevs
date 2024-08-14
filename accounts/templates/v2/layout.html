@@ -114,14 +114,14 @@
                             </path>
                         </svg>
                     </button>
-                    <h1 class="text-3xl font-bold w-8 hidden md:block md:w-60">
-                        <a class="flex gap-4" href="{% url 'index' %}">
+                    <h1 class="text-2xl w-8 hidden md:block md:w-60">
+                        <a class="flex gap-2" href="{% url 'index' %}">
                             <img src="{% static 'logo.png' %}"
                                  alt="logo"
-                                 class="w-8 h-8 mt-0.5"
+                                 class="w-8 h-8"
                                  width="32"
                                  height="32">
-                            <span class="hidden md:block">FEDIDEVS</span>
+                            <span>FEDIDEVS</span>
                         </a>
                     </h1>
                     <h2 class="block md:hidden text-3xl font-semibold text-transparent bg-clip-text {% if page_header_color == 'red' %} bg-gradient-to-r from-pink-500 to-orange-400 {% elif page_header_color == 'green' %} bg-gradient-to-r from-green-400 to-blue-600 {% elif page_header_color == 'blue' %} bg-gradient-to-r from-cyan-500 to-blue-500 {% else %} text-black dark:text-white {% endif %} ">
