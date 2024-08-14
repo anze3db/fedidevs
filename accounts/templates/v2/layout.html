@@ -62,7 +62,7 @@
                 data-domain="fedidevs.com"
                 src="https://plausible.io/js/script.tagged-events.js"></script>
     </head>
-    <body class="min-h-screen bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-white"
+    <body class="min-h-screen bg-gray-100 dark:bg-gray-950 text-black dark:text-white"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <div class="fixed top-4 right-4 z-50">
             {% for message in messages %}
@@ -96,93 +96,92 @@
                 </div>
             {% endfor %}
         </div>
-        <nav class="fixed top-0 z-40 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700 top-bar">
-            <div class="z-50 flex fixed w-full top-0 backdrop-blur bg-gray-100/[0.5] dark:bg-gray-950/[0.5] px-4 sm:px-12 py-4 flex-row justify-between items-center">
-                <div class="flex items-center flex-1 gap-4 sm:gap-8 overflow-hidden">
-                    <button data-drawer-target="logo-sidebar"
-                            data-drawer-toggle="logo-sidebar"
-                            aria-controls="logo-sidebar"
-                            type="button"
-                            class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-                        <span class="sr-only">Open sidebar</span>
-                        <svg class="w-6 h-6"
-                             aria-hidden="true"
-                             fill="currentColor"
-                             viewBox="0 0 20 20"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
-                            </path>
-                        </svg>
-                    </button>
-                    <h1 class="text-2xl w-8 hidden md:block md:w-60">
-                        <a class="flex gap-2" href="{% url 'index' %}">
-                            <img src="{% static 'logo.png' %}"
-                                 alt="logo"
-                                 class="w-8 h-8"
-                                 width="32"
-                                 height="32">
-                            <span>FEDIDEVS</span>
-                        </a>
-                    </h1>
-                    <h2 class="block md:hidden text-3xl font-semibold {% if page_header_color %}text-transparent bg-clip-text{% endif %} {% if page_header_color == 'red' %} bg-gradient-to-r from-pink-500 to-orange-400 {% elif page_header_color == 'green' %} bg-gradient-to-r from-green-400 to-blue-600 {% elif page_header_color == 'blue' %} bg-gradient-to-r from-cyan-500 to-blue-500 {% else %} text-black dark:text-white {% endif %} ">
-                        {{ page_header }}
-                    </h2>
-                    <nav class="hidden md:flex gap-2 sm:gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
-                        <a href="{% url 'index' %}"><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Accounts</span></a>
-                        <a class="pl-4" href="{% url 'conferences' %}"><span class="{% if page == 'conferences' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Conferences</span></a>
-                    </nav>
-                </div>
-                <div class="flex justify-between sm:gap-2">
-                    <theme-toggle>
-                    <button type="button"
-                            class="hidden sm:inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
-                        <span class="sr-only">Toggle Theme</span>
-                        <span class="hidden dark:block">{% heroicon_outline 'sun' %}</span>
-                        <span class="block w-6 h-6 dark:hidden">{% heroicon_outline 'moon' %}</span>
-                    </button>
-                    </theme-toggle>
-                    {% if request.user.is_authenticated %}
-                        <button type="button"
-                                data-dropdown-toggle="dropdown"
-                                class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
-                            <span class="sr-only">Account</span>
-                            <img src={{ user.accountaccess.account.avatar_static }} loading="lazy" alt="avatar" class="w-8 h-8 rounded-full" />
-                        </button>
-                        <div id="dropdown"
-                             class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
-                                aria-labelledby="dropdownDefaultButton">
-                                <li>
-                                    <a href="{% url 'mastodon_logout' %}"
-                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</a>
-                                </li>
-                            </ul>
-                        </div>
-                    {% else %}
-                        <button type="button"
-                                data-dropdown-toggle="dropdown"
-                                class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
-                            <span class="sr-only">Account</span>
-                            <span class="block w-6 h-6">{% heroicon_outline 'user' %}</span>
-                        </button>
-                        <div id="dropdown"
-                             class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
-                                aria-labelledby="dropdownDefaultButton">
-                                <li>
-                                    <button data-modal-target="authentication-modal"
-                                            data-modal-toggle="authentication-modal"
-                                            data-umami-event="signin-modal"
-                                            class="block px-4 py-2 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white plausible-event-name=signin-modal">
-                                        Sign in
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                    {% endif %}
-                </div>
+        <div id="top-bar"
+             class="z-50 flex fixed w-full -top-16 backdrop-blur-2xl px-4 sm:px-12 py-4 pt-[72px] flex-row justify-between items-center">
+            <div class="flex items-center flex-1 gap-4 sm:gap-8 overflow-hidden">
+                <button data-drawer-target="logo-sidebar"
+                        data-drawer-toggle="logo-sidebar"
+                        aria-controls="logo-sidebar"
+                        type="button"
+                        class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                    <span class="sr-only">Open sidebar</span>
+                    <svg class="w-6 h-6"
+                         aria-hidden="true"
+                         fill="currentColor"
+                         viewBox="0 0 20 20"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
+                        </path>
+                    </svg>
+                </button>
+                <h1 class="text-2xl w-8 hidden md:block md:w-60">
+                    <a class="flex gap-2" href="{% url 'index' %}">
+                        <img src="{% static 'logo.png' %}"
+                             alt="logo"
+                             class="w-8 h-8"
+                             width="32"
+                             height="32">
+                        <span>FEDIDEVS</span>
+                    </a>
+                </h1>
+                <h2 class="block md:hidden text-3xl font-semibold {% if page_header_color %}text-transparent bg-clip-text{% endif %} {% if page_header_color == 'red' %} bg-gradient-to-r from-pink-500 to-orange-400 {% elif page_header_color == 'green' %} bg-gradient-to-r from-green-400 to-blue-600 {% elif page_header_color == 'blue' %} bg-gradient-to-r from-cyan-500 to-blue-500 {% else %} text-black dark:text-white {% endif %} ">
+                    {{ page_header }}
+                </h2>
+                <nav class="hidden md:flex gap-2 sm:gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
+                    <a href="{% url 'index' %}"><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Accounts</span></a>
+                    <a class="pl-4" href="{% url 'conferences' %}"><span class="{% if page == 'conferences' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Conferences</span></a>
+                </nav>
             </div>
-        </nav>
+            <div class="flex justify-between sm:gap-2">
+                <theme-toggle>
+                <button type="button"
+                        class="hidden sm:inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
+                    <span class="sr-only">Toggle Theme</span>
+                    <span class="hidden dark:block">{% heroicon_outline 'sun' %}</span>
+                    <span class="block w-6 h-6 dark:hidden">{% heroicon_outline 'moon' %}</span>
+                </button>
+                </theme-toggle>
+                {% if request.user.is_authenticated %}
+                    <button type="button"
+                            data-dropdown-toggle="dropdown"
+                            class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
+                        <span class="sr-only">Account</span>
+                        <img src={{ user.accountaccess.account.avatar_static }} loading="lazy" alt="avatar" class="w-8 h-8 rounded-full" />
+                    </button>
+                    <div id="dropdown"
+                         class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                            aria-labelledby="dropdownDefaultButton">
+                            <li>
+                                <a href="{% url 'mastodon_logout' %}"
+                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</a>
+                            </li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <button type="button"
+                            data-dropdown-toggle="dropdown"
+                            class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
+                        <span class="sr-only">Account</span>
+                        <span class="block w-6 h-6">{% heroicon_outline 'user' %}</span>
+                    </button>
+                    <div id="dropdown"
+                         class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                            aria-labelledby="dropdownDefaultButton">
+                            <li>
+                                <button data-modal-target="authentication-modal"
+                                        data-modal-toggle="authentication-modal"
+                                        data-umami-event="signin-modal"
+                                        class="block px-4 py-2 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white plausible-event-name=signin-modal">
+                                    Sign in
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
         {% block header %}
             {% comment %} {% if page_subheader %}<h2>{{ page_subheader | safe }}</h2>{% endif %} {% endcomment %}
         {% endblock header %}

@@ -34,3 +34,11 @@ class ThemeToggle extends HTMLElement {
 window.addEventListener("DOMContentLoaded", () => {
 	customElements.define("theme-toggle", ThemeToggle);
 });
+
+window.addEventListener("scroll", () => {
+	if (window.scrollY > 0) {
+		document.getElementById('top-bar').classList.add('shadow-lg');
+	} else {
+		document.getElementById('top-bar').classList.remove('shadow-lg');
+	}
+});
