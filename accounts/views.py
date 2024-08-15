@@ -147,6 +147,7 @@ def index(request, lang: str | None = None):
         search_query &= Q(accountlookup__text__icontains=query)
 
     # Annotate the Account model with weekly followers gained from WeeklyAccountChange
+
     accounts = Account.objects.select_related("accountlookup", "instance_model").filter(search_query)
     accounts = accounts.order_by(sort_order)
     if request.user.is_authenticated:
@@ -159,7 +160,7 @@ def index(request, lang: str | None = None):
     paginator = Paginator(accounts, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    accounts_count = AccountLookup.objects.filter().count()
+    accounts_count = Account.objects.filter(search_query).count()
 
     user_instance = None
     if request.user.is_authenticated:
@@ -167,19 +168,61 @@ def index(request, lang: str | None = None):
 
     instances = Instance.objects.values_list("instance", flat=True)
 
+    page_description = ""
+    if accounts_count > 0:
+        page_description += f"Listing {accounts_count} "
+    else:
+        page_description += "No "
+
+    if follower_type == "best" and accounts_count > 0:
+        page_description += "of the best "
+    elif follower_type == "best":
+        page_description += "best "
+    elif follower_type == "celebrity":
+        page_description += "celebrity "
+    else:
+        page_description += ""
+
+    if selected_lang:
+        page_description += f"{selected_lang.name} "
+    elif selected_framework:
+        page_description += f"{selected_framework.name} "
+
+    if account_type == "human":
+        if accounts_count == 1:
+            page_description += "developer"
+        else:
+            page_description += "developers"
+    elif account_type == "project":
+        if accounts_count == 1:
+            page_description += "project"
+        else:
+            page_description += "projects"
+    elif accounts_count == 1:
+        page_description += "developer or project"
+    else:
+        page_description += "developers or projects"
+
+    page_description += " on Mastodon"
+    if posted == "recently":
+        page_description += " who recently posted"
+    page_description += ". "
+
+    top_five_accounts = ""
+    if accounts_count > 0:
+        top_five_accounts += ", ".join(a.name for a in page_obj[:5])
+        if accounts_count > 5:
+            top_five_accounts += ", and more."
+
     return render(
         request,
         "v2/accounts.html" if "HX-Request" in request.headers else "v2/index.html",
         {
             "page": "accounts",
-            "page_title": "FediDevs | List of software developers on Mastodon"
-            if not selected_lang
-            else f"FediDevs | List of {selected_lang.name} developers on Mastodon",
+            "page_title": f"FediDevs | {page_description.replace("Listing ", "")}",
             "page_header": "FEDIDEVS",
-            "page_subheader": "",
-            "page_description": "Discover amazing developers from across the Fediverse."
-            if not selected_lang
-            else f"Discover amazing {selected_lang.name} developers from across the fediverse.",
+            "page_subheader": page_description,
+            "page_description": page_description + top_five_accounts,
             "page_image": "og.png",
             "accounts": page_obj,
             "selected_lang": selected_lang,

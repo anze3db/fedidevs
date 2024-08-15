@@ -173,45 +173,8 @@
 {% endblock content %}
 {% block sidebar %}
     <header>
-        <blockquote>
-            <p class="text-xl italic font-medium">
-                Discover <mark>{{ accounts_count }}</mark> superb devs from across the <a class="underline" href="{% url 'developers-on-mastodon' %}">Fediverse</a>!
-            </p>
-        </blockquote>
-        <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b pt-8">
-            Filter
-            <span class="hidden">{% heroicon_outline 'plus' %}</span>
-            <span class="hidden [&>svg]:h-4">{% heroicon_outline 'minus' %}</span>
-        </h2>
-        <form method="get"
-              role="group"
-              class="mb-8"
-              action="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}">
-            <label for="default-search"
-                   class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-            <div class="relative">
-                <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
-                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                         aria-hidden="true"
-                         xmlns="http://www.w3.org/2000/svg"
-                         fill="none"
-                         viewBox="0 0 20 20">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                    </svg>
-                </div>
-                <button type="submit"
-                        class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    Go
-                </button>
-                <input type="search"
-                       name="q"
-                       class="block w-full p-4 pr-16 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                       placeholder="Filter by name, bio, or instance..."
-                       value="{{ query }}" />
-                <input type="hidden" name="o" value="{{ order }}" />
-            </div>
-        </form>
-        <section class="mb-8">
+        <p class="prose-xl dark:prose-invert">{{ page_subheader | safe }}</p>
+        <section class="mb-8 mt-8">
             <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">Smart Filters ✨</h2>
             <ul class="px-4 -mx-4 text-small">
                 <li class="me-2 mb-2 inline-block">
@@ -318,5 +281,38 @@
                 {% endfor %}
             </ul>
         </section>
+        <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b pt-2">
+            Filter by name bio or instance...
+            <span class="hidden">{% heroicon_outline 'plus' %}</span>
+            <span class="hidden [&>svg]:h-4">{% heroicon_outline 'minus' %}</span>
+        </h2>
+        <form method="get"
+              role="group"
+              class="mb-8"
+              action="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}">
+            <label for="default-search"
+                   class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                         aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                    </svg>
+                </div>
+                <button type="submit"
+                        class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    Go
+                </button>
+                <input type="search"
+                       name="q"
+                       class="block w-full p-4 pr-16 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                       placeholder="Filter by name, bio, or instance..."
+                       value="{{ query }}" />
+                <input type="hidden" name="o" value="{{ order }}" />
+            </div>
+        </form>
     </header>
 {% endblock sidebar %}
