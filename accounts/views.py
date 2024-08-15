@@ -12,7 +12,7 @@ from django.views.decorators.cache import cache_page
 from mastodon_auth.models import AccountFollowing
 from stats.models import Daily
 
-from .models import FRAMEWORKS, LANGUAGES, Account, AccountLookup, Instance
+from .models import FRAMEWORKS, LANGUAGES, Account, AccountLookup, Framework, Instance, Language
 
 
 def get_lookup_sort_order(order: str, period: str):
@@ -59,6 +59,57 @@ def get_display_strings(order: str, period: str):
         res["period"] = "All time"
 
     return res
+
+
+def get_page_description(
+    accounts_count: int,
+    selected_lang: Language | None,
+    selected_framework: Framework | None,
+    follower_type: str | None,
+    account_type: str | None,
+    posted: str | None,
+) -> str:
+    page_description = ""
+    if accounts_count > 0:
+        page_description += f"Listing {accounts_count} "
+    else:
+        page_description += "No "
+
+    if follower_type == "best" and accounts_count > 0:
+        page_description += "of the best "
+    elif follower_type == "best":
+        page_description += "best "
+    elif follower_type == "celebrity":
+        page_description += "celebrity "
+    else:
+        page_description += ""
+
+    if selected_lang:
+        page_description += f"{selected_lang.name} "
+    elif selected_framework:
+        page_description += f"{selected_framework.name} "
+
+    if account_type == "human":
+        if accounts_count == 1:
+            page_description += "developer"
+        else:
+            page_description += "developers"
+    elif account_type == "project":
+        if accounts_count == 1:
+            page_description += "project"
+        else:
+            page_description += "projects"
+    elif accounts_count == 1:
+        page_description += "developer or project"
+    else:
+        page_description += "developers or projects"
+
+    page_description += " on Mastodon"
+    if posted == "recently":
+        page_description += " who recently posted"
+    page_description += ". "
+
+    return page_description
 
 
 def index(request, lang: str | None = None):
@@ -168,45 +219,9 @@ def index(request, lang: str | None = None):
 
     instances = Instance.objects.values_list("instance", flat=True)
 
-    page_description = ""
-    if accounts_count > 0:
-        page_description += f"Listing {accounts_count} "
-    else:
-        page_description += "No "
-
-    if follower_type == "best" and accounts_count > 0:
-        page_description += "of the best "
-    elif follower_type == "best":
-        page_description += "best "
-    elif follower_type == "celebrity":
-        page_description += "celebrity "
-    else:
-        page_description += ""
-
-    if selected_lang:
-        page_description += f"{selected_lang.name} "
-    elif selected_framework:
-        page_description += f"{selected_framework.name} "
-
-    if account_type == "human":
-        if accounts_count == 1:
-            page_description += "developer"
-        else:
-            page_description += "developers"
-    elif account_type == "project":
-        if accounts_count == 1:
-            page_description += "project"
-        else:
-            page_description += "projects"
-    elif accounts_count == 1:
-        page_description += "developer or project"
-    else:
-        page_description += "developers or projects"
-
-    page_description += " on Mastodon"
-    if posted == "recently":
-        page_description += " who recently posted"
-    page_description += ". "
+    page_description = get_page_description(
+        accounts_count, selected_lang, selected_framework, follower_type, account_type, posted
+    )
 
     top_five_accounts = ""
     if accounts_count > 0:
