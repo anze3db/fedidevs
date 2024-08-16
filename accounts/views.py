@@ -112,6 +112,18 @@ def get_page_description(
     return page_description
 
 
+def build_canonical_url(base, get_params, canonical_params):
+    canonical_url = base
+    params_to_include = []
+    for param in canonical_params:
+        if param in get_params:
+            if get_params[param] is not None or get_params[param] != "":
+                params_to_include.append(f"{param}={get_params[param]}")
+    if params_to_include:
+        canonical_url += "?" + "&".join(params_to_include)
+    return canonical_url
+
+
 def index(request, lang: str | None = None):
     if "selected_instance" in request.GET:
         request.session["selected_instance"] = parse_instance(request.GET.get("selected_instance"))
@@ -237,6 +249,9 @@ def index(request, lang: str | None = None):
             "page_title": f"FediDevs | {page_description.replace("Listing ", "")}",
             "page_header": "FEDIDEVS",
             "page_subheader": page_description,
+            "canonical_url": build_canonical_url(
+                reverse("index" if lang is None else lang), request.GET, ["t", "f", "post"]
+            ),
             "page_description": page_description + top_five_accounts,
             "page_image": "og.png",
             "accounts": page_obj,

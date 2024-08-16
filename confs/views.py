@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_date
 
+from accounts.views import build_canonical_url
 from confs.models import (
     FRAMEWORKS,
     LANGUAGES,
@@ -230,6 +231,9 @@ def conference(request, slug: str):
             "primary_tag": next(tag for tag in conference.tags.split(",") if tag),
             "page_subheader": f"{conference.start_date.strftime('%b %d')} - {conference.end_date.strftime('%b %d, %Y')}",
             "page_description": "Mastodon posts about " + conference.name,
+            "canonical_url": build_canonical_url(
+                reverse("conference", kwargs={"slug": conference.slug}), request.GET, ["account", "date"]
+            ),
             "page_image": "og-conferences.png",
             "page_url": reverse("conference", kwargs={"slug": conference.slug}),
             "conference": conference,
