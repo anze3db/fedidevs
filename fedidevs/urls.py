@@ -14,6 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from textwrap import dedent
+
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import include, path, register_converter
@@ -29,7 +31,16 @@ from posts import views as post_views
 
 
 def robots_txt(_):
-    return HttpResponse("User-agent: *\nDisallow:", content_type="text/plain")
+    return HttpResponse(
+        dedent("""\
+        User-agent: *
+        Disallow: *page=*
+        Disallow: *o=*
+        Disallow: *q=*
+        Disallow: *p=*
+        """),
+        content_type="text/plain",
+    )
 
 
 class DateConverter:
