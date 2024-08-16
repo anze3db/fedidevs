@@ -219,6 +219,18 @@ def conference(request, slug: str):
     if request.user.is_authenticated:
         user_instance = str(request.user.accountaccess.instance)
 
+    current_account = next((account for account in account_counts if account.account.id == account_id), None)
+    current_date = next((d for d in dates if d["value"] == date), None)
+    if all_conf_posts_count > 0:
+        page_description = f"Dive into {all_conf_posts_count} insightful Mastodon posts from {conference.name} {conference.start_date.strftime('%Y')}"
+        if current_account:
+            page_description += f" by {current_account.account.name}"
+        if current_date:
+            page_description += f" on {current_date['pre_display']}"
+        page_description += " featuring key discussions, trending topics, and highlights from the conference."
+    else:
+        page_description = f"Explore Mastodon posts about {conference.name} {conference.start_date.strftime('%Y')}"
+
     return render(
         request,
         "conference.html" if "HX-Request" not in request.headers else "conference.html#posts-partial",
@@ -230,7 +242,7 @@ def conference(request, slug: str):
             "page_header_color": "red",
             "primary_tag": next(tag for tag in conference.tags.split(",") if tag),
             "page_subheader": f"{conference.start_date.strftime('%b %d')} - {conference.end_date.strftime('%b %d, %Y')}",
-            "page_description": "Mastodon posts about " + conference.name,
+            "page_description": page_description,
             "canonical_url": build_canonical_url(
                 reverse("conference", kwargs={"slug": conference.slug}), request.GET, ["account", "date"]
             ),
@@ -242,12 +254,12 @@ def conference(request, slug: str):
             "selected_instance": user_instance,
             "slug": slug,
             "account_id": account_id,
-            "current_account": next((account for account in account_counts if account.account.id == account_id), None),
+            "current_account": current_account,
             "order_display": get_order_display(order),
             "dates": dates,
             "all_conf_posts_count": all_conf_posts_count,
             "posts_date": date,
-            "current_date": next((d for d in dates if d["value"] == date), None),
+            "current_date": current_date,
             "order": order,
             "is_superuser": request.user.is_superuser,
         },
