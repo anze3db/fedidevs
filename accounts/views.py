@@ -208,7 +208,7 @@ def index(request, lang: str | None = None):
                 AccountFollowing.objects.filter(account=request.user.accountaccess.account, url=OuterRef("url")),
             )
         )
-    paginator = Paginator(accounts, 50)
+    paginator = Paginator(accounts, 20)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     accounts_count = Account.objects.filter(search_query).count()
