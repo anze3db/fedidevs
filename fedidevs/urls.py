@@ -34,10 +34,7 @@ def robots_txt(_):
     return HttpResponse(
         dedent("""\
         User-agent: *
-        Disallow: *page=*
-        Disallow: *o=*
-        Disallow: *q=*
-        Disallow: *p=*
+        Disallow:
         """),
         content_type="text/plain",
     )
