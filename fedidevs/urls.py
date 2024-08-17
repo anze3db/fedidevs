@@ -17,8 +17,10 @@ Including another URLconf
 from textwrap import dedent
 
 from django.contrib import admin
+from django.contrib.sitemaps import Sitemap
+from django.contrib.sitemaps.views import sitemap
 from django.http import HttpResponse
-from django.urls import include, path, register_converter
+from django.urls import include, path, register_converter, reverse
 from django.utils import dateparse, timezone
 
 from accounts import views
@@ -26,6 +28,7 @@ from accounts.models import FRAMEWORKS, LANGUAGES
 from confs import views as confs_views
 from confs.models import FRAMEWORKS as CONF_FRAMEWORKS
 from confs.models import LANGUAGES as CONF_LANGUAGES
+from confs.models import Conference
 from mastodon_auth import views as mastodon_views
 from posts import views as post_views
 
@@ -38,6 +41,56 @@ def robots_txt(_):
         """),
         content_type="text/plain",
     )
+
+
+class StaticViewSitemap(Sitemap):
+    """
+    Sitemap for serving any static content you want.
+    """
+
+    changefreq = "monthly"
+
+    def items(self):
+        # add any urls (by name) for static content you want to appear in your sitemap to this list
+        return [
+            "index",
+            "faq",
+            "developers-on-mastodon",
+            "conferences",
+        ]
+
+    def location(self, item):
+        return reverse(item)
+
+
+class AccountSitemap(Sitemap):
+    changefreq = "weekly"
+
+    def items(self):
+        return [lang.code for lang in LANG_OR_FRAMEWORK]
+
+    def location(self, item):
+        return reverse(item)
+
+
+class ConferencesSitemap(Sitemap):
+    changefreq = "weekly"
+
+    def items(self):
+        return [lang.code for lang in CONF_LANG_OR_FRAMEWORK]
+
+    def location(self, item):
+        return reverse(f"conference-{item}", kwargs={"lang": item})
+
+
+class ConferenceSitemap(Sitemap):
+    changefreq = "weekly"
+
+    def items(self):
+        return [conf.slug for conf in Conference.objects.all()]
+
+    def location(self, item):
+        return reverse("conference", kwargs={"slug": item})
 
 
 class DateConverter:
@@ -59,6 +112,19 @@ CONF_LANG_OR_FRAMEWORK = CONF_LANGUAGES + CONF_FRAMEWORKS
 
 urlpatterns = (
     [
+        path(
+            "sitemap.xml",
+            sitemap,
+            {
+                "sitemaps": {
+                    "static": StaticViewSitemap(),
+                    "accounts": AccountSitemap(),
+                    "conferences": ConferencesSitemap(),
+                    "conference": ConferenceSitemap(),
+                }
+            },
+            name="django.contrib.sitemaps.views.sitemap",
+        ),
         path("admin/", admin.site.urls),
         path("__debug__/", include("debug_toolbar.urls")),
         path("__reload__/", include("django_browser_reload.urls")),
