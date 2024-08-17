@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import datetime as dt
 from textwrap import dedent
 
 from django.contrib import admin
@@ -28,7 +29,7 @@ from accounts.models import FRAMEWORKS, LANGUAGES
 from confs import views as confs_views
 from confs.models import FRAMEWORKS as CONF_FRAMEWORKS
 from confs.models import LANGUAGES as CONF_LANGUAGES
-from confs.models import Conference
+from confs.models import Conference, ConferenceAccount
 from mastodon_auth import views as mastodon_views
 from posts import views as post_views
 
@@ -48,12 +49,9 @@ class StaticViewSitemap(Sitemap):
     Sitemap for serving any static content you want.
     """
 
-    changefreq = "monthly"
-
     def items(self):
         # add any urls (by name) for static content you want to appear in your sitemap to this list
         return [
-            "index",
             "faq",
             "developers-on-mastodon",
             "conferences",
@@ -67,10 +65,35 @@ class AccountSitemap(Sitemap):
     changefreq = "weekly"
 
     def items(self):
-        return [lang.code for lang in LANG_OR_FRAMEWORK]
+        lang_or_frameworks = [lang.code for lang in LANG_OR_FRAMEWORK] + ["index"]
+        best_or_celebrity = ["best", "celebrity", None]
+        human_or_project = ["human", "project", None]
+        recently_posted = ["recently_posted", None]
+        return [
+            (
+                lang,
+                bc,
+                hp,
+                rp,
+            )
+            for lang in lang_or_frameworks
+            for bc in best_or_celebrity
+            for hp in human_or_project
+            for rp in recently_posted
+        ]
 
     def location(self, item):
-        return reverse(item)
+        lang, best_or_celebrity, human_or_project, recently_posted = item
+        if not best_or_celebrity and not human_or_project and not recently_posted:
+            return reverse(lang)
+        qs = []
+        if best_or_celebrity:
+            qs.append(f"best={best_or_celebrity}")
+        if human_or_project:
+            qs.append(f"type={human_or_project}")
+        if recently_posted:
+            qs.append(f"recently_posted={recently_posted}")
+        return reverse(lang) + "?" + "&".join(qs)
 
 
 class ConferencesSitemap(Sitemap):
@@ -87,10 +110,28 @@ class ConferenceSitemap(Sitemap):
     changefreq = "weekly"
 
     def items(self):
-        return [conf.slug for conf in Conference.objects.all()]
+        return [
+            (conf.slug, account, conf.start_date + dt.timedelta(days=i))
+            for conf in Conference.objects.all()
+            for account in ConferenceAccount.objects.filter(conference=conf)
+            .values_list("account_id", flat=True)
+            .filter(count__gt=0)
+            .order_by("-count")[:10]
+            for i in range((conf.end_date - conf.start_date).days + 1)
+            if conf.start_date + dt.timedelta(i) < timezone.now().date()
+        ] + [(conf, None, None) for conf in Conference.objects.all()]
 
     def location(self, item):
-        return reverse("conference", kwargs={"slug": item})
+        conf, account, date = item
+        if not date:
+            return reverse("conference", kwargs={"slug": conf})
+
+        qs = []
+        if date:
+            qs.append(f"date={date}")
+        if account:
+            qs.append(f"account={account}")
+        return reverse("conference", kwargs={"slug": conf}) + "?" + "&".join(qs)
 
 
 class DateConverter:
