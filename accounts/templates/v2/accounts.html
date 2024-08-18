@@ -86,7 +86,7 @@
                             {% elif sort_order == '-accountlookup__monthly_statuses_count' %}
                                 <span class="{% if account.accountlookup.monthly_statuses_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.monthly_statuses_count | intcomma }}</span>
                             {% elif sort_order == '-accountlookup__statuses_count' %}
-                                <span>▼ {{ account.accountlookup.monthly_statuses_count | intcomma }}</span>
+                                <span>▼ {{ account.accountlookup.statuses_count | intcomma }}</span>
                             {% else %}
                                 <span>{{ account.accountlookup.statuses_count | intcomma }}</span>
                             {% endif %}
