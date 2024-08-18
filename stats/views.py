@@ -32,7 +32,7 @@ def stats(request):
         if start_count < end_count:
             card["percent_change"] = round((end_count - start_count) / start_count * 100, 1)
         if start_count > end_count:
-            card["percent_change"] = round(- ((start_count - end_count) / start_count * 100), 2)
+            card["percent_change"] = round(-((start_count - end_count) / start_count * 100), 2)
 
         card["total_accounts"] = end_count
 
@@ -48,7 +48,7 @@ def stats(request):
             "page_subheader": "",
             "page_description": "",
             "page_image": "og.png",
-            "cards": cards,                   # Needed for template rendering
+            "cards": cards,  # Needed for template rendering
             "cards_json": json.dumps(cards),  # Needed for JavaScript parsing
         },
     )

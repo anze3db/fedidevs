@@ -2,40 +2,35 @@
 {% load account_extras %}
 {% load static %}
 {% block content %}
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <main>
         <div class="grid xl:grid-cols-3 lg:grid-cols-2 gap-1 p-2 bg-gray-100 dark:bg-gray-700 rounded-xl">
             {% for card in cards %}
-            <div class="max-w-sm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
-                <div class="flex justify-between">
-                  <div>
-                    <h5 class="leading-none text-xl font-bold text-gray-900 dark:text-white pb-2">{{ card.emoji }} {{ card.name }}</h5>
-                    <p class="text-base font-normal text-gray-500 dark:text-gray-400">
-                        Total accounts: <span class="font-semibold">{{ card.total_accounts }}</span>
-                    </p>
-                  </div>
-
-                  <div
-                    class="flex items-center px-2.5 py-0.5 text-base font-semibold
-                    {% if card.percent_change > 0 %} text-green-500 dark:text-green-500
-                    {% elif card.percent_change == 0 %} text-gray-500 dark:text-gray-500
-                    {% else %} text-red-500 dark:text-red-500
-                    {% endif %}
-                    text-center">
-                    {{ card.percent_change }}%
-                    <svg class="w-3 h-3 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
-                    </svg>
-                  </div>
+                <div class="max-w-sm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
+                    <div class="flex justify-between">
+                        <div>
+                            <h5 class="leading-none text-xl font-bold text-gray-900 dark:text-white pb-2">{{ card.emoji }} {{ card.name }}</h5>
+                            <p class="text-base font-normal text-gray-500 dark:text-gray-400">
+                                Total accounts: <span class="font-semibold">{{ card.total_accounts }}</span>
+                            </p>
+                        </div>
+                        <div class="flex items-center px-2.5 py-0.5 text-base font-semibold {% if card.percent_change > 0 %} text-green-500 dark:text-green-500 {% elif card.percent_change == 0 %} text-gray-500 dark:text-gray-500 {% else %} text-red-500 dark:text-red-500 {% endif %} text-center">
+                            {{ card.percent_change }}%
+                            <svg class="w-3 h-3 ms-1"
+                                 aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 10 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div id="{{ card.code }}-graph"></div>
                 </div>
-                <div id="{{ card.code }}-graph"></div>
-            </div>
             {% endfor %}
         </div>
     </main>
-
-<script>
+    <script>
 const cards = {{ cards_json|safe }};
 
 for (let i = 0 ; i < cards.length ; i++) {
@@ -113,5 +108,5 @@ for (let i = 0 ; i < cards.length ; i++) {
         chart.render();
     }
 }
-</script>
+    </script>
 {% endblock content %}
