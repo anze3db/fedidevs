@@ -32,6 +32,7 @@ from confs.models import LANGUAGES as CONF_LANGUAGES
 from confs.models import Conference, ConferenceAccount
 from mastodon_auth import views as mastodon_views
 from posts import views as post_views
+from stats import views as stats_views
 
 
 def robots_txt(_):
@@ -188,6 +189,13 @@ urlpatterns = (
             name="developers-on-mastodon",
         ),
         path("conferences/", confs_views.conferences, name="conferences"),
+        path("posts/subscribe", post_views.subscribe, name="posts_subscribe"),
+        path(
+            "posts/subscribe/success/",
+            post_views.subscribe_success,
+            name="posts_subscribe_success",
+        ),
+        path("stats/", stats_views.stats, name="stats"),
     ]
     + [
         path(
