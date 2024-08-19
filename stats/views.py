@@ -53,6 +53,8 @@ def stats(request):
 
         cards.append(card)
 
+    cards = sorted(cards, key=lambda x: x["total_accounts"], reverse=True)
+
     return render(
         request,
         "stats.html",
