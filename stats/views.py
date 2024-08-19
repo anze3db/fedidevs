@@ -7,16 +7,19 @@ from stats.models import Daily
 
 
 def stats(request):
-    period = request.GET.get("p") or "monthly"
+    period = request.GET.get("p") or "weekly"
     if period == "weekly":
         graph_days_len = 7
+    elif period == "biweekly":
+        graph_days_len = 14
     elif period == "monthly":
         graph_days_len = 30
-    elif period == "trimonthly":
-        graph_days_len = 90
+    else:
+        graph_days_len = 7
 
     cards = []
-    daily_objects = Daily.objects.order_by("-date")[:graph_days_len]
+    values = [f"{lang.code}_accounts" for lang in (LANGUAGES + FRAMEWORKS)] + ["date"]
+    daily_objects = Daily.objects.order_by("-date").values(*values)[:graph_days_len]
     for lang in LANGUAGES + FRAMEWORKS:
         card = {
             "code": lang.code,
@@ -30,11 +33,11 @@ def stats(request):
         }
 
         for daily in reversed(daily_objects):
-            card["accounts_count"].append(getattr(daily, f"{lang.code}_accounts"))
-            card["dates"].append(daily.date.strftime("%Y-%m-%d"))
+            card["accounts_count"].append(daily[f"{lang.code}_accounts"])
+            card["dates"].append(daily["date"].strftime("%Y-%m-%d"))
 
-        start_count = getattr(daily_objects[len(daily_objects) - 1], f"{lang.code}_accounts")
-        end_count = getattr(daily_objects[0], f"{lang.code}_accounts")
+        start_count = card["accounts_count"][0]
+        end_count = card["accounts_count"][-1]
         if start_count == 0:
             card["percent_change"] = "N/A"
         elif start_count < end_count:
