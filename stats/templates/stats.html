@@ -1,6 +1,14 @@
 {% extends "v2/layout.html" %}
 {% load account_extras %}
 {% load static %}
+{% block sidebar %}
+    <header class="mb-8">
+        <p class="prose-xl dark:prose-invert">{{ page_subheader | safe }}</p>
+        <p class="prose dark:prose-invert">
+            Showing active Mastodon accounts in the last <strong>{{ period_name }}</strong> days.
+        </p>
+    </header>
+{% endblock sidebar %}
 {% block content %}
     <main>
         <section class="mb-8 flex flex-wrap gap-4 justify-end">
