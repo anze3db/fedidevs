@@ -10,16 +10,16 @@ def stats(request):
     period = request.GET.get("p") or "weekly"
     if period == "weekly":
         graph_days_len = 7
-        period_name = "seven"
+        period_name = "week"
     elif period == "biweekly":
         graph_days_len = 14
-        period_name = "fourteen"
+        period_name = "two weeks"
     elif period == "monthly":
         graph_days_len = 30
-        period_name = "thirty"
+        period_name = "month"
     else:
         graph_days_len = 7
-        period_name = "seven"
+        period_name = "week"
 
     cards = []
     values = [f"{lang.code}_accounts" for lang in (LANGUAGES + FRAMEWORKS)] + ["date"]
@@ -48,13 +48,13 @@ def stats(request):
             card["percent_change"] = round((end_count - start_count) / start_count * 100, 1)
         elif start_count > end_count:
             card["percent_change"] = round(-((start_count - end_count) / start_count * 100), 2)
-
+        card["count_diff"] = end_count - start_count
         card["total_accounts"] = end_count
 
         cards.append(card)
 
     order = request.GET.get("o") or "percent_change"
-    if order not in ("percent_change", "count", "name"):
+    if order not in ("percent_change", "count", "name", "count_diff"):
         order = "count"
 
     cards = sorted(cards, key=lambda x: x[order], reverse=True)

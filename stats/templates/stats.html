@@ -5,7 +5,7 @@
     <header class="mb-8">
         <p class="prose-xl dark:prose-invert">{{ page_subheader | safe }}</p>
         <p class="prose dark:prose-invert">
-            Showing active Mastodon accounts in the last <strong>{{ period_name }}</strong> days.
+            Showing Mastodon accounts from the last <strong>{{ period_name }}</strong>.
         </p>
     </header>
 {% endblock sidebar %}
@@ -76,7 +76,7 @@
                             <span class="leading-loose">{{ card.name }}</span></a>
                     </h3>
                     <div id="{{ card.code }}-graph"></div>
-                    <div class="flex justify-between">
+                    <div class="flex justify-between gap-2">
                         <p class="text-base font-normal text-gray-500 dark:text-gray-400">
                             <span class="font-semibold">{{ card.total_accounts }}</span> accounts
                         </p>
