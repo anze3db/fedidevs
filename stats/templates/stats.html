@@ -66,12 +66,14 @@
         <div class="grid xl:grid-cols-3 lg:grid-cols-2 gap-8 p-2 rounded-xl">
             {% for card in cards %}
                 <div class="w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
-                    <h3 class="flex gap-2 text-xl font-bold text-gray-900 dark:text-white">
-                        <img src="{% static card.image %}"
-                             alt="{{ card.code }}"
-                             loading="lazy"
-                             class="object-contain w-4" />
-                        <span class="leading-loose">{{ card.name }}</span>
+                    <h3>
+                        <a href="{% url card.code %}"
+                           class="flex gap-2 text-xl font-bold text-gray-900 dark:text-white">
+                            <img src="{% static card.image %}"
+                                 alt="{{ card.code }}"
+                                 loading="lazy"
+                                 class="object-contain w-4" />
+                            <span class="leading-loose">{{ card.name }}</span></a>
                     </h3>
                     <div id="{{ card.code }}-graph"></div>
                     <div class="flex justify-between">
