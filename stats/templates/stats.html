@@ -1,0 +1,178 @@
+{% extends "v2/layout.html" %}
+{% load account_extras %}
+{% load static %}
+{% block sidebar %}
+    <header class="mb-8">
+        <p class="prose-xl dark:prose-invert">{{ page_subheader | safe }}</p>
+        <p class="prose dark:prose-invert">
+            Showing active Mastodon accounts in the last <strong>{{ period_name }}</strong> days.
+        </p>
+    </header>
+{% endblock sidebar %}
+{% block content %}
+    <main>
+        <section class="mb-8 flex flex-wrap gap-4 justify-end">
+            <div class="gap-1 p-2">
+                <button id="dropdownRadioButton"
+                        data-dropdown-toggle="dropdownRadio"
+                        class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm ml-10 px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                        type="button">
+                    <svg class="w-3 h-3 text-gray-500 dark:text-gray-400 me-3"
+                         aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg"
+                         fill="currentColor"
+                         viewBox="0 0 20 20">
+                        <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                    </svg>
+                    {{ period_display_name }}
+                    <svg class="w-2.5 h-2.5 ms-2.5"
+                         aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                    </svg>
+                </button>
+                <!-- Dropdown menu -->
+                <div id="dropdownRadio"
+                     class="z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+                     data-popper-reference-hidden=""
+                     data-popper-escaped=""
+                     data-popper-placement="top"
+                     style="position: absolute;
+                            inset: auto auto 0px 0px;
+                            margin: 0px;
+                            transform: translate3d(522.5px, 3847.5px, 0px)">
+                    {% if order != '-last_status_at' %}
+                        <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
+                            aria-labelledby="dropdownRadioButton">
+                            <li>
+                                <a href="{% querystring p='weekly' %}"
+                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 7 days</a>
+                            </li>
+                            <li>
+                                <a href="{% querystring p='biweekly' %}"
+                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 14 days</a>
+                            </li>
+                            <li>
+                                <a href="{% querystring p='monthly' %}"
+                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 30 days</a>
+                            </li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+        <div class="grid xl:grid-cols-3 lg:grid-cols-2 gap-8 p-2 rounded-xl">
+            {% for card in cards %}
+                <div class="w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
+                    <h3 class="flex gap-2 text-xl font-bold text-gray-900 dark:text-white">
+                        <img src="{% static card.image %}"
+                             alt="{{ card.code }}"
+                             loading="lazy"
+                             class="object-contain w-4" />
+                        <span class="leading-loose">{{ card.name }}</span>
+                    </h3>
+                    <div id="{{ card.code }}-graph"></div>
+                    <div class="flex justify-between">
+                        <p class="text-base font-normal text-gray-500 dark:text-gray-400">
+                            <span class="font-semibold">{{ card.total_accounts }}</span> accounts
+                        </p>
+                        <div class="flex items-center text-base font-semibold {% if card.percent_change > 0 %} text-green-500 dark:text-green-500 {% elif card.percent_change == 0 %} text-gray-500 dark:text-gray-500 {% else %} text-red-500 dark:text-red-500 {% endif %} text-right">
+                            {{ card.percent_change }}%
+                            <svg class="w-3 h-3 ms-1"
+                                 aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 10 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+    <script>
+const cards = {{ cards_json|safe }};
+
+addEventListener("DOMContentLoaded", (event) => {
+    cards.forEach((card) => {
+        const options = {
+            chart: {
+                height: "120rem",
+                maxWidth: "200rem",
+                type: "area",
+                fontFamily: "Inter, sans-serif",
+                dropShadow: {
+                    enabled: false,
+                },
+                toolbar: {
+                    show: false,
+                },
+                zoom: {
+                    enabled: false,
+                }
+            },
+            tooltip: {
+                enabled: false,
+            },
+            fill: {
+                    type: "gradient",
+                    gradient: {
+                    opacityFrom: 0.55,
+                    opacityTo: 0,
+                    shade: "#1C64F2",
+                    gradientToColors: ["#1C64F2"],
+                },
+            },
+            dataLabels: {
+                enabled: false,
+            },
+            stroke: {
+                width: 3,
+            },
+            grid: {
+                    show: false,
+                    strokeDashArray: 4,
+                    padding: {
+                    left: 2,
+                    right: 2,
+                    top: 0
+                },
+            },
+            series: [
+                {
+                    name: "Total accounts",
+                    data: card.accounts_count,
+                    color: "#1A56DB",
+                },
+            ],
+            xaxis: {
+                categories: card.dates,
+                labels: {
+                    show: false,
+                },
+                axisBorder: {
+                    show: false,
+                },
+                axisTicks: {
+                    show: false,
+                },
+            },
+            yaxis: {
+                show: false,
+            },
+        }
+
+        if (document.getElementById(card.code + "-graph") && typeof ApexCharts !== 'undefined') {
+            const chart = new ApexCharts(document.getElementById(card.code + "-graph"), options);
+            chart.render();
+        }
+    });
+});
+
+
+    </script>
+    <script src="{% static "apexcharts.min.js" %}"></script>
+{% endblock content %}

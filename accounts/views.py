@@ -209,8 +209,6 @@ def index(request, lang: str | None = None):
     if query:
         search_query &= Q(accountlookup__text__icontains=query)
 
-    # Annotate the Account model with weekly followers gained from WeeklyAccountChange
-
     accounts = Account.objects.select_related("accountlookup", "instance_model").filter(search_query)
     accounts = accounts.order_by(sort_order)
     if request.user.is_authenticated:
