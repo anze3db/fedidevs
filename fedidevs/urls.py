@@ -56,6 +56,7 @@ class StaticViewSitemap(Sitemap):
             "faq",
             "developers-on-mastodon",
             "conferences",
+            "stats",
         ]
 
     def location(self, item):
