@@ -63,11 +63,11 @@ def stats(request):
         request,
         "stats.html",
         {
-            "page_title": "Statistics | Fediverse Developers",
+            "page_title": "Stats | Fedidevs",
             "page": "stats",
             "page_header": "Stats",
             "page_subheader": "See how many developers on Mastodon are using your favorite languages and frameworks.",
-            "page_description": "Statistics on the number of developers on Mastodon using various programming languages and frameworks.",
+            "page_description": "Stats on the number of developers on Mastodon using various programming languages and frameworks.",
             "page_image": "og-stats.png",
             "period_name": period_name,
             "cards": cards,  # Needed for template rendering
