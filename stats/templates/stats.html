@@ -93,84 +93,86 @@
             {% endfor %}
         </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
 const cards = {{ cards_json|safe }};
 
-for (let i = 0 ; i < cards.length ; i++) {
-    let card = cards[i];
-
-    const options = {
-        chart: {
-            height: "120rem",
-            maxWidth: "200rem",
-            type: "area",
-            fontFamily: "Inter, sans-serif",
-            dropShadow: {
+addEventListener("DOMContentLoaded", (event) => {
+    cards.forEach((card) => {
+        const options = {
+            chart: {
+                height: "120rem",
+                maxWidth: "200rem",
+                type: "area",
+                fontFamily: "Inter, sans-serif",
+                dropShadow: {
+                    enabled: false,
+                },
+                toolbar: {
+                    show: false,
+                },
+                zoom: {
+                    enabled: false,
+                }
+            },
+            tooltip: {
                 enabled: false,
             },
-            toolbar: {
-                show: false,
+            fill: {
+                    type: "gradient",
+                    gradient: {
+                    opacityFrom: 0.55,
+                    opacityTo: 0,
+                    shade: "#1C64F2",
+                    gradientToColors: ["#1C64F2"],
+                },
             },
-            zoom: {
+            dataLabels: {
                 enabled: false,
-            }
-        },
-        tooltip: {
-            enabled: false,
-        },
-        fill: {
-                type: "gradient",
-                gradient: {
-                opacityFrom: 0.55,
-                opacityTo: 0,
-                shade: "#1C64F2",
-                gradientToColors: ["#1C64F2"],
             },
-        },
-        dataLabels: {
-            enabled: false,
-        },
-        stroke: {
-            width: 3,
-        },
-        grid: {
-                show: false,
-                strokeDashArray: 4,
-                padding: {
-                left: 2,
-                right: 2,
-                top: 0
+            stroke: {
+                width: 3,
             },
-        },
-        series: [
-            {
-                name: "Total accounts",
-                data: card.accounts_count,
-                color: "#1A56DB",
+            grid: {
+                    show: false,
+                    strokeDashArray: 4,
+                    padding: {
+                    left: 2,
+                    right: 2,
+                    top: 0
+                },
             },
-        ],
-        xaxis: {
-            categories: card.dates,
-            labels: {
+            series: [
+                {
+                    name: "Total accounts",
+                    data: card.accounts_count,
+                    color: "#1A56DB",
+                },
+            ],
+            xaxis: {
+                categories: card.dates,
+                labels: {
+                    show: false,
+                },
+                axisBorder: {
+                    show: false,
+                },
+                axisTicks: {
+                    show: false,
+                },
+            },
+            yaxis: {
                 show: false,
             },
-            axisBorder: {
-                show: false,
-            },
-            axisTicks: {
-                show: false,
-            },
-        },
-        yaxis: {
-            show: false,
-        },
-    }
+        }
 
-    if (document.getElementById(card.code + "-graph") && typeof ApexCharts !== 'undefined') {
-        const chart = new ApexCharts(document.getElementById(card.code + "-graph"), options);
-        chart.render();
-    }
-}
+        if (document.getElementById(card.code + "-graph") && typeof ApexCharts !== 'undefined') {
+            const chart = new ApexCharts(document.getElementById(card.code + "-graph"), options);
+            chart.render();
+        }
+    });
+});
+
+
     </script>
+    <script src="{% static "apexcharts.min.js" %}"></script>
 {% endblock content %}
