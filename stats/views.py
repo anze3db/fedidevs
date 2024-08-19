@@ -53,7 +53,11 @@ def stats(request):
 
         cards.append(card)
 
-    cards = sorted(cards, key=lambda x: x["total_accounts"], reverse=True)
+    order = request.GET.get("o") or "percent_change"
+    if order not in ("percent_change", "count", "name"):
+        order = "count"
+
+    cards = sorted(cards, key=lambda x: x[order], reverse=True)
 
     return render(
         request,
