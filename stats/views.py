@@ -10,13 +10,10 @@ def stats(request):
     period = request.GET.get("p") or "monthly"
     if period == "weekly":
         graph_days_len = 7
-        period_display_name = "Last 7 days"
     elif period == "monthly":
         graph_days_len = 30
-        period_display_name = "Last 30 days"
     elif period == "trimonthly":
         graph_days_len = 90
-        period_display_name = "Last 90 days"
 
     cards = []
     daily_objects = Daily.objects.order_by("-date")[:graph_days_len]
@@ -61,6 +58,6 @@ def stats(request):
             "page_image": "og.png",
             "cards": cards,  # Needed for template rendering
             "cards_json": json.dumps(cards),  # Needed for JavaScript parsing
-            "period_display_name": period_display_name,
+            "period_display_name": f"Last {graph_days_len} days",
         },
     )
