@@ -1,3 +1,44 @@
+[project]
+name = "fedidevs"
+version = "2024"
+requires-python = ">=3.12"
+dependencies = [
+  "django",
+  "django-dramatiq",
+  "django-environ",
+  "django-tailwind",
+  "django-template-partials",
+  "dramatiq[redis, watch]",
+  "gunicorn",
+  "heroicons[django]",
+  "httpx",
+  "mastodon.py",
+  "psycopg2-binary",
+  "schedule",
+  "sentry-sdk",
+  "setproctitle",
+  "whitenoise",
+]
+
+[tool.setuptools]
+py-modules = []
+
+[tool.uv]
+dev-dependencies = [
+  "django-browser-reload",
+  "django-coverage-plugin",
+  "django-debug-toolbar",
+  "django-rich",
+  "django-tui",
+  "djlint",
+  "flakytest",
+  "mypy",
+  "pip-tools",
+  "pytest-cov",
+  "pytest-django",
+  "rich",
+  "ruff",
+]
 [tool.ruff]
 line-length = 120
 lint.select = [
@@ -79,7 +120,6 @@ omit = [
   ".venv/*",
   "staticfiles/*",
   "manage.py",
-  "requirements.txt",
   "fedidevs/wsgi.py",
   "fedidevs/asgi.py",
 ]

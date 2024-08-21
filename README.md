@@ -17,7 +17,7 @@ python -m venv .venv
 
 3. Install required packages
 ```
-python -m pip install -r requirements.txt
+uv sync
 ```
 
 4. Run the migrations
