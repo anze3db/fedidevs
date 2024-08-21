@@ -1,9 +1,9 @@
-from datetime import datetime, timezone
+import datetime as dt
 
 import httpx
 from asgiref.sync import async_to_sync
 from django.contrib.humanize.templatetags.humanize import naturaltime
-from django.utils.timezone import make_aware
+from django.utils import timezone
 from django_rich.management import RichCommand
 
 from accounts.models import Account
@@ -42,11 +42,11 @@ class Command(RichCommand):
                 "discoverable": account.get("discoverable", False) if not make_visible else True,
                 "group": account.get("group", False),
                 "noindex": account.get("noindex", None) if not make_visible else False,
-                "created_at": (datetime.fromisoformat(account["created_at"])),
-                "last_status_at": make_aware(datetime.fromisoformat(account["last_status_at"]))
+                "created_at": (dt.datetime.fromisoformat(account["created_at"])),
+                "last_status_at": timezone.make_aware(dt.datetime.fromisoformat(account["last_status_at"]))
                 if account.get("last_status_at")
                 else None,
-                "last_sync_at": datetime.now(tz=timezone.utc),
+                "last_sync_at": timezone.now(),
                 "followers_count": account["followers_count"],
                 "following_count": account["following_count"],
                 "statuses_count": account["statuses_count"],

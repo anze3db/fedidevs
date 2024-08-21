@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime, timezone
 from uuid import uuid4
 
 import dramatiq
@@ -11,6 +10,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db import transaction
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 from mastodon import Mastodon, MastodonNetworkError
 from mastodon.errors import MastodonAPIError, MastodonNotFoundError, MastodonUnauthorizedError
@@ -135,7 +135,7 @@ def auth(request):
         scopes=login_scopes,
     )
 
-    now = datetime.now(tz=timezone.utc)
+    now = timezone.now()
     logged_in_account = mastodon.me()
     account, _ = Account.objects.update_or_create(
         account_id=logged_in_account["id"],

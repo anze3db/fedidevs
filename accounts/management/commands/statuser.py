@@ -1,8 +1,9 @@
 import asyncio
-from datetime import datetime, timedelta, timezone
+import datetime as dt
 
 import httpx
 from asgiref.sync import async_to_sync
+from django.utils import timezone
 from django_rich.management import RichCommand
 
 from accounts.models import Account
@@ -15,7 +16,7 @@ class Command(RichCommand):
     def add_arguments(self, parser): ...
 
     def handle(self, *args, offset=0, instances=None, **options):
-        min_stat = datetime.now(tz=timezone.utc) - timedelta(days=2)
+        min_stat = timezone.now() - dt.timedelta(days=2)
         accounts = Account.objects.filter(last_status_at__gte=min_stat).order_by("-followers_count")
         self.main(list(accounts))
 
@@ -58,7 +59,7 @@ class Command(RichCommand):
             Post(
                 post_id=result["id"],
                 account=account,
-                created_at=datetime.fromisoformat(result["created_at"]),
+                created_at=dt.datetime.fromisoformat(result["created_at"]),
                 instance=account.instance,
                 in_reply_to_id=result["in_reply_to_id"],
                 in_reply_to_account_id=result["in_reply_to_account_id"],
@@ -71,7 +72,7 @@ class Command(RichCommand):
                 replies_count=result["replies_count"],
                 reblogs_count=result["reblogs_count"],
                 favourites_count=result["favourites_count"],
-                edited_at=datetime.fromisoformat(result["edited_at"]) if result.get("edited_at") else None,
+                edited_at=dt.datetime.fromisoformat(result["edited_at"]) if result.get("edited_at") else None,
                 content=result["content"],
                 reblog=result["reblog"],
                 application=result.get("application", None),

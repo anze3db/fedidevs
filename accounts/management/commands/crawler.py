@@ -1,10 +1,10 @@
 import asyncio
-from datetime import datetime, timedelta, timezone
+import datetime as dt
 
 import httpx
 from asgiref.sync import async_to_sync
 from django.contrib.humanize.templatetags.humanize import naturaltime
-from django.utils.timezone import make_aware
+from django.utils import timezone
 from django_rich.management import RichCommand
 
 from accounts.models import Account, Instance
@@ -49,14 +49,14 @@ class Command(RichCommand):
         pre_filter: bool = False,
     ):
         async with httpx.AsyncClient() as client:
-            start_time = datetime.now(tz=timezone.utc)
+            start_time = timezone.now()
             instance_models = await Instance.objects.ain_bulk(field_name="instance")
             if instances:
                 to_index = instances.split(",")
             else:
                 to_index = [i async for i in Instance.objects.values_list("instance", flat=True)]
             while to_index:
-                now = datetime.now(tz=timezone.utc)
+                now = timezone.now()
                 results = await asyncio.gather(
                     *[self.fetch(client, offset, instance, skip_inactive_for) for instance in to_index]
                 )
@@ -79,8 +79,8 @@ class Command(RichCommand):
                             discoverable=account.get("discoverable", False),
                             group=account.get("group", False),
                             noindex=account.get("noindex", None),
-                            created_at=(datetime.fromisoformat(account["created_at"])),
-                            last_status_at=make_aware(datetime.fromisoformat(account["last_status_at"]))
+                            created_at=(dt.datetime.fromisoformat(account["created_at"])),
+                            last_status_at=timezone.make_aware(dt.datetime.fromisoformat(account["last_status_at"]))
                             if account.get("last_status_at")
                             else None,
                             last_sync_at=now,
@@ -141,7 +141,7 @@ class Command(RichCommand):
                     )
                 offset += 1
             self.console.print(
-                f"Done. Started at {start_time}. Ended at {datetime.now(tz=timezone.utc)}, duration {datetime.now(tz=timezone.utc) - start_time}"
+                f"Done. Started at {start_time}. Ended at {timezone.now()}, duration {timezone.now() - start_time}"
             )
 
     async def fetch(self, client, offset, instance, skip_inactive_for: int):
@@ -177,8 +177,8 @@ class Command(RichCommand):
         def is_recently_updated(account) -> bool:
             if not account.get("last_status_at"):
                 return False
-            last_status_at = make_aware(datetime.fromisoformat(account["last_status_at"]))
-            if (datetime.now(tz=timezone.utc) - last_status_at) > timedelta(days=skip_inactive_for):
+            last_status_at = timezone.make_aware(dt.datetime.fromisoformat(account["last_status_at"]))
+            if (timezone.now() - last_status_at) > dt.timedelta(days=skip_inactive_for):
                 return False
             return True
 

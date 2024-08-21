@@ -5,6 +5,7 @@ from pathlib import Path
 
 from django.core import management
 from django.template.defaultfilters import slugify
+from django.utils import timezone
 from django_rich.management import RichCommand
 
 from confs.models import Conference
@@ -32,7 +33,7 @@ class Command(RichCommand):
                 website=website,
                 mastodon=mastodon,
                 description=description,
-                posts_after=dt.datetime.now(tz=dt.UTC).date().replace(month=1, day=1),
+                posts_after=timezone.now().date().replace(month=1, day=1),
                 instances="mastodon.social",
                 tags=slug if tag in ("", "?") else tag,
             )

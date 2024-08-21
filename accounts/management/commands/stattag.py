@@ -1,12 +1,12 @@
 import asyncio
+import datetime as dt
 import logging
-from datetime import datetime, timedelta, timezone
 
 import httpx
 from asgiref.sync import async_to_sync
 from django.db.models import Count, OuterRef, Subquery, Value
 from django.db.models.functions import Coalesce
-from django.utils.timezone import make_aware
+from django.utils import timezone
 from django_rich.management import RichCommand
 
 from accounts.management.commands.instances import process_instances
@@ -36,10 +36,7 @@ class Command(RichCommand):
             conferences = [await Conference.objects.aget(slug=slug)]
         elif active:
             conferences = [
-                c
-                async for c in Conference.objects.filter(
-                    start_date__lte=datetime.now(tz=timezone.utc), end_date__gte=datetime.now(tz=timezone.utc)
-                )
+                c async for c in Conference.objects.filter(start_date__lte=timezone.now(), end_date__gte=timezone.now())
             ]
         else:
             conferences = [c async for c in Conference.objects.filter(archived_date__isnull=True)]
@@ -74,9 +71,7 @@ class Command(RichCommand):
                     if min_id == posts[-1]["id"]:
                         break
                     min_id = posts[-1]["id"]
-                    if datetime.fromisoformat(posts[-1]["created_at"]) < (
-                        datetime.now(tz=timezone.utc) - timedelta(days=3)
-                    ):
+                    if dt.datetime.fromisoformat(posts[-1]["created_at"]) < (timezone.now() - dt.timedelta(days=3)):
                         min_id_to_save = min_id
                     await self.process_posts(posts, conference, instance_model)
 
@@ -137,11 +132,11 @@ class Command(RichCommand):
                     "discoverable": account.get("discoverable", False) or False,
                     "group": account.get("group", False),
                     "noindex": account.get("noindex", None),
-                    "created_at": (datetime.fromisoformat(account["created_at"])),
-                    "last_status_at": make_aware(datetime.fromisoformat(account["last_status_at"]))
+                    "created_at": (dt.datetime.fromisoformat(account["created_at"])),
+                    "last_status_at": timezone.make_aware(dt.datetime.fromisoformat(account["last_status_at"]))
                     if account.get("last_status_at")
                     else None,
-                    "last_sync_at": datetime.now(tz=timezone.utc),
+                    "last_sync_at": timezone.now(),
                     "followers_count": account["followers_count"],
                     "following_count": account["following_count"],
                     "statuses_count": account["statuses_count"],
@@ -172,7 +167,7 @@ class Command(RichCommand):
                     "post_id": result["id"],
                     "account": account_map[result["account"]["url"]],
                     "instance": result["account"]["url"].split("/")[2],
-                    "created_at": datetime.fromisoformat(result["created_at"]),
+                    "created_at": dt.datetime.fromisoformat(result["created_at"]),
                     "in_reply_to_id": result["in_reply_to_id"],
                     "in_reply_to_account_id": result["in_reply_to_account_id"],
                     "sensitive": result.get("sensitive", None),
@@ -184,7 +179,7 @@ class Command(RichCommand):
                     "replies_count": result["replies_count"],
                     "reblogs_count": result["reblogs_count"],
                     "favourites_count": result["favourites_count"],
-                    "edited_at": datetime.fromisoformat(result["edited_at"]) if result.get("edited_at") else None,
+                    "edited_at": dt.datetime.fromisoformat(result["edited_at"]) if result.get("edited_at") else None,
                     "content": result["content"],
                     "reblog": result["reblog"],
                     "application": result.get("application", None),
@@ -212,7 +207,7 @@ class Command(RichCommand):
         if conference.posts_after:
             posts_after = conference.posts_after
         else:
-            posts_after = datetime.now(tz=timezone.utc) - timedelta(days=999)
+            posts_after = timezone.now() - dt.timedelta(days=999)
 
         await ConferenceAccount.objects.filter(conference=conference).aupdate(
             count=Coalesce(
