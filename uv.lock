@@ -24,6 +24,18 @@ wheels = [
 ]
 
 [[package]]
+name = "beautifulsoup4"
+version = "4.12.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "soupsieve" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b3/ca/824b1195773ce6166d388573fc106ce56d4a805bd7427b624e063596ec58/beautifulsoup4-4.12.3.tar.gz", hash = "sha256:74e3d1928edc070d21748185c46e3fb33490f22f52a3addee9aee0f4f7781051", size = 581181 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b1/fe/e8c672695b37eecc5cbf43e1d0638d88d66ba3a44c4d321c796f4e59167f/beautifulsoup4-4.12.3-py3-none-any.whl", hash = "sha256:b80878c9f40111313e55da8ba20bdba06d8fa3969fc68304167741bbf9e082ed", size = 147925 },
+]
+
+[[package]]
 name = "blurhash"
 version = "1.1.4"
 source = { registry = "https://pypi.org/simple" }
@@ -219,6 +231,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-cotton"
+version = "0.9.27"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "beautifulsoup4" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b6/c8/6ac44a2778c783a54eb0f827ed6ff6eff36886a08b424548c446c1182407/django_cotton-0.9.27.tar.gz", hash = "sha256:1f5fc6912ec9ac78bc2c448f8a5646755c8e61e2298bf0061da221ce13338cfd", size = 23304 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0c/96/fc77b0da15ff5a8ec8f60b90e3009806c794627dfff3f2458a623e233f0b/django_cotton-0.9.27-py3-none-any.whl", hash = "sha256:b9300aed2d5f0c8d74a8eecd2bea92deb0d61a97789b2de3f510c4d02e1ff716", size = 20623 },
+]
+
+[[package]]
 name = "django-coverage-plugin"
 version = "3.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -371,6 +395,7 @@ version = "2024"
 source = { editable = "." }
 dependencies = [
     { name = "django" },
+    { name = "django-cotton" },
     { name = "django-dramatiq" },
     { name = "django-environ" },
     { name = "django-tailwind" },
@@ -407,6 +432,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "django" },
+    { name = "django-cotton", specifier = ">=0.9.27" },
     { name = "django-dramatiq" },
     { name = "django-environ" },
     { name = "django-tailwind" },
@@ -1078,6 +1104,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a2/87/a6771e1546d97e7e041b6ae58d80074f81b7d5121207425c964ddf5cfdbd/sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc", size = 20372 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e9/44/75a9c9421471a6c4805dbf2356f7c181a29c1879239abab1ea2cc8f38b40/sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2", size = 10235 },
+]
+
+[[package]]
+name = "soupsieve"
+version = "2.6"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d7/ce/fbaeed4f9fb8b2daa961f90591662df6a86c1abf25c548329a86920aedfb/soupsieve-2.6.tar.gz", hash = "sha256:e2e68417777af359ec65daac1057404a3c8a5455bb8abc36f1a9866ab1a51abb", size = 101569 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d1/c2/fe97d779f3ef3b15f05c94a2f1e3d21732574ed441687474db9d342a7315/soupsieve-2.6-py3-none-any.whl", hash = "sha256:e72c4ff06e4fb6e4b5a9f0f55fe6e81514581fca1515028625d0f299c602ccc9", size = 36186 },
 ]
 
 [[package]]

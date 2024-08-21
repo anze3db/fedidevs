@@ -1,0 +1,8 @@
+<a href="{{ url }}"
+   {% if color == 'purple' %} class="purple-to-blue-btn group" {% elif color == 'cyan' %} class="cyan-to-blue-btn group" {% elif color == 'green' %} class="green-to-blue-btn group" {% elif color == 'pink' %} class="purple-to-pink-btn group" {% elif color == 'orange' %} class="pink-to-orange-btn group" {% elif color == 'teal' %} class="teal-to-lime-btn group" {% elif color == 'red' %} class="red-to-orange-btn group" {% else %} class="red-to-orange-btn group" {% endif %}
+   role="button">
+    <span class="relative p-2.5 transition-all ease-in duration-75 rounded-md group-hover:bg-opacity-0">{{ slot }}</span>
+    {% if xmark %}
+        <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+    {% endif %}
+</a>

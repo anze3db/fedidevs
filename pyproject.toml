@@ -18,6 +18,7 @@ dependencies = [
   "sentry-sdk",
   "setproctitle",
   "whitenoise",
+  "django-cotton>=0.9.27",
 ]
 
 [build-system]

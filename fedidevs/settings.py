@@ -75,7 +75,8 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django_dramatiq",
     "django_tui",
-    "template_partials",
+    "template_partials.apps.SimpleAppConfig",
+    "django_cotton",
     "tailwind",
     "theme",
     "mastodon_auth",
@@ -103,8 +104,8 @@ ROOT_URLCONF = "fedidevs.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
+        "DIRS": [],  # Add your template directories here
+        "APP_DIRS": False,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -112,10 +113,25 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "loaders": [
+                (
+                    "template_partials.loader.Loader",
+                    [
+                        (
+                            "django.template.loaders.cached.Loader",
+                            [
+                                "django_cotton.cotton_loader.Loader",
+                                "django.template.loaders.filesystem.Loader",
+                                "django.template.loaders.app_directories.Loader",
+                            ],
+                        )
+                    ],
+                ),
+            ],
             "builtins": [
+                "django_cotton.templatetags.cotton",
                 "heroicons.templatetags.heroicons",
             ],
-            "debug": DEBUG,
         },
     },
 ]
