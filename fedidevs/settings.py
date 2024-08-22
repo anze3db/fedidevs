@@ -76,7 +76,7 @@ INSTALLED_APPS = [
     "django_dramatiq",
     "django_tui",
     "template_partials.apps.SimpleAppConfig",
-    "django_cotton",
+    "django_cotton.apps.SimpleAppConfig",
     "tailwind",
     "theme",
     "mastodon_auth",
