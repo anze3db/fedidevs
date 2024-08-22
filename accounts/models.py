@@ -248,6 +248,7 @@ class Instance(models.Model):
     instance = models.TextField(unique=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     domain = models.TextField()
     title = models.TextField()
