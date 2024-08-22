@@ -4,60 +4,46 @@ This is the source code for the [fedidevs.com](https://fedidevs.com) website.
 
 ## Set up dev environment
 
-0. Install Python 3.12
-1. Create a venv environment
+0. Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
+
+1. Run the migrations
 ```
-python -m venv .venv
+uv run python manage.py migrate
 ```
 
-2. Activate the virtual env
+2. Run the development server
 ```
-. .venv/bin/activate
-```
-
-3. Install required packages
-```
-uv sync
+uv run python manage.py runserver
 ```
 
-4. Run the migrations
+3. In a separate terminal set up tailwindcss...
 ```
-python manage.py migrate
-```
-
-5. Run the development server
-```
-python manage.py runserver
+uv run python manage.py tailwind install
 ```
 
-6. In a separate terminal set up tailwindcss...
+4. ... and start the tailwind server
 ```
-python manage.py tailwind install
-```
-
-7. ... and start the tailwind server
-```
-python manage.py tailwind start
+uv run python manage.py tailwind start
 ```
 
-8. ... and start the background worker (only needed for syncing followers on login)
+5. ... and start the background worker (only needed for syncing followers on login)
 ```
-python manage.py rundramatiq --reload
+uv run python manage.py rundramatiq --reload
 ```
 
-9. Populate the local database (takes about ~1hr)
+6. Populate the local database (takes about ~1hr)
 ```
-python manage.py scheduler --run-now
+uv run python manage.py scheduler --run-now
 ```
 
 or run the crawler and indexer separately if you only want to populate account data (takes about ~5mins)
 
 ```
-python manage.py crawler
-python manage.py indexer
+uv run python manage.py crawler
+uv run python manage.py indexer
 ```
 
-10. Create a Django Admin user for `http://localhost:8000/admin`
+7. Create a Django Admin user for `http://localhost:8000/admin`
 ```
-python manage.py createsuperuser
+uv run python manage.py createsuperuser
 ```
