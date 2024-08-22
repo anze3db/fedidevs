@@ -19,6 +19,7 @@ dependencies = [
   "setproctitle",
   "whitenoise",
   "django-cotton>=0.9.27",
+  "openai>=1.42.0",
 ]
 
 [build-system]
