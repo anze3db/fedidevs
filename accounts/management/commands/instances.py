@@ -194,6 +194,33 @@ async def process_instances(instances):
             logger.info("%s ok", instance)
 
 
+async def fetch_v1(client, instance) -> tuple[dict | None, str]:
+    try:
+        response = await client.get(
+            f"https://{instance}/api/v1/instance",
+            timeout=5,
+        )
+    except httpx.HTTPError:
+        logger.error("Http error when indexing %s (v1 API)", instance)
+        return None, instance
+    except Exception as e:
+        logger.error("Unknown error when indexing %s (v1 API), %s", instance, e)
+        return None, instance
+
+    if response.status_code != 200:
+        logger.error("Error status code for %s", instance)
+        return None, instance
+
+    v1_json = response.json()
+    v2_json = v1_json | {
+        "domain": v1_json["uri"],
+        "description": v1_json["description"],
+        "thumbnail": {"url": v1_json["thumbnail"]},
+        "registrations": {"enabled": v1_json["registrations"]},
+    }
+    return v2_json, instance
+
+
 async def fetch(client, instance) -> tuple[dict | None, str]:
     try:
         response = await client.get(
@@ -206,10 +233,15 @@ async def fetch(client, instance) -> tuple[dict | None, str]:
     except Exception as e:
         logger.error("Unknown error when indexing %s, %s", instance, e)
         return None, instance
-    if response.status_code != 200:
+
+    if response.status_code == 200:
+        return response.json(), instance
+    elif response.status_code == 404:
+        # Try the v1 endpoint:
+        return await fetch_v1(client, instance)
+    else:
         logger.error("Error status code for %s", instance)
         return None, instance
-    return response.json(), instance
 
 
 class Command(RichCommand):
