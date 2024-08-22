@@ -18,7 +18,7 @@ def render_emojis(msg: str, emoji_list: list[str]):
 
 @register.simple_tag
 def instances_datalist():
-    instances = Instance.objects.values_list("domain", flat=True)
+    instances = Instance.objects.filter(deleted_at__isnull=True).values_list("domain", flat=True)
     res = "<datalist id='instances'>"
     for instance in instances:
         res += f"<option value='{instance}'>"

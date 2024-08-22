@@ -54,7 +54,9 @@ class Command(RichCommand):
             if instances:
                 to_index = instances.split(",")
             else:
-                to_index = [i async for i in Instance.objects.values_list("instance", flat=True)]
+                to_index = [
+                    i async for i in Instance.objects.filter(deleted_at__isnull=True).values_list("instance", flat=True)
+                ]
             while to_index:
                 now = timezone.now()
                 results = await asyncio.gather(

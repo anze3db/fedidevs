@@ -227,7 +227,7 @@ def index(request, lang: str | None = None):
     if request.user.is_authenticated:
         user_instance = str(request.user.accountaccess.instance)
 
-    instances = Instance.objects.values_list("instance", flat=True)
+    instances = Instance.objects.filter(deleted_at__isnull=True).values_list("instance", flat=True)
 
     page_description = get_page_description(
         accounts_count, selected_lang, selected_framework, follower_type, account_type, posted
@@ -309,7 +309,7 @@ def switch_account_type(_, accountlookup_id: int, account_type: str):
 
 @cache_page(60 * 60 * 24, cache="memory")
 def faq(request):
-    instances = Instance.objects.values_list("instance", flat=True)
+    instances = Instance.objects.values("instance", "deleted_at")
     return render(
         request,
         "faq.html",
