@@ -115,6 +115,7 @@ def logout(request):
 
 def auth(request):
     code = request.GET.get("code")
+
     state = request.GET.get("state")
 
     instance_id = cache.get(f"oauth:{state}")
@@ -128,6 +129,16 @@ def auth(request):
         client_secret=instance.client_secret,
         user_agent="fedidevs",
     )
+
+    if not code:
+        auth_request_url = mastodon.auth_request_url(
+            client_id=instance.client_id,
+            state=state,
+            redirect_uris=settings.MSTDN_REDIRECT_URI,
+            scopes=login_scopes,
+            force_login=True,
+        )
+        return redirect(auth_request_url)
 
     access_token = mastodon.log_in(
         code=code,
