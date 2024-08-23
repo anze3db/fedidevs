@@ -24,34 +24,35 @@ def stats(request):
     cards = []
     values = [f"{lang.code}_accounts" for lang in (LANGUAGES + FRAMEWORKS)] + ["date"]
     daily_objects = Daily.objects.order_by("-date").values(*values)[:graph_days_len]
-    for lang in LANGUAGES + FRAMEWORKS:
-        card = {
-            "code": lang.code,
-            "name": lang.name,
-            "emoji": lang.emoji,
-            "image": lang.image,
-            "accounts_count": [],
-            "dates": [],
-            "percent_change": 0,
-            "total_accounts": 0,
-        }
+    if daily_objects:
+        for lang in LANGUAGES + FRAMEWORKS:
+            card = {
+                "code": lang.code,
+                "name": lang.name,
+                "emoji": lang.emoji,
+                "image": lang.image,
+                "accounts_count": [],
+                "dates": [],
+                "percent_change": 0,
+                "total_accounts": 0,
+            }
 
-        for daily in reversed(daily_objects):
-            card["accounts_count"].append(daily[f"{lang.code}_accounts"])
-            card["dates"].append(daily["date"].strftime("%Y-%m-%d"))
+            for daily in reversed(daily_objects):
+                card["accounts_count"].append(daily[f"{lang.code}_accounts"])
+                card["dates"].append(daily["date"].strftime("%Y-%m-%d"))
 
-        start_count = card["accounts_count"][0]
-        end_count = card["accounts_count"][-1]
-        if start_count == 0:
-            card["percent_change"] = "N/A"
-        elif start_count < end_count:
-            card["percent_change"] = round((end_count - start_count) / start_count * 100, 1)
-        elif start_count > end_count:
-            card["percent_change"] = round(-((start_count - end_count) / start_count * 100), 2)
-        card["count_diff"] = end_count - start_count
-        card["total_accounts"] = end_count
+            start_count = card["accounts_count"][0]
+            end_count = card["accounts_count"][-1]
+            if start_count == 0:
+                card["percent_change"] = "N/A"
+            elif start_count < end_count:
+                card["percent_change"] = round((end_count - start_count) / start_count * 100, 1)
+            elif start_count > end_count:
+                card["percent_change"] = round(-((start_count - end_count) / start_count * 100), 2)
+            card["count_diff"] = end_count - start_count
+            card["total_accounts"] = end_count
 
-        cards.append(card)
+            cards.append(card)
 
     order = request.GET.get("o") or "percent_change"
     if order not in ("percent_change", "count", "name", "count_diff"):
