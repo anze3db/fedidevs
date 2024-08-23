@@ -24,7 +24,7 @@ def stats(request):
     cards = []
     values = [f"{lang.code}_accounts" for lang in (LANGUAGES + FRAMEWORKS)] + ["date"]
     daily_objects = Daily.objects.order_by("-date").values(*values)[:graph_days_len]
-    if len(daily_objects) > 0:
+    if daily_objects:
         for lang in LANGUAGES + FRAMEWORKS:
             card = {
                 "code": lang.code,
