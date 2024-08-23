@@ -43,7 +43,7 @@ uv run python manage.py crawler
 uv run python manage.py indexer
 ```
 
-7. Create a Django Admin user for `http://localhost:8000/admin`
+7. [optional] Create a Django Admin user for `http://localhost:8000/admin`
 ```
 uv run python manage.py createsuperuser
 ```
