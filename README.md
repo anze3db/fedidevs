@@ -26,12 +26,12 @@ uv run python manage.py tailwind install
 uv run python manage.py tailwind start
 ```
 
-5. ... and start the background worker (only needed for syncing followers on login)
+5. [optional] ... and start the background worker (only needed for syncing followers on login)
 ```
 uv run python manage.py rundramatiq --reload
 ```
 
-6. Populate the local database (takes about ~1hr)
+6. [optional] Populate the local database (takes about ~1hr)
 ```
 uv run python manage.py scheduler --run-now
 ```
