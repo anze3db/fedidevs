@@ -209,7 +209,24 @@ def index(request, lang: str | None = None):
     if query:
         search_query &= Q(accountlookup__text__icontains=query)
 
-    accounts = Account.objects.select_related("accountlookup", "instance_model").filter(search_query)
+    accounts = (
+        Account.objects.select_related("accountlookup", "instance_model")
+        .filter(search_query)
+        .only(
+            "id",
+            "display_name",
+            "username",
+            "header",
+            "url",
+            "instance",
+            "avatar",
+            "emojis",
+            "note",
+            "last_status_at",
+            "instance_model",
+            "accountlookup",
+        )
+    )
     accounts = accounts.order_by(sort_order)
     if request.user.is_authenticated:
         # Annotate whether the current request user is following the account:
@@ -221,7 +238,7 @@ def index(request, lang: str | None = None):
     paginator = Paginator(accounts, 20)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    accounts_count = Account.objects.filter(search_query).count()
+    accounts_count = page_obj.paginator.count
 
     user_instance = None
     if request.user.is_authenticated:
@@ -262,7 +279,6 @@ def index(request, lang: str | None = None):
             "account_type": account_type,
             "follower_type": follower_type,
             "posted": posted,
-            "instances_count": len(instances),
             "accounts_count": accounts_count,  # TODO might be slow
             "selected_instance": request.session.get("selected_instance") or user_instance,
             "query": query,
