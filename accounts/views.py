@@ -71,7 +71,7 @@ def get_page_description(
 ) -> str:
     page_description = ""
     if accounts_count > 0:
-        page_description += f"Listing {accounts_count} "
+        page_description += f"{accounts_count} "
     else:
         page_description += "No "
 
