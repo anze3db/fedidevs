@@ -8,6 +8,7 @@
 {% block content %}
     <main class="flex justify-center">
         <article>
+            <p class="prose-xl dark:prose-invert md:hidden mb-4">{{ page_subheader | safe }}</p>
             <section class="mb-8 flex flex-wrap gap-4 justify-end">
                 {# djlint:off #}
                 {% if follower_type == 'best' %}
