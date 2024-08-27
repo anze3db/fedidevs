@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_date
+from django.views.decorators.cache import cache_page
 
 from accounts.views import build_canonical_url
 from confs.models import (
@@ -135,6 +136,7 @@ def get_order_display(order: Literal["-favourites_count", "-reblogs_count", "-re
             return "Created Date"
 
 
+@cache_page(30, cache="memory")
 def conference(request, slug: str):
     conference = get_object_or_404(Conference, slug=slug)
     if conference.posts_after:
