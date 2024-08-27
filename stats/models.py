@@ -9,14 +9,14 @@ def store_daily_stats():
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
     account_defaults = {
-        f"{lang.code}_accounts": AccountLookup.objects.filter(language__icontains=lang.code).count()
+        f"{lang.code}_accounts": AccountLookup.objects.filter(language__icontains=lang.code + "\n").count()
         for lang in LANGUAGES + FRAMEWORKS
     }
     account_defaults["total_accounts"] = Account.objects.count()
 
     post_defaults = {
         f"{lang.code}_posts": Post.objects.filter(
-            account__accountlookup__language__icontains=lang.code,
+            account__accountlookup__language__icontains=lang.code + "\n",
         ).count()
         for lang in LANGUAGES + FRAMEWORKS
     }
