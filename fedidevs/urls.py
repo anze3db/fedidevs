@@ -166,7 +166,20 @@ class LangSlugConverter:
         return value
 
 
+class ConfLangSlugConverter:
+    regex = "|".join([lang.code for lang in CONF_LANG_OR_FRAMEWORK]) + "|"
+
+    def to_python(self, value: str):
+        return value
+
+    def to_url(self, value):
+        if not value:
+            return ""
+        return value
+
+
 register_converter(LangSlugConverter, "langslug")
+register_converter(ConfLangSlugConverter, "conflangslug")
 
 
 urlpatterns = [
@@ -206,7 +219,7 @@ urlpatterns = [
         name="developers-on-mastodon",
     ),
     path("conferences/", confs_views.conferences, name="conferences"),
-    path("conferences/<langslug:lang>/", confs_views.conferences, name="conferences"),
+    path("conferences/<conflangslug:lang>/", confs_views.conferences, name="conferences"),
     path("posts/subscribe", post_views.subscribe, name="posts_subscribe"),
     path(
         "posts/subscribe/success/",
@@ -238,5 +251,5 @@ urlpatterns = [
         confs_views.dotnetconf,
         name="dotnetconf",
     ),
-    path("<slug:slug>/", confs_views.conference, name="conference"),
+    path("<slug:conference_slug>/", confs_views.conference, name="conference"),
 ]

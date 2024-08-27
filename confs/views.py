@@ -137,8 +137,8 @@ def get_order_display(order: Literal["-favourites_count", "-reblogs_count", "-re
 
 
 @cache_page(30, cache="memory")
-def conference(request, slug: str):
-    conference = get_object_or_404(Conference, slug=slug)
+def conference(request, conference_slug: str):
+    conference = get_object_or_404(Conference, slug=conference_slug)
     if conference.posts_after:
         search_query = Q(conference=conference, created_at__gte=conference.posts_after)
     else:
@@ -246,15 +246,15 @@ def conference(request, slug: str):
             "page_subheader": f"{conference.start_date.strftime('%b %d')} - {conference.end_date.strftime('%b %d, %Y')}",
             "page_description": page_description,
             "canonical_url": build_canonical_url(
-                reverse("conference", kwargs={"slug": conference.slug}), request.GET, ["account", "date"]
+                reverse("conference", kwargs={"conference_slug": conference.slug}), request.GET, ["account", "date"]
             ),
             "page_image": "og-conferences.png",
-            "page_url": reverse("conference", kwargs={"slug": conference.slug}),
+            "page_url": reverse("conference", kwargs={"conference_slug": conference.slug}),
             "conference": conference,
             "conf_posts": page_obj,
             "account_counts": account_counts,
             "selected_instance": user_instance,
-            "slug": slug,
+            "slug": conference_slug,
             "account_id": account_id,
             "current_account": current_account,
             "order_display": get_order_display(order),
