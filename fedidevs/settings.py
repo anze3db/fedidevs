@@ -320,8 +320,8 @@ if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
         # We recommend adjusting this value in production.
-        traces_sample_rate=0.005,
-        profiles_sample_rate=0.005,
+        traces_sample_rate=0.05,
+        profiles_sample_rate=0.05,
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
