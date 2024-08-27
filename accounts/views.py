@@ -265,7 +265,7 @@ def index(request, lang: str | None = None):
             "page_header": "FEDIDEVS",
             "page_subheader": page_description,
             "canonical_url": build_canonical_url(
-                reverse("index" if lang is None else lang), request.GET, ["t", "f", "post"]
+                reverse("index", kwargs={"lang": lang}), request.GET, ["t", "f", "post"]
             ),
             "page_description": page_description + top_five_accounts,
             "page_image": "og.png",

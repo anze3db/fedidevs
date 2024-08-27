@@ -67,7 +67,7 @@
             {% for card in cards %}
                 <div class="w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
                     <h3>
-                        <a href="{% url card.code %}"
+                        <a href="{% url 'index' card.code %}"
                            class="flex gap-2 text-xl font-bold text-gray-900 dark:text-white">
                             <img src="{% static card.image %}"
                                  alt="{{ card.code }}"

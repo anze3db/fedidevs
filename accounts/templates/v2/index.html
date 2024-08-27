@@ -12,27 +12,27 @@
             <section class="mb-8 flex flex-wrap gap-4 justify-end">
                 {# djlint:off #}
                 {% if follower_type == 'best' %}
-                    <c-pretty-button url="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring f=None %}" color="purple" :xmark="True">
+                    <c-pretty-button url="{% if selected_lang_or_framework %}{% url 'index' selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring f=None %}" color="purple" :xmark="True">
                     Best
                     </c-pretty-button>
                 {% endif %}
                 {% if follower_type == 'celebrity' %}
-                    <c-pretty-button url="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring f=None %}" color="pink" :xmark="True">
+                    <c-pretty-button url="{% if selected_lang_or_framework %}{% url 'index' selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring f=None %}" color="pink" :xmark="True">
                     Celebrity
                     </c-pretty-button>
                 {% endif %}
                 {% if account_type == 'human' %}
-                    <c-pretty-button url="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring t=None %}" color="orange" :xmark="True">
+                    <c-pretty-button url="{% if selected_lang_or_framework %}{% url 'index' selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring t=None %}" color="orange" :xmark="True">
                     Human
                     </c-pretty-button>
                 {% endif %}
                 {% if account_type == 'project' %}
-                    <c-pretty-button url="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring t=None %}" color="cyan" :xmark="True">
+                    <c-pretty-button url="{% if selected_lang_or_framework %}{% url 'index' selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring t=None %}" color="cyan" :xmark="True">
                     Project
                     </c-pretty-button>
                 {% endif %}
                 {% if posted == 'recently' %}
-                    <c-pretty-button url="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring post=None %}" color="green" :xmark="True">
+                    <c-pretty-button url="{% if selected_lang_or_framework %}{% url 'index' selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring post=None %}" color="green" :xmark="True">
                     Recently posted
                     </c-pretty-button>
                 {% endif %}
@@ -218,7 +218,7 @@
             <ul class="px-4 -mx-4 text-small ">
                 {% for language in languages %}
                     <li class="m-1 inline-block">
-                        <a href="{% if selected_lang.code != language.code %}{% url language.code %}{% else %}{% url "index" %}{% endif %}{% querystring %}"
+                        <a href="{% if selected_lang.code != language.code %}{% url 'index' language.code %}{% else %}{% url "index" %}{% endif %}{% querystring %}"
                            class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 {% if selected_lang.code == language.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
                            role="button">
                             <span class="flex gap-2">
@@ -247,7 +247,7 @@
             <ul class="px-4 -mx-4">
                 {% for framework in frameworks %}
                     <li class="m-1 inline-block">
-                        <a href="{% if selected_framework.code != framework.code %}{% url framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring %}"
+                        <a href="{% if selected_framework.code != framework.code %}{% url 'index' framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring %}"
                            class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if selected_framework.code == framework.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
                            role="button">
                             <span class="flex gap-2">
@@ -275,7 +275,7 @@
         <form method="get"
               role="group"
               class="mb-8"
-              action="{% if selected_lang_or_framework %}{% url selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}">
+              action="{% if selected_lang_or_framework %}{% url 'index' selected_lang_or_framework.code %}{% else %}{% url 'index' %}{% endif %}">
             <label for="default-search"
                    class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
             <div class="relative">

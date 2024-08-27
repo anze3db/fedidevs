@@ -173,6 +173,7 @@ urlpatterns = (
         path("__reload__/", include("django_browser_reload.urls")),
         path("robots.txt", robots_txt),
         path("", views.index, name="index"),
+        path("<str:lang>", views.index, name="index"),
         path("follow/<int:account_id>", mastodon_views.follow, name="follow"),
         path("redirect/<path:query>", mastodon_views.redirect_to_local, name="redirect"),
         path(
@@ -207,7 +208,6 @@ urlpatterns = (
         )
         for lang in CONF_LANG_OR_FRAMEWORK
     ]
-    + [path(f"{lang.code}/", views.index, name=lang.code, kwargs={"lang": lang.code}) for lang in LANG_OR_FRAMEWORK]
     + [
         path(
             "posts/<date:date>/djangoconus23/",
