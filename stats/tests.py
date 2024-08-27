@@ -51,7 +51,7 @@ class TestStats(TestCase):
             roles=[],
             fields=[],
         )
-        AccountLookup.objects.create(account=account, language="python")
+        AccountLookup.objects.create(account=account, language="python\n")
 
         store_daily_stats()
         daily = Daily.objects.get(date=timezone.now().date())
@@ -112,7 +112,7 @@ class TestStats(TestCase):
             roles=[],
             fields=[],
         )
-        AccountLookup.objects.create(account=account, language="python")
+        AccountLookup.objects.create(account=account, language="python\n")
         Post.objects.create(
             account=account,
             post_id="0",
