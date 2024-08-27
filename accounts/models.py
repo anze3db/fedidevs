@@ -188,7 +188,7 @@ class Account(models.Model):
     @property
     def languages(self):
         lang_lookup = {lang.code: lang for lang in LANGUAGES + FRAMEWORKS}
-        return [lang_lookup[lang] for lang in self.accountlookup.language.split("\n")]
+        return [lang_lookup[lang.strip()] for lang in self.accountlookup.language[:-1].split("\n")]
 
     def should_index(self):
         if self.noindex or not self.discoverable:

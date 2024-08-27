@@ -46,7 +46,7 @@ class Command(RichCommand):
                 lookup = AccountLookup(account=account)
                 create_lookups.append(lookup)
 
-            lookup.language = "\n".join(languages)
+            lookup.language = "\n".join(languages) + "\n"
             lookup.last_status_at = account.last_status_at
             lookup.followers_count = account.followers_count
             lookup.text = "\n".join([account.display_name, account.username, account.url, account.note])

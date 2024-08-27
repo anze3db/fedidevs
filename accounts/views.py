@@ -180,9 +180,9 @@ def index(request, lang: str | None = None):
 
     search_query = Q(accountlookup__isnull=False)
     if selected_lang:
-        search_query &= Q(accountlookup__language__icontains=selected_lang.code)
+        search_query &= Q(accountlookup__language__icontains=selected_lang.code + "\n")
     if selected_framework:
-        search_query &= Q(accountlookup__language__icontains=selected_framework.code)
+        search_query &= Q(accountlookup__language__icontains=selected_framework.code + "\n")
 
     order = request.GET.get("o") or "followers"
     period = request.GET.get("p") or "all"
