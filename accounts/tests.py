@@ -184,3 +184,13 @@ class TestSelectedInstance(TestCase):
             response,
             '<a href="https://mastodon.social/@test"',
         )
+
+
+class TestStaticPages(TestCase):
+    def test_developers_on_mastodon(self):
+        response = self.client.get("/developers-on-mastodon/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_faq(self):
+        response = self.client.get("/faq/")
+        self.assertEqual(response.status_code, 200)

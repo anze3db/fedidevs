@@ -153,90 +153,90 @@ register_converter(DateConverter, "date")
 LANG_OR_FRAMEWORK = LANGUAGES + FRAMEWORKS
 CONF_LANG_OR_FRAMEWORK = CONF_LANGUAGES + CONF_FRAMEWORKS
 
-urlpatterns = (
-    [
-        path(
-            "sitemap.xml",
-            sitemap,
-            {
-                "sitemaps": {
-                    "static": StaticViewSitemap(),
-                    "accounts": AccountSitemap(),
-                    "conferences": ConferencesSitemap(),
-                    "conference": ConferenceSitemap(),
-                }
-            },
-            name="django.contrib.sitemaps.views.sitemap",
-        ),
-        path("admin/", admin.site.urls),
-        path("__debug__/", include("debug_toolbar.urls")),
-        path("__reload__/", include("django_browser_reload.urls")),
-        path("robots.txt", robots_txt),
-        path("", views.index, name="index"),
-        path("<str:lang>", views.index, name="index"),
-        path("follow/<int:account_id>", mastodon_views.follow, name="follow"),
-        path("redirect/<path:query>", mastodon_views.redirect_to_local, name="redirect"),
-        path(
-            "switch/account_type/<int:accountlookup_id>/<str:account_type>",
-            views.switch_account_type,
-            name="switch_account_type",
-        ),
-        path("mastodon_login/", mastodon_views.login, name="mastodon_login"),
-        path("mastodon_logout/", mastodon_views.logout, name="mastodon_logout"),
-        path("mastodon_auth/", mastodon_views.auth, name="mastodon_auth"),
-        path("faq/", views.faq, name="faq"),
-        path(
-            "developers-on-mastodon/",
-            views.devs_on_mastodon,
-            name="developers-on-mastodon",
-        ),
-        path("conferences/", confs_views.conferences, name="conferences"),
-        path("posts/subscribe", post_views.subscribe, name="posts_subscribe"),
-        path(
-            "posts/subscribe/success/",
-            post_views.subscribe_success,
-            name="posts_subscribe_success",
-        ),
-        path("stats/", stats_views.stats, name="stats"),
-    ]
-    + [
-        path(
-            f"conferences/{lang.code}/",
-            confs_views.conferences,
-            name=f"conference-{lang.code}",
-            kwargs={"lang": lang.code},
-        )
-        for lang in CONF_LANG_OR_FRAMEWORK
-    ]
-    + [
-        path(
-            "posts/<date:date>/djangoconus23/",
-            post_views.djangoconus,
-            name="djangoconus",
-        ),
-        path("posts/djangoconus23/", post_views.djangoconus, name="djangoconus"),
-    ]
-    + [
-        path("fwd50/", confs_views.fwd50, name="fwd50"),
-        path(
-            "fwd50/<date:date>/",
-            confs_views.fwd50,
-            name="fwd50",
-        ),
-        path("djangoconafrica/", confs_views.djangoconafrica, name="djangoconafrica"),
-        path(
-            "djangoconafrica/<date:date>/",
-            confs_views.djangoconafrica,
-            name="djangoconafrica",
-        ),
-        path("dotnetconf/", confs_views.dotnetconf, name="dotnetconf"),
-        path(
-            "dotnetconf/<date:date>/",
-            confs_views.dotnetconf,
-            name="dotnetconf",
-        ),
-    ]
-    + [
-        path("<str:slug>/", confs_views.conference, name="conference"),
-    ]
-)
+
+class LangSlugConverter:
+    regex = "|".join([lang.code for lang in LANG_OR_FRAMEWORK]) + "|"
+
+    def to_python(self, value: str):
+        return value
+
+    def to_url(self, value):
+        if not value:
+            return ""
+        return value
+
+
+register_converter(LangSlugConverter, "langslug")
+
+
+urlpatterns = [
+    path(
+        "sitemap.xml",
+        sitemap,
+        {
+            "sitemaps": {
+                "static": StaticViewSitemap(),
+                "accounts": AccountSitemap(),
+                "conferences": ConferencesSitemap(),
+                "conference": ConferenceSitemap(),
+            }
+        },
+        name="django.contrib.sitemaps.views.sitemap",
+    ),
+    path("admin/", admin.site.urls),
+    path("__debug__/", include("debug_toolbar.urls")),
+    path("__reload__/", include("django_browser_reload.urls")),
+    path("robots.txt", robots_txt),
+    path("", views.index, name="index"),
+    path("<langslug:lang>/", views.index, name="index"),
+    path("follow/<int:account_id>", mastodon_views.follow, name="follow"),
+    path("redirect/<path:query>", mastodon_views.redirect_to_local, name="redirect"),
+    path(
+        "switch/account_type/<int:accountlookup_id>/<str:account_type>",
+        views.switch_account_type,
+        name="switch_account_type",
+    ),
+    path("mastodon_login/", mastodon_views.login, name="mastodon_login"),
+    path("mastodon_logout/", mastodon_views.logout, name="mastodon_logout"),
+    path("mastodon_auth/", mastodon_views.auth, name="mastodon_auth"),
+    path("faq/", views.faq, name="faq"),
+    path(
+        "developers-on-mastodon/",
+        views.devs_on_mastodon,
+        name="developers-on-mastodon",
+    ),
+    path("conferences/", confs_views.conferences, name="conferences"),
+    path("conferences/<langslug:lang>/", confs_views.conferences, name="conferences"),
+    path("posts/subscribe", post_views.subscribe, name="posts_subscribe"),
+    path(
+        "posts/subscribe/success/",
+        post_views.subscribe_success,
+        name="posts_subscribe_success",
+    ),
+    path("stats/", stats_views.stats, name="stats"),
+    path(
+        "posts/<date:date>/djangoconus23/",
+        post_views.djangoconus,
+        name="djangoconus",
+    ),
+    path("posts/djangoconus23/", post_views.djangoconus, name="djangoconus"),
+    path("fwd50/", confs_views.fwd50, name="fwd50"),
+    path(
+        "fwd50/<date:date>/",
+        confs_views.fwd50,
+        name="fwd50",
+    ),
+    path("djangoconafrica/", confs_views.djangoconafrica, name="djangoconafrica"),
+    path(
+        "djangoconafrica/<date:date>/",
+        confs_views.djangoconafrica,
+        name="djangoconafrica",
+    ),
+    path("dotnetconf/", confs_views.dotnetconf, name="dotnetconf"),
+    path(
+        "dotnetconf/<date:date>/",
+        confs_views.dotnetconf,
+        name="dotnetconf",
+    ),
+    path("<slug:slug>/", confs_views.conference, name="conference"),
+]
