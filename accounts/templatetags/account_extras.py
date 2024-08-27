@@ -24,17 +24,3 @@ def instances_datalist():
         res += f"<option value='{instance}'>"
     res += "</datalist>"
     return mark_safe(res)  # noqa: S308)
-
-
-@register.inclusion_tag("v2/follow_button.html")
-def follow_button(user, account):
-    if not user.is_authenticated:
-        _type = "login"
-    elif user.accountaccess.account.account_id == account.account_id:
-        _type = "self"
-    elif account.is_following:
-        _type = "unfollow"
-    else:
-        _type = "follow"
-
-    return {"account": account, "type": _type}
