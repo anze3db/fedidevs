@@ -1,8 +1,11 @@
+import xml.etree.ElementTree as ET
+
 from django.core import management
 from django.test import TestCase
 from django.utils import timezone
 
 from accounts.models import Account
+from confs.models import Conference, ConferenceAccount
 
 
 # Create your tests here.
@@ -194,3 +197,69 @@ class TestStaticPages(TestCase):
     def test_faq(self):
         response = self.client.get("/faq/")
         self.assertEqual(response.status_code, 200)
+
+
+class TestSitemap(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.conf = Conference.objects.create(
+            slug="testconf",
+            instances="mastodon.social",
+            name="Test Conference",
+            start_date=timezone.datetime(2021, 1, 1).date(),
+            end_date=timezone.datetime(2021, 1, 1).date(),
+            tags="",
+        )
+        cls.account = Account.objects.create(
+            account_id="1",
+            instance="mastodon.social",
+            username="test",
+            acct="test",
+            display_name="Test",
+            locked=False,
+            bot=False,
+            discoverable=True,
+            noindex=False,
+            group=False,
+            created_at="2021-01-01T00:00:00.000000+00:00",
+            last_status_at=timezone.now(),
+            last_sync_at="2021-01-01T00:00:00.000000+00:00",
+            followers_count=0,
+            following_count=0,
+            statuses_count=0,
+            note="python",
+            url="https://mastodon.social/@test",
+            avatar="https://mastodon.social/@test/avatar",
+            avatar_static="https://mastodon.social/@test/avatar",
+            header="https://mastodon.social/@test/header",
+            header_static="https://mastodon.social/@test/header",
+            emojis=[],
+            roles=[],
+            fields=[],
+        )
+        ConferenceAccount.objects.create(conference=cls.conf, account=cls.account, count=1)
+
+    def test_sitemap(self):
+        response = self.client.get("/sitemap.xml")
+        urls = [
+            "http://testserver/",
+            "http://testserver/faq/",
+            "http://testserver/developers-on-mastodon/",
+            "http://testserver/conferences/",
+            "http://testserver/stats/",
+            "http://testserver/?f=celebrity&t=project",
+            "http://testserver/?f=best&t=project&posted=recently",
+            "http://testserver/python/?f=best&t=human&posted=recently",
+            "http://testserver/conferences/typescript/",
+            "http://testserver/testconf/",
+            "http://testserver/testconf/?date=2021-01-01",
+            f"http://testserver/testconf/?date=2021-01-01&account={self.account.id}",
+        ]
+
+        self.assertEqual(response.status_code, 200)
+
+        xml = ET.fromstring(response.content)  # noqa: S314
+        xml_urls = {url[0].text for url in xml}
+        for url in urls:
+            with self.subTest(url=url):
+                self.assertIn(url, xml_urls)

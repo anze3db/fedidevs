@@ -64,13 +64,11 @@ class StaticViewSitemap(Sitemap):
 
 
 class AccountSitemap(Sitemap):
-    changefreq = "weekly"
-
     def items(self):
-        lang_or_frameworks = [lang.code for lang in LANG_OR_FRAMEWORK] + ["index"]
+        lang_or_frameworks = [lang.code for lang in LANG_OR_FRAMEWORK] + [None]
         best_or_celebrity = ["best", "celebrity", None]
         human_or_project = ["human", "project", None]
-        recently_posted = ["recently_posted", None]
+        recently_posted = ["recently", None]
         return [
             (
                 lang,
@@ -87,53 +85,58 @@ class AccountSitemap(Sitemap):
     def location(self, item):
         lang, best_or_celebrity, human_or_project, recently_posted = item
         if not best_or_celebrity and not human_or_project and not recently_posted:
-            return reverse(lang)
+            return reverse("index", kwargs={"lang": lang} if lang else {})
         qs = []
         if best_or_celebrity:
-            qs.append(f"best={best_or_celebrity}")
+            qs.append(f"f={best_or_celebrity}")
         if human_or_project:
-            qs.append(f"type={human_or_project}")
+            qs.append(f"t={human_or_project}")
         if recently_posted:
-            qs.append(f"recently_posted={recently_posted}")
-        return reverse(lang) + "?" + "&".join(qs)
+            qs.append(f"posted={recently_posted}")
+        return reverse("index", kwargs={"lang": lang} if lang else {}) + "?" + "&".join(qs)
 
 
 class ConferencesSitemap(Sitemap):
-    changefreq = "weekly"
-
     def items(self):
-        return [lang.code for lang in CONF_LANG_OR_FRAMEWORK]
+        return [lang.code for lang in CONF_LANG_OR_FRAMEWORK] + [None]
 
     def location(self, item):
-        return reverse(f"conference-{item}", kwargs={"lang": item})
+        return reverse("conferences", kwargs={"lang": item})
 
 
 class ConferenceSitemap(Sitemap):
-    changefreq = "weekly"
-
     def items(self):
-        return [
-            (conf.slug, account, conf.start_date + dt.timedelta(days=i))
-            for conf in Conference.objects.all()
-            for account in ConferenceAccount.objects.filter(conference=conf)
-            .values_list("account_id", flat=True)
-            .filter(count__gt=0)
-            .order_by("-count")[:10]
-            for i in range((conf.end_date - conf.start_date).days + 1)
-            if conf.start_date + dt.timedelta(i) < timezone.now().date()
-        ] + [(conf, None, None) for conf in Conference.objects.all()]
+        return (
+            [
+                (conf.slug, account, conf.start_date + dt.timedelta(days=i))
+                for conf in Conference.objects.all()
+                for account in ConferenceAccount.objects.filter(conference=conf)
+                .values_list("account_id", flat=True)
+                .filter(count__gt=0)
+                .order_by("-count")[:10]
+                for i in range((conf.end_date - conf.start_date).days + 1)
+                if conf.start_date + dt.timedelta(i) < timezone.now().date()
+            ]
+            + [
+                (conf.slug, None, conf.start_date + dt.timedelta(days=i))
+                for conf in Conference.objects.all()
+                for i in range((conf.end_date - conf.start_date).days + 1)
+                if conf.start_date + dt.timedelta(i) < timezone.now().date()
+            ]
+            + [(conf.slug, None, None) for conf in Conference.objects.all()]
+        )
 
     def location(self, item):
         conf, account, date = item
         if not date:
-            return reverse("conference", kwargs={"slug": conf})
+            return reverse("conference", kwargs={"conference_slug": conf})
 
         qs = []
         if date:
             qs.append(f"date={date}")
         if account:
             qs.append(f"account={account}")
-        return reverse("conference", kwargs={"slug": conf}) + "?" + "&".join(qs)
+        return reverse("conference", kwargs={"conference_slug": conf}) + "?" + "&".join(qs)
 
 
 class DateConverter:
