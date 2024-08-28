@@ -128,4 +128,5 @@ omit = [
   "manage.py",
   "fedidevs/wsgi.py",
   "fedidevs/asgi.py",
+  "theme/*"
 ]
