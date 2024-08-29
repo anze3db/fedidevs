@@ -28,32 +28,7 @@
                      alt="{{ account.login }}"
                      width="80"
                      height="80" />
-                {% if not user.is_authenticated %}
-                    <button data-modal-target="authentication-modal"
-                            data-modal-toggle="authentication-modal"
-                            data-umami-event="follow-signup-modal"
-                            class="plausible-event-name=follow-signup-modal text-white absolute end-2 -bottom-12 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Follow
-                    </button>
-                {% elif account.is_following %}
-                    <button disable
-                            class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
-                        Following
-                    </button>
-                {% elif user.accountaccess.account.account_id == account.account_id %}
-                    <button disable
-                            class="absolute -bottom-12 end-2 cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
-                        You!
-                    </button>
-                {% else %}
-                    <button hx-post="{% url 'follow' account.pk %}"
-                            hx-swap="outerHTML"
-                            onclick="this.innerText = 'Following...'; this.disabled = true; this.classList.add('opacity-50');"
-                            data-umami-event="follow"
-                            class="plausible-event-name=follow absolute -bottom-12 end-2 rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Follow
-                    </button>
-                {% endif %}
+                <c-follow-button :account="account" :user="user" />
             </div>
             <div class="p-4 pt-16">
                 <div class="relative">
