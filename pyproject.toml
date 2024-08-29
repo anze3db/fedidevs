@@ -20,15 +20,7 @@ dependencies = [
   "whitenoise",
   "django-cotton>=0.9.27",
   "openai>=1.42.0",
-  "django-debug-toolbar-template-profiler>=2.1.0",
 ]
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["."]
 
 [tool.uv]
 dev-dependencies = [
