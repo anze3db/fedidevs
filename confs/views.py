@@ -232,12 +232,19 @@ def conference(request, conference_slug: str):
         page_description += " featuring key discussions, trending topics, and highlights from the conference."
     else:
         page_description = f"Explore Mastodon posts about {conference.name} {conference.start_date.strftime('%Y')}"
-
+    if current_account and current_date:
+        page_title = f"{current_account.account.name} Mastodon posts from {current_date['pre_display']} of {conference.name} {conference.start_date.strftime('%Y')}"
+    elif current_account and not current_date:
+        page_title = f"{current_account.account.name} Mastodon posts from {conference.name} {conference.start_date.strftime('%Y')}"
+    elif not current_account and current_date:
+        page_title = f"Mastodon posts from {current_date['pre_display']} of {conference.name} {conference.start_date.strftime('%Y')}"
+    else:
+        page_title = f"{conference.name} {conference.start_date.strftime('%Y')} Mastodon posts and highlights"
     return render(
         request,
         "conference.html" if "HX-Request" not in request.headers else "conference.html#posts-partial",
         {
-            "page_title": f"{conference.name}: Explore {ConferencePost.objects.filter(conference=conference).count()} Mastodon Posts & Conference Highlights",
+            "page_title": page_title,
             "page": "conferences",
             # Conference header is conference.name and year
             "page_header": conference.name + " " + conference.start_date.strftime("%Y"),
