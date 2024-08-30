@@ -3,7 +3,6 @@ import re
 from dataclasses import dataclass
 from datetime import timedelta
 
-from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils import timezone
@@ -172,12 +171,17 @@ class Account(models.Model):
     def last_status_at_cached(self):
         if self.last_status_at is None:
             return "Never posted"
-
-        if timezone.now() - self.last_status_at < timedelta(days=1):
+        diff = timezone.now() - self.last_status_at
+        if diff < timedelta(days=1):
             return "Less than a day ago"
 
-        # use natural time to display last status
-        return naturaltime(self.last_status_at)
+        if diff < timedelta(days=7):
+            return f"{diff.days} day{"s" if diff.days > 1 else ""} ago"
+
+        if diff < timedelta(days=30):
+            return f"{diff.days // 7} week{"s" if diff.days // 7 > 1 else ""} ago"
+
+        return f"{diff.days // 30} month{"s" if diff.days // 30 > 1 else ""} ago"
 
     @property
     def username_at_instance(self):
