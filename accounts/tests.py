@@ -247,7 +247,7 @@ class TestSitemap(TestCase):
             "http://testserver/developers-on-mastodon/",
             "http://testserver/conferences/",
             "http://testserver/stats/",
-            "http://testserver/?f=celebrity&t=project",
+            "http://testserver/?f=popular&t=project",
             "http://testserver/?f=best&t=project&posted=recently",
             "http://testserver/python/?f=best&t=human&posted=recently",
             "http://testserver/conferences/typescript/",

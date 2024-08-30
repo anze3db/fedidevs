@@ -66,7 +66,7 @@ class StaticViewSitemap(Sitemap):
 class AccountSitemap(Sitemap):
     def items(self):
         lang_or_frameworks = [lang.code for lang in LANG_OR_FRAMEWORK] + [None]
-        best_or_celebrity = ["best", "celebrity", None]
+        best_or_popular = ["best", "popular", None]
         human_or_project = ["human", "project", None]
         recently_posted = ["recently", None]
         return [
@@ -77,18 +77,18 @@ class AccountSitemap(Sitemap):
                 rp,
             )
             for lang in lang_or_frameworks
-            for bc in best_or_celebrity
+            for bc in best_or_popular
             for hp in human_or_project
             for rp in recently_posted
         ]
 
     def location(self, item):
-        lang, best_or_celebrity, human_or_project, recently_posted = item
-        if not best_or_celebrity and not human_or_project and not recently_posted:
+        lang, best_or_popular, human_or_project, recently_posted = item
+        if not best_or_popular and not human_or_project and not recently_posted:
             return reverse("index", kwargs={"lang": lang} if lang else {})
         qs = []
-        if best_or_celebrity:
-            qs.append(f"f={best_or_celebrity}")
+        if best_or_popular:
+            qs.append(f"f={best_or_popular}")
         if human_or_project:
             qs.append(f"t={human_or_project}")
         if recently_posted:

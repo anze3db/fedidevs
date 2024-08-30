@@ -16,9 +16,9 @@
                     Best
                     </c-pretty-button>
                 {% endif %}
-                {% if follower_type == 'celebrity' %}
+                {% if follower_type == 'popular' %}
                     <c-pretty-button url="{% if selected_lang_or_framework %}{% url 'index' selected_lang_or_framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring f=None %}" color="pink" :xmark="True">
-                    Celebrity
+                    Popular
                     </c-pretty-button>
                 {% endif %}
                 {% if account_type == 'human' %}
@@ -159,7 +159,7 @@
 {% endblock content %}
 {% block sidebar %}
     <header>
-        <h1 class="prose-xl dark:prose-invert">{{ page_subheader | safe }}</h1>
+        <h1 class="prose-xl dark:prose-invert hidden md:block">{{ page_subheader | safe }}</h1>
         <section class="mb-8 mt-8">
             <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">Smart Filters ✨</h2>
             <ul class="px-4 -mx-4 text-small">
@@ -172,10 +172,10 @@
                     </a>
                 </li>
                 <li class="me-2 mb-2 inline-block">
-                    <a href="{% if follower_type == 'celebrity' %}{% querystring f='' %}{% else %}{% querystring f='celebrity' %}{% endif %}"
+                    <a href="{% if follower_type == 'popular' %}{% querystring f='' %}{% else %}{% querystring f='popular' %}{% endif %}"
                        class="purple-to-pink-btn group">
-                        <span class="relative p-2.5 transition-all ease-in duration-75 {% if follower_type != 'celebrity' %}bg-white dark:bg-gray-900{% endif %} rounded-md group-hover:bg-opacity-0">
-                            Celebrity
+                        <span class="relative p-2.5 transition-all ease-in duration-75 {% if follower_type != 'popular' %}bg-white dark:bg-gray-900{% endif %} rounded-md group-hover:bg-opacity-0">
+                            Popular
                         </span>
                     </a>
                 </li>

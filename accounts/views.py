@@ -61,6 +61,41 @@ def get_display_strings(order: str, period: str):
     return res
 
 
+def get_page_title(
+    selected_lang: Language | None,
+    selected_framework: Framework | None,
+    follower_type: str | None,
+    account_type: str | None,
+    posted: str | None,
+) -> str:
+    page_title = ""
+    if follower_type == "best":
+        page_title += "The best "
+    elif follower_type == "popular":
+        page_title += "Popular "
+    else:
+        page_title += "Awesome "
+
+    if selected_lang:
+        page_title += f"{selected_lang.name} "
+    elif selected_framework:
+        page_title += f"{selected_framework.name} "
+
+    if account_type == "human":
+        page_title += "developers "
+    elif account_type == "project":
+        page_title += "projects "
+    else:
+        page_title += "accounts "
+
+    page_title += "on Mastodon"
+
+    if posted == "recently":
+        page_title += " that posted recently"
+
+    return page_title
+
+
 def get_page_description(
     accounts_count: int,
     selected_lang: Language | None,
@@ -79,10 +114,10 @@ def get_page_description(
         page_description += "of the best "
     elif follower_type == "best":
         page_description += "best "
-    elif follower_type == "celebrity":
-        page_description += "celebrity "
+    elif follower_type == "popular":
+        page_description += "popular "
     else:
-        page_description += ""
+        page_description += "awesome "
 
     if selected_lang:
         page_description += f"{selected_lang.name} "
@@ -100,13 +135,13 @@ def get_page_description(
         else:
             page_description += "projects"
     elif accounts_count == 1:
-        page_description += "developer or project"
+        page_description += "account"
     else:
-        page_description += "developers or projects"
+        page_description += "accounts"
 
     page_description += " on Mastodon"
     if posted == "recently":
-        page_description += " who recently posted"
+        page_description += " that posted recently"
     page_description += ". "
 
     return page_description
@@ -195,7 +230,8 @@ def index(request, lang: str | None = None):
         search_query &= Q(accountlookup__account_type="P")
 
     follower_type = request.GET.get("f")
-    if follower_type == "celebrity":
+    if follower_type in ("celebrity", "popular"):
+        follower_type = "popular"
         search_query &= Q(accountlookup__follower_type="C")
     elif follower_type == "best":
         search_query &= Q(accountlookup__follower_type="B")
@@ -262,13 +298,13 @@ def index(request, lang: str | None = None):
         "v2/accounts.html" if "HX-Request" in request.headers else "v2/index.html",
         {
             "page": "accounts",
-            "page_title": f"FediDevs | {page_description.replace("Listing ", "")}",
+            "page_title": get_page_title(selected_lang, selected_framework, follower_type, account_type, posted),
             "page_header": "FEDIDEVS",
             "page_subheader": page_description,
             "canonical_url": build_canonical_url(
                 reverse("index", kwargs={"lang": lang}), request.GET, ["t", "f", "post"]
             ),
-            "page_description": page_description + top_five_accounts,
+            "page_description": top_five_accounts if top_five_accounts else page_description,
             "page_image": "og.png",
             "accounts": page_obj,
             "selected_lang": selected_lang,

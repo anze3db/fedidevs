@@ -102,11 +102,17 @@ def conferences(request, lang: str | None = None):
         key=lambda lng: lng["count"],
         reverse=True,
     )
+    if selected_lang:
+        title = selected_lang.name + " conference discussions on Mastodon"
+    elif selected_framework:
+        title = selected_framework.name + " conference discussions on Mastodon"
+    else:
+        title = "Conference dicussions on Mastodon"
     return render(
         request,
         "conferences.html",
         {
-            "page_title": "Conferences | Fediverse Developers",
+            "page_title": title,
             "page": "conferences",
             "page_header": "Conferences",
             "page_subheader": "",
