@@ -20,6 +20,7 @@ dependencies = [
   "whitenoise",
   "django-cotton>=0.9.27",
   "openai>=1.42.0",
+  "django-watchfiles>=0.2.0",
 ]
 
 [tool.uv]

@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     "django_tui",
     "template_partials.apps.SimpleAppConfig",
     "django_cotton.apps.SimpleAppConfig",
+    "django_watchfiles",
     "tailwind",
     "theme",
     "mastodon_auth",
