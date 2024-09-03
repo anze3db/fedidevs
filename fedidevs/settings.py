@@ -100,6 +100,10 @@ MIDDLEWARE = [
     "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
+if DEBUG:
+    INSTALLED_APPS.append("zeal")
+    MIDDLEWARE.append("zeal.middleware.zeal_middleware")
+
 ROOT_URLCONF = "fedidevs.urls"
 
 TEMPLATES = [
