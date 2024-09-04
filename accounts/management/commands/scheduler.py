@@ -10,6 +10,8 @@ class Command(RichCommand):
 
     def daily_job(self):
         self.console.print("Starting daily job")
+        self.console.print("Running instances")
+        management.call_command("instances")
         self.console.print("Running crawler")
         management.call_command("crawler", skip_inactive_for=3, pre_filter=True)
         self.console.print("Running indexer")
