@@ -1,5 +1,6 @@
 import datetime as dt
 from textwrap import dedent
+from typing import Literal
 
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -85,7 +86,7 @@ class Command(RichCommand):
         daily_accounts: list[DailyAccount],
         prev_date: dt.date,
         account_lookups: dict[int, AccountLookup],
-        prefix: str,
+        prefix: Literal["daily", "weekly", "monthly"],
     ):
         prev_date_account_counts = {
             da["account_id"]: da
