@@ -65,7 +65,7 @@
     </head>
     <body class="min-h-screen bg-gray-100 dark:bg-gray-950 text-black dark:text-white"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-        <div class="fixed top-4 right-4 z-50">
+        <div class="fixed top-20 right-4 z-50">
             {% for message in messages %}
                 <div class="flex items-center p-4 mb-4 text-sm rounded-lg {{ message.tags }}"
                      role="alert">
@@ -80,7 +80,13 @@
                     <div>
                         <span class="font-medium">{{ message.tags | title }}!</span> {{ message }}
                     </div>
-                    <button onclick="return this.parentNode.remove();"
+                    <script nonce="{{ request.csp_nonce }}">
+                        document.addEventListener('DOMContentLoaded', function () {
+                            document.getElementById('message-{{forloop.counter}}')
+                                    .addEventListener('click', function () { this.parentNode.remove() });
+                        });
+                    </script>
+                    <button id="message-{{ forloop.counter }}"
                             type="button"
                             class="ms-auto -mx-1.5 -my-1.5  rounded-lg focus:ring-2 p-1.5  inline-flex items-center justify-center h-8 w-8 {{ message.tags }} border-none"
                             data-dismiss-target="#alert-1"
