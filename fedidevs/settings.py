@@ -305,6 +305,7 @@ CONTENT_SECURITY_POLICY = {
         "style-src": [SELF, UNSAFE_INLINE],
         "base-uri": [SELF],
         "form-action": [SELF],
+        "frame-ancestors": [NONE],
     }
 }
 
