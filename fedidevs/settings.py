@@ -16,6 +16,7 @@ from pathlib import Path
 
 import environ
 import sentry_sdk
+from csp.constants import NONCE, NONE, SELF, UNSAFE_INLINE
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -98,6 +99,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
+    "csp.middleware.CSPMiddleware",
 ]
 
 if DEBUG:
@@ -292,6 +294,20 @@ LOGGING = {
 }
 
 OPENAI_API_KEY = env.str("OPENAI_API_KEY", default=None)
+
+
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": [NONE],
+        "script-src": [SELF, "plausible.io", "gc.zgo.at", NONCE],
+        "connect-src": [SELF],
+        "img-src": ["*", "data:"],
+        "style-src": [SELF, UNSAFE_INLINE],
+        "base-uri": [SELF],
+        "form-action": [SELF],
+    }
+}
+
 
 if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
     sentry_sdk.init(

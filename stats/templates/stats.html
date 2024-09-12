@@ -95,7 +95,7 @@
             {% endfor %}
         </div>
     </main>
-    <script>
+    <script nonce="{{request.csp_nonce}}">
 const cards = {{ cards_json|safe }};
 
 addEventListener("DOMContentLoaded", (event) => {

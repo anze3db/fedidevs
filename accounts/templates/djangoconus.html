@@ -31,7 +31,7 @@
                     </ul>
                     <ul>
                         <li>
-                            <script>
+                            <script nonce="{{request.csp_nonce}}">
                                 function change_sort(element) {
                                 var date = {% if posts_date %}"{{ posts_date|date:"Y-m-d" }}"{% else %}null{% endif %};
                                 if (date) {

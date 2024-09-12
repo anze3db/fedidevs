@@ -263,6 +263,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-csp"
+version = "4.0b1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/82/62/2dc00501f8e59c6795636ca91d4198652e2946fe3f72f05de5b0e189b7c1/django_csp-4.0b1.tar.gz", hash = "sha256:3cf48ceab3996476c4d1e5f30ad05f1accf6a08f6b2fea17fb3cb027f7d75f11", size = 16073 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fc/12/83911b864ebb52c1937b804723a338c4a05c1fae052a353ad692ebee7bc9/django_csp-4.0b1-py3-none-any.whl", hash = "sha256:d1ef2ac5d92acf1f501410223447efc246e5c8ec206f1b519320c49a7d797d0f", size = 21547 },
+]
+
+[[package]]
 name = "django-debug-toolbar"
 version = "4.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -426,6 +438,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "django" },
     { name = "django-cotton" },
+    { name = "django-csp" },
     { name = "django-dramatiq" },
     { name = "django-environ" },
     { name = "django-tailwind" },
@@ -465,6 +478,7 @@ dev = [
 requires-dist = [
     { name = "django" },
     { name = "django-cotton", specifier = ">=0.9.27" },
+    { name = "django-csp", specifier = ">4.0b0" },
     { name = "django-dramatiq" },
     { name = "django-environ" },
     { name = "django-tailwind" },
