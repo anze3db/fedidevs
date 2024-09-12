@@ -312,7 +312,7 @@ CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SECURE = True
 LANGUAGE_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True  # Already done by default
-SECURE_HSTS_SECONDS = 10
+SECURE_HSTS_SECONDS = 15768000  # 6 months
 
 if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
     sentry_sdk.init(
