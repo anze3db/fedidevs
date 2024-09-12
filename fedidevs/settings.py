@@ -300,7 +300,7 @@ CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": [NONE],
         "script-src": [SELF, "plausible.io", "gc.zgo.at", NONCE],
-        "connect-src": [SELF],
+        "connect-src": [SELF, "plausible.io", "fedidevs.goatcounter.com"],
         "img-src": ["*", "data:"],
         "style-src": [SELF, UNSAFE_INLINE],
         "base-uri": [SELF],
