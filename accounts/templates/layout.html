@@ -46,7 +46,9 @@
         {% endblock head %}
         <script defer
                 data-domain="fedidevs.com"
-                src="https://plausible.io/js/script.tagged-events.js"></script>
+                integrity="sha384-87OYk/kq93ABjstiAsm9vZl+nVpe09IudBE9iBfPBX+UZhLjyqgLBlVDBawfHtqs"
+                src="https://plausible.io/js/script.tagged-events.js"
+                crossorigin="anonymous"></script>
     </head>
     <body>
         <header style="text-align:center;">
@@ -91,7 +93,4 @@
     </body>
     <script src="{% static "modal.js" %}"></script>
     <script src="{% static "masonry-layout.js" %}"></script>
-    <script data-goatcounter="https://fedidevs.goatcounter.com/count"
-            async
-            src="//gc.zgo.at/count.js"></script>
 </html>
