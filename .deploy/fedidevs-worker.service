@@ -1,0 +1,12 @@
+[Unit]
+Description=Fedidevs Worker
+After=fedidevs.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/bin/bash /home/anze/projects/fedidevs/.deploy/run_worker.sh
+
+[Install]
+WantedBy=fedidevs.service

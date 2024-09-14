@@ -49,4 +49,4 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          bash projects/fedidevs/fedidevs_update.sh
+          bash projects/fedidevs/.deploy/update.sh
