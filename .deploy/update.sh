@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e
-pushd "$(dirname "$0")"
+pushd "$(dirname "$0")/.."
 git pull
-echo $PATH
 uv sync --frozen
 uv run --frozen python manage.py collectstatic --noinput
 uv run --frozen python manage.py migrate
