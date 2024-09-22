@@ -304,7 +304,7 @@ CONTENT_SECURITY_POLICY = {
         "img-src": ["*", "data:"],
         "style-src": [SELF, UNSAFE_INLINE],
         "base-uri": [SELF],
-        "form-action": [SELF],
+        "form-action": [SELF, "*"],
         "frame-ancestors": [NONE],
     }
 }
