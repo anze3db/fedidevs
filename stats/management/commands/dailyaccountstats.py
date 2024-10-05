@@ -8,6 +8,7 @@ from django.utils import timezone
 from django_rich.management import RichCommand
 
 from accounts.models import Account, AccountLookup, Instance
+from confs.models import Conference
 from stats.models import (
     Daily,
     DailyAccount,
@@ -181,6 +182,21 @@ class Command(RichCommand):
         else:
             instances_str = ""
 
+        todays_conferences = Conference.objects.filter(start_date=todays_date.date())
+        ending_conferences = Conference.objects.filter(end_date=todays_date.date())
+        todays_conferences_msg = "\n".join(
+            [
+                f"{conference.name} {conference.website}, with num posts: {conference.posts.count()} starting today!"
+                for conference in todays_conferences
+            ]
+        )
+        ending_conferences_msg = "\n".join(
+            [
+                f"{conference.name} {conference.website}, with num posts: {conference.posts.count()} ending today!"
+                for conference in ending_conferences
+            ]
+        )
+
         send_mail(
             f"Fedidevs daily stats for {todays_date.date().isoformat()}",
             dedent(
@@ -188,7 +204,8 @@ class Command(RichCommand):
                     Total users {auth_users_cnt}, joined since yesterday {yesterday_auth_users_cnt}
                     Weekly active users {weekly_users_cnt}
                     Monthly active users {monthly_users_cnt}
-
+                    {todays_conferences_msg}
+                    {ending_conferences_msg}
                     Total follows {total_follows}, followed since yesterday {yesterday_total_follows}
                     Weekly follows {weekly_follows_cnt}
                     Monthly follows {monthly_follows_cnt}
