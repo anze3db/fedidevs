@@ -64,6 +64,7 @@ FRAMEWORKS = [
     Framework("linux", "Linux", "🐧", r"linux", "languages/linux.png"),
     Framework("terraform", "Terraform", "🏗️", r"terraform", "frameworks/terraform.png"),
     Framework("opentofu", "OpenTofu", "🍲", r"opentofu", "frameworks/opentofu.png"),
+    Framework("security", "Security", "🔒", r"security|infosec|appsec|OSCP|OSWP", "frameworks/security.png"),
 ]
 
 LANGUAGES = [

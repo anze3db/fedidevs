@@ -70,6 +70,7 @@ class Daily(models.Model):
     bootstrap_accounts = models.IntegerField(default=0)
     terraform_accounts = models.IntegerField(default=0)
     opentofu_accounts = models.IntegerField(default=0)
+    security_accounts = models.IntegerField(default=0)
 
     total_posts = models.IntegerField(default=0)
     python_posts = models.IntegerField(default=0)
@@ -114,6 +115,7 @@ class Daily(models.Model):
     bootstrap_posts = models.IntegerField(default=0)
     terraform_posts = models.IntegerField(default=0)
     opentofu_posts = models.IntegerField(default=0)
+    security_posts = models.IntegerField(default=0)
 
     def __str__(self):
         return self.date.strftime("%Y-%m-%d")
