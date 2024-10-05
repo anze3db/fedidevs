@@ -44,7 +44,7 @@ def stats(request):
             start_count = card["accounts_count"][0]
             end_count = card["accounts_count"][-1]
             if start_count == 0:
-                card["percent_change"] = "N/A"
+                card["percent_change"] = 0
             elif start_count < end_count:
                 card["percent_change"] = round((end_count - start_count) / start_count * 100, 1)
             elif start_count > end_count:
