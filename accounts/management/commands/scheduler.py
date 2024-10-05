@@ -33,6 +33,8 @@ class Command(RichCommand):
         self.console.print("Running stats")
         management.call_command("dailystats")
         management.call_command("dailyaccountstats")
+        self.console.print("Archiving conferences")
+        management.call_command("confarchiver")
         self.console.print("All done! 🎉")
 
     def hourly_job(self):
