@@ -47,3 +47,9 @@ uv run python manage.py indexer
 ```
 uv run python manage.py createsuperuser
 ```
+
+Fixing Plauisible hash:
+
+```
+curl -s https://plausible.io/js/script.tagged-events.js | openssl dgst -sha384 -binary | openssl base64
+```
