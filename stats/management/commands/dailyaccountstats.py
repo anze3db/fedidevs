@@ -4,6 +4,7 @@ from typing import Literal
 
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.urls import reverse
 from django.utils import timezone
 from django_rich.management import RichCommand
 
@@ -186,13 +187,13 @@ class Command(RichCommand):
         ending_conferences = Conference.objects.filter(end_date=todays_date.date())
         todays_conferences_msg = "\n".join(
             [
-                f"{conference.name} {conference.website}, with num posts: {conference.posts.count()} starting today!"
+                f"{conference.name} https://fedidevs.com{reverse("conference", kwargs={"conference_slug":conference.slug})}, with {conference.posts.count()} posts is starting today!"
                 for conference in todays_conferences
             ]
         )
         ending_conferences_msg = "\n".join(
             [
-                f"{conference.name} {conference.website}, with num posts: {conference.posts.count()} ending today!"
+                f"{conference.name} https://fedidevs.com{reverse("conference", kwargs={"conference_slug":conference.slug})}, with {conference.posts.count()} posts is ending today!"
                 for conference in ending_conferences
             ]
         )
