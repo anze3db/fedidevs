@@ -30,6 +30,7 @@ FRAMEWORKS = [
         "languages/opensource.png",
     ),
     Framework("linux", "Linux", "🐧", r"linux", "languages/linux.png"),
+    Framework("security", "Security", "🔒", r"security|infosec|appsec|OSCP|OSWP", "frameworks/security.png"),
     Framework("bsd", "BSD", "😈", r"bsd", "frameworks/bsd.svg"),
     Framework("android", "Android", "🤖", r"roboto|android", "frameworks/android.png"),
     Framework("postgres", "Postgres", "🐧", r"postgres|pg", "frameworks/postgres.png"),
