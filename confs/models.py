@@ -1,3 +1,5 @@
+import zoneinfo
+
 from django.db import models
 
 from accounts.models import Framework, Language
@@ -85,6 +87,9 @@ class Conference(models.Model):
     location = models.CharField(max_length=255)
     start_date = models.DateField()
     end_date = models.DateField()
+
+    timezone_choices = models.TextChoices("Timezone", " ".join(sorted(zoneinfo.available_timezones())))
+    time_zone = models.CharField(max_length=255, default="UTC", choices=timezone_choices.choices)
 
     archived_date = models.DateField(null=True, blank=True)
 

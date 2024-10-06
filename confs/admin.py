@@ -19,6 +19,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         "name",
         "slug",
         "location",
+        "time_zone",
         "start_date",
         "end_date",
         "archived_date",
