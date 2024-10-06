@@ -129,6 +129,9 @@ class ConferenceLookup(models.Model):
         choices=[(lang.code, lang.name) for lang in LANGUAGES + FRAMEWORKS],
     )
 
+    def __str__(self):
+        return self.language
+
 
 class ConferenceAccount(models.Model):
     conference = models.ForeignKey(Conference, on_delete=models.CASCADE)
