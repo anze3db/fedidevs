@@ -1,8 +1,10 @@
 import datetime as dt
+import zoneinfo
 from typing import Literal
 
 from django.core.paginator import Paginator
 from django.db.models import Count, Q, Sum
+from django.db.models.functions import Trunc
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
@@ -165,9 +167,15 @@ def conference(request, conference_slug: str):
 
     date = request.GET.get("date") or None
     if date and (date := parse_date(date)):
-        search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
+        search_query &= Q(created_at_date__gte=date, created_at_date__lt=date + dt.timedelta(days=1))
 
-    all_conf_posts_count = ConferencePost.objects.filter(search_query).count()
+    all_conf_posts_count = (
+        ConferencePost.objects.annotate(
+            created_at_date=Trunc("created_at", "day", tzinfo=zoneinfo.ZoneInfo(conference.time_zone))
+        )
+        .filter(search_query)
+        .count()
+    )
     if order not in ("-favourites_count", "-reblogs_count", "-replies_count", "-created_at"):
         if conference.start_date <= timezone.now().date() <= conference.end_date:
             order = "-created_at"
@@ -175,16 +183,20 @@ def conference(request, conference_slug: str):
             order = "-favourites_count"
 
     counts = (
-        ConferencePost.objects.filter(
+        ConferencePost.objects.annotate(
+            created_at_date=Trunc("created_at", "day", tzinfo=zoneinfo.ZoneInfo(conference.time_zone))
+        )
+        .filter(
             conference=conference,
             visibility="public",
-            created_at__gte=conference.start_date,
-            created_at__lt=conference.end_date + dt.timedelta(days=1),
+            created_at_date__gte=conference.start_date,
+            created_at_date__lt=conference.end_date + dt.timedelta(days=1),
         )
-        .values("created_at__date")
+        .values("created_at_date")
         .annotate(count=Count("id"))
     )
-    counts_dict = {c["created_at__date"]: c["count"] for c in counts}
+
+    counts_dict = {c["created_at_date"].date(): c["count"] for c in counts}
     dates = [
         conference.start_date + dt.timedelta(days=i)
         for i in range((conference.end_date - conference.start_date).days + 1)
@@ -208,7 +220,10 @@ def conference(request, conference_slug: str):
         for i, date in enumerate(dates)
     ]
     conf_posts = (
-        ConferencePost.objects.filter(search_query)
+        ConferencePost.objects.annotate(
+            created_at_date=Trunc("created_at", "day", tzinfo=zoneinfo.ZoneInfo(conference.time_zone))
+        )
+        .filter(search_query)
         .order_by(order)
         .prefetch_related("post", "post__account", "post__account__accountlookup", "post__account__instance_model")
     )

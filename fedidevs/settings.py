@@ -57,6 +57,14 @@ CACHES = {
         "LOCATION": "fedidevs",
     },
 }
+TEST_CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+    },
+    "memory": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+    },
+}
 
 
 # Application definition
