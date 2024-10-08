@@ -7,6 +7,7 @@ Type=simple
 Restart=always
 RestartSec=1
 ExecStart=/bin/bash /home/anze/projects/fedidevs/.deploy/run_worker.sh
+User=anze
 
 [Install]
 WantedBy=fedidevs.service
