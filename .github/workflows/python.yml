@@ -16,7 +16,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.13.0-rc.3'
+        python-version: '3.13'
     - name: Set up uv
       # Install latest uv version using the installer
       run: curl -LsSf https://astral.sh/uv/install.sh | sh
