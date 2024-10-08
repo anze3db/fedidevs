@@ -241,7 +241,7 @@ if TESTS_RUNNING:
         "OPTIONS": {},
         "MIDDLEWARE": [
             "dramatiq.middleware.AgeLimit",
-            "dramatiq.middleware.TimeLimit",
+            # "dramatiq.middleware.TimeLimit", # Broken on 3.13
             "dramatiq.middleware.Callbacks",
             "dramatiq.middleware.Pipelines",
             "dramatiq.middleware.Retries",
@@ -257,7 +257,7 @@ else:  # no cov
         },
         "MIDDLEWARE": [
             "dramatiq.middleware.AgeLimit",
-            "dramatiq.middleware.TimeLimit",
+            # "dramatiq.middleware.TimeLimit", # Broken on 3.13
             "dramatiq.middleware.Callbacks",
             "dramatiq.middleware.Retries",
             "django_dramatiq.middleware.DbConnectionsMiddleware",
