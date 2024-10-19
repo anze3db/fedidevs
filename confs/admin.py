@@ -31,7 +31,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         "days",
         "day_styles",
     )
-    inlines = [ConferenceLookupInline]
+    # inlines = [ConferenceLookupInline]
 
 
 admin.site.register(Conference, ConferenceAdmin)
