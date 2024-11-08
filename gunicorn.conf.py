@@ -1,6 +1,6 @@
 # import multiprocessing
 
-pidfile = "gunicorn.pid"
+pidfile = "/var/run/gunicorn-fedidevs.pid"
 proc_name = "fedidevs"
 bind = "unix:fedidevs.sock"
 workers = 4  # multiprocessing.cpu_count() + 1
