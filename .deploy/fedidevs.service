@@ -8,7 +8,10 @@ After=redis.service
 Type=simple
 Restart=always
 RestartSec=1
-ExecStart=/bin/bash /home/anze/projects/fedidevs/.deploy/run.sh
+WorkingDirectory=/var/apps/fedidevs
+ExecStart=/var/apps/fedidevs/.venv/bin/gunicorn fedidevs.wsgi
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MANPID
 User=anze
 
 [Install]
