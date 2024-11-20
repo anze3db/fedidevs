@@ -32,6 +32,7 @@ from confs.models import LANGUAGES as CONF_LANGUAGES
 from confs.models import Conference, ConferenceAccount
 from mastodon_auth import views as mastodon_views
 from posts import views as post_views
+from starter_packs import views as starter_packs_views
 from stats import views as stats_views
 
 
@@ -236,6 +237,16 @@ urlpatterns = [
         name="djangoconus",
     ),
     path("posts/djangoconus23/", post_views.djangoconus, name="djangoconus"),
+    path(
+        "starter-packs/add/<str:starter_pack_slug>/",
+        starter_packs_views.add_accounts_to_starter_pack,
+        name="add_starter_packs",
+    ),
+    path("starter-packs/create/", starter_packs_views.create_starter_pack, name="create_starter_pack"),
+    path(
+        "starter-packs/edit/<str:starter_pack_slug>/", starter_packs_views.edit_starter_pack, name="edit_starter_pack"
+    ),
+    path("starter-packs/", starter_packs_views.starter_packs, name="starter_packs"),
     path("fwd50/", confs_views.fwd50, name="fwd50"),
     path(
         "fwd50/<date:date>/",

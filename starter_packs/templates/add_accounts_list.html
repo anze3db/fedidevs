@@ -1,0 +1,48 @@
+{% load account_extras %}
+{% load static %}
+<ul role="list"
+    id="accounts_target"
+    class="divide-y divide-gray-200 dark:divide-gray-700">
+    {% for account in accounts %}
+        <li class="py-3 sm:py-4">
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                <div class="flex-shrink-0">
+                    <img class="w-8 h-8 rounded-full" src="{{ account.avatar }}" alt="PIC">
+                </div>
+                <label for="checkbox-{{ account.id }}" class="flex-1 min-w-0 cursor-pointer">
+                    <p class="text-sm font-semibold text-gray-900 truncate dark:text-white mb-1 flex gap-2 [&>img]:max-w-4 [&>img]:max-h-4">
+                        {% render_emojis account.name account.emojis %}
+                    </p>
+                    <p class="text-sm text-gray-500 truncate dark:text-gray-400">{{ account.username_at_instance }}</p>
+                </label>
+                <input id="checkbox-{{ account.id }}"
+                       type="checkbox"
+                       value=""
+                       class="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2  dark:border-gray-600">
+            </div>
+        </li>
+    {% empty %}
+        {% if is_username %}
+            <li class="py-3 sm:py-4">
+                <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                    <label for="checkbox" class="flex-1 min-w-0 cursor-pointer">
+                        <p class="text-sm font-semibold text-gray-900 truncate dark:text-white mb-1 flex gap-2 [&>img]:max-w-4 [&>img]:max-h-4">
+                            {{ q }}
+                        </p>
+                    </label>
+                    <input id="checkbox-{{ account.id }}"
+                           type="checkbox"
+                           value=""
+                           class="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2  dark:border-gray-600">
+                </div>
+            </li>
+        {% else %}
+            No results. Try searching for a username like @username@instance.org
+        {% endif %}
+    {% endfor %}
+    {% if accounts.has_next %}
+        <li hx-get="{% url 'add_starter_packs' starter_pack.slug %}{% querystring page=accounts.next_page_number %}"
+            hx-trigger="intersect once"
+            hx-swap="afterend"></li>
+    {% endif %}
+</ul>

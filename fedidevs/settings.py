@@ -90,6 +90,7 @@ INSTALLED_APPS = [
     "tailwind",
     "theme",
     "mastodon_auth",
+    "starter_packs",
     "accounts",
     "posts",
     "stats",

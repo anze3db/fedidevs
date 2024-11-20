@@ -1,0 +1,29 @@
+{% extends "v2/layout.html" %}
+{% load account_extras %}
+{% load static %}
+{% block content %}
+    <main>
+        {% for starter_pack in starter_packs %}
+            <a href="{% url 'edit_starter_pack' starter_pack.slug %}"
+               class="my-4 block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ starter_pack.title }}</h5>
+                <p class="font-normal text-gray-700 dark:text-gray-400">{{ starter_pack.description }}</p>
+            </a>
+        {% endfor %}
+        {% if not user.is_authenticated %}
+            <button data-modal-target="authentication-modal"
+                    data-modal-toggle="authentication-modal"
+                    data-umami-event="follow-signup-modal"
+                    class="plausible-event-name=follow-signup-modal text-white absolute bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Create a starter pack
+            </button>
+        {% else %}
+            <a href="{% url 'create_starter_pack' %}"
+               class="plausible-event-name=follow-signup-modal text-white absolute bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create a starter pack</a>
+        {% endif %}
+    </main>
+{% endblock content %}
+{% block sidebar %}
+    <section class="mb-8">
+    </section>
+{% endblock sidebar %}
