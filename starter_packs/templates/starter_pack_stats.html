@@ -1,12 +1,22 @@
 <div class="flex px-8 pt-8 pb-4">
     <div class="flex-1">
-        {# djlint:off #}
-        {{ num_accounts }} account{% if num_accounts > 1 %}s{% endif %} 
-        {# djlint:on #}
-        in your starter pack
+        {% if num_accounts == 0 %}
+        {% else %}
+            {{ num_accounts }}
+            {# djlint:off #}
+            account{% if num_accounts > 1 %}s{% endif %} 
+            {# djlint:on #}
+            in your starter pack
+        {% endif %}
     </div>
     <div>
-        <a href="{% url 'create_starter_pack' %}"
-           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Finish</a>
+        {% if num_accounts %}
+            <a href="{% url 'share_starter_pack' starter_pack.slug %}"
+               class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Finish</a>
+        {% else %}
+            <a href="#"
+               class="cursor-not-allowed text-white bg-gray-400 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-gray-500 dark:focus:ring-gray-800"
+               disabled>Finish</a>
+        {% endif %}
     </div>
 </div>

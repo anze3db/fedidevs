@@ -237,6 +237,7 @@ urlpatterns = [
         name="djangoconus",
     ),
     path("posts/djangoconus23/", post_views.djangoconus, name="djangoconus"),
+    path("s/<str:starter_pack_slug>/", starter_packs_views.share_starter_pack, name="share_starter_pack"),
     path("starter-packs/create/", starter_packs_views.create_starter_pack, name="create_starter_pack"),
     path(
         "starter-packs/<str:starter_pack_slug>/toggle/<int:account_id>/",

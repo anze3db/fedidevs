@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.db.models import Exists, OuterRef, Subquery
 from django.shortcuts import get_object_or_404, redirect, render
-from django.template.defaultfilters import slugify
+from django.utils.http import urlsafe_base64_encode
 
 from accounts.models import Account
 from mastodon_auth.models import AccountFollowing
@@ -113,7 +113,9 @@ def create_starter_pack(request):
         if form.is_valid():
             starter_pack = form.save(commit=False)
             starter_pack.created_by = request.user
-            starter_pack.slug = slugify(starter_pack.title)
+            starter_pack.save()
+            starter_pack.slug = urlsafe_base64_encode(str(starter_pack.id).encode())
+            starter_pack.save(update_fields=["slug"])
             try:
                 starter_pack.save()
                 return redirect("edit_accounts_starter_pack", starter_pack_slug=starter_pack.slug)
@@ -151,6 +153,18 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
         request,
         "starter_pack_stats.html",
         {
+            "starter_pack": starter_pack,
             "num_accounts": StarterPackAccount.objects.filter(starter_pack=starter_pack).count(),
+        },
+    )
+
+
+def share_starter_pack(request, starter_pack_slug):
+    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug)
+    return render(
+        request,
+        "share_starter_pack.html",
+        {
+            "starter_pack": starter_pack,
         },
     )
