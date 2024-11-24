@@ -1,0 +1,12 @@
+<div class="flex px-8 pt-8 pb-4">
+    <div class="flex-1">
+        {# djlint:off #}
+        {{ num_accounts }} account{% if num_accounts > 1 %}s{% endif %} 
+        {# djlint:on #}
+        in your starter pack
+    </div>
+    <div>
+        <a href="{% url 'create_starter_pack' %}"
+           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Finish</a>
+    </div>
+</div>

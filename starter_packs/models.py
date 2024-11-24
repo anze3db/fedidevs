@@ -13,3 +13,11 @@ class StarterPack(models.Model):
 
     class Meta:
         unique_together = ("created_by", "slug")
+
+
+class StarterPackAccount(models.Model):
+    starter_pack = models.ForeignKey(StarterPack, on_delete=models.CASCADE)
+    account = models.ForeignKey("accounts.Account", on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("starter_pack", "account")

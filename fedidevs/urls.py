@@ -237,14 +237,19 @@ urlpatterns = [
         name="djangoconus",
     ),
     path("posts/djangoconus23/", post_views.djangoconus, name="djangoconus"),
-    path(
-        "starter-packs/add/<str:starter_pack_slug>/",
-        starter_packs_views.add_accounts_to_starter_pack,
-        name="add_starter_packs",
-    ),
     path("starter-packs/create/", starter_packs_views.create_starter_pack, name="create_starter_pack"),
     path(
-        "starter-packs/edit/<str:starter_pack_slug>/", starter_packs_views.edit_starter_pack, name="edit_starter_pack"
+        "starter-packs/<str:starter_pack_slug>/toggle/<int:account_id>/",
+        starter_packs_views.toggle_account_to_starter_pack,
+        name="toggle_account_to_starter_pack",
+    ),
+    path(
+        "starter-packs/<str:starter_pack_slug>/edit/", starter_packs_views.edit_starter_pack, name="edit_starter_pack"
+    ),
+    path(
+        "starter-packs/<str:starter_pack_slug>/edit/accounts/",
+        starter_packs_views.add_accounts_to_starter_pack,
+        name="edit_accounts_starter_pack",
     ),
     path("starter-packs/", starter_packs_views.starter_packs, name="starter_packs"),
     path("fwd50/", confs_views.fwd50, name="fwd50"),

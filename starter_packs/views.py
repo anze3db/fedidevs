@@ -1,15 +1,18 @@
+import logging
 import re
 
 from django import forms
 from django.core.paginator import Paginator
 from django.db import IntegrityError
-from django.db.models import Subquery
+from django.db.models import Exists, OuterRef, Subquery
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.defaultfilters import slugify
 
 from accounts.models import Account
 from mastodon_auth.models import AccountFollowing
-from starter_packs.models import StarterPack
+from starter_packs.models import StarterPack, StarterPackAccount
+
+logger = logging.getLogger(__name__)
 
 
 def starter_packs(request):
@@ -37,8 +40,17 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, created_by=request.user)
     if not (q := request.GET.get("q", "")):
         followed_accounts = AccountFollowing.objects.filter(account=request.user.accountaccess.account)
-        accounts = Account.objects.filter(url__in=Subquery(followed_accounts.values("url"))).prefetch_related(
-            "instance_model"
+        accounts = (
+            Account.objects.filter(url__in=Subquery(followed_accounts.values("url")))
+            .prefetch_related("instance_model")
+            .annotate(
+                in_starter_pack=Exists(
+                    StarterPackAccount.objects.filter(
+                        starter_pack=starter_pack,
+                        account_id=OuterRef("pk"),
+                    )
+                )
+            )
         )
     else:
         search = q.strip()
@@ -57,12 +69,8 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
     paginator = Paginator(accounts, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    accounts_count = page_obj.paginator.count
 
     is_username = re.match(r"(@[a-zA-Z0-9_\.\-]+)@([a-zA-Z0-9_\.\-]+)", q)
-
-    if request.method == "POST":
-        pass
 
     return render(
         request,
@@ -71,6 +79,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
             "page": "edit_starter_pack",
             "q": q,
             "is_username": is_username,
+            "num_accounts": StarterPackAccount.objects.filter(starter_pack=starter_pack).count(),
             "accounts": page_obj,
             "starter_pack": starter_pack,
         },
@@ -83,7 +92,7 @@ def edit_starter_pack(request, starter_pack_slug):
         form = StarterPackForm(request.POST, instance=starter_pack)
         if form.is_valid():
             form.save()
-            return redirect("add_starter_packs", starter_pack_slug=starter_pack.slug)
+            return redirect("edit_accounts_starter_pack", starter_pack_slug=starter_pack.slug)
     else:
         form = StarterPackForm(instance=starter_pack)
 
@@ -107,7 +116,7 @@ def create_starter_pack(request):
             starter_pack.slug = slugify(starter_pack.title)
             try:
                 starter_pack.save()
-                return redirect("add_starter_packs", starter_pack_slug=starter_pack.slug)
+                return redirect("edit_accounts_starter_pack", starter_pack_slug=starter_pack.slug)
             except IntegrityError:
                 form.add_error(
                     "title",
@@ -122,5 +131,26 @@ def create_starter_pack(request):
         {
             "page": "create_starter_pack",
             "form": form,
+        },
+    )
+
+
+def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
+    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, created_by=request.user)
+    try:
+        StarterPackAccount.objects.create(
+            starter_pack=starter_pack,
+            account_id=account_id,
+        )
+    except IntegrityError:
+        StarterPackAccount.objects.filter(
+            starter_pack=starter_pack,
+            account_id=account_id,
+        ).delete()
+    return render(
+        request,
+        "starter_pack_stats.html",
+        {
+            "num_accounts": StarterPackAccount.objects.filter(starter_pack=starter_pack).count(),
         },
     )

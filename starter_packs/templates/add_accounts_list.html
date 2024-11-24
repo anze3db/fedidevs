@@ -4,7 +4,7 @@
     id="accounts_target"
     class="divide-y divide-gray-200 dark:divide-gray-700">
     {% for account in accounts %}
-        <li class="py-3 sm:py-4">
+        <li class="py-3 sm:py-4 px-3">
             <div class="flex items-center space-x-3 rtl:space-x-reverse">
                 <div class="flex-shrink-0">
                     <img class="w-8 h-8 rounded-full" src="{{ account.avatar }}" alt="PIC">
@@ -18,6 +18,9 @@
                 <input id="checkbox-{{ account.id }}"
                        type="checkbox"
                        value=""
+                       hx-target="#starter_pack_stats"
+                       hx-post="{% url 'toggle_account_to_starter_pack' starter_pack.slug account.id %}"
+                       {% if account.in_starter_pack %}checked="checked"{% endif %}
                        class="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2  dark:border-gray-600">
             </div>
         </li>
@@ -41,7 +44,7 @@
         {% endif %}
     {% endfor %}
     {% if accounts.has_next %}
-        <li hx-get="{% url 'add_starter_packs' starter_pack.slug %}{% querystring page=accounts.next_page_number %}"
+        <li hx-get="{% url 'edit_accounts_starter_pack' starter_pack.slug %}{% querystring page=accounts.next_page_number %}"
             hx-trigger="intersect once"
             hx-swap="afterend"></li>
     {% endif %}
