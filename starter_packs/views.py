@@ -161,10 +161,20 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
 
 def share_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug)
+    accounts = Account.objects.filter(
+        starterpackaccount__starter_pack=starter_pack,
+    ).select_related("accountlookup", "instance_model")
+
+    paginator = Paginator(accounts, 50)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(
         request,
         "share_starter_pack.html",
         {
             "starter_pack": starter_pack,
+            "num_accounts": accounts.count(),
+            "accounts": page_obj,
         },
     )
