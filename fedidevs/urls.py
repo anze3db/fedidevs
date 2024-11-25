@@ -248,6 +248,11 @@ urlpatterns = [
         "starter-packs/<str:starter_pack_slug>/edit/", starter_packs_views.edit_starter_pack, name="edit_starter_pack"
     ),
     path(
+        "starter-packs/<str:starter_pack_slug>/delete/",
+        starter_packs_views.delete_starter_pack,
+        name="delete_starter_pack",
+    ),
+    path(
         "starter-packs/<str:starter_pack_slug>/edit/accounts/",
         starter_packs_views.add_accounts_to_starter_pack,
         name="edit_accounts_starter_pack",

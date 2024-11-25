@@ -1,0 +1,21 @@
+{% extends "v2/layout.html" %}
+{% load account_extras %}
+{% load static %}
+{% block content %}
+    <main>
+        <div class="max-w-md p-4 bg-red-100 border border-red-200 rounded-lg shadow sm:p-8 dark:bg-red-950 dark:border-red-800">
+            <h5 class="text-xl text-gray-900 dark:text-white mb-8">
+                Are you sure you want to delete the starter pack <strong>"{{ starter_pack.title }}"</strong>?
+            </h5>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit"
+                        class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+                    Yes, delete
+                </button>
+            </form>
+        </div>
+    </main>
+{% endblock content %}
+{% block sidebar %}
+{% endblock sidebar %}

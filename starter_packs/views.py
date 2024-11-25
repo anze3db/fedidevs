@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.db.models import Exists, OuterRef, Subquery
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.utils.http import urlsafe_base64_encode
 
 from accounts.models import Account
@@ -20,7 +21,9 @@ def starter_packs(request):
         your_starter_packs = StarterPack.objects.none()
     else:
         your_starter_packs = (
-            StarterPack.objects.filter(created_by=request.user).order_by("-created_at").prefetch_related("created_by")
+            StarterPack.objects.filter(created_by=request.user, deleted_at__isnull=True)
+            .order_by("-created_at")
+            .prefetch_related("created_by")
         )
 
     return render(
@@ -28,7 +31,9 @@ def starter_packs(request):
         "starter_packs.html",
         {
             "page": "starter_packs",
-            "starter_packs": StarterPack.objects.all().order_by("-created_at").prefetch_related("created_by"),
+            "starter_packs": StarterPack.objects.filter(deleted_at__isnull=True)
+            .order_by("-created_at")
+            .prefetch_related("created_by"),
             "your_starter_packs": your_starter_packs,
         },
     )
@@ -41,7 +46,9 @@ class StarterPackForm(forms.ModelForm):
 
 
 def add_accounts_to_starter_pack(request, starter_pack_slug):
-    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, created_by=request.user)
+    starter_pack = get_object_or_404(
+        StarterPack, slug=starter_pack_slug, created_by=request.user, deleted_at__isnull=True
+    )
     if not (q := request.GET.get("q", "")):
         followed_accounts = AccountFollowing.objects.filter(account=request.user.accountaccess.account)
         accounts = (
@@ -91,7 +98,9 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
 
 
 def edit_starter_pack(request, starter_pack_slug):
-    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, created_by=request.user)
+    starter_pack = get_object_or_404(
+        StarterPack, slug=starter_pack_slug, created_by=request.user, deleted_at__isnull=True
+    )
     if request.method == "POST":
         form = StarterPackForm(request.POST, instance=starter_pack)
         if form.is_valid():
@@ -142,7 +151,9 @@ def create_starter_pack(request):
 
 
 def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
-    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, created_by=request.user)
+    starter_pack = get_object_or_404(
+        StarterPack, slug=starter_pack_slug, deleted_at__isnull=True, created_by=request.user
+    )
     try:
         StarterPackAccount.objects.create(
             starter_pack=starter_pack,
@@ -164,7 +175,7 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
 
 
 def share_starter_pack(request, starter_pack_slug):
-    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug)
+    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, deleted_at__isnull=True)
     accounts = Account.objects.filter(
         starterpackaccount__starter_pack=starter_pack,
     ).select_related("accountlookup", "instance_model")
@@ -187,3 +198,21 @@ def share_starter_pack(request, starter_pack_slug):
             "accounts": page_obj,
         },
     )
+
+
+def delete_starter_pack(request, starter_pack_slug):
+    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, created_by=request.user)
+    if request.method == "POST":
+        starter_pack.deleted_at = timezone.now()
+        starter_pack.save(update_fields=["deleted_at"])
+    else:
+        return render(
+            request,
+            "delete_starter_pack.html",
+            {
+                "page": "starter_packs",
+                "starter_pack": starter_pack,
+            },
+        )
+
+    return redirect("starter_packs")
