@@ -15,6 +15,7 @@ from mastodon import Mastodon, MastodonAPIError, MastodonNotFoundError, Mastodon
 from accounts.models import Account
 from mastodon_auth.models import AccountFollowing
 from starter_packs.models import StarterPack, StarterPackAccount
+from stats.models import FollowAllClick
 
 logger = logging.getLogger(__name__)
 
@@ -267,6 +268,7 @@ def follow_starter_pack(request, starter_pack_slug):
 
     AccountFollowing.objects.bulk_create(account_following, ignore_conflicts=True)
     transaction.on_commit(lambda: follow_bg.send(request.user.id, starter_pack_slug))
+    FollowAllClick.objects.create(user=request.user, starter_pack=starter_pack)
 
     return redirect("share_starter_pack", starter_pack_slug=starter_pack.slug)
 
