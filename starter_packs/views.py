@@ -72,7 +72,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
         )
         .order_by("-is_followed", "-followers_count")
     )
-    if q := request.GET.get("q"):
+    if q := request.GET.get("q", ""):
         search = q.strip()
 
         # Check if searching with @username@instance and convert to instance/@username which is indexed
