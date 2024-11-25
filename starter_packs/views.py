@@ -34,6 +34,9 @@ def starter_packs(request):
         "starter_packs.html",
         {
             "page": "starter_packs",
+            "page_title": "Mastodon Starter Pack Directory | Fedidevs",
+            "page_header": "FEDIDEVS",
+            "page_subheader": "",
             "starter_packs": StarterPack.objects.filter(deleted_at__isnull=True)
             .order_by("-created_at")
             .prefetch_related("created_by"),
@@ -91,6 +94,9 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
         "add_accounts_list.html" if "HX-Request" in request.headers else "add_accounts.html",
         {
             "page": "starter_packs",
+            "page_title": "Add accounts to your starter pack",
+            "page_header": "FEDIDEVS",
+            "page_subheader": "",
             "q": q,
             "is_username": is_username,
             "num_accounts": StarterPackAccount.objects.filter(starter_pack=starter_pack).count(),
@@ -117,6 +123,9 @@ def edit_starter_pack(request, starter_pack_slug):
         "create_starter_pack.html",
         {
             "page": "starter_packs",
+            "page_title": "Edit your starter pack",
+            "page_header": "FEDIDEVS",
+            "page_subheader": "",
             "form": form,
             "starter_pack": starter_pack,
         },
@@ -148,6 +157,10 @@ def create_starter_pack(request):
         "create_starter_pack.html",
         {
             "page": "starter_packs",
+            "page_title": "Create a new starter pack",
+            "page_header": "FEDIDEVS",
+            "page_subheader": "",
+            "page_description": starter_pack.description,
             "form": form,
         },
     )
