@@ -1,4 +1,5 @@
 <div class="flex px-8 pt-8 pb-4">
+    {% if error %}<p>{{ error }}</p>{% endif %}
     <div class="flex-1">
         {% if num_accounts == 0 %}
         {% else %}

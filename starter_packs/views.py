@@ -154,6 +154,16 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
     starter_pack = get_object_or_404(
         StarterPack, slug=starter_pack_slug, deleted_at__isnull=True, created_by=request.user
     )
+    if StarterPackAccount.objects.filter(starter_pack=starter_pack).count() > 150:
+        return render(
+            request,
+            "starter_pack_stats.html",
+            {
+                "starter_pack": starter_pack,
+                "num_accounts": StarterPackAccount.objects.filter(starter_pack=starter_pack).count(),
+                "error": "You have reached the maximum number of accounts in a starter pack.",
+            },
+        )
     try:
         StarterPackAccount.objects.create(
             starter_pack=starter_pack,
@@ -179,6 +189,14 @@ def share_starter_pack(request, starter_pack_slug):
     accounts = Account.objects.filter(
         starterpackaccount__starter_pack=starter_pack,
     ).select_related("accountlookup", "instance_model")
+
+    if request.user.is_authenticated:
+        # Annotate whether the current request user is following the account:
+        accounts = accounts.annotate(
+            is_following=Exists(
+                AccountFollowing.objects.filter(account=request.user.accountaccess.account, url=OuterRef("url")),
+            )
+        )
 
     paginator = Paginator(accounts, 50)
     page_number = request.GET.get("page")
@@ -216,3 +234,17 @@ def delete_starter_pack(request, starter_pack_slug):
         )
 
     return redirect("starter_packs")
+
+
+def follow_starter_pack(request, starter_pack_slug):
+    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, deleted_at__isnull=True)
+    accounts = Account.objects.filter(
+        starterpackaccount__starter_pack=starter_pack,
+    ).select_related("accountlookup", "instance_model")
+    account_following = []
+    for account in accounts:
+        account_following.append(AccountFollowing(account=request.user.accountaccess.account, url=account.url))
+
+    AccountFollowing.objects.bulk_create(account_following, ignore_conflicts=True)
+
+    return redirect("share_starter_pack", starter_pack_slug=starter_pack.slug)
