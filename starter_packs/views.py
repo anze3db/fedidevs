@@ -72,6 +72,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
         )
         .order_by("-is_followed", "-followers_count")
     )
+    is_username = False
     if q := request.GET.get("q", ""):
         search = q.strip()
 
@@ -88,8 +89,6 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
         accounts = accounts.filter(
             accountlookup__text__icontains=search,
         )
-    else:
-        is_username = False
 
     paginator = Paginator(accounts, 50)
     page_number = request.GET.get("page")
