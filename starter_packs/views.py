@@ -78,6 +78,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
         # Check if searching with @username@instance and convert to instance/@username which is indexed
         regex = re.compile(r"(@?[a-zA-Z0-9_\.\-]+)@([a-zA-Z0-9_\.\-]+)")
         if regex.match(search):
+            is_username = True
             if search.startswith("@"):
                 search = search[1:]
             if len(splt := search.split("@")) == 2:
@@ -87,6 +88,8 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
         accounts = accounts.filter(
             accountlookup__text__icontains=search,
         )
+    else:
+        is_username = False
 
     paginator = Paginator(accounts, 50)
     page_number = request.GET.get("page")
