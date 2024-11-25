@@ -56,33 +56,37 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(
         StarterPack, slug=starter_pack_slug, created_by=request.user, deleted_at__isnull=True
     )
-    if not (q := request.GET.get("q", "")):
-        followed_accounts = AccountFollowing.objects.filter(account=request.user.accountaccess.account)
-        accounts = (
-            Account.objects.filter(url__in=Subquery(followed_accounts.values("url")))
-            .prefetch_related("instance_model")
-            .annotate(
-                in_starter_pack=Exists(
-                    StarterPackAccount.objects.filter(
-                        starter_pack=starter_pack,
-                        account_id=OuterRef("pk"),
-                    )
+    accounts = (
+        Account.objects.filter()
+        .prefetch_related("instance_model")
+        .annotate(
+            in_starter_pack=Exists(
+                StarterPackAccount.objects.filter(
+                    starter_pack=starter_pack,
+                    account_id=OuterRef("pk"),
                 )
-            )
+            ),
+            is_followed=Exists(
+                AccountFollowing.objects.filter(account=request.user.accountaccess.account, url=OuterRef("url")),
+            ),
         )
-    else:
+        .order_by("-is_followed", "-followers_count")
+    )
+    if q := request.GET.get("q"):
         search = q.strip()
-        if search.startswith("@"):
-            search = search[1:]
-        if len(splt := search.split("@")) == 2:
-            username, instance = splt
-            url = f"{instance}/@{username}"
-        else:
-            url = search
 
-        accounts = Account.objects.filter(
-            url__icontains=url,
-        ).prefetch_related("instance_model")
+        # Check if searching with @username@instance and convert to instance/@username which is indexed
+        regex = re.compile(r"(@?[a-zA-Z0-9_\.\-]+)@([a-zA-Z0-9_\.\-]+)")
+        if regex.match(search):
+            if search.startswith("@"):
+                search = search[1:]
+            if len(splt := search.split("@")) == 2:
+                username, instance = splt
+                search = f"{instance}/@{username}"
+
+        accounts = accounts.filter(
+            accountlookup__text__icontains=search,
+        )
 
     paginator = Paginator(accounts, 50)
     page_number = request.GET.get("page")
