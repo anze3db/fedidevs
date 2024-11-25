@@ -92,8 +92,6 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    is_username = re.match(r"(@[a-zA-Z0-9_\.\-]+)@([a-zA-Z0-9_\.\-]+)", q)
-
     return render(
         request,
         "add_accounts_list.html" if "HX-Request" in request.headers else "add_accounts.html",
