@@ -289,6 +289,9 @@ def follow_bg(user_id: int, starter_pack_slug: str):
     )
 
     for account in starter_pack_accounts:
+        if account == account_access.account:
+            # Skip self
+            continue
         if account.instance == instance.url:
             account_id = account.account_id
         else:
