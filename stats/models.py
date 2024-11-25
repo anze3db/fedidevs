@@ -138,6 +138,12 @@ class FollowClick(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+class FollowAllClick(models.Model):
+    user = models.ForeignKey("auth.User", on_delete=models.CASCADE)
+    starter_pack = models.ForeignKey("starter_packs.StarterPack", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class DailySite(models.Model):
     date = models.DateField(unique=True, db_index=True)
 
