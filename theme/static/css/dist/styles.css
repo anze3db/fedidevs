@@ -1696,6 +1696,11 @@ select {
   margin-bottom: 2rem;
 }
 
+.my-16 {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+}
+
 .-ml-2 {
   margin-left: -0.5rem;
 }
@@ -1806,6 +1811,10 @@ select {
 
 .mb-16 {
   margin-bottom: 4rem;
+}
+
+.mt-16 {
+  margin-top: 4rem;
 }
 
 .line-clamp-4 {
