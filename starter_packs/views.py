@@ -231,6 +231,7 @@ def share_starter_pack(request, starter_pack_slug):
             "page": "starter_packs",
             "page_header": "FEDIDEVS",
             "page_subheader": "",
+            "page_image": "og-starterpack.png",
             "page_description": starter_pack.description,
             "starter_pack": starter_pack,
             "num_accounts": accounts.count(),
