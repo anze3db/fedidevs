@@ -161,7 +161,7 @@ def create_starter_pack(request):
             "page_title": "Create a new starter pack",
             "page_header": "FEDIDEVS",
             "page_subheader": "",
-            "page_description": starter_pack.description,
+            "page_description": "",
             "form": form,
         },
     )
