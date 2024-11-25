@@ -189,9 +189,13 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
 
 def share_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, deleted_at__isnull=True)
-    accounts = Account.objects.filter(
-        starterpackaccount__starter_pack=starter_pack,
-    ).select_related("accountlookup", "instance_model")
+    accounts = (
+        Account.objects.filter(
+            starterpackaccount__starter_pack=starter_pack,
+        )
+        .select_related("accountlookup", "instance_model")
+        .order_by("-followers_count")
+    )
 
     if request.user.is_authenticated:
         # Annotate whether the current request user is following the account:
