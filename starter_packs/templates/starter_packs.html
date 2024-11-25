@@ -2,28 +2,44 @@
 {% load account_extras %}
 {% load static %}
 {% block content %}
-    <main>
+    <main class="mx-auto">
+        {% if your_starter_packs %}
+            <h3 class="mb-8 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Your Starter Packs</h3>
+            {% for starter_pack in your_starter_packs %}
+                <a href="{% url 'share_starter_pack' starter_pack.slug %}"
+                   class="my-4 block max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ starter_pack.title }}</h5>
+                    <p class="font-normal text-gray-700 dark:text-gray-400">{{ starter_pack.description }}</p>
+                </a>
+            {% endfor %}
+        {% endif %}
+        <h3 class="mb-8 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Community Starter Packs</h3>
         {% for starter_pack in starter_packs %}
             <a href="{% url 'share_starter_pack' starter_pack.slug %}"
-               class="my-4 block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+               class="my-4 block max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ starter_pack.title }}</h5>
+                <p class="mb-5 text-base text-gray-500 sm:text-sm dark:text-gray-400">by {{ starter_pack.created_by }}</p>
                 <p class="font-normal text-gray-700 dark:text-gray-400">{{ starter_pack.description }}</p>
             </a>
         {% endfor %}
+    </main>
+{% endblock content %}
+{% block sidebar %}
+    <section class="mb-8 prose dark:prose-invert">
+        <h2>Mastodon starter packs</h2>
+        <p>Invite your friends to follow your favorite people on Mastodon.</p>
+    </section>
+    <section class="mb-16">
         {% if not user.is_authenticated %}
             <button data-modal-target="authentication-modal"
                     data-modal-toggle="authentication-modal"
                     data-umami-event="follow-signup-modal"
-                    class="plausible-event-name=follow-signup-modal text-white absolute bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                Create a starter pack
+                    class="plausible-event-name=follow-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Create your starter pack
             </button>
         {% else %}
             <a href="{% url 'create_starter_pack' %}"
-               class="plausible-event-name=follow-signup-modal text-white absolute bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create a starter pack</a>
+               class="plausible-event-name=follow-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create your starter pack</a>
         {% endif %}
-    </main>
-{% endblock content %}
-{% block sidebar %}
-    <section class="mb-8">
     </section>
 {% endblock sidebar %}

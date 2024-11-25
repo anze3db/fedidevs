@@ -17,15 +17,19 @@ logger = logging.getLogger(__name__)
 
 def starter_packs(request):
     if request.user.is_anonymous:
-        starter_packs = StarterPack.objects.none()
+        your_starter_packs = StarterPack.objects.none()
     else:
-        starter_packs = StarterPack.objects.filter(created_by=request.user).order_by("-created_at")
+        your_starter_packs = (
+            StarterPack.objects.filter(created_by=request.user).order_by("-created_at").prefetch_related("created_by")
+        )
+
     return render(
         request,
         "starter_packs.html",
         {
             "page": "starter_packs",
-            "starter_packs": starter_packs,
+            "starter_packs": StarterPack.objects.all().order_by("-created_at").prefetch_related("created_by"),
+            "your_starter_packs": your_starter_packs,
         },
     )
 
