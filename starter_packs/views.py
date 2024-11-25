@@ -1,13 +1,16 @@
 import logging
 import re
 
+import dramatiq
 from django import forms
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.db.models import Exists, OuterRef, Subquery
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_encode
+from mastodon import Mastodon, MastodonAPIError, MastodonNotFoundError, MastodonUnauthorizedError
 
 from accounts.models import Account
 from mastodon_auth.models import AccountFollowing
@@ -246,5 +249,62 @@ def follow_starter_pack(request, starter_pack_slug):
         account_following.append(AccountFollowing(account=request.user.accountaccess.account, url=account.url))
 
     AccountFollowing.objects.bulk_create(account_following, ignore_conflicts=True)
+    transaction.on_commit(lambda: follow_bg.send(request.user.id, starter_pack_slug))
 
     return redirect("share_starter_pack", starter_pack_slug=starter_pack.slug)
+
+
+@dramatiq.actor
+def follow_bg(user_id: int, starter_pack_slug: str):
+    user = User.objects.get(pk=user_id)
+    account_access = user.accountaccess
+    instance = account_access.instance
+    mastodon = Mastodon(
+        api_base_url=instance.url,
+        client_id=instance.client_id,
+        client_secret=instance.client_secret,
+        access_token=account_access.access_token,
+        user_agent="fedidevs",
+    )
+
+    starter_pack_accounts = Account.objects.filter(
+        starterpackaccount__starter_pack__slug=starter_pack_slug,
+    )
+
+    for account in starter_pack_accounts:
+        if account.instance == instance.url:
+            account_id = account.account_id
+        else:
+            try:
+                local_account = mastodon.account_lookup(acct=account.username_at_instance)
+            except MastodonNotFoundError:
+                logger.exception("Account not found on instance %s", account.username_at_instance)
+                continue
+            except MastodonUnauthorizedError:
+                logger.exception("Not authorized %s", account.username_at_instance)
+                continue
+            except MastodonAPIError:
+                logger.exception("Unknown error when following %s", account.username_at_instance)
+                continue
+            account_id = local_account["id"]
+
+        try:
+            mastodon.account_follow(account_id)
+        except MastodonUnauthorizedError:
+            logger.exception("Unauthorized error when following")
+            continue
+        except MastodonAPIError:
+            # We weren't able to follow the user. Maybe the account was moved?
+            try:
+                local_account = mastodon.account_lookup(acct=account.username_at_instance)
+            except MastodonNotFoundError:
+                logger.warning("Account not found on instance %s", account.username_at_instance)
+                continue
+            if moved := local_account.get("moved"):
+                account.moved = moved
+                account.save(update_fields=("moved",))
+                logger.warning("Account %s moved", account.username_at_instance)
+                continue
+
+            logger.error("Unknown error when following %s", account.username_at_instance)
+            continue
