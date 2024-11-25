@@ -4,16 +4,18 @@
 {% block content %}
     <main class="mx-auto">
         {% if your_starter_packs %}
-            <h3 class="mb-8 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Your Starter Packs</h3>
-            {% for starter_pack in your_starter_packs %}
-                <a href="{% url 'share_starter_pack' starter_pack.slug %}"
-                   class="my-4 block max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                    <h4 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ starter_pack.title }}</h4>
-                    <p class="font-normal text-gray-700 dark:text-gray-400">{{ starter_pack.description }}</p>
-                </a>
-            {% endfor %}
+            <div class="mb-16">
+                <h3 class="mb-8 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Your Starter Packs</h3>
+                {% for starter_pack in your_starter_packs %}
+                    <a href="{% url 'share_starter_pack' starter_pack.slug %}"
+                       class="my-4 block max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                        <h4 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ starter_pack.title }}</h4>
+                        <p class="font-normal text-gray-700 dark:text-gray-400">{{ starter_pack.description }}</p>
+                    </a>
+                {% endfor %}
+            </div>
         {% endif %}
-        <h3 class="mt-16 mb-8 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Community Starter Packs</h3>
+        <h3 class="mb-8 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Community Starter Packs</h3>
         {% for starter_pack in starter_packs %}
             <a href="{% url 'share_starter_pack' starter_pack.slug %}"
                class="my-4 block max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
