@@ -53,6 +53,7 @@ class StarterPackForm(forms.ModelForm):
         fields = ["title", "description"]
 
 
+@login_required
 def add_accounts_to_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(
         StarterPack, slug=starter_pack_slug, created_by=request.user, deleted_at__isnull=True
@@ -112,6 +113,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
     )
 
 
+@login_required
 def edit_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(
         StarterPack, slug=starter_pack_slug, created_by=request.user, deleted_at__isnull=True
