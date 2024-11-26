@@ -132,3 +132,37 @@ class TestEditStarterPackAccounts(TestCase):
         response = self.client.get(reverse("edit_accounts_starter_pack", args=[self.starter_pack.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Search @username@instance.org")
+
+
+class TestDeleteStarterPack(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = baker.make("auth.User")
+        baker.make("mastodon_auth.AccountAccess", user=cls.user)
+        cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
+
+    def test_not_logged_in(self):
+        response = self.client.get(reverse("delete_starter_pack", args=[self.starter_pack.slug]))
+        self.assertRedirects(response, reverse("login") + f"?next=/starter-packs/{self.starter_pack.slug}/delete/")
+
+    def test_not_owned_starter_pack(self):
+        other_user = baker.make("auth.User")
+        self.client.force_login(other_user)
+        response = self.client.get(reverse("delete_starter_pack", args=[self.starter_pack.slug]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_confirmation(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("delete_starter_pack", args=[self.starter_pack.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, f'Are you sure you want to delete the starter pack <strong>"{self.starter_pack.title}"</strong>?'
+        )
+
+    def test_delete(self):
+        self.client.force_login(self.user)
+        self.assertIsNone(self.starter_pack.deleted_at)
+        response = self.client.post(reverse("delete_starter_pack", args=[self.starter_pack.slug]))
+        self.assertEqual(response.status_code, 302)
+        self.starter_pack.refresh_from_db()
+        self.assertIsNotNone(self.starter_pack.deleted_at)

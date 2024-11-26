@@ -248,6 +248,7 @@ def share_starter_pack(request, starter_pack_slug):
     )
 
 
+@login_required
 def delete_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, created_by=request.user)
     if request.method == "POST":
