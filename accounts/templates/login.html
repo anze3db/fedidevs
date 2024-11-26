@@ -1,0 +1,14 @@
+{% extends "v2/layout.html" %}
+{% load account_extras %}
+{% load static %}
+{% block content %}
+    <main class="py-8 px-4 mx-auto max-w-2xl lg:py-16 p-3 mb-12 ">
+        {% with hide_close=True %}
+            {% include "login_form.html" %}
+        {% endwith %}
+    </main>
+{% endblock content %}
+{% block sidebar %}
+    <section class="mb-8">
+    </section>
+{% endblock sidebar %}

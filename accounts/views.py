@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import Paginator
 from django.db.models import Count, Exists, OuterRef, Q
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
@@ -157,6 +157,12 @@ def build_canonical_url(base, get_params, canonical_params):
     if params_to_include:
         canonical_url += "?" + "&".join(params_to_include)
     return canonical_url
+
+
+def login(request):
+    if request.user.is_authenticated:
+        return redirect("index")
+    return render(request, "login.html")
 
 
 def index(request, lang: str | None = None):

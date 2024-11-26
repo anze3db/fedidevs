@@ -116,6 +116,7 @@ if DEBUG:
     MIDDLEWARE.append("zeal.middleware.zeal_middleware")
 
 ROOT_URLCONF = "fedidevs.urls"
+LOGIN_URL = "/login/"
 
 TEMPLATES = [
     {

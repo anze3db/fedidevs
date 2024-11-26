@@ -205,6 +205,7 @@ urlpatterns = [
     path("__reload__/", include("django_browser_reload.urls")),
     path("robots.txt", robots_txt),
     path("", views.index, name="index"),
+    path("login/", views.login, name="login"),
     path("<langslug:lang>/", views.index, name="index"),
     path("follow/<int:account_id>", mastodon_views.follow, name="follow"),
     path("redirect/<path:query>", mastodon_views.redirect_to_local, name="redirect"),

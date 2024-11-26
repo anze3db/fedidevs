@@ -30,3 +30,14 @@ class TestStarterPacks(TestCase):
         self.assertContains(response, "Your Starter Packs")
         self.assertContains(response, "Community Starter Packs")
 
+
+class TestCreateStarterPack(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = baker.make("auth.User")
+
+    def test_create_page(self):
+        response = self.client.get(reverse("create_starter_pack"))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("login") + "?next=/starter-packs/create/")
+
