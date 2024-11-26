@@ -6,7 +6,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
-from django.db.models import Exists, OuterRef, Subquery
+from django.db.models import Exists, OuterRef
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_encode
@@ -27,7 +27,7 @@ def starter_packs(request):
         your_starter_packs = (
             StarterPack.objects.filter(created_by=request.user, deleted_at__isnull=True)
             .order_by("-created_at")
-            .prefetch_related("created_by")
+            .select_related("created_by")
         )
 
     return render(
@@ -40,7 +40,7 @@ def starter_packs(request):
             "page_subheader": "",
             "starter_packs": StarterPack.objects.filter(deleted_at__isnull=True)
             .order_by("-created_at")
-            .prefetch_related("created_by"),
+            .select_related("created_by"),
             "your_starter_packs": your_starter_packs,
         },
     )
