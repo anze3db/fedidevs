@@ -5,9 +5,9 @@
     <main>
         <div class="max-w-4xl mb-8">
             <div class="w-full p-4 text-center bg-blue-100 border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-blue-950 dark:border-blue-800">
-                <h5 class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">{{ starter_pack.title }}</h5>
+                <h5 class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">{% render_language_emojis starter_pack.title %}</h5>
                 <p class="mb-5 text-base text-gray-500 sm:text-sm dark:text-gray-400">by {{ starter_pack.created_by }}</p>
-                <p class="mb-5 text-base sm:text-lg">{{ starter_pack.description }}</p>
+                <p class="mb-5 text-base sm:text-lg">{% render_language_emojis starter_pack.description %}</p>
                 <div class="items-center justify-center space-y-4 sm:flex sm:space-y-0 sm:space-x-4 rtl:space-x-reverse">
                     {% if not user.is_authenticated %}
                         <button data-modal-target="authentication-modal"

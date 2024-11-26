@@ -47,3 +47,14 @@ html {
 .red-to-yellow-btn {
     @apply inline-flex gap-2 text-sm items-center justify-center p-0.5 overflow-hidden font-medium text-gray-900 rounded-lg bg-gradient-to-br from-red-200 via-red-300 to-yellow-200 group-hover:from-red-200 group-hover:via-red-300 group-hover:to-yellow-200 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400;
 }
+
+.emojione {
+    font-size: inherit;
+    vertical-align: middle;
+    -o-object-fit: contain;
+    object-fit: contain;
+    margin: -.2ex 0.15em .2ex;
+    height:1em; width:auto;
+    display: inline-block;
+}
+
