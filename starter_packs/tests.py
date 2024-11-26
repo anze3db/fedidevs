@@ -166,3 +166,45 @@ class TestDeleteStarterPack(TestCase):
         self.assertEqual(response.status_code, 302)
         self.starter_pack.refresh_from_db()
         self.assertIsNotNone(self.starter_pack.deleted_at)
+
+
+class TestShareStarterPack(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = baker.make("auth.User")
+        baker.make("mastodon_auth.AccountAccess", user=cls.user)
+        cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
+        baker.make("starter_packs.StarterPackAccount", starter_pack=cls.starter_pack, _quantity=5)
+
+    def test_not_existing_starter_pack(self):
+        response = self.client.get(reverse("share_starter_pack", args=["not-existing"]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_share_starter_pack(self):
+        response = self.client.get(reverse("share_starter_pack", args=[self.starter_pack.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.starter_pack.title)
+        self.assertContains(response, self.starter_pack.description)
+
+        for account in self.starter_pack.starterpackaccount_set.all():
+            with self.subTest("Check account"):
+                self.assertContains(response, account.account.username)
+
+        self.assertNotContains(response, "Edit")
+        self.assertNotContains(response, "Delete")
+        self.assertContains(response, "Follow all 5 accounts")
+
+    def test_logged_in(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("share_starter_pack", args=[self.starter_pack.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.starter_pack.title)
+        self.assertContains(response, self.starter_pack.description)
+
+        for account in self.starter_pack.starterpackaccount_set.all():
+            with self.subTest("Check account"):
+                self.assertContains(response, account.account.username)
+
+        self.assertContains(response, "Edit")
+        self.assertContains(response, "Delete")
+        self.assertContains(response, "Follow all 5 accounts")
