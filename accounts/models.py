@@ -118,6 +118,8 @@ class Account(models.Model):
     instance = models.TextField()
     instance_model = models.ForeignKey("Instance", on_delete=models.CASCADE, null=True, blank=True)
 
+    text = models.TextField(null=True, blank=True)
+
     username = models.TextField()
     acct = models.TextField()
     display_name = models.TextField()
@@ -153,9 +155,7 @@ class Account(models.Model):
             "account_id",
             "instance",
         )
-        indexes = [
-            models.Index(fields=["noindex", "discoverable"]),
-        ]
+        indexes = [models.Index(fields=["noindex", "discoverable"]), models.Index(fields=["text"])]
 
     def __str__(self):
         return self.username

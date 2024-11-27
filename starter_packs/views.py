@@ -89,7 +89,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
                 search = f"{instance}/@{username}"
 
         accounts = accounts.filter(
-            accountlookup__text__icontains=search,
+            text__icontains=search,
         )
 
     paginator = Paginator(accounts, 50)

@@ -68,11 +68,12 @@ class Command(RichCommand):
                         self.console.print(f"[green]Done with {instance}[/green]")
                         to_index.remove(instance)
                         continue
+                    inst = instance_models.get(instance)
                     fetched_accounts += [
                         Account(
                             account_id=account["id"],
                             instance=account["url"].split("/")[2],
-                            instance_model=instance_models.get(instance),
+                            instance_model=inst,
                             username=account["username"],
                             acct=account["acct"],
                             display_name=account["display_name"],
@@ -98,6 +99,14 @@ class Command(RichCommand):
                             emojis=account["emojis"],
                             roles=account.get("roles", []),
                             fields=account["fields"],
+                            text="\n".join(
+                                [
+                                    f"@{account["username"]}@{inst.domain}",
+                                    account["display_name"],
+                                    account["url"],
+                                    account["note"],
+                                ]
+                            ),
                         )
                         for account in response
                         if account.get("id")
