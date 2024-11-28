@@ -22,8 +22,9 @@ class Command(RichCommand):
         # TODO: Optimizer should no longer be needed because crawler is pre-filtering
         # self.console.print("Running optimizer")
         # management.call_command("optimizer")
-        self.console.print("Running statuser")
-        management.call_command("statuser")
+        # TODO: Why was I even still running statuser?
+        # self.console.print("Running statuser")
+        # management.call_command("statuser")
         self.console.print("Running findinstances")
         management.call_command("findinstances")
         self.console.print("Running stattag")
