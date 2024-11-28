@@ -12,7 +12,7 @@ def store_daily_stats():
         f"{lang.code}_accounts": AccountLookup.objects.filter(language__icontains=lang.code + "\n").count()
         for lang in LANGUAGES + FRAMEWORKS
     }
-    account_defaults["total_accounts"] = Account.objects.count()
+    account_defaults["total_accounts"] = Account.objects.filter(accountlookup__isnull=False).count()
 
     post_defaults = {
         f"{lang.code}_posts": Post.objects.filter(
