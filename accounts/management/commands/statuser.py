@@ -17,7 +17,9 @@ class Command(RichCommand):
 
     def handle(self, *args, offset=0, instances=None, **options):
         min_stat = timezone.now() - dt.timedelta(days=2)
-        accounts = Account.objects.filter(last_status_at__gte=min_stat).order_by("-followers_count")
+        accounts = Account.objects.filter(accountlookup__isnull=False, last_status_at__gte=min_stat).order_by(
+            "-followers_count"
+        )
         self.main(list(accounts))
 
     @async_to_sync
