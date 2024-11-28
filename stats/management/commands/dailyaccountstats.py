@@ -26,7 +26,9 @@ class Command(RichCommand):
 
     def handle(self, *args, **options):
         self.console.print("Insert account stats")
-        accounts = Account.objects.all().only(
+        accounts = Account.objects.filter(
+            accountlookup__isnull=False,
+        ).only(
             "id",
             "followers_count",
             "following_count",
