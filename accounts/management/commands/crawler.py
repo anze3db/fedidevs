@@ -144,6 +144,7 @@ class Command(RichCommand):
                         "roles",
                         "fields",
                         "instance_model",
+                        "text",
                     ],
                 )
                 if fetched_accounts:
