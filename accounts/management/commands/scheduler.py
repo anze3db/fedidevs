@@ -16,7 +16,7 @@ class Command(RichCommand):
             self.console.print("Running instances")
             management.call_command("instances")
         self.console.print("Running crawler")
-        management.call_command("crawler", skip_inactive_for=3, pre_filter=False)
+        management.call_command("crawler", skip_inactive_for=3)
         self.console.print("Running indexer")
         management.call_command("indexer")
         # TODO: Optimizer should no longer be needed because crawler is pre-filtering
