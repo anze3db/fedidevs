@@ -17,12 +17,6 @@ class Command(RichCommand):
         parser.add_argument("--offset", type=int, nargs="?", default=0)
         parser.add_argument("--instances", type=str, nargs="?", default=None)
         parser.add_argument("--skip-inactive-for", type=int, nargs="?", default=3)
-        parser.add_argument(
-            "--pre-filter",
-            action="store_true",
-            default=True,
-            help="Don't insert accounts that would be deleted by optimizer",
-        )
 
     def handle(
         self,
@@ -30,14 +24,12 @@ class Command(RichCommand):
         offset=0,
         instances=None,
         skip_inactive_for: int = 3,
-        pre_filter: bool = True,
         **options,
     ):
         self.main(
             offset=offset,
             instances=instances,
             skip_inactive_for=skip_inactive_for,
-            pre_filter=pre_filter,
         )
 
     @async_to_sync
@@ -46,7 +38,6 @@ class Command(RichCommand):
         offset: int,
         instances: str | None,
         skip_inactive_for: int = 0,
-        pre_filter: bool = False,
     ):
         async with httpx.AsyncClient() as client:
             start_time = timezone.now()
@@ -111,10 +102,7 @@ class Command(RichCommand):
                         for account in response
                         if account.get("id")
                     ]
-                if pre_filter:
-                    inserted_accounts = [account for account in fetched_accounts if account.should_index()]
-                else:
-                    inserted_accounts = fetched_accounts
+                inserted_accounts = fetched_accounts
 
                 await Account.objects.abulk_create(
                     inserted_accounts,
