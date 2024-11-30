@@ -1,10 +1,10 @@
 import logging
-import re
 
 import dramatiq
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.postgres.search import SearchQuery
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import Exists, OuterRef
@@ -78,18 +78,8 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
     if q := request.GET.get("q", ""):
         search = q.strip()
 
-        # Check if searching with @username@instance and convert to instance/@username which is indexed
-        regex = re.compile(r"(@?[a-zA-Z0-9_\.\-]+)@([a-zA-Z0-9_\.\-]+)")
-        if regex.match(search):
-            is_username = True
-            if search.startswith("@"):
-                search = search[1:]
-            if len(splt := search.split("@")) == 2:
-                username, instance = splt
-                search = f"{instance}/@{username}"
-
         accounts = accounts.filter(
-            text__icontains=search,
+            search=SearchQuery(search, search_type="websearch"),
         )
 
     paginator = Paginator(accounts, 50)

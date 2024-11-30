@@ -66,6 +66,7 @@ class Command(RichCommand):
                             instance=account["url"].split("/")[2],
                             instance_model=inst,
                             username=account["username"],
+                            username_at_instance=f"@{account['username']}@{inst.domain}",
                             acct=account["acct"],
                             display_name=account["display_name"],
                             locked=account["locked"],
@@ -90,14 +91,7 @@ class Command(RichCommand):
                             emojis=account["emojis"],
                             roles=account.get("roles", []),
                             fields=account["fields"],
-                            text="\n".join(
-                                [
-                                    f"@{account["username"]}@{inst.domain}",
-                                    account["display_name"],
-                                    account["url"],
-                                    account["note"],
-                                ]
-                            ),
+                            search=Account.get_search_vector(),
                         )
                         for account in response
                         if account.get("id")

@@ -258,6 +258,7 @@ def index(request, lang: str | None = None):
             "id",
             "display_name",
             "username",
+            "username_at_instance",
             "account_id",
             "header",
             "url",

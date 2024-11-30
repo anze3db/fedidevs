@@ -3,6 +3,8 @@ import re
 from dataclasses import dataclass
 from datetime import timedelta
 
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils import timezone
@@ -118,7 +120,8 @@ class Account(models.Model):
     instance = models.TextField()
     instance_model = models.ForeignKey("Instance", on_delete=models.CASCADE, null=True, blank=True)
 
-    text = models.TextField(null=True, blank=True)
+    username_at_instance = models.TextField(null=True, blank=True)
+    search = SearchVectorField(null=True, blank=True)
 
     username = models.TextField()
     acct = models.TextField()
@@ -155,7 +158,10 @@ class Account(models.Model):
             "account_id",
             "instance",
         )
-        indexes = [models.Index(fields=["noindex", "discoverable"]), models.Index(fields=["text"])]
+        indexes = [
+            models.Index(fields=["noindex", "discoverable"]),
+            GinIndex(fields=["search"]),
+        ]
 
     def __str__(self):
         return self.username
@@ -184,11 +190,16 @@ class Account(models.Model):
 
         return f"{diff.days // 30} month{"s" if diff.days // 30 > 1 else ""} ago"
 
-    @property
-    def username_at_instance(self):
-        if self.instance_model:
-            return f"@{self.username}@{self.instance_model.domain}"
-        return f"@{self.username}@{self.source}"
+    def get_username_at_instance(self):
+        return f"@{self.username}@{self.instance_model.domain}"
+
+    @classmethod
+    def get_search_vector(cls):
+        return (
+            SearchVector("username", "username_at_instance", weight="A")
+            + SearchVector("instance", weight="B")
+            + SearchVector("note", weight="D")
+        )
 
     @property
     def languages(self):
