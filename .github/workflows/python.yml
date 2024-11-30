@@ -7,6 +7,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
     - uses: actions/checkout@v4
     - name: Install the latest version of uv
@@ -21,6 +34,8 @@ jobs:
     - name: Run Tests
       env:
         FLAKYTEST_SECRET_TOKEN: ${{ secrets.FLAKYTEST_SECRET_TOKEN }}
+        DJANGO_DATABASE_USER: postgres
+        DATABASE_URL: 'postgresql://postgres:postgres_password@127.0.0.1:5432/fedidevs'
       run: uv run pytest
   deploy:
     runs-on: ubuntu-latest
