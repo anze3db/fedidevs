@@ -24,8 +24,9 @@ class Command(RichCommand):
         accounts = accounts.split(",")
         starter_pack = StarterPack.objects.get(slug=starter_pack_slug)
         for account in accounts:
-            if not Account.objects.filter(username_at_instance=account).exists():
-                management.call_command("crawlone", user=account[1:])
+            account_str = account.strip().lower()
+            if not Account.objects.filter(username_at_instance=account_str).exists():
+                management.call_command("crawlone", user=account_str[1:])
 
         account_models = Account.objects.filter(username_at_instance__in=accounts)
         starter_pack_accounts = [
