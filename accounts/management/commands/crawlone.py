@@ -6,7 +6,8 @@ from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils import timezone
 from django_rich.management import RichCommand
 
-from accounts.models import Account
+from accounts.management.commands.instances import process_instances
+from accounts.models import Account, Instance
 
 
 class Command(RichCommand):
@@ -25,6 +26,8 @@ class Command(RichCommand):
     async def main(self, user: str, make_visible: bool = False):
         async with httpx.AsyncClient() as client:
             user, instance = user.split("@")
+            await process_instances([instance])
+            instance_model = await Instance.objects.aget(instance=instance)
             user_id = await self.fetch_id(client, instance, user)
             if not user_id:
                 self.console.print("id not found")
@@ -35,11 +38,14 @@ class Command(RichCommand):
                 return
             defaults = {
                 "username": account["username"],
+                "username_at_instance": f"@{account['username']}@{instance}",
+                "instance": account["url"].split("/")[2],
+                "instance_model": instance_model,
                 "acct": account["acct"],
                 "display_name": account["display_name"],
                 "locked": account["locked"],
                 "bot": account["bot"],
-                "discoverable": account.get("discoverable", False) if not make_visible else True,
+                "discoverable": (account.get("discoverable", False) is True) if not make_visible else True,
                 "group": account.get("group", False),
                 "noindex": account.get("noindex", None) if not make_visible else False,
                 "created_at": (dt.datetime.fromisoformat(account["created_at"])),

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import timedelta
 
 from django.contrib.postgres.indexes import GinIndex
-from django.contrib.postgres.search import SearchVector, SearchVectorField
+from django.contrib.postgres.search import SearchVectorField
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils import timezone
