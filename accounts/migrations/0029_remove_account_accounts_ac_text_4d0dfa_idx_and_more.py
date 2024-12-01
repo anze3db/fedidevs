@@ -18,7 +18,7 @@ def compute_search_vector(apps, schema_editor):
 def _get_username_at_instance(account):
     if account.instance_model:
         return f"@{account.username}@{account.instance_model.domain}"
-    return f"@{account.username}@{account.source}"
+    return f"@{account.username}@{account.url.replace('https://', '').split('/@')[0]}"
 
 
 def populate_username_at_instance(apps, schema_editor):

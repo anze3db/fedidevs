@@ -191,7 +191,9 @@ class Account(models.Model):
         return f"{diff.days // 30} month{"s" if diff.days // 30 > 1 else ""} ago"
 
     def get_username_at_instance(self):
-        return f"@{self.username}@{self.instance_model.domain}"
+        if self.instance_model:
+            return f"@{self.username}@{self.instance_model.domain}"
+        return f"@{self.username}@{self.url.replace('https://', '').split('/@')[0]}"
 
     @classmethod
     def get_search_vector(cls):
