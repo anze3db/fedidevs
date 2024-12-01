@@ -88,7 +88,7 @@
                             {% elif sort_order == '-accountlookup__statuses_count' %}
                                 <span>▼ {{ account.accountlookup.statuses_count | intcomma }}</span>
                             {% else %}
-                                <span>{{ account.accountlookup.statuses_count | intcomma }}</span>
+                                <span>{{ account.statuses_count | intcomma }}</span>
                             {% endif %}
                         </span>
                     </div>
@@ -104,7 +104,7 @@
                             {% elif sort_order == '-accountlookup__followers_count' %}
                                 <span>▼ {{ account.accountlookup.followers_count | intcomma }}</span>
                             {% else %}
-                                <span>{{ account.accountlookup.followers_count | intcomma }}</span>
+                                <span>{{ account.followers_count | intcomma }}</span>
                             {% endif %}
                         </span>
                     </div>
@@ -120,7 +120,7 @@
                             {% elif sort_order == '-accountlookup__following_count' %}
                                 <span>▼ {{ account.accountlookup.following_count | intcomma }}</span>
                             {% else %}
-                                <span>{{ account.accountlookup.following_count | intcomma }}</span>
+                                <span>{{ account.following_count | intcomma }}</span>
                             {% endif %}
                         </span>
                     </div>

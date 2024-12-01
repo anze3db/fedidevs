@@ -269,6 +269,9 @@ def index(request, lang: str | None = None):
             "last_status_at",
             "instance_model",
             "accountlookup",
+            "followers_count",
+            "following_count",
+            "statuses_count",
         )
     )
     accounts = accounts.order_by(sort_order)
