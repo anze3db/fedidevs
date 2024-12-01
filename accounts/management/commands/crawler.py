@@ -91,7 +91,6 @@ class Command(RichCommand):
                             emojis=account["emojis"],
                             roles=account.get("roles", []),
                             fields=account["fields"],
-                            search=Account.get_search_vector(),
                         )
                         for account in response
                         if account.get("id")
@@ -127,7 +126,6 @@ class Command(RichCommand):
                         "roles",
                         "fields",
                         "instance_model",
-                        "search",
                     ],
                 )
                 if fetched_accounts:

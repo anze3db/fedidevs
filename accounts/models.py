@@ -195,14 +195,6 @@ class Account(models.Model):
             return f"@{self.username}@{self.instance_model.domain}"
         return f"@{self.username}@{self.url.replace('https://', '').split('/@')[0]}"
 
-    @classmethod
-    def get_search_vector(cls):
-        return (
-            SearchVector("username", "username_at_instance", weight="A")
-            + SearchVector("instance", weight="B")
-            + SearchVector("note", weight="D")
-        )
-
     @property
     def languages(self):
         lang_lookup = {lang.code: lang for lang in LANGUAGES + FRAMEWORKS}
