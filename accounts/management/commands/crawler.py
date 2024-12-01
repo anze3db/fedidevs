@@ -104,6 +104,7 @@ class Command(RichCommand):
                     update_conflicts=["account_id", "instance"],
                     update_fields=[
                         "username",
+                        "username_at_instance",
                         "acct",
                         "display_name",
                         "locked",
@@ -126,7 +127,7 @@ class Command(RichCommand):
                         "roles",
                         "fields",
                         "instance_model",
-                        "text",
+                        "search",
                     ],
                 )
                 if fetched_accounts:
