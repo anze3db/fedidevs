@@ -26,9 +26,19 @@ class Command(RichCommand):
     async def main(self, user: str, make_visible: bool = False):
         async with httpx.AsyncClient() as client:
             user, instance = user.split("@")
-            await process_instances([instance])
-            instance_model = await Instance.objects.aget(instance=instance)
-            user_id = await self.fetch_id(client, instance, user)
+            try:
+                instance_model = await Instance.objects.aget(instance=instance)
+            except Instance.DoesNotExist:
+                await process_instances([instance])
+                instance_model = await Instance.objects.filter(instance=instance).afirst()
+                if not instance_model:
+                    self.console.print(f"Instance {instance} not found")
+                    return
+            try:
+                user_id = await self.fetch_id(client, instance, user)
+            except Exception as e:
+                self.console.print(f"Error: {e}")
+                return
             if not user_id:
                 self.console.print("id not found")
                 return
