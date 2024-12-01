@@ -12,11 +12,11 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             sql="""
               CREATE TRIGGER accounts_search_vector_trigger
-              BEFORE INSERT OR UPDATE OF username, username_at_instance, instance
+              BEFORE INSERT OR UPDATE OF username, username_at_instance, display_name, instance
               ON accounts_account
               FOR EACH ROW EXECUTE PROCEDURE
               tsvector_update_trigger(
-                search, 'pg_catalog.english', username, username_at_instance, instance
+                search, 'pg_catalog.english', username, username_at_instance, display_name, instance
               );
             """,
             reverse_sql="""
