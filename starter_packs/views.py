@@ -223,7 +223,7 @@ def share_starter_pack(request, starter_pack_slug):
 
     return render(
         request,
-        "share_starter_pack.html",
+        "starter_pack_accounts.html" if "HX-Request" in request.headers else "share_starter_pack.html",
         {
             "page_title": starter_pack.title + " - Mastodon Starter Pack",
             "page": "starter_packs",
