@@ -49,7 +49,7 @@ login_scopes = ("read:accounts", "read:follows", "write:follows", "read:search")
 
 @require_POST
 def login(request):
-    api_base_url = request.POST.get("instance", "").strip()
+    api_base_url = request.POST.get("instance", "").strip().lower()
     api_base_url = api_base_url.replace("https://", "").replace("http://", "")
 
     if api_base_url.endswith("/"):
