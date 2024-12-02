@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             sql="""
               CREATE TRIGGER accounts_search_vector_trigger
-              BEFORE INSERT OR UPDATE OF username, username_at_instance, display_name, instance
+              BEFORE INSERT OR UPDATE OF username, username_at_instance, display_name, instance, search
               ON accounts_account
               FOR EACH ROW EXECUTE PROCEDURE
               tsvector_update_trigger(
