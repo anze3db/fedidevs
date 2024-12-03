@@ -68,7 +68,11 @@ FRAMEWORKS = [
     Framework("opentofu", "OpenTofu", "🍲", r"opentofu", "frameworks/opentofu.png"),
     Framework("security", "Security", "🔒", r"security|infosec|appsec|OSCP|OSWP", "frameworks/security.png"),
     Framework(
-        "machinelearning", "Machine Learning", "🤖", r"machine[- _]?learning|ML|AI", "frameworks/machine-learning.jpg"
+        "machinelearning",
+        "Machine Learning",
+        "🤖",
+        r"machine[- _]?learning|artificial[- _]?intelligance|#ml|#ai",
+        "frameworks/machine-learning.jpg",
     ),
 ]
 
