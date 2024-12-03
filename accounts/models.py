@@ -67,6 +67,9 @@ FRAMEWORKS = [
     Framework("terraform", "Terraform", "🏗️", r"terraform", "frameworks/terraform.png"),
     Framework("opentofu", "OpenTofu", "🍲", r"opentofu", "frameworks/opentofu.png"),
     Framework("security", "Security", "🔒", r"security|infosec|appsec|OSCP|OSWP", "frameworks/security.png"),
+    Framework(
+        "machinelearning", "Machine Learning", "🤖", r"machine[- _]?learning|ML|AI", "frameworks/machine-learning.jpg"
+    ),
 ]
 
 LANGUAGES = [
