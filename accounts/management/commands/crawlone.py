@@ -35,14 +35,10 @@ class Command(RichCommand):
                     self.console.print(f"Instance {instance} not found")
                     return
             try:
-                user_id = await self.fetch_id(client, instance, user)
+                account = await self.fetch_user(client, instance, user)
             except Exception as e:
                 self.console.print(f"Error: {e}")
                 return
-            if not user_id:
-                self.console.print("id not found")
-                return
-            account = await self.fetch_user(client, instance, user_id)
             if not account or not account.get("id"):
                 self.console.print("account not found")
                 return
@@ -100,7 +96,7 @@ class Command(RichCommand):
                         "\n\nHey! Looks like your account is not discoverable and you've opted-out of search engine indexing. That's why you aren't showing up 😔 See the FAQ for instructions on how to fix it: http://fedidevs.com/faq/\n\nI did a manual override so that you show up now, but this is a temporary fix."
                     )
 
-    async def fetch_id(self, client, instance: str, user: str) -> str | None:
+    async def fetch_user(self, client, instance: str, user: str) -> dict:
         try:
             response = await client.get(
                 f"https://{instance}/api/v1/accounts/lookup",
@@ -111,25 +107,7 @@ class Command(RichCommand):
             )
             if response.status_code != 200:
                 self.console.print(f"[bold red]Error status code[/bold red]. {response.status_code}")
-                return None
-            return response.json().get("id")
-        except (
-            httpx.ReadTimeout,
-            httpx.ConnectTimeout,
-            httpx.RemoteProtocolError,
-        ):
-            self.console.print("[bold red]Error timeout[/bold red]")
-            return None
-
-    async def fetch_user(self, client, instance: str, user_id: str):
-        try:
-            response = await client.get(
-                f"https://{instance}/api/v1/accounts/{user_id}",
-                timeout=30,
-            )
-            if response.status_code != 200:
-                self.console.print(f"[bold red]Error status code[/bold red]. {response.status_code}")
-                return None
+                return {}
             return response.json()
         except (
             httpx.ReadTimeout,
@@ -137,4 +115,4 @@ class Command(RichCommand):
             httpx.RemoteProtocolError,
         ):
             self.console.print("[bold red]Error timeout[/bold red]")
-            return None
+            return {}
