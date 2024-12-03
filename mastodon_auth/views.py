@@ -248,13 +248,13 @@ def follow(request, account_id: int):
         try:
             local_account = mastodon.account_lookup(acct=account.username_at_instance)
         except MastodonNotFoundError:
-            logging.warning("Account not found on instance %s", account.username_at_instance)
+            logging.exception("Account not found on instance %s", account.username_at_instance)
             return err_response("Account not found")
         except MastodonUnauthorizedError:
-            logging.warning("Not authorized %s", account.username_at_instance)
+            logging.exception("Not authorized %s", account.username_at_instance)
             return err_response("Not Authorized")
         except MastodonAPIError:
-            logging.error("Unknown error when following %s", account.username_at_instance)
+            logging.exception("Unknown error when following %s", account.username_at_instance)
             return err_response("Failed to follow")
         account_id = local_account["id"]
 
@@ -267,7 +267,7 @@ def follow(request, account_id: int):
         try:
             local_account = mastodon.account_lookup(acct=account.username_at_instance)
         except MastodonNotFoundError:
-            logging.warning("Account not found on instance %s", account.username_at_instance)
+            logging.exception("Account not found on instance %s", account.username_at_instance)
             return err_response("Account not found")
         if moved := local_account.get("moved"):
             account.moved = moved
