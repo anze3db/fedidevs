@@ -244,7 +244,7 @@ def share_starter_pack(request, starter_pack_slug):
         request,
         "starter_pack_accounts.html" if "HX-Request" in request.headers else "share_starter_pack.html",
         {
-            "page_title": starter_pack.title + " - Mastodon Starter Pack",
+            "page_title": re.sub(r":\w+:", "", starter_pack.title).strip() + " - Mastodon Starter Pack",
             "page": "starter_packs",
             "page_header": "FEDIDEVS",
             "page_subheader": "",
