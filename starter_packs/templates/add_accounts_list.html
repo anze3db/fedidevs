@@ -51,5 +51,13 @@
         <li hx-get="{% url 'edit_accounts_starter_pack' starter_pack.slug %}{% querystring page=accounts.next_page_number %}"
             hx-trigger="intersect once"
             hx-swap="afterend"></li>
+    {% else %}
+        {% if accounts %}
+            <li class="p-4 prose text-s dark:prose-invert">
+                <p>
+                    <strong>Tip:</strong> Not finding a specific account? Try searching for <strong>@username@instance.org</strong> to find the user directly on their instance.
+                </p>
+            </li>
+        {% endif %}
     {% endif %}
 </ul>
