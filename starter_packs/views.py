@@ -1,10 +1,12 @@
 import logging
+import re
 
 import dramatiq
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery
+from django.core import management
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import Exists, OuterRef
@@ -19,6 +21,7 @@ from starter_packs.models import StarterPack, StarterPackAccount
 from stats.models import FollowAllClick
 
 logger = logging.getLogger(__name__)
+username_regex = re.compile(r"@?\b([A-Z0-9._%+-]+)@([A-Z0-9.-]+\.[A-Z]{2,})\b", re.IGNORECASE)
 
 
 def starter_packs(request):
@@ -77,10 +80,20 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
     is_username = False
     if q := request.GET.get("q", ""):
         search = q.strip()
-
-        accounts = accounts.filter(
-            search=SearchQuery(search, search_type="websearch"),
-        )
+        if username_regex.match(search):
+            logger.info("Searching for username %s", search)
+            is_username = True
+            accounts = accounts.filter(
+                username_at_instance=search,
+            )
+            if not accounts.exists():
+                logger.info("Username not found, crawling the instance")
+                management.call_command("crawlone", user=search[1:])
+        else:
+            logger.info("Using full text search for %s", search)
+            accounts = accounts.filter(
+                search=SearchQuery(search, search_type="websearch"),
+            )
 
     paginator = Paginator(accounts, 50)
     page_number = request.GET.get("page")
