@@ -13,7 +13,13 @@ from django.db.models import Exists, OuterRef
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_encode
-from mastodon import Mastodon, MastodonAPIError, MastodonNotFoundError, MastodonUnauthorizedError
+from mastodon import (
+    Mastodon,
+    MastodonAPIError,
+    MastodonNotFoundError,
+    MastodonServiceUnavailableError,
+    MastodonUnauthorizedError,
+)
 
 from accounts.models import Account
 from mastodon_auth.models import AccountFollowing
@@ -313,8 +319,22 @@ def follow_bg(user_id: int, starter_pack_slug: str):
             try:
                 local_account = mastodon.account_lookup(acct=account.username_at_instance)
             except MastodonNotFoundError:
-                logger.exception("Account not found on instance %s", account.username_at_instance)
-                continue
+                # Attempt to resolve through search:
+                try:
+                    local_accounts = mastodon.account_search(q=account.username_at_instance, resolve=True, limit=1)
+                except MastodonServiceUnavailableError:
+                    logger.exception("Service unavailable when searching for %s", account.username_at_instance)
+                    continue
+                except Exception:
+                    logger.exception("Unknown error when searching for %s", account.username_at_instance)
+                    continue
+                if not local_accounts:
+                    logger.exception("Account not found on instance %s", account.username_at_instance)
+                    continue
+                local_account = local_accounts[0]
+                if local_account["acct"] != account.username_at_instance[1:]:
+                    logger.exception("Account mismatch %s %s", account.username_at_instance[1:], local_account["acct"])
+                    continue
             except MastodonUnauthorizedError:
                 logger.exception("Not authorized %s", account.username_at_instance)
                 continue
