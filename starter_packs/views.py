@@ -224,6 +224,7 @@ def share_starter_pack(request, starter_pack_slug):
     accounts = (
         Account.objects.filter(
             starterpackaccount__starter_pack=starter_pack,
+            discoverable=True,
         )
         .select_related("accountlookup", "instance_model")
         .order_by("-followers_count")
@@ -308,6 +309,7 @@ def follow_bg(user_id: int, starter_pack_slug: str):
 
     starter_pack_accounts = Account.objects.filter(
         starterpackaccount__starter_pack__slug=starter_pack_slug,
+        discoverable=True,
     )
 
     for account in starter_pack_accounts:
