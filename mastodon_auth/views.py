@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
+from django.core import management
 from django.core.cache import cache
 from django.db import transaction
 from django.shortcuts import redirect, render
@@ -47,6 +48,11 @@ app_scopes = (
 login_scopes = ("read:accounts", "read:follows", "write:follows", "read:search")
 
 
+@dramatiq.actor
+def crawl_instance(instance_url: str):
+    management.call_command("crawler", instances=instance_url)
+
+
 @require_POST
 def login(request):
     api_base_url = request.POST.get("instance", "").strip().lower()
@@ -74,11 +80,13 @@ def login(request):
             return redirect("/")
 
         instance = Instance(
+            id=3333,
             url=api_base_url,
             client_id=client_id,
             client_secret=client_secret,
         )
         instance.save()
+    transaction.on_commit(lambda: crawl_instance.send(api_base_url))
 
     state = str(uuid4())
 
@@ -175,6 +183,7 @@ def auth(request):
             "emojis": logged_in_account.get("emojis"),
             "roles": logged_in_account.get("roles", []),
             "fields": logged_in_account.get("fields"),
+            "username_at_instance": f"@{logged_in_account['username']}@{instance.url}",
         },
     )
 
