@@ -47,6 +47,7 @@ def starter_packs(request):
             "page": "starter_packs",
             "page_title": "Mastodon Starter Pack Directory | Fedidevs",
             "page_header": "FEDIDEVS",
+            "page_image": "og-starterpacks.png",
             "page_subheader": "",
             "starter_packs": StarterPack.objects.filter(deleted_at__isnull=True)
             .order_by("-created_at")
