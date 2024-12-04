@@ -2,6 +2,8 @@ from django.test import TestCase
 from django.urls import reverse
 from model_bakery import baker
 
+from accounts.models import Account
+
 
 class TestStarterPacks(TestCase):
     @classmethod
@@ -174,7 +176,9 @@ class TestShareStarterPack(TestCase):
         cls.user = baker.make("auth.User")
         baker.make("mastodon_auth.AccountAccess", user=cls.user)
         cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
-        baker.make("starter_packs.StarterPackAccount", starter_pack=cls.starter_pack, _quantity=5)
+        baker.make(
+            "starter_packs.StarterPackAccount", starter_pack=cls.starter_pack, account__discoverable=True, _quantity=5
+        )
 
     def test_not_existing_starter_pack(self):
         response = self.client.get(reverse("share_starter_pack", args=["not-existing"]))
@@ -208,3 +212,18 @@ class TestShareStarterPack(TestCase):
         self.assertContains(response, "Edit")
         self.assertContains(response, "Delete")
         self.assertContains(response, "Follow all 5 accounts")
+
+    def test_non_discoverable_accounts(self):
+        Account.objects.update(discoverable=False)
+        response = self.client.get(reverse("share_starter_pack", args=[self.starter_pack.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.starter_pack.title)
+        self.assertContains(response, self.starter_pack.description)
+
+        for account in self.starter_pack.starterpackaccount_set.all():
+            with self.subTest("Check account"):
+                self.assertNotContains(response, account.account.username)
+
+        self.assertNotContains(response, "Edit")
+        self.assertNotContains(response, "Delete")
+        self.assertNotContains(response, "Follow all 5 accounts")
