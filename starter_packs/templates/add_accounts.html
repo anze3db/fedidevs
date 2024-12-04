@@ -3,6 +3,12 @@
 {% load static %}
 {% block content %}
     <main class="h-[calc(100vh-120px)] flex flex-col max-w-lg px-4 mx-auto">
+        <div class="text-center">
+            <p>Add accounts to</p>
+            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white p-4 pb-8">
+                {% render_language_emojis starter_pack.title %}
+            </h1>
+        </div>
         <form>
             <label for="default-search"
                    class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
