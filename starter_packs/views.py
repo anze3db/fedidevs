@@ -11,6 +11,7 @@ from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import Exists, OuterRef
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_encode
 from mastodon import (
@@ -248,6 +249,7 @@ def share_starter_pack(request, starter_pack_slug):
         {
             "page_title": re.sub(r":\w+:", "", starter_pack.title).strip() + " - Mastodon Starter Pack",
             "page": "starter_packs",
+            "page_url": reverse("share_starter_pack", kwargs={"starter_pack_slug": starter_pack_slug}),
             "page_header": "FEDIDEVS",
             "page_subheader": "",
             "page_image": "og-starterpack.png",
