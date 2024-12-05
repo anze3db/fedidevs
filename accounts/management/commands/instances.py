@@ -173,7 +173,11 @@ async def process_instances(instances):
             await Instance.objects.aupdate_or_create(
                 instance=instance,
                 defaults={
+                    "description": "",
+                    "thumbnail": {},
+                    "languages": [],
                     "configuration": {},
+                    "registrations": {},
                     "rules": {},
                 }
                 | {
