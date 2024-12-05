@@ -122,7 +122,9 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
             "page_subheader": "",
             "q": q,
             "is_username": is_username,
-            "num_accounts": StarterPackAccount.objects.filter(starter_pack=starter_pack).count(),
+            "num_accounts": StarterPackAccount.objects.filter(
+                account__discoverable=True, starter_pack=starter_pack
+            ).count(),
             "accounts": page_obj,
             "starter_pack": starter_pack,
         },
