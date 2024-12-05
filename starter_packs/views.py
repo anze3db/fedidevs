@@ -20,6 +20,7 @@ from mastodon import (
     MastodonNotFoundError,
     MastodonServiceUnavailableError,
     MastodonUnauthorizedError,
+    MastodonVersionError,
 )
 
 from accounts.models import Account
@@ -326,7 +327,7 @@ def follow_bg(user_id: int, starter_pack_slug: str):
         else:
             try:
                 local_account = mastodon.account_lookup(acct=account.username_at_instance)
-            except MastodonNotFoundError:
+            except (MastodonNotFoundError, MastodonVersionError):
                 # Attempt to resolve through search:
                 try:
                     local_accounts = mastodon.account_search(q=account.username_at_instance, resolve=True, limit=1)

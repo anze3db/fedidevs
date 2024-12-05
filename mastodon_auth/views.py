@@ -7,19 +7,19 @@ from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
-from django.core import management
 from django.core.cache import cache
 from django.db import transaction
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from mastodon import Mastodon, MastodonNetworkError
+from mastodon import Mastodon, MastodonNetworkError, MastodonServiceUnavailableError, MastodonVersionError
 from mastodon.errors import MastodonAPIError, MastodonNotFoundError, MastodonUnauthorizedError
 
 from accounts.models import Account
 from mastodon_auth.models import AccountAccess, AccountFollowing, Instance
 from stats.models import FollowClick
 
+logger = logging.getLogger(__name__)
 app_scopes = (
     "read:accounts",
     "read:blocks",
@@ -249,9 +249,23 @@ def follow(request, account_id: int):
     else:
         try:
             local_account = mastodon.account_lookup(acct=account.username_at_instance)
-        except MastodonNotFoundError:
-            logging.exception("Account not found on instance %s", account.username_at_instance)
-            return err_response("Account not found")
+        except (MastodonNotFoundError, MastodonVersionError):
+            # Attempt to resolve through search:
+            try:
+                local_accounts = mastodon.account_search(q=account.username_at_instance, resolve=True, limit=1)
+            except MastodonServiceUnavailableError:
+                logger.exception("Service unavailable when searching for %s", account.username_at_instance)
+                return err_response("Service unavailable")
+            except Exception:
+                logger.exception("Unknown error when searching for %s", account.username_at_instance)
+                return err_response("Unknown error")
+            if not local_accounts:
+                logger.exception("Account not found on instance %s", account.username_at_instance)
+                return err_response("Account not found on instance")
+            local_account = local_accounts[0]
+            if local_account["acct"] != account.username_at_instance[1:]:
+                logger.exception("Account mismatch %s %s", account.username_at_instance[1:], local_account["acct"])
+                return err_response("Account not found")
         except MastodonUnauthorizedError:
             logging.exception("Not authorized %s", account.username_at_instance)
             return err_response("Not Authorized")
