@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from json import JSONDecodeError
 
 import httpx
 from asgiref.sync import async_to_sync
@@ -240,7 +241,11 @@ async def fetch(client, instance) -> tuple[dict | None, str]:
         return None, instance
 
     if response.status_code == 200:
-        return response.json(), instance
+        try:
+            return response.json(), instance
+        except JSONDecodeError:
+            logger.warning("Error decoding JSON for %s", instance)
+            return None, instance
     elif response.status_code == 404:
         # Try the v1 endpoint:
         return await fetch_v1(client, instance)
