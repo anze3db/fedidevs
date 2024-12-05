@@ -12,7 +12,13 @@ from django.db import transaction
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from mastodon import Mastodon, MastodonNetworkError, MastodonServiceUnavailableError, MastodonVersionError
+from mastodon import (
+    Mastodon,
+    MastodonInternalServerError,
+    MastodonNetworkError,
+    MastodonServiceUnavailableError,
+    MastodonVersionError,
+)
 from mastodon.errors import MastodonAPIError, MastodonNotFoundError, MastodonUnauthorizedError
 
 from accounts.models import Account
@@ -249,7 +255,7 @@ def follow(request, account_id: int):
     else:
         try:
             local_account = mastodon.account_lookup(acct=account.username_at_instance)
-        except (MastodonNotFoundError, MastodonVersionError):
+        except (MastodonNotFoundError, MastodonVersionError, MastodonInternalServerError):
             # Attempt to resolve through search:
             try:
                 local_accounts = mastodon.account_search(q=account.username_at_instance, resolve=True, limit=1)
