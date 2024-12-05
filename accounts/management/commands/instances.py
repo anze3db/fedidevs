@@ -169,9 +169,14 @@ async def process_instances(instances):
         for model_instance, instance in results:
             if not model_instance:
                 continue
+
             await Instance.objects.aupdate_or_create(
                 instance=instance,
                 defaults={
+                    "configuration": {},
+                    "rules": {},
+                }
+                | {
                     k: v
                     for k, v in model_instance.items()
                     if k
