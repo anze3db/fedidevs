@@ -6,7 +6,7 @@ from django.contrib.postgres.search import SearchVector
 from django.db import migrations, models
 
 
-def compute_search_vector(apps, schema_editor):
+def compute_search_vector(apps, _):
     Account = apps.get_model("accounts", "Account")
     Account.objects.update(
         search=SearchVector("username", "username_at_instance", weight="A")
@@ -21,7 +21,7 @@ def _get_username_at_instance(account):
     return f"@{account.username}@{account.url.replace('https://', '').split('/@')[0]}"
 
 
-def populate_username_at_instance(apps, schema_editor):
+def populate_username_at_instance(apps, _):
     Account = apps.get_model("accounts", "Account")
     accounts = Account.objects.prefetch_related("instance_model").all()
     for account in accounts:
