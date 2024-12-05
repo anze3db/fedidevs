@@ -213,6 +213,9 @@ async def fetch_v1(client, instance) -> tuple[dict | None, str]:
         logger.error("Unknown error when indexing %s (v1 API), %s", instance, e)
         return None, instance
 
+    if response.status_code == 404:
+        logger.info("Probably not a mastodon instance %s", instance)
+        return None, instance
     if response.status_code != 200:
         logger.error("Error status code for %s", instance)
         return None, instance
@@ -238,6 +241,9 @@ async def fetch(client, instance) -> tuple[dict | None, str]:
                 response.headers["Location"],
                 timeout=5,
             )
+        if response.status_code == 404:
+            logger.info("Probably not a mastodon instance %s", instance)
+            return None, instance
     except httpx.HTTPError:
         logger.exception("Http error when indexing %s", instance)
         return None, instance
