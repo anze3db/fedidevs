@@ -269,7 +269,7 @@ def follow(request, account_id: int):
                 logger.exception("Account not found on instance %s", account.username_at_instance)
                 return err_response("Account not found on instance")
             local_account = local_accounts[0]
-            if local_account["acct"] != account.username_at_instance[1:]:
+            if local_account["acct"].lower() != account.username_at_instance[1:]:
                 logger.exception("Account mismatch %s %s", account.username_at_instance[1:], local_account["acct"])
                 return err_response("Account not found")
         except MastodonUnauthorizedError:
