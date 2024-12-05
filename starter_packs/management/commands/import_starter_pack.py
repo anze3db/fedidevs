@@ -21,7 +21,9 @@ class Command(RichCommand):
         accounts=None,
         **options,
     ):
-        accounts = accounts.split(",")
+        if not accounts:
+            return
+        accounts = accounts.lower().split(",")
         starter_pack = StarterPack.objects.get(slug=starter_pack_slug)
         for account in accounts:
             account_str = account.strip().lower()

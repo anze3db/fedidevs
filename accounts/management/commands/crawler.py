@@ -66,7 +66,7 @@ class Command(RichCommand):
                             instance=account["url"].split("/")[2],
                             instance_model=inst,
                             username=account["username"],
-                            username_at_instance=f"@{account['username']}@{inst.domain}",
+                            username_at_instance=f"@{account['username'].lower()}@{inst.domain.lower()}",
                             acct=account["acct"],
                             display_name=account["display_name"],
                             locked=account["locked"],

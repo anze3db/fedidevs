@@ -87,7 +87,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
     )
     is_username = False
     if q := request.GET.get("q", ""):
-        search = q.strip()
+        search = q.strip().lower()
         if username_regex.match(search):
             logger.info("Searching for username %s", search)
             is_username = True
@@ -97,6 +97,9 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
             if not accounts.exists():
                 logger.info("Username not found, crawling the instance")
                 management.call_command("crawlone", user=search[1:])
+                accounts = accounts.filter(
+                    username_at_instance=search,
+                )
         else:
             logger.info("Using full text search for %s", search)
             accounts = accounts.filter(

@@ -25,7 +25,7 @@ class Command(RichCommand):
     @async_to_sync
     async def main(self, user: str, make_visible: bool = False):
         async with httpx.AsyncClient() as client:
-            user, instance = user.split("@")
+            user, instance = user.lower().split("@")
             try:
                 instance_model = await Instance.objects.aget(instance=instance)
             except Instance.DoesNotExist:
@@ -44,7 +44,7 @@ class Command(RichCommand):
                 return
             defaults = {
                 "username": account["username"],
-                "username_at_instance": f"@{account['username']}@{instance}",
+                "username_at_instance": f"@{account['username'].lower()}@{instance}",
                 "instance": account["url"].split("/")[2],
                 "instance_model": instance_model,
                 "acct": account["acct"],

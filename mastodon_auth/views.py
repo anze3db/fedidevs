@@ -176,7 +176,7 @@ def auth(request):
             "emojis": logged_in_account.get("emojis"),
             "roles": logged_in_account.get("roles", []),
             "fields": logged_in_account.get("fields"),
-            "username_at_instance": f"@{logged_in_account['username']}@{instance.url}",
+            "username_at_instance": f"@{logged_in_account['username'].lower()}@{instance.url.lower()}",
         },
     )
 
