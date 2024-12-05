@@ -268,7 +268,7 @@ async def fetch(client, instance) -> tuple[dict | None, str]:
         # Try the v1 endpoint:
         return await fetch_v1(client, instance)
     else:
-        logger.error("Error status code for %s", instance)
+        logger.info("Error status code for %s %s", instance, response.status_code)
         return None, instance
 
 
