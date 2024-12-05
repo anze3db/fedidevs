@@ -105,6 +105,14 @@ class Command(RichCommand):
                 },
                 timeout=30,
             )
+            if response.status_code == 301:
+                response = await client.get(
+                    response.headers["Location"],
+                    params={
+                        "acct": user,
+                    },
+                    timeout=5,
+                )
             if response.status_code != 200:
                 self.console.print(f"[bold red]Error status code[/bold red]. {response.status_code}")
                 return {}

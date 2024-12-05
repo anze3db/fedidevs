@@ -227,11 +227,16 @@ async def fetch(client, instance) -> tuple[dict | None, str]:
             f"https://{instance}/api/v2/instance",
             timeout=5,
         )
+        if response.status_code == 301:
+            response = await client.get(
+                response.headers["Location"],
+                timeout=5,
+            )
     except httpx.HTTPError:
-        logger.error("Http error when indexing %s", instance)
+        logger.exception("Http error when indexing %s", instance)
         return None, instance
     except Exception as e:
-        logger.error("Unknown error when indexing %s, %s", instance, e)
+        logger.exception("Unknown error when indexing %s, %s", instance, e)
         return None, instance
 
     if response.status_code == 200:
