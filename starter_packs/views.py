@@ -17,6 +17,7 @@ from django.utils.http import urlsafe_base64_encode
 from mastodon import (
     Mastodon,
     MastodonAPIError,
+    MastodonInternalServerError,
     MastodonNotFoundError,
     MastodonServiceUnavailableError,
     MastodonUnauthorizedError,
@@ -327,7 +328,7 @@ def follow_bg(user_id: int, starter_pack_slug: str):
         else:
             try:
                 local_account = mastodon.account_lookup(acct=account.username_at_instance)
-            except (MastodonNotFoundError, MastodonVersionError):
+            except (MastodonNotFoundError, MastodonVersionError, MastodonInternalServerError):
                 # Attempt to resolve through search:
                 try:
                     local_accounts = mastodon.account_search(q=account.username_at_instance, resolve=True, limit=1)
