@@ -2,19 +2,52 @@
 {% load account_extras %}
 {% load static %}
 {% block content %}
+    <header class="pb-8">
+        <div class="border-b border-gray-200 dark:border-gray-700">
+            <ul class="flex flex-wrap justify-center -mb-px text-lg font-medium text-center text-gray-800 dark:text-gray-200">
+                <li class="me-2">
+                    <c-tab tab="community" default>
+                    {% heroicon_solid 'user-group' %}
+                    Community Starter Packs
+                    </c-tab>
+                </li>
+                <li class="me-2">
+                    <c-tab tab="your">
+                    {% heroicon_solid 'user' %}
+                    Your Starter Packs
+                    </c-tab>
+                </li>
+                <li class="me-2">
+                    <c-tab tab="containing">
+                    {% heroicon_solid 'users' %}
+                    Starter Packs Containing You
+                    </c-tab>
+                </li>
+            </ul>
+        </div>
+    </header>
     <main class="mx-auto">
-        {% if your_starter_packs %}
-            <div class="mb-16">
-                <h3 class="mb-8 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Your Starter Packs</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                    {% for starter_pack in your_starter_packs %}<c-starter-pack-card your="true" />{% endfor %}
-                </div>
+        {% if starter_packs %}
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                {% for starter_pack in starter_packs %}<c-starter-pack-card />{% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center text-gray-700 dark:text-gray-300 w-full">
+                {% if request.user.is_anonymous %}
+                    {% if request.GET.tab == 'your' %}
+                        <p class="w-full">Please login to see your starter packs.</p>
+                    {% elif request.GET.tab == 'containing' %}
+                        <p class="w-full">Please login to see starter packs containing your account.</p>
+                    {% endif %}
+                {% else %}
+                    {% if request.GET.tab == 'your' %}
+                        <p class="w-full">You haven't created any starter packs yet.</p>
+                    {% elif request.GET.tab == 'containing' %}
+                        <p class="w-full">You haven't been added to any starter packs yet.</p>
+                    {% endif %}
+                {% endif %}
             </div>
         {% endif %}
-        <h3 class="mb-8 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Community Starter Packs</h3>
-        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            {% for starter_pack in starter_packs %}<c-starter-pack-card />{% endfor %}
-        </div>
     </main>
 {% endblock content %}
 {% block sidebar %}

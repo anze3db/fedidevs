@@ -6,7 +6,7 @@
         <h4 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             {% render_language_emojis starter_pack.title %}
         </h4>
-        {% if not your %}
+        {% if request.GET.tab != 'your' %}
             <p class="text-sm font-medium text-gray-700 dark:text-gray-400">
                 By {% render_language_emojis starter_pack.created_by.username %}
             </p>

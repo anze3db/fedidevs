@@ -34,14 +34,35 @@ username_regex = re.compile(r"@?\b([A-Z0-9._%+-]+)@([A-Z0-9.-]+\.[A-Z]{2,})\b", 
 
 
 def starter_packs(request):
-    if request.user.is_anonymous:
-        your_starter_packs = StarterPack.objects.none()
-    else:
-        your_starter_packs = (
-            StarterPack.objects.filter(created_by=request.user, deleted_at__isnull=True)
-            .order_by("-created_at")
-            .select_related("created_by")
+    tab = request.GET.get("tab")
+    if tab not in ("community", "your", "containing"):
+        tab = "community"
+
+    if tab == "community":
+        starter_packs = (
+            StarterPack.objects.filter(deleted_at__isnull=True).order_by("-created_at").select_related("created_by")
         )
+    elif tab == "your":
+        if request.user.is_anonymous:
+            starter_packs = StarterPack.objects.none()
+        else:
+            starter_packs = (
+                StarterPack.objects.filter(created_by=request.user, deleted_at__isnull=True)
+                .order_by("-created_at")
+                .select_related("created_by")
+            )
+    elif tab == "containing":
+        if request.user.is_anonymous:
+            starter_packs = StarterPack.objects.none()
+        else:
+            starter_packs = (
+                StarterPack.objects.filter(
+                    starterpackaccount__account=request.user.accountaccess.account,
+                    deleted_at__isnull=True,
+                )
+                .order_by("-created_at")
+                .select_related("created_by")
+            )
 
     return render(
         request,
@@ -52,10 +73,7 @@ def starter_packs(request):
             "page_header": "FEDIDEVS",
             "page_image": "og-starterpacks.png",
             "page_subheader": "",
-            "starter_packs": StarterPack.objects.filter(deleted_at__isnull=True)
-            .order_by("-created_at")
-            .select_related("created_by"),
-            "your_starter_packs": your_starter_packs,
+            "starter_packs": starter_packs,
         },
     )
 
