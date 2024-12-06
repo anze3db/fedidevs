@@ -170,7 +170,10 @@ class Command(RichCommand):
         def is_recently_updated(account) -> bool:
             if not account.get("last_status_at"):
                 return False
-            last_status_at = timezone.make_aware(dt.datetime.fromisoformat(account["last_status_at"]))
+            try:
+                last_status_at = timezone.make_aware(dt.datetime.fromisoformat(account["last_status_at"]))
+            except ValueError:
+                last_status_at = dt.datetime.fromisoformat(account["last_status_at"])
             if (timezone.now() - last_status_at) > dt.timedelta(days=skip_inactive_for):
                 return False
             return True
