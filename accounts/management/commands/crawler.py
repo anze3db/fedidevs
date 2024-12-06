@@ -10,6 +10,15 @@ from django_rich.management import RichCommand
 from accounts.models import Account, Instance
 
 
+def convert_last_status_at(last_status_at: str | None) -> dt.datetime | None:
+    if not last_status_at:
+        return None
+    try:
+        return timezone.make_aware(dt.datetime.fromisoformat(last_status_at))
+    except ValueError:
+        return dt.datetime.fromisoformat(last_status_at)
+
+
 class Command(RichCommand):
     help = "Crawles the fosstodon.org API and saves all accounts to the database"
 
@@ -75,9 +84,7 @@ class Command(RichCommand):
                             group=account.get("group", False),
                             noindex=account.get("noindex", None),
                             created_at=(dt.datetime.fromisoformat(account["created_at"])),
-                            last_status_at=timezone.make_aware(dt.datetime.fromisoformat(account["last_status_at"]))
-                            if account.get("last_status_at")
-                            else None,
+                            last_status_at=convert_last_status_at(account.get("last_status_at")),
                             last_sync_at=now,
                             followers_count=account["followers_count"],
                             following_count=account["following_count"],
