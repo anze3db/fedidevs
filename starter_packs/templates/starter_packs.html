@@ -6,28 +6,15 @@
         {% if your_starter_packs %}
             <div class="mb-16">
                 <h3 class="mb-8 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Your Starter Packs</h3>
-                {% for starter_pack in your_starter_packs %}
-                    <a href="{% url 'share_starter_pack' starter_pack.slug %}"
-                       class="my-4 block max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                        <h4 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                            {% render_language_emojis starter_pack.title %}
-                        </h4>
-                        <p class="font-normal text-gray-700 dark:text-gray-400">{% render_language_emojis starter_pack.description %}</p>
-                    </a>
-                {% endfor %}
+                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                    {% for starter_pack in your_starter_packs %}<c-starter-pack-card your="true" />{% endfor %}
+                </div>
             </div>
         {% endif %}
         <h3 class="mb-8 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Community Starter Packs</h3>
-        {% for starter_pack in starter_packs %}
-            <a href="{% url 'share_starter_pack' starter_pack.slug %}"
-               class="my-4 block max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                <h4 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    {% render_language_emojis starter_pack.title %}
-                </h4>
-                <p class="mb-5 text-base text-gray-500 sm:text-sm dark:text-gray-400">by {{ starter_pack.created_by }}</p>
-                <p class="font-normal text-gray-700 dark:text-gray-400">{% render_language_emojis starter_pack.description %}</p>
-            </a>
-        {% endfor %}
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+            {% for starter_pack in starter_packs %}<c-starter-pack-card />{% endfor %}
+        </div>
     </main>
 {% endblock content %}
 {% block sidebar %}

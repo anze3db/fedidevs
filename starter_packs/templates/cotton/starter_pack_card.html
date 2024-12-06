@@ -1,0 +1,16 @@
+{% load account_extras %}
+{% load static %}
+<div class="prose dark:prose-invert">
+    <a href="{% url 'share_starter_pack' starter_pack.slug %}"
+       class="block px-6 no-underline bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+        <h4 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            {% render_language_emojis starter_pack.title %}
+        </h4>
+        {% if not your %}
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-400">
+                By {% render_language_emojis starter_pack.created_by.username %}
+            </p>
+        {% endif %}
+        <p class="font-normal text-gray-700 dark:text-gray-400">{% render_language_emojis starter_pack.description %}</p>
+    </a>
+</div>
