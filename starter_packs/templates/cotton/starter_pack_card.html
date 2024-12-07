@@ -1,8 +1,9 @@
 {% load account_extras %}
 {% load static %}
+{% load humanize %}
 <div class="prose dark:prose-invert">
     <a href="{% url 'share_starter_pack' starter_pack.slug %}"
-       class="block px-6 no-underline bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+       class="block px-6 no-underline bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-900">
         <h4 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             {% render_language_emojis starter_pack.title %}
         </h4>
@@ -12,5 +13,17 @@
             </p>
         {% endif %}
         <p class="font-normal text-gray-700 dark:text-gray-400">{% render_language_emojis starter_pack.description %}</p>
+        <div class="grid grid-cols-2 gap-2 py-4 mt-4 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">
+            <div class="flex flex-col gap-0 text-center" title="Last status">
+                <span class="text-xs">Created</span>
+                <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">{{ starter_pack.created_at | naturaltime }}</span>
+            </div>
+            <div class="flex flex-col gap-0 text-center" title="Following">
+                <span class="text-xs">Accounts</span>
+                <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
+                    <span>{{ starter_pack.num_accounts }}</span>
+                </span>
+            </div>
+        </div>
     </a>
 </div>

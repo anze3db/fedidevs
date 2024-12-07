@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery
 from django.core import management
 from django.core.paginator import Paginator
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, models, transaction
 from django.db.models import Exists, OuterRef
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -38,31 +38,28 @@ def starter_packs(request):
     if tab not in ("community", "your", "containing"):
         tab = "community"
 
+    starter_packs = StarterPack.objects.none()
     if tab == "community":
-        starter_packs = (
-            StarterPack.objects.filter(deleted_at__isnull=True).order_by("-created_at").select_related("created_by")
+        starter_packs = StarterPack.objects.all()
+    elif tab == "your" and not request.user.is_anonymous:
+        starter_packs = StarterPack.objects.filter(created_by=request.user)
+    elif tab == "containing" and not request.user.is_anonymous:
+        starter_packs = StarterPack.objects.filter(
+            starterpackaccount__account=request.user.accountaccess.account,
         )
-    elif tab == "your":
-        if request.user.is_anonymous:
-            starter_packs = StarterPack.objects.none()
-        else:
-            starter_packs = (
-                StarterPack.objects.filter(created_by=request.user, deleted_at__isnull=True)
-                .order_by("-created_at")
-                .select_related("created_by")
+
+    starter_packs = (
+        starter_packs.filter(
+            deleted_at__isnull=True,
+        )
+        .annotate(
+            num_accounts=models.Count(
+                "starterpackaccount", filter=models.Q(starterpackaccount__account__discoverable=True)
             )
-    elif tab == "containing":
-        if request.user.is_anonymous:
-            starter_packs = StarterPack.objects.none()
-        else:
-            starter_packs = (
-                StarterPack.objects.filter(
-                    starterpackaccount__account=request.user.accountaccess.account,
-                    deleted_at__isnull=True,
-                )
-                .order_by("-created_at")
-                .select_related("created_by")
-            )
+        )
+        .order_by("-created_at")
+        .select_related("created_by")
+    )
 
     return render(
         request,
