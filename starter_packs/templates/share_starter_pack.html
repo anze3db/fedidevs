@@ -46,6 +46,10 @@
                             </li>
                             {% if starter_pack.created_by == request.user %}
                                 <li>
+                                    <a href="{% url 'edit_accounts_starter_pack' starter_pack.slug %}"
+                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Add Accounts</a>
+                                </li>
+                                <li>
                                     <a href="{% url 'edit_starter_pack' starter_pack.slug %}"
                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
                                 </li>
