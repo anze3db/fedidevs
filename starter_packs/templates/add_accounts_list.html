@@ -14,12 +14,12 @@
                         {% render_emojis account.name account.emojis %}
                     </p>
                     <p class="text-sm text-gray-500 truncate dark:text-gray-400">{{ account.username_at_instance }}</p>
-                    <p class="text-xs py-2 prose drak:prose-invert text-gray-500 truncate dark:text-gray-400">
-                        {% if not account.discoverable %}
+                    {% if not account.discoverable %}
+                        <p class="text-xs py-2 prose drak:prose-invert text-gray-500 truncate dark:text-gray-400">
                             ⚠️ The account is not set as <a class="text-gray-600 truncate dark:text-gray-200"
     href="https://docs.joinmastodon.org/user/profile/#discoverable">discoverable</a> and cannot be added.
-                        {% endif %}
-                    </p>
+                        </p>
+                    {% endif %}
                 </label>
                 {% if account.discoverable %}
                     <input id="checkbox-{{ account.id }}"
