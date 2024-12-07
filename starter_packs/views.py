@@ -280,6 +280,9 @@ def share_starter_pack(request, starter_pack_slug):
             "page_description": starter_pack.description,
             "starter_pack": starter_pack,
             "num_accounts": accounts.count(),
+            "num_hidden_accounts": Account.objects.filter(
+                discoverable=False, starterpackaccount__starter_pack=starter_pack
+            ).count(),
             "accounts": page_obj,
         },
     )
