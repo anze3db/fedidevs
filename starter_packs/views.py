@@ -45,7 +45,9 @@ def starter_packs(request):
         starter_packs = StarterPack.objects.filter(created_by=request.user)
     elif tab == "containing" and not request.user.is_anonymous:
         starter_packs = StarterPack.objects.filter(
-            starterpackaccount__account=request.user.accountaccess.account,
+            id__in=StarterPackAccount.objects.filter(account=request.user.accountaccess.account).values(
+                "starter_pack_id"
+            )
         )
 
     starter_packs = (
