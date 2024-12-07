@@ -58,7 +58,7 @@ def starter_packs(request):
             )
         )
         .order_by("-created_at")
-        .select_related("created_by")
+        .prefetch_related("created_by__accountaccess__account")
     )
 
     return render(
