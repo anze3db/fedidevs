@@ -64,13 +64,15 @@
                         </ul>
                     </div>
                 </div>
-                {% if num_hidden_accounts %}
-                    <p class="text-center text-xs pt-4 text-gray-700 dark:text-gray-400">
-                        ⚠️ <strong class="text-gray-950 dark:text-gray-50">{{ num_hidden_accounts }}</strong>
-                        {# djlint:off #}
+                {% if request.user == starter_pack.created_by %}
+                    {% if num_hidden_accounts %}
+                        <p class="text-center text-xs pt-4 text-gray-700 dark:text-gray-400">
+                            ⚠️ <strong class="text-gray-950 dark:text-gray-50">{{ num_hidden_accounts }}</strong>
+                            {# djlint:off #}
                             account{% if num_hidden_accounts > 1 %}s{% endif %}
-                        {# djlint:on #} hidden due to their privacy settings.
-                    </p>
+                            {# djlint:on #} hidden due to their privacy settings.
+                        </p>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
