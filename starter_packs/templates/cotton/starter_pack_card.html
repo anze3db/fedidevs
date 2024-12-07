@@ -10,7 +10,7 @@
         </a>
         {% if request.GET.tab != 'your' %}
             <a href="{{ starter_pack.created_by.accountaccess.account.url }}"
-               class="block text-sm font-medium pt-4 text-gray-700 dark:text-gray-400">
+               class="block text-sm font-medium pt-4 text-gray-700 dark:text-gray-400 hover:underline">
                 By <span class="text-gray-900 dark:text-gray-200">{% render_language_emojis starter_pack.created_by.accountaccess.account.display_name %}</span> {{ starter_pack.created_by.accountaccess.account.username_at_instance }}
             </a>
         {% endif %}
