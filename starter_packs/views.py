@@ -49,6 +49,13 @@ def starter_packs(request):
                 "starter_pack_id"
             )
         )
+    elif tab == "containing" and request.GET.get("username"):
+        username = request.GET.get("username").lower()
+        if username[0] != "@":
+            username = "@" + username
+        starter_packs = StarterPack.objects.filter(
+            id__in=StarterPackAccount.objects.filter(account__username_at_instance=username).values("starter_pack_id")
+        )
 
     starter_packs = (
         starter_packs.filter(
@@ -73,6 +80,7 @@ def starter_packs(request):
             "page_image": "og-starterpacks.png",
             "page_subheader": "",
             "starter_packs": starter_packs,
+            "containing_username": request.GET.get("username", ""),
         },
     )
 
