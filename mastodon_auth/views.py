@@ -89,7 +89,7 @@ def login(request):
 
     state = str(uuid4())
 
-    mastodon = Mastodon(api_base_url=api_base_url, user_agent="fedidevs")
+    mastodon = Mastodon(api_base_url=api_base_url, user_agent="fedidevs", version_check_mode="none")
     auth_request_url = mastodon.auth_request_url(
         client_id=instance.client_id,
         state=state,
