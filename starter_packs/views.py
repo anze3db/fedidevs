@@ -120,6 +120,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
             is_username = True
             accounts = accounts.filter(
                 username_at_instance=search,
+                discoverable=True,
             )
             if not accounts.exists():
                 logger.info("Username not found, crawling the instance")
