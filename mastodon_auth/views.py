@@ -79,6 +79,12 @@ def login(request):
         except MastodonNetworkError:
             messages.error(request, f"Network error, is the instance url correct? `{api_base_url}`")
             return redirect("/")
+        except KeyError:
+            messages.error(
+                request,
+                f"Unable to create app on your instance. Is it a Mastodon compatible instance? `{api_base_url}`",
+            )
+            return redirect("/")
 
         instance = Instance(
             url=api_base_url,
