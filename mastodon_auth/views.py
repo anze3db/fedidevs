@@ -125,6 +125,10 @@ def auth(request):
 
     state = request.GET.get("state")
 
+    if not code or not state:
+        messages.error(request, "Invalid request, please try again")
+        return redirect("index")
+
     instance_id = cache.get(f"oauth:{state}")
     assert instance_id, "State could not be found in cache"
 
