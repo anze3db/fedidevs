@@ -76,6 +76,7 @@ def starter_packs(request):
         {
             "page": "starter_packs",
             "page_title": "Mastodon Starter Pack Directory | Fedidevs",
+            "page_description": "Discover, create, and share Mastodon starter packs to help new users find interesting accounts to follow.",
             "page_header": "FEDIDEVS",
             "page_image": "og-starterpacks.png",
             "page_subheader": "",
@@ -144,6 +145,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
         {
             "page": "starter_packs",
             "page_title": "Add accounts to your starter pack",
+            "page_description": "Add accounts to your starter pack to help new users find interesting accounts to follow.",
             "page_header": "FEDIDEVS",
             "page_subheader": "",
             "q": q,
@@ -176,6 +178,7 @@ def edit_starter_pack(request, starter_pack_slug):
         {
             "page": "starter_packs",
             "page_title": "Edit your starter pack",
+            "page_description": "Edit your starter pack to help new users find interesting accounts to follow.",
             "page_header": "FEDIDEVS",
             "page_subheader": "",
             "form": form,
@@ -211,9 +214,9 @@ def create_starter_pack(request):
         {
             "page": "starter_packs",
             "page_title": "Create a new starter pack",
+            "page_description": "Create a new starter pack to help new users find interesting accounts to follow.",
             "page_header": "FEDIDEVS",
             "page_subheader": "",
-            "page_description": "",
             "form": form,
         },
     )
