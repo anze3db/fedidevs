@@ -75,6 +75,7 @@ def starter_packs(request):
         "starter_packs.html",
         {
             "page": "starter_packs",
+            "page_url": reverse("starter_packs"),
             "page_title": "Mastodon Starter Pack Directory | Fedidevs",
             "page_description": "Discover, create, and share Mastodon starter packs to help new users find interesting accounts to follow.",
             "page_header": "FEDIDEVS",
