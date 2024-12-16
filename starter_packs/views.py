@@ -9,7 +9,7 @@ from django.contrib.postgres.search import SearchQuery
 from django.core import management
 from django.core.paginator import Paginator
 from django.db import IntegrityError, models, transaction
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -69,6 +69,14 @@ def starter_packs(request):
         .order_by("-created_at")
         .prefetch_related("created_by__accountaccess__account")
     )
+
+    if q := request.GET.get("q"):
+        starter_packs = starter_packs.filter(
+            Q(title__icontains=q)
+            | Q(description__icontains=q)
+            | Q(created_by__username__icontains=q)
+            | Q(created_by__accountaccess__account__display_name__icontains=q)
+        )
 
     paginator = Paginator(starter_packs, 100)
     page_number = request.GET.get("page")
