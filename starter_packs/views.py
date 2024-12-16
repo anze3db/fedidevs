@@ -3,6 +3,7 @@ import re
 
 import dramatiq
 from django import forms
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery
@@ -344,6 +345,7 @@ def follow_starter_pack(request, starter_pack_slug):
     AccountFollowing.objects.bulk_create(account_following, ignore_conflicts=True)
     transaction.on_commit(lambda: follow_bg.send(request.user.id, starter_pack_slug))
     FollowAllClick.objects.create(user=request.user, starter_pack=starter_pack)
+    messages.success(request, "Following all accounts in the starter pack. 🎉")
 
     return redirect("share_starter_pack", starter_pack_slug=starter_pack.slug)
 
