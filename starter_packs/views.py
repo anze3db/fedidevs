@@ -70,7 +70,7 @@ def starter_packs(request):
         .prefetch_related("created_by__accountaccess__account")
     )
 
-    paginator = Paginator(starter_packs, 20)
+    paginator = Paginator(starter_packs, 100)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
