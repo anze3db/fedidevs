@@ -70,6 +70,10 @@ def starter_packs(request):
         .prefetch_related("created_by__accountaccess__account")
     )
 
+    paginator = Paginator(starter_packs, 20)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(
         request,
         "starter_packs.html",
@@ -81,7 +85,7 @@ def starter_packs(request):
             "page_header": "FEDIDEVS",
             "page_image": "og-starterpacks.png",
             "page_subheader": "",
-            "starter_packs": starter_packs,
+            "starter_packs": page_obj,
             "containing_username": request.GET.get("username", ""),
         },
     )

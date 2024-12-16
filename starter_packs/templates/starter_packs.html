@@ -28,8 +28,19 @@
     </header>
     <main class="mx-auto">
         {% if starter_packs %}
-            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                {% for starter_pack in starter_packs %}<c-starter-pack-card />{% endfor %}
+            <div class="starter_packs_content">
+                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                    {% for starter_pack in starter_packs %}<c-starter-pack-card />{% endfor %}
+                </div>
+                <div>
+                    {% if starter_packs.has_next %}
+                        <div class="mt-12"
+                             hx-get="{% url 'starter_packs' %}{% querystring page=starter_packs.next_page_number %}"
+                             hx-trigger="intersect once"
+                             hx-select=".starter_packs_content"
+                             hx-swap="afterend"></div>
+                    {% endif %}
+                </div>
             </div>
         {% else %}
             <div class="text-center text-gray-700 dark:text-gray-300 w-full">
