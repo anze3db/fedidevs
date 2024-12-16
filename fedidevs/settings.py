@@ -148,6 +148,7 @@ TEMPLATES = [
             "builtins": [
                 "django_cotton.templatetags.cotton",
                 "heroicons.templatetags.heroicons",
+                "django.templatetags.i18n",
             ],
         },
     },
