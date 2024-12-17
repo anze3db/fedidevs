@@ -100,7 +100,7 @@ lint.ignore = [
   # May cause conflicts with formatter:
   "ISC001",
   "S101",   # I like asserts
-  "S113", # Default timeout is 5s, why are you asking me to override?
+  "S113",   # Default timeout is 5s, why are you asking me to override?
 ]
 
 [tool.ruff.format]
@@ -108,6 +108,7 @@ exclude = ["static"]
 
 [tool.djlint]
 ignore = "H006,H021"
+custom_blocks = "slot,blocktrans,flag,switch,sample"
 
 # pyproject.toml
 [tool.pytest.ini_options]
@@ -124,5 +125,5 @@ omit = [
   "manage.py",
   "fedidevs/wsgi.py",
   "fedidevs/asgi.py",
-  "theme/*"
+  "theme/*",
 ]

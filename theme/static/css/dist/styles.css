@@ -4167,6 +4167,17 @@ html {
   text-align: right;
 }
 
+.\[\&\>a\]\:truncate>a {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:is(.dark .\[\&\>a\]\:dark\:text-gray-200)>a {
+  --tw-text-opacity: 1;
+  color: rgb(229 231 235 / var(--tw-text-opacity));
+}
+
 .\[\&\>img\]\:my-1>img {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;

@@ -8,19 +8,19 @@
                 <li class="me-2">
                     <c-tab tab="community" default>
                     {% heroicon_solid 'user-group' %}
-                    Community Starter Packs
+                    {% trans "Community Starter Packs" %}
                     </c-tab>
                 </li>
                 <li class="me-2">
                     <c-tab tab="your">
                     {% heroicon_solid 'user' %}
-                    Your Starter Packs
+                    {% trans "Your Starter Packs" %}
                     </c-tab>
                 </li>
                 <li class="me-2">
                     <c-tab tab="containing">
                     {% heroicon_solid 'users' %}
-                    Starter Packs Containing You
+                    {% trans "Starter Packs Containing You" %}
                     </c-tab>
                 </li>
             </ul>
@@ -41,7 +41,7 @@
                         </div>
                         <button type="submit"
                                 class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                            Go
+                            {% trans "Go" %}
                         </button>
                         <input type="hidden" name="tab" value="containing">
                         <input type="search"
@@ -65,12 +65,12 @@
                     </div>
                     <button type="submit"
                             class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Go
+                        {% trans "Go" %}
                     </button>
                     <input type="search"
                            name="q"
                            class="block w-full p-4 pr-16 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                           placeholder="Search..."
+                           placeholder="{% trans "Search..." %}"
                            value="{{ request.GET.q }}">
                 </div>
             {% endif %}
@@ -96,22 +96,22 @@
             <div class="text-center text-gray-700 dark:text-gray-300 w-full">
                 {% if containing_username %}
                     <p class="w-full">
-                        No starter packs containing <strong>{{ containing_username }}</strong>.
+                        {% trans "No starter packs containing" %} <strong>{{ containing_username }}</strong>.
                     </p>
                 {% endif %}
                 {% if request.user.is_anonymous %}
                     {% if request.GET.tab == 'your' %}
-                        <p class="w-full">Please login to see your starter packs.</p>
+                        <p class="w-full">{% trans "Please login to see your starter packs." %}</p>
                     {% elif request.GET.tab == 'containing' %}
                         <p class="w-full">
-                            Please login to see your starter packs or search for your username@instance.org in the search form above
+                            {% trans "Please login to see your starter packs or search for your username@instance.org in the search form above" %}
                         </p>
                     {% endif %}
                 {% else %}
                     {% if request.GET.tab == 'your' %}
-                        <p class="w-full">You haven't created any starter packs yet.</p>
+                        <p class="w-full">{% trans "You haven't created any starter packs yet." %}</p>
                     {% elif request.GET.tab == 'containing' %}
-                        <p class="w-full">You haven't been added to any starter packs yet.</p>
+                        <p class="w-full">{% trans "You haven't been added to any starter packs yet." %}</p>
                     {% endif %}
                 {% endif %}
             </div>
@@ -120,8 +120,8 @@
 {% endblock content %}
 {% block sidebar %}
     <section class="mb-8 prose dark:prose-invert">
-        <h2>Mastodon starter packs</h2>
-        <p>Invite your friends to follow your favorite people on Mastodon.</p>
+        <h2>{% trans "Mastodon starter packs" %}</h2>
+        <p>{% trans "Invite your friends to follow your favorite people on Mastodon." %}</p>
     </section>
     <section class="mb-16">
         {% if not user.is_authenticated %}
@@ -129,11 +129,11 @@
                     data-modal-toggle="authentication-modal"
                     data-umami-event="follow-signup-modal"
                     class="plausible-event-name=follow-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                Create your starter pack
+                {% trans "Create your starter pack" %}
             </button>
         {% else %}
             <a href="{% url 'create_starter_pack' %}"
-               class="plausible-event-name=follow-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create your starter pack</a>
+               class="plausible-event-name=follow-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{% trans "Create your starter pack" %}</a>
         {% endif %}
     </section>
 {% endblock sidebar %}

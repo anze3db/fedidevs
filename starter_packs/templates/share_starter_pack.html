@@ -8,7 +8,7 @@
                 <h5 class="mb-4 text-3xl font-bold text-gray-900 dark:text-white">{% render_language_emojis starter_pack.title %}</h5>
                 <a href="{{ starter_pack.created_by.accountaccess.account.url }}"
                    class="block text-sm font-medium pb-4 text-gray-700 dark:text-gray-400 hover:underline">
-                    By <span class="text-gray-900 dark:text-gray-200">{% render_emojis starter_pack.created_by.accountaccess.account.display_name starter_pack.created_by.accountaccess.account.emojis %}</span> {{ starter_pack.created_by.accountaccess.account.username_at_instance }}
+                    {% trans "By" %} <span class="text-gray-900 dark:text-gray-200">{% render_emojis starter_pack.created_by.accountaccess.account.display_name starter_pack.created_by.accountaccess.account.emojis %}</span> {{ starter_pack.created_by.accountaccess.account.username_at_instance }}
                 </a>
                 <p class="mb-5 text-base sm:text-lg">{% render_language_emojis starter_pack.description %}</p>
                 <div class="items-center justify-center space-y-4 sm:flex sm:space-y-0 sm:space-x-4 rtl:space-x-reverse">
@@ -17,7 +17,11 @@
                                 data-modal-toggle="authentication-modal"
                                 data-umami-event="follow-signup-modal"
                                 class="plausible-event-name=follow-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                            Follow all {{ num_accounts }} accounts
+                            {% blocktrans count count=num_accounts %}
+                                Follow {{ count }} account
+                            {% plural %}
+                                Follow all {{ count }} accounts
+                            {% endblocktrans %}
                         </button>
                     {% else %}
                         <form method="post"
@@ -25,7 +29,11 @@
                             {% csrf_token %}
                             <button type="submit"
                                     class="plausible-event-name=follow-all text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                Follow all {{ num_accounts }} accounts
+                                {% blocktrans count count=num_accounts %}
+                                    Follow {{ count }} account
+                                {% plural %}
+                                    Follow all {{ count }} accounts
+                                {% endblocktrans %}
                             </button>
                         </form>
                     {% endif %}
@@ -46,20 +54,20 @@
                             {% if starter_pack.created_by == request.user %}
                                 <li>
                                     <a href="{% url 'edit_accounts_starter_pack' starter_pack.slug %}"
-                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Add Accounts</a>
+                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Add Accounts" %}</a>
                                 </li>
                                 <li>
                                     <a href="{% url 'edit_starter_pack' starter_pack.slug %}"
-                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
+                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Edit" %}</a>
                                 </li>
                                 <li>
                                     <a href="{% url 'delete_starter_pack' starter_pack.slug %}"
-                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</a>
+                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Delete" %}</a>
                                 </li>
                             {% endif %}
                             <li>
                                 <a href="{% url 'faq' %}#report-issue"
-                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Report</a>
+                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Report" %}</a>
                             </li>
                         </ul>
                     </div>
@@ -68,9 +76,11 @@
                     {% if num_hidden_accounts %}
                         <p class="text-center text-xs pt-4 text-gray-700 dark:text-gray-400">
                             ⚠️ <strong class="text-gray-950 dark:text-gray-50">{{ num_hidden_accounts }}</strong>
-                            {# djlint:off #}
-                            account{% if num_hidden_accounts > 1 %}s{% endif %}
-                            {# djlint:on #} hidden due to their privacy settings.
+                            {% blocktrans count count=num_hidden_accounts %}
+                                {{ count }} account hidden due to their privacy settings.
+                            {% plural %}
+                                {{ count }} accounts hidden due to their privacy settings.
+                            {% endblocktrans %}
                         </p>
                     {% endif %}
                 {% endif %}

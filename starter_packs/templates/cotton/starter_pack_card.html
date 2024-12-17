@@ -11,7 +11,7 @@
         {% if request.GET.tab != 'your' %}
             <a href="{{ starter_pack.created_by.accountaccess.account.url }}"
                class="block text-sm font-medium pt-4 text-gray-700 dark:text-gray-400 hover:underline">
-                By <span class="text-gray-900 dark:text-gray-200">{% render_emojis starter_pack.created_by.accountaccess.account.display_name starter_pack.created_by.accountaccess.account.emojis %}</span> {{ starter_pack.created_by.accountaccess.account.username_at_instance }}
+                {% trans "By" %} <span class="text-gray-900 dark:text-gray-200">{% render_emojis starter_pack.created_by.accountaccess.account.display_name starter_pack.created_by.accountaccess.account.emojis %}</span> {{ starter_pack.created_by.accountaccess.account.username_at_instance }}
             </a>
         {% endif %}
         <a href="{% url 'share_starter_pack' starter_pack.slug %}" class="block">
@@ -20,11 +20,11 @@
             </p>
             <div class="prose dark:prose-invert grid grid-cols-2 gap-2 py-4 mt-4 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">
                 <div class="flex flex-col gap-0 text-center" title="Last status">
-                    <span class="text-xs">Created</span>
+                    <span class="text-xs">{% trans "Created" %}</span>
                     <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">{{ starter_pack.created_at | naturaltime }}</span>
                 </div>
                 <div class="flex flex-col gap-0 text-center" title="Following">
-                    <span class="text-xs">Accounts</span>
+                    <span class="text-xs">{% trans "Accounts" %}</span>
                     <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
                         <span>{{ starter_pack.num_accounts }}</span>
                     </span>

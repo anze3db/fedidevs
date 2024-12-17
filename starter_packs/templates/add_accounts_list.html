@@ -15,9 +15,12 @@
                     </p>
                     <p class="text-sm text-gray-500 truncate dark:text-gray-400">{{ account.username_at_instance }}</p>
                     {% if not account.discoverable %}
-                        <p class="text-xs py-2 prose drak:prose-invert text-gray-500 truncate dark:text-gray-400">
-                            ⚠️ The account is not set as <a class="text-gray-600 truncate dark:text-gray-200"
-    href="https://docs.joinmastodon.org/user/profile/#discoverable">discoverable</a> and cannot be added.
+                        <p class="text-xs py-2 prose drak:prose-invert text-gray-500 truncate dark:text-gray-400 [&>a]:text-gray [&>a]:truncate [&>a]:dark:text-gray-200">
+                            {% with url="https://docs.joinmastodon.org/user/profile/#discoverable" %}
+                                {% blocktrans %}
+                                ⚠️ The account is not set as <a href="{{url}}">discoverable</a> and cannot be added.
+                                {% endblocktrans %}
+                            {% endwith %}
                         </p>
                     {% endif %}
                 </label>
@@ -36,25 +39,33 @@
     {% empty %}
         {% if is_username %}
             <li class="p-8 prose dark:prose-invert">
-                <h2 class="text-center">No results found 😞</h2>
+                <h2 class="text-center">{% trans "No results found 😞" %}</h2>
                 <p>
-                    We couldn't find any accounts matching your query in the Fedidevs database or at the instance itself. Double check the username and instance and try again.
+                    {% trans "We couldn't find any accounts matching your query in the Fedidevs database or at the instance itself. Double check the username and instance and try again." %}
                 </p>
                 <p>
-                    <strong>Note:</strong> Only <strong>Mastodon</strong> instances are supported at the moment.
+                    {% blocktrans %}
+                        <strong>Note:</strong> Only <strong>Mastodon</strong> instances are supported at the moment.
+                    {% endblocktrans %}
                 </p>
-                <p>
-                    <strong>Tip:</strong> Reach out to us through <a href="mailto:hello@fedidevs.com">email</a> or <a href="https://fosstodon.org/@Fedidevs">Mastodon</a> and we'll try to help you out!
-                </p>
+                {% with email="mailto:hello@fedidevs.com" url="https://fosstodon.org/@Fedidevs" %}
+                    <p>
+                        {% blocktrans %}
+                            <strong>Tip:</strong> Reach out to us through <a href="{{mail}}">email</a> or <a href="{{url}}">Mastodon</a> and we'll try to help you out!
+                        {% endblocktrans%}
+                    </p>
+                {% endwith %}
             </li>
         {% else %}
             <li class="p-8 prose dark:prose-invert">
                 <h2 class="text-center">No results found 😞</h2>
                 <p>
-                    We couldn't find any accounts matching your query in the Fedidevs database. Keep in mind, our database only includes a small portion of all the accounts in the fediverse!
+                    {% trans "We couldn't find any accounts matching your query in the Fedidevs database. Keep in mind, our database only includes a small portion of all the accounts in the fediverse!" %}
                 </p>
                 <p>
-                    <strong>Tip:</strong> Try searching for <strong>@username@instance.org</strong> to find the user directly on their instance.
+                    {% blocktrans %}
+                        <strong>Tip:</strong> Try searching for <strong>@username@instance.org</strong> to find the user directly on their instance.
+                    {% endblocktrans %}
                 </p>
             </li>
         {% endif %}
@@ -67,7 +78,9 @@
         {% if accounts %}
             <li class="p-4 prose text-s dark:prose-invert">
                 <p>
-                    <strong>Tip:</strong> Not finding a specific account? Try searching for <strong>@username@instance.org</strong> to find the user directly on their instance.
+                    {% blocktrans %}
+                        <strong>Tip:</strong> Not finding a specific account? Try searching for <strong>@username@instance.org</strong> to find the user directly on their instance.
+                    {% endblocktrans %}
                 </p>
             </li>
         {% endif %}
