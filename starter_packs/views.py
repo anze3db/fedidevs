@@ -236,30 +236,32 @@ def create_starter_pack(request):
     )
 
 
+@transaction.atomic
 def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
     starter_pack = get_object_or_404(
         StarterPack, slug=starter_pack_slug, deleted_at__isnull=True, created_by=request.user
     )
-    if StarterPackAccount.objects.filter(starter_pack=starter_pack).count() > 150:
-        return render(
-            request,
-            "starter_pack_stats.html",
-            {
-                "starter_pack": starter_pack,
-                "num_accounts": StarterPackAccount.objects.filter(starter_pack=starter_pack).count(),
-                "error": "You have reached the maximum number of accounts in a starter pack.",
-            },
-        )
-    try:
-        StarterPackAccount.objects.create(
-            starter_pack=starter_pack,
-            account_id=account_id,
-        )
-    except IntegrityError:
+    if StarterPackAccount.objects.filter(starter_pack=starter_pack, account_id=account_id).exists():
         StarterPackAccount.objects.filter(
             starter_pack=starter_pack,
             account_id=account_id,
         ).delete()
+    else:
+        if StarterPackAccount.objects.filter(starter_pack=starter_pack).count() >= 150:
+            return render(
+                request,
+                "starter_pack_stats.html",
+                {
+                    "starter_pack": starter_pack,
+                    "num_accounts": StarterPackAccount.objects.filter(starter_pack=starter_pack).count(),
+                    "error": "You have reached the maximum number of accounts in a starter pack.",
+                },
+            )
+        StarterPackAccount.objects.create(
+            starter_pack=starter_pack,
+            account_id=account_id,
+        )
+
     return render(
         request,
         "starter_pack_stats.html",

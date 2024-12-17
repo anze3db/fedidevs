@@ -3,6 +3,7 @@ from django.urls import reverse
 from model_bakery import baker
 
 from accounts.models import Account
+from starter_packs.models import StarterPackAccount
 
 
 class TestStarterPacks(TestCase):
@@ -171,6 +172,69 @@ class TestDeleteStarterPack(TestCase):
         self.assertEqual(response.status_code, 302)
         self.starter_pack.refresh_from_db()
         self.assertIsNotNone(self.starter_pack.deleted_at)
+
+
+class TestToggleStarterPackAccount(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = baker.make("auth.User")
+        baker.make("mastodon_auth.AccountAccess", user=cls.user)
+        cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
+
+    def test_add_account(self):
+        account = baker.make("accounts.Account", discoverable=True)
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse(
+                "toggle_account_to_starter_pack",
+                kwargs={"starter_pack_slug": self.starter_pack.slug, "account_id": account.id},
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            StarterPackAccount.objects.filter(account_id=account.id, starter_pack_id=self.starter_pack.id).exists()
+        )
+
+    def test_remove_account(self):
+        account = baker.make("accounts.Account", discoverable=True)
+        self.client.force_login(self.user)
+        baker.make("starter_packs.StarterPackAccount", account=account, starter_pack=self.starter_pack)
+        response = self.client.post(
+            reverse(
+                "toggle_account_to_starter_pack",
+                kwargs={"starter_pack_slug": self.starter_pack.slug, "account_id": account.id},
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(
+            StarterPackAccount.objects.filter(account_id=account.id, starter_pack_id=self.starter_pack.id).exists()
+        )
+
+    def test_toggle_after_limit(self):
+        account = baker.make("accounts.Account", discoverable=True)
+        self.client.force_login(self.user)
+        # baker.make("starter_packs.StarterPackAccount", starter_pack=self.starter_pack, account=account)
+        baker.make("starter_packs.StarterPackAccount", starter_pack=self.starter_pack, _quantity=150)
+
+        self.assertEqual(self.starter_pack.starterpackaccount_set.count(), 150)
+        response = self.client.post(
+            reverse(
+                "toggle_account_to_starter_pack",
+                kwargs={"starter_pack_slug": self.starter_pack.slug, "account_id": account.id},
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # Make sure we can delete even after the limit:
+        baker.make("starter_packs.StarterPackAccount", starter_pack=self.starter_pack, account=account)
+        self.assertEqual(self.starter_pack.starterpackaccount_set.count(), 151)
+        response = self.client.post(
+            reverse(
+                "toggle_account_to_starter_pack",
+                kwargs={"starter_pack_slug": self.starter_pack.slug, "account_id": account.id},
+            )
+        )
+        self.assertEqual(self.starter_pack.starterpackaccount_set.count(), 150)
 
 
 class TestShareStarterPack(TestCase):
