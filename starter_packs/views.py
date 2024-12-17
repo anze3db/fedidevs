@@ -15,6 +15,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_encode
+from django.utils.translation import gettext as _
 from mastodon import (
     Mastodon,
     MastodonAPIError,
@@ -89,7 +90,7 @@ def starter_packs(request):
         {
             "page": "starter_packs",
             "page_url": reverse("starter_packs"),
-            "page_title": "Mastodon Starter Pack Directory | Fedidevs",
+            "page_title": _("Mastodon Starter Pack Directory | Fedidevs"),
             "page_description": "Discover, create, and share Mastodon starter packs to help new users find interesting accounts to follow.",
             "page_header": "FEDIDEVS",
             "page_image": "og-starterpacks.png",
@@ -158,7 +159,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
         "add_accounts_list.html" if "HX-Request" in request.headers else "add_accounts.html",
         {
             "page": "starter_packs",
-            "page_title": "Add accounts to your starter pack",
+            "page_title": _("Add accounts to your starter pack"),
             "page_description": "Add accounts to your starter pack to help new users find interesting accounts to follow.",
             "page_header": "FEDIDEVS",
             "page_subheader": "",
@@ -191,7 +192,7 @@ def edit_starter_pack(request, starter_pack_slug):
         "create_starter_pack.html",
         {
             "page": "starter_packs",
-            "page_title": "Edit your starter pack",
+            "page_title": _("Edit your starter pack"),
             "page_description": "Edit your starter pack to help new users find interesting accounts to follow.",
             "page_header": "FEDIDEVS",
             "page_subheader": "",
@@ -217,7 +218,7 @@ def create_starter_pack(request):
             except IntegrityError:
                 form.add_error(
                     "title",
-                    forms.ValidationError("You already have a starter pack with this title."),
+                    forms.ValidationError(_("You already have a starter pack with this title.")),
                 )
     else:
         form = StarterPackForm()
@@ -227,7 +228,7 @@ def create_starter_pack(request):
         "create_starter_pack.html",
         {
             "page": "starter_packs",
-            "page_title": "Create a new starter pack",
+            "page_title": _("Create a new starter pack"),
             "page_description": "Create a new starter pack to help new users find interesting accounts to follow.",
             "page_header": "FEDIDEVS",
             "page_subheader": "",
@@ -254,7 +255,7 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
                 {
                     "starter_pack": starter_pack,
                     "num_accounts": StarterPackAccount.objects.filter(starter_pack=starter_pack).count(),
-                    "error": "You have reached the maximum number of accounts in a starter pack.",
+                    "error": _("You have reached the maximum number of accounts in a starter pack."),
                 },
             )
         StarterPackAccount.objects.create(
@@ -299,7 +300,7 @@ def share_starter_pack(request, starter_pack_slug):
         request,
         "starter_pack_accounts.html" if "HX-Request" in request.headers else "share_starter_pack.html",
         {
-            "page_title": re.sub(r":\w+:", "", starter_pack.title).strip() + " - Mastodon Starter Pack",
+            "page_title": re.sub(r":\w+:", "", starter_pack.title).strip() + _(" - Mastodon Starter Pack"),
             "page": "starter_packs",
             "page_url": reverse("share_starter_pack", kwargs={"starter_pack_slug": starter_pack_slug}),
             "page_header": "FEDIDEVS",
@@ -347,7 +348,7 @@ def follow_starter_pack(request, starter_pack_slug):
     AccountFollowing.objects.bulk_create(account_following, ignore_conflicts=True)
     transaction.on_commit(lambda: follow_bg.send(request.user.id, starter_pack_slug))
     FollowAllClick.objects.create(user=request.user, starter_pack=starter_pack)
-    messages.success(request, "Following all accounts in the starter pack. 🎉")
+    messages.success(request, _("Following all accounts in the starter pack. 🎉"))
 
     return redirect("share_starter_pack", starter_pack_slug=starter_pack.slug)
 
