@@ -74,12 +74,12 @@
                 </div>
                 {% if request.user == starter_pack.created_by %}
                     {% if num_hidden_accounts %}
-                        <p class="text-center text-xs pt-4 text-gray-700 dark:text-gray-400">
-                            ⚠️ <strong class="text-gray-950 dark:text-gray-50">{{ num_hidden_accounts }}</strong>
+                        <p class="text-center text-xs pt-4 text-gray-700 dark:text-gray-400 [&>strong]:text-gray-950 [&>strong]:dark:text-gray-50">
+                            ⚠️
                             {% blocktrans count count=num_hidden_accounts %}
-                                {{ count }} account hidden due to their privacy settings.
+                                <strong>{{ count }}</strong> account hidden due to their privacy settings.
                             {% plural %}
-                                {{ count }} accounts hidden due to their privacy settings.
+                                <strong>{{ count }}</strong> accounts hidden due to their privacy settings.
                             {% endblocktrans %}
                         </p>
                     {% endif %}

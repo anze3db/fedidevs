@@ -4207,6 +4207,16 @@ html {
   max-width: 2rem;
 }
 
+.\[\&\>strong\]\:text-gray-950>strong {
+  --tw-text-opacity: 1;
+  color: rgb(3 7 18 / var(--tw-text-opacity));
+}
+
+:is(.dark .\[\&\>strong\]\:dark\:text-gray-50)>strong {
+  --tw-text-opacity: 1;
+  color: rgb(249 250 251 / var(--tw-text-opacity));
+}
+
 .\[\&\>svg\]\:h-4>svg {
   height: 1rem;
 }
