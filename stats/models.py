@@ -48,6 +48,7 @@ class Daily(models.Model):
     opensource_accounts = models.IntegerField()
     php_accounts = models.IntegerField()
     julia_accounts = models.IntegerField(default=0)
+    odin_accounts = models.IntegerField(default=0)
     css_accounts = models.IntegerField(default=0)
     rstats_accounts = models.IntegerField(default=0)
 
@@ -95,6 +96,7 @@ class Daily(models.Model):
     opensource_posts = models.IntegerField(default=0)
     php_posts = models.IntegerField(default=0)
     julia_posts = models.IntegerField(default=0)
+    odin_posts = models.IntegerField(default=0)
     css_posts = models.IntegerField(default=0)
     rstats_posts = models.IntegerField(default=0)
 
