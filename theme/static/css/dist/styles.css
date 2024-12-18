@@ -2236,6 +2236,10 @@ select {
   text-overflow: ellipsis;
 }
 
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+
 .text-balance {
   text-wrap: balance;
 }

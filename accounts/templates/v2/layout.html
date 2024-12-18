@@ -9,10 +9,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% tailwind_css %}
         <meta name="keywords"
-              content="fedidevs,mastodon,developers,developer,fediverse,discover,discover developers" />
+              content="fedidevs,mastodon,developers,developer,fediverse,discover,discover developers,starter pack,community" />
         <title>{{ page_title }}</title>
         <meta name="description"
-              content="{% if page_description %}{{ page_description }}{% else %}Discover amazing developers on Mastodon.{% endif %}">
+              content="{% if page_description %}{{ page_description }}{% else %}{% trans "Discover amazing people on Mastodon." %}{% endif %}">
         {% if canonical_url %}<link rel="canonical" href="https://fedidevs.com{{ canonical_url | safe }}" />{% endif %}
         <!-- PWA -->
         <meta name="apple-mobile-web-app-status-bar-style"
@@ -39,7 +39,7 @@
         <meta property="og:type" content="website">
         <meta property="og:title" content="{{ page_title }}">
         <meta property="og:description"
-              content="{% if page_description %}{{ page_description }}{% else %}Discover amazing developers from across the fediverse.{% endif %}">
+              content="{% if page_description %}{{ page_description }}{% else %}{% trans "Discover amazing people from across the fediverse." %}{% endif %}">
         {% if page_image %}
             <meta property="og:image"
                   content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static page_image %}">
@@ -50,7 +50,7 @@
         <meta property="twitter:url" content="https://fedidevs.com{{ page_url }}">
         <meta name="twitter:title" content="{{ page_title }}">
         <meta name="twitter:description"
-              content="{% if page_description %}{{ page_description }}{% else %}Discover amazing developers from across the fediverse.{% endif %}">
+              content="{% if page_description %}{{ page_description }}{% else %}{% trans "Discover amazing people from across the fediverse." %}{% endif %}">
         {% if page_image %}
             <meta name="twitter:image"
                   content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static page_image %}">
@@ -79,9 +79,7 @@
                         <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
                     </svg>
                     <span class="sr-only">Info</span>
-                    <div>
-                        <span class="font-medium">{{ message.tags | title }}!</span> {{ message }}
-                    </div>
+                    <div>{{ message }}</div>
                     <script nonce="{{ request.csp_nonce }}">
                         document.addEventListener('DOMContentLoaded', function () {
                             document.getElementById('message-{{forloop.counter}}')
@@ -93,7 +91,7 @@
                             class="ms-auto -mx-1.5 -my-1.5  rounded-lg focus:ring-2 p-1.5  inline-flex items-center justify-center h-8 w-8 {{ message.tags }} border-none"
                             data-dismiss-target="#alert-1"
                             aria-label="Close">
-                        <span class="sr-only">Close</span>
+                        <span class="sr-only">{% trans "Close" %}</span>
                         <svg class="w-3 h-3"
                              aria-hidden="true"
                              xmlns="http://www.w3.org/2000/svg"
@@ -113,7 +111,7 @@
                         aria-controls="logo-sidebar"
                         type="button"
                         class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-                    <span class="sr-only">Open sidebar</span>
+                    <span class="sr-only">{% trans "Open sidebar" %}</span>
                     <svg class="w-6 h-6"
                          aria-hidden="true"
                          fill="currentColor"
@@ -137,17 +135,17 @@
                     {{ page_header }}
                 </h2>
                 <nav class="hidden md:flex gap-2 sm:gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
-                    <a href="{% url 'index' %}"><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Accounts</span></a>
-                    <a class="pl-4" href="{% url 'conferences' %}"><span class="{% if page == 'conferences' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Conferences</span></a>
-                    <a class="pl-4" href="{% url 'starter_packs' %}"><span class="{% if page == 'starter_packs' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Starter&nbsp;Packs</span></a>
-                    <a class="pl-4" href="{% url 'stats' %}"><span class="{% if page == 'stats' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Stats</span></a>
+                    <a href="{% url 'index' %}"><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Accounts" %}</span></a>
+                    <a class="pl-4" href="{% url 'conferences' %}"><span class="{% if page == 'conferences' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Conferences" %}</span></a>
+                    <a class="pl-4 whitespace-nowrap" href="{% url 'starter_packs' %}"><span class="{% if page == 'starter_packs' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Starter Packs" %}</span></a>
+                    <a class="pl-4" href="{% url 'stats' %}"><span class="{% if page == 'stats' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Stats" %}</span></a>
                 </nav>
             </div>
             <div class="flex justify-between sm:gap-2">
                 <theme-toggle>
                 <button type="button"
                         class="hidden sm:inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
-                    <span class="sr-only">Toggle Theme</span>
+                    <span class="sr-only">{% trans "Toggle Theme" %}</span>
                     <span class="hidden dark:block">{% heroicon_outline 'sun' %}</span>
                     <span class="block w-6 h-6 dark:hidden">{% heroicon_outline 'moon' %}</span>
                 </button>
@@ -156,7 +154,7 @@
                     <button type="button"
                             data-dropdown-toggle="dropdown"
                             class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
-                        <span class="sr-only">Account</span>
+                        <span class="sr-only">{% trans "Account" %}</span>
                         <img src={{ user.accountaccess.account.avatar_static }} loading="lazy" alt="avatar" class="w-8 h-8 rounded-full" />
                     </button>
                     <div id="dropdown"
@@ -165,7 +163,7 @@
                             aria-labelledby="dropdownDefaultButton">
                             <li>
                                 <a href="{% url 'mastodon_logout' %}"
-                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</a>
+                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Sign out" %}</a>
                             </li>
                         </ul>
                     </div>
@@ -173,7 +171,7 @@
                     <button type="button"
                             data-dropdown-toggle="dropdown"
                             class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
-                        <span class="sr-only">Account</span>
+                        <span class="sr-only">{% trans "Account" %}</span>
                         <span class="block w-6 h-6">{% heroicon_outline 'user' %}</span>
                     </button>
                     <div id="dropdown"
@@ -185,7 +183,7 @@
                                         data-modal-toggle="authentication-modal"
                                         data-umami-event="signin-modal"
                                         class="block px-4 py-2 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white plausible-event-name=signin-modal">
-                                    Sign in
+                                    {% trans "Sign in" %}
                                 </button>
                             </li>
                         </ul>
@@ -203,16 +201,16 @@
                 <nav class="flex md:hidden gap-2 sm:gap-4 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
                     <ul class="pb-8">
                         <li>
-                            <a href="{% url 'index' %}"><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Accounts</span></a>
+                            <a href="{% url 'index' %}"><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Accounts" %}</span></a>
                         </li>
                         <li>
-                            <a class="pt-8" href="{% url 'conferences' %}"><span class="{% if page == 'conferences' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Conferences</span></a>
+                            <a class="pt-8" href="{% url 'conferences' %}"><span class="{% if page == 'conferences' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Conferences" %}</span></a>
                         </li>
                         <li>
-                            <a href="{% url 'starter_packs' %}"><span class="{% if page == 'starter_packs' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Starter Packs</span></a>
+                            <a href="{% url 'starter_packs' %}"><span class="{% if page == 'starter_packs' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Starter Packs" %}</span></a>
                         </li>
                         <li>
-                            <a href="{% url 'stats' %}"><span class="{% if page == 'stats' %}{% else %}opacity-50 hover:opacity-75{% endif %}">Stats</span></a>
+                            <a href="{% url 'stats' %}"><span class="{% if page == 'stats' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Stats" %}</span></a>
                         </li>
                     </ul>
                 </nav>
@@ -252,19 +250,21 @@
                             </div>
                             <ul>
                                 <li>
-                                    <a href="{% url 'faq' %}">FAQ</a>
+                                    <a href="{% url 'faq' %}">{% trans "FAQ" %}</a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'developers-on-mastodon' %}">Mastodon instances</a>
+                                    <a href="{% url 'developers-on-mastodon' %}">{% trans "Mastodon instances" %}</a>
                                 </li>
                                 <li>
-                                    <a target="_blank" href="https://anze3db.ck.page/76db70f6e0 ">Newsletter</a>
+                                    <a target="_blank" href="https://anze3db.ck.page/76db70f6e0 ">{% trans "Newsletter" %}</a>
                                 </li>
                             </ul>
                         </nav>
                         <p class="mt-4 mb-12 text-sm prose dark:prose-invert">
-                            Created by <a href="https://fosstodon.org/@anze3db">Anže</a>
-                            and <a href="https://github.com/anze3db/fedidevs/graphs/contributors">friends.</a>
+                            {% blocktrans trimmed %}
+                                Created by <a href="https://fosstodon.org/@anze3db">Anže</a>
+                                and <a href="https://github.com/anze3db/fedidevs/graphs/contributors">friends.</a>
+                            {% endblocktrans %}
                         </p>
                     </footer>
                 </div>

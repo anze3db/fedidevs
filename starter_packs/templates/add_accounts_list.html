@@ -17,8 +17,8 @@
                     {% if not account.discoverable %}
                         <p class="text-xs py-2 prose drak:prose-invert text-gray-500 truncate dark:text-gray-400 [&>a]:text-gray [&>a]:truncate [&>a]:dark:text-gray-200">
                             {% with url="https://docs.joinmastodon.org/user/profile/#discoverable" %}
-                                {% blocktrans %}
-                                ⚠️ The account is not set as <a href="{{url}}">discoverable</a> and cannot be added.
+                                {% blocktrans trimmed %}
+                                    ⚠️ The account is not set as <a href="{{ url }}">discoverable</a> and cannot be added.
                                 {% endblocktrans %}
                             {% endwith %}
                         </p>
@@ -44,15 +44,15 @@
                     {% trans "We couldn't find any accounts matching your query in the Fedidevs database or at the instance itself. Double check the username and instance and try again." %}
                 </p>
                 <p>
-                    {% blocktrans %}
+                    {% blocktrans trimmed %}
                         <strong>Note:</strong> Only <strong>Mastodon</strong> instances are supported at the moment.
                     {% endblocktrans %}
                 </p>
                 {% with email="mailto:hello@fedidevs.com" url="https://fosstodon.org/@Fedidevs" %}
                     <p>
-                        {% blocktrans %}
-                            <strong>Tip:</strong> Reach out to us through <a href="{{mail}}">email</a> or <a href="{{url}}">Mastodon</a> and we'll try to help you out!
-                        {% endblocktrans%}
+                        {% blocktrans trimmed %}
+                            <strong>Tip:</strong> Reach out to us through <a href="{{ mail }}">email</a> or <a href="{{ url }}">Mastodon</a> and we'll try to help you out!
+                        {% endblocktrans %}
                     </p>
                 {% endwith %}
             </li>
@@ -63,7 +63,7 @@
                     {% trans "We couldn't find any accounts matching your query in the Fedidevs database. Keep in mind, our database only includes a small portion of all the accounts in the fediverse!" %}
                 </p>
                 <p>
-                    {% blocktrans %}
+                    {% blocktrans trimmed %}
                         <strong>Tip:</strong> Try searching for <strong>@username@instance.org</strong> to find the user directly on their instance.
                     {% endblocktrans %}
                 </p>
@@ -78,7 +78,7 @@
         {% if accounts %}
             <li class="p-4 prose text-s dark:prose-invert">
                 <p>
-                    {% blocktrans %}
+                    {% blocktrans trimmed %}
                         <strong>Tip:</strong> Not finding a specific account? Try searching for <strong>@username@instance.org</strong> to find the user directly on their instance.
                     {% endblocktrans %}
                 </p>

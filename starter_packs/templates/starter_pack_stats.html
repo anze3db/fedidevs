@@ -3,10 +3,10 @@
     <div class="flex-1">
         {% if num_accounts == 0 %}
         {% else %}
-            {% blocktrans count counter=num_accounts %}
-              {{ counter }} account in your starter pack.
+            {% blocktrans trimmed count counter=num_accounts %}
+                {{ counter }} account in your starter pack.
             {% plural %}
-              {{ counter }} accounts in your starter pack.
+                {{ counter }} accounts in your starter pack.
             {% endblocktrans %}
         {% endif %}
     </div>

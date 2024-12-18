@@ -71,13 +71,13 @@
                 {% endif %}
                 <div class="grid grid-cols-4 gap-2 pt-4 mt-4 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">
                     <div class="flex flex-col gap-0 text-center" title="Last status">
-                        <span class="text-xs">Last posted</span>
+                        <span class="text-xs">{% trans "Last posted" %}</span>
                         <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
                             {% if sort_order == '-accountlookup__last_status_at' %}▼{% endif %}
                         {{ account.last_status_at_cached }}</span>
                     </div>
                     <div class="flex flex-col gap-0 text-center" title="Statuses">
-                        <span class="text-xs">Posts</span>
+                        <span class="text-xs">{% trans "Posts" %}</span>
                         <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
                             {% if sort_order == '-accountlookup__daily_statuses_count' %}
                                 <span class="{% if account.accountlookup.daily_statuses_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.daily_statuses_count | intcomma }}</span>
@@ -93,7 +93,7 @@
                         </span>
                     </div>
                     <div class="flex flex-col gap-0 text-center" title="Followers">
-                        <span class="text-xs">Followers</span>
+                        <span class="text-xs">{% trans "Followers" %}</span>
                         <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
                             {% if sort_order == '-accountlookup__daily_followers_count' %}
                                 <span class="{% if account.accountlookup.daily_followers_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.daily_followers_count | intcomma }}</span>
@@ -109,7 +109,7 @@
                         </span>
                     </div>
                     <div class="flex flex-col gap-0 text-center" title="Following">
-                        <span class="text-xs">Following</span>
+                        <span class="text-xs">{% trans "Following" %}</span>
                         <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
                             {% if sort_order == '-accountlookup__daily_following_count' %}
                                 <span class="{% if account.accountlookup.daily_following_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.daily_following_count | intcomma }}</span>
@@ -129,7 +129,7 @@
         </div>
     {% empty %}
         <div class="prose dark:prose-invert">
-            No accounts found. <a href="{% url 'index' %}">Reset the filters</a>.
+            {% trans "No accounts found." %} <a href="{% url 'index' %}">{% trans "Reset the filters" %}</a>.
         </div>
     {% endfor %}
 </div>

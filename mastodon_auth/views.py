@@ -11,6 +11,7 @@ from django.core.cache import cache
 from django.db import transaction
 from django.shortcuts import redirect, render
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from mastodon import (
     Mastodon,
@@ -77,12 +78,13 @@ def login(request):
                 api_base_url=api_base_url,
             )
         except MastodonNetworkError:
-            messages.error(request, f"Network error, is the instance url correct? `{api_base_url}`")
+            messages.error(request, _("Network error, is the instance url correct?") + f" `{api_base_url}`")
             return redirect("/")
         except KeyError:
             messages.error(
                 request,
-                f"Unable to create app on your instance. Is it a Mastodon compatible instance? `{api_base_url}`",
+                _("Unable to create app on your instance. Is it a Mastodon compatible instance?")
+                + f" `{api_base_url}`",
             )
             return redirect("/")
 
@@ -132,11 +134,13 @@ def auth(request):
     state = request.GET.get("state")
 
     if not code or not state:
-        messages.error(request, "Invalid request, please try again")
+        messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
     instance_id = cache.get(f"oauth:{state}")
-    assert instance_id, "State could not be found in cache"
+    if not instance_id:
+        messages.error(request, _("Invalid request, please try again"))
+        return redirect("index")
 
     instance = Instance.objects.get(id=instance_id)
 
@@ -165,7 +169,7 @@ def auth(request):
 
     now = timezone.now()
     logged_in_account = mastodon.me()
-    account, _ = Account.objects.update_or_create(
+    account, __ = Account.objects.update_or_create(
         account_id=logged_in_account["id"],
         instance=instance,
         defaults={
@@ -196,7 +200,7 @@ def auth(request):
         },
     )
 
-    user, _ = User.objects.get_or_create(username=account.username_at_instance)
+    user, __ = User.objects.get_or_create(username=account.username_at_instance)
 
     AccountAccess.objects.update_or_create(
         user=user,
@@ -271,7 +275,7 @@ def follow(request, account_id: int):
                 local_accounts = mastodon.account_search(q=account.username_at_instance, resolve=True, limit=1)
             except MastodonServiceUnavailableError:
                 logger.exception("Service unavailable when searching for %s", account.username_at_instance)
-                return err_response("Service unavailable")
+                return err_response(_("Service unavailable"))
             except Exception:
                 logger.exception("Unknown error when searching for %s", account.username_at_instance)
                 return err_response("Unknown error")
@@ -281,34 +285,34 @@ def follow(request, account_id: int):
             local_account = local_accounts[0]
             if local_account["acct"].lower() != account.username_at_instance[1:]:
                 logger.exception("Account mismatch %s %s", account.username_at_instance[1:], local_account["acct"])
-                return err_response("Account not found")
+                return err_response(_("Account not found"))
         except MastodonUnauthorizedError:
             logging.exception("Not authorized %s", account.username_at_instance)
-            return err_response("Not Authorized")
+            return err_response(_("Not Authorized"))
         except MastodonAPIError:
             logging.exception("Unknown error when following %s", account.username_at_instance)
-            return err_response("Failed to follow")
+            return err_response(_("Failed to follow"))
         account_id = local_account["id"]
 
     try:
         mastodon.account_follow(account_id)
     except MastodonUnauthorizedError:
-        return err_response("Unothorized")
+        return err_response(_("Unothorized"))
     except MastodonAPIError:
         # We weren't able to follow the user. Maybe the account was moved?
         try:
             local_account = mastodon.account_lookup(acct=account.username_at_instance)
         except MastodonNotFoundError:
             logging.exception("Account not found on instance %s", account.username_at_instance)
-            return err_response("Account not found")
+            return err_response(_("Account not found"))
         if moved := local_account.get("moved"):
             account.moved = moved
             account.save(update_fields=("moved",))
             logging.warning("Account %s moved", account.username_at_instance)
-            return err_response("Account has moved")
+            return err_response(_("Account has moved"))
 
         logging.error("Unknown error when following %s", account.username_at_instance)
-        return err_response("Failed to follow")
+        return err_response(_("Failed to follow"))
 
     AccountFollowing.objects.get_or_create(account=request.user.accountaccess.account, url=account.url)
     FollowClick.objects.create(user=request.user, url=account.url)
