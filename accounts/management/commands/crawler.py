@@ -1,5 +1,7 @@
 import asyncio
 import datetime as dt
+import logging
+from json import JSONDecodeError
 
 import httpx
 from asgiref.sync import async_to_sync
@@ -8,6 +10,8 @@ from django.utils import timezone
 from django_rich.management import RichCommand
 
 from accounts.models import Account, Instance
+
+logger = logging.getLogger(__name__)
 
 
 def convert_last_status_at(last_status_at: str | None) -> dt.datetime | None:
@@ -168,7 +172,10 @@ class Command(RichCommand):
                 f"[bold red]Error status code[/bold red] for {instance} at offset {offset}. {response.status_code}"
             )
             return instance, []
-        results = response.json()
+        try:
+            results = response.json()
+        except JSONDecodeError:
+            logger.exception("Error decoding JSON", extra={"response": response.text})
 
         # Don't skip inactive accounts if skip_inactive_for is None or 0
         if not skip_inactive_for:
