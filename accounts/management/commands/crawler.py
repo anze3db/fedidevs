@@ -176,6 +176,7 @@ class Command(RichCommand):
             results = response.json()
         except JSONDecodeError:
             logger.exception("Error decoding JSON", extra={"response": response.text})
+            return instance, []
 
         # Don't skip inactive accounts if skip_inactive_for is None or 0
         if not skip_inactive_for:
