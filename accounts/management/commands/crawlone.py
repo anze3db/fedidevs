@@ -24,6 +24,8 @@ class Command(RichCommand):
 
     @async_to_sync
     async def main(self, user: str, make_visible: bool = False):
+        if user.startswith("@"):
+            user = user[1:]
         async with httpx.AsyncClient() as client:
             user, instance = user.lower().split("@")
             try:
