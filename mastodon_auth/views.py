@@ -66,6 +66,9 @@ def login(request):
     if "/" in api_base_url:
         api_base_url = api_base_url.split("/")[0]
 
+    if "@" in api_base_url:
+        api_base_url = api_base_url.split("@")[-1]
+
     instance = Instance.objects.filter(url=api_base_url).first()
 
     if not instance:
