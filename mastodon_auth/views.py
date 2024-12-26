@@ -169,14 +169,6 @@ def auth(request):
 
     now = timezone.now()
     logged_in_account = mastodon.me()
-    if "@" in logged_in_account["username"]:
-        username_at_instance = logged_in_account["username"]
-        if username_at_instance[0] != "@":
-            username_at_instance = f"@{username_at_instance}"
-        logger.error("Username contains @ %s", logged_in_account["username"], extra=logged_in_account)
-    else:
-        username_at_instance = f"@{logged_in_account['username'].lower()}@{instance.url.lower()}"
-
     account, __ = Account.objects.update_or_create(
         account_id=logged_in_account["id"],
         instance=instance,
@@ -204,7 +196,7 @@ def auth(request):
             "emojis": logged_in_account.get("emojis"),
             "roles": logged_in_account.get("roles", []),
             "fields": logged_in_account.get("fields"),
-            "username_at_instance": username_at_instance,
+            "username_at_instance": f"@{logged_in_account['username'].lower()}@{instance.url.lower()}",
         },
     )
 
