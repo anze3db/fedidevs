@@ -71,7 +71,7 @@ class Command(RichCommand):
                     if min_id == posts[-1]["id"]:
                         break
                     min_id = posts[-1]["id"]
-                    if dt.datetime.fromisoformat(posts[-1]["created_at"]) < (timezone.now() - dt.timedelta(days=3)):
+                    if dt.datetime.fromisoformat(posts[-1]["created_at"]) < (timezone.now() - dt.timedelta(days=1)):
                         min_id_to_save = min_id
                     await self.process_posts(posts, conference, instance_model)
 
