@@ -17,4 +17,3 @@ https://www.youtube.com/watch?v=url1TFdHlSI
 - espaces insécables : le développeur inclut des émojis dans son code, et utilise donc UTF-8. On part donc du principe qu'on peut utiliser le caractère d'espace insécable pour mettre avant les ? ! : ;. Si vous avez besoin de le copier-coller utilisez le caractère entre les * ci-dessous.
 On pensait utiliser &nbsp; mais n'étant pas sûr que ce code sera interprété correctement, on préfère le caractère unicode.
 * *
-
