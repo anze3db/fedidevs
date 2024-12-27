@@ -47,6 +47,32 @@ class Command(RichCommand):
             instances = conference.instances.split(",")
             await asyncio.gather(*[self.handle_instance(instance.strip(), conference) for instance in instances])
 
+            if conference.posts_after:
+                posts_after = conference.posts_after
+            else:
+                posts_after = timezone.now() - dt.timedelta(days=180)
+
+            await ConferenceAccount.objects.filter(conference=conference).aupdate(
+                count=Coalesce(
+                    Subquery(
+                        conference.posts.values("account_id")
+                        .filter(account_id=OuterRef("account_id"), created_at__gte=posts_after)
+                        .annotate(post_count=Count("id"))
+                        .values("post_count")[:1],
+                    ),
+                    Value(0),
+                )
+            )
+
+            await ConferencePost.objects.filter(conference=conference).aupdate(
+                created_at=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("created_at")[:1]),
+                favourites_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("favourites_count")[:1]),
+                reblogs_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("reblogs_count")[:1]),
+                replies_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("replies_count")[:1]),
+                visibility=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("visibility")[:1]),
+                account_id=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("account_id")[:1]),
+            )
+
     async def handle_instance(self, instance, conference):
         self.console.print(f"Starting {instance}, {conference.slug}")
 
@@ -80,32 +106,6 @@ class Command(RichCommand):
 
         await MinId.objects.abulk_create(
             min_ids, update_conflicts=True, unique_fields=["conference", "instance"], update_fields=["min_id"]
-        )
-
-        if conference.posts_after:
-            posts_after = conference.posts_after
-        else:
-            posts_after = timezone.now() - dt.timedelta(days=999)
-
-        await ConferenceAccount.objects.filter(conference=conference).aupdate(
-            count=Coalesce(
-                Subquery(
-                    conference.posts.values("account_id")
-                    .filter(account_id=OuterRef("account_id"), created_at__gte=posts_after)
-                    .annotate(post_count=Count("id"))
-                    .values("post_count")[:1],
-                ),
-                Value(0),
-            )
-        )
-
-        await ConferencePost.objects.filter(conference=conference).aupdate(
-            created_at=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("created_at")[:1]),
-            favourites_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("favourites_count")[:1]),
-            reblogs_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("reblogs_count")[:1]),
-            replies_count=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("replies_count")[:1]),
-            visibility=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("visibility")[:1]),
-            account_id=Subquery(Post.objects.filter(id=OuterRef("post_id")).values("account_id")[:1]),
         )
 
     async def fetch_and_handle_fail(self, client, instance: str, tag: str, min_id: str):
