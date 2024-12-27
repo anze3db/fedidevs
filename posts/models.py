@@ -37,6 +37,7 @@ class Post(models.Model):
         )
         indexes = [
             models.Index(fields=["created_at"]),
+            models.Index(fields=["account", "created_at"]),
         ]
 
 
