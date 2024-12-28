@@ -1,0 +1,482 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-28 10:26+0000\n"
+"PO-Revision-Date: 2024-12-28 10:19+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: sl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100>=3 && "
+"n%100<=4 ? 2 : 3);\n"
+"X-Generator: Poedit 3.5\n"
+
+#: accounts/templates/cotton/follow_button.html:6
+#: accounts/templates/cotton/follow_button.html:23
+msgid "Follow"
+msgstr "Sledi"
+
+#: accounts/templates/cotton/follow_button.html:11
+#: accounts/templates/v2/accounts.html:112
+#: starter_packs/templates/starter_pack_accounts.html:112
+msgid "Following"
+msgstr "Slediš"
+
+#: accounts/templates/cotton/follow_button.html:16
+msgid "You!"
+msgstr "Ti!"
+
+#: accounts/templates/login_form.html:7
+msgid "Sign in to your Mastodon instance"
+msgstr "Prijavi se v svojo Mastodon instanco"
+
+#: accounts/templates/login_form.html:19
+msgid "Close modal"
+msgstr "Zapri okno"
+
+#: accounts/templates/login_form.html:31
+msgid "Your instance"
+msgstr "Tvoja instanca"
+
+#: accounts/templates/login_form.html:41
+msgid ""
+"<strong>Write</strong> permissions will be requested to be able to follow "
+"accounts on your behalf."
+msgstr ""
+"Za spremljanje računov v vašem imenu bodo zahtevana dovoljenja za "
+"<strong>pisanje</strong>."
+
+#: accounts/templates/login_form.html:48
+msgid "Authorize"
+msgstr "Pooblasti"
+
+#: accounts/templates/v2/accounts.html:74
+#: starter_packs/templates/starter_pack_accounts.html:74
+msgid "Last posted"
+msgstr "Nazadnje objevljeno"
+
+#: accounts/templates/v2/accounts.html:80
+#: starter_packs/templates/starter_pack_accounts.html:80
+msgid "Posts"
+msgstr "Objave"
+
+#: accounts/templates/v2/accounts.html:96
+#: starter_packs/templates/starter_pack_accounts.html:96
+msgid "Followers"
+msgstr "Sledilci"
+
+#: accounts/templates/v2/accounts.html:132
+msgid "No accounts found."
+msgstr "Noben račun ni bil najden."
+
+#: accounts/templates/v2/accounts.html:132
+msgid "Reset the filters"
+msgstr "Resetiraj filtre"
+
+#: accounts/templates/v2/layout.html:15
+msgid "Discover amazing people on Mastodon."
+msgstr "Odkrij odlične ljudi na Mastodonu."
+
+#: accounts/templates/v2/layout.html:42 accounts/templates/v2/layout.html:53
+msgid "Discover amazing people from across the fediverse."
+msgstr "Odkrij odlične ljudi čez celoten fediverse."
+
+#: accounts/templates/v2/layout.html:94
+msgid "Close"
+msgstr "Zapri"
+
+#: accounts/templates/v2/layout.html:114
+msgid "Open sidebar"
+msgstr "Odpri stransko vrstico"
+
+#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:240
+#: starter_packs/templates/cotton/starter_pack_card.html:27
+msgid "Accounts"
+msgstr "Računi"
+
+#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:243
+msgid "Conferences"
+msgstr "Konference"
+
+#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:246
+msgid "Starter Packs"
+msgstr "Začetni Paketi"
+
+#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:249
+msgid "Stats"
+msgstr "Statistika"
+
+#: accounts/templates/v2/layout.html:148
+msgid "Toggle Theme"
+msgstr "Preklopi temo"
+
+#: accounts/templates/v2/layout.html:182
+msgid "Help with translations"
+msgstr ""
+
+#: accounts/templates/v2/layout.html:192 accounts/templates/v2/layout.html:209
+msgid "Account"
+msgstr "Račun"
+
+#: accounts/templates/v2/layout.html:201
+msgid "Sign out"
+msgstr "Odjavi se"
+
+#: accounts/templates/v2/layout.html:221
+msgid "Sign in"
+msgstr "Prijavi se"
+
+#: accounts/templates/v2/layout.html:289
+msgid "FAQ"
+msgstr "Pogosta vprašanja"
+
+#: accounts/templates/v2/layout.html:292
+msgid "Mastodon instances"
+msgstr "Mastodon instance"
+
+#: accounts/templates/v2/layout.html:295
+msgid "Newsletter"
+msgstr "Glasilo"
+
+#: accounts/templates/v2/layout.html:300
+msgid ""
+"Created by <a href=\"https://fosstodon.org/@anze3db\">Anže</a> and <a "
+"href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">friends.</a>"
+msgstr ""
+"Ustvarili <a href=\"https://fosstodon.org/@anze3db\">Anže</a> in <a "
+"href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">prijatelji."
+"</a>"
+
+#: mastodon_auth/views.py:84
+msgid "Network error, is the instance url correct?"
+msgstr "Omrežna napaka, ali je URL pravilen?"
+
+#: mastodon_auth/views.py:89
+msgid ""
+"Unable to create app on your instance. Is it a Mastodon compatible instance?"
+msgstr ""
+"Na vaši instanci ni mogoče ustvariti aplikacije. Ali je vaša instanca "
+"združljiva z Mastodonom?"
+
+#: mastodon_auth/views.py:140 mastodon_auth/views.py:145
+msgid "Invalid request, please try again"
+msgstr "Neveljavna zahteva, poskusite znova"
+
+#: mastodon_auth/views.py:281
+msgid "Service unavailable"
+msgstr "Storitev ni na voljo"
+
+#: mastodon_auth/views.py:291 mastodon_auth/views.py:310
+msgid "Account not found"
+msgstr "Račun ni bil najden"
+
+#: mastodon_auth/views.py:294
+msgid "Not Authorized"
+msgstr "Ni dovoljeno"
+
+#: mastodon_auth/views.py:297 mastodon_auth/views.py:318
+msgid "Failed to follow"
+msgstr "Sledenje ni uspelo"
+
+#: mastodon_auth/views.py:303
+msgid "Unauthorized"
+msgstr "Nepooblaščeno"
+
+#: mastodon_auth/views.py:315
+msgid "Account has moved"
+msgstr "Račun je bil premaknjen"
+
+#: starter_packs/templates/add_accounts.html:7
+msgid "Add accounts to"
+msgstr "Dodaj računov v"
+
+#: starter_packs/templates/add_accounts.html:14
+#: starter_packs/templates/add_accounts.html:34
+msgid "Search"
+msgstr "Išči"
+
+#: starter_packs/templates/add_accounts.html:31
+msgid "Search @username@instance.org"
+msgstr "Išči @username@instance.org"
+
+#: starter_packs/templates/add_accounts_list.html:20
+#, python-format
+msgid ""
+"⚠️ The account is not set as <a href=\"%(url)s\">discoverable</a> and cannot "
+"be added."
+msgstr ""
+"⚠️ Račun ni nastavljen kot <a href=\"%(url)s\">viden</a> in ga ni mogoče "
+"dodati."
+
+#: starter_packs/templates/add_accounts_list.html:42
+msgid "No results found 😞"
+msgstr "Ni rezultatov 😞"
+
+#: starter_packs/templates/add_accounts_list.html:44
+msgid ""
+"We couldn't find any accounts matching your query in the Fedidevs database "
+"or at the instance itself. Double check the username and instance and try "
+"again."
+msgstr ""
+"V zbirki podatkov Fedidevs ali v sami instanci nismo mogli najti nobenega "
+"računa, ki bi ustrezal vaši poizvedbi. Še enkrat preverite uporabniško ime "
+"in primerek ter poskusite znova."
+
+#: starter_packs/templates/add_accounts_list.html:47
+msgid ""
+"<strong>Note:</strong> Only <strong>Mastodon</strong> instances are "
+"supported at the moment."
+msgstr ""
+"<strong>Opomba:</strong> Trenutno so podprti samo <strong>Mastodon</strong> "
+"instance."
+
+#: starter_packs/templates/add_accounts_list.html:53
+#, python-format
+msgid ""
+"<strong>Tip:</strong> Reach out to us through <a href=\"%(mail)s\">email</a> "
+"or <a href=\"%(url)s\">Mastodon</a> and we'll try to help you out!"
+msgstr ""
+"<strong>Nasvet:</strong> Pišite nam prek <a href=\"%(mail)s\">e-pošte</a> "
+"ali <a href=\"%(url)s\">Mastodona</a> in poskušali vam bomo pomagati!"
+
+#: starter_packs/templates/add_accounts_list.html:63
+msgid ""
+"We couldn't find any accounts matching your query in the Fedidevs database. "
+"Keep in mind, our database only includes a small portion of all the accounts "
+"in the fediverse!"
+msgstr ""
+"V zbirki podatkov Fedidevs nismo mogli najti nobenega računa, ki bi ustrezal "
+"vaši poizvedbi. Upoštevajte, da naša zbirka podatkov vključuje le majhen del "
+"vseh računov v fediversu!"
+
+#: starter_packs/templates/add_accounts_list.html:66
+msgid ""
+"<strong>Tip:</strong> Try searching for <strong>@username@instance.org</"
+"strong> to find the user directly on their instance."
+msgstr ""
+"<strong>Nasvet:</strong> Za iskanje neposredno na uporabnikovi instanci, "
+"iščite v formatu: <strong>@uporabniškoime@instanca.org</strong>."
+
+#: starter_packs/templates/add_accounts_list.html:81
+msgid ""
+"<strong>Tip:</strong> Not finding a specific account? Try searching for "
+"<strong>@username@instance.org</strong> to find the user directly on their "
+"instance."
+msgstr ""
+"<strong>Nasvet:</strong> Ne najdete določenega računa? Poskusite poiskati "
+"<strong>@uporabniškoime@instanca.org</strong>, da poiščete uporabnika "
+"neposredno na njihovi instanci."
+
+#: starter_packs/templates/cotton/starter_pack_card.html:14
+#: starter_packs/templates/share_starter_pack.html:11
+msgid "By"
+msgstr "Ustvaril"
+
+#: starter_packs/templates/cotton/starter_pack_card.html:23
+msgid "Created"
+msgstr "Ustvarjen"
+
+#: starter_packs/templates/create_starter_pack.html:6
+#: starter_packs/templates/starter_packs.html:123
+msgid "Mastodon starter packs"
+msgstr "Mastodon začetni paketi"
+
+#: starter_packs/templates/create_starter_pack.html:7
+msgid "Invite your friends to follow your favorite people on Mastodon"
+msgstr "Povabite prijatelje naj sledijo vašim najljubšim ljudem na Mastodonu"
+
+#: starter_packs/templates/create_starter_pack.html:16
+msgid "Starter pack title"
+msgstr "Naslov začetnega paketa"
+
+#: starter_packs/templates/create_starter_pack.html:22
+msgid "My Awesome Starter Pack"
+msgstr "Moj super začetni paket"
+
+#: starter_packs/templates/create_starter_pack.html:30
+msgid "Starter pack description"
+msgstr "Opis začetnega paketa"
+
+#: starter_packs/templates/create_starter_pack.html:36
+msgid "My favorite people on Mastodon - join me!"
+msgstr "Moji najljubši ljudje na Mastodonu - pridružite se mi!"
+
+#: starter_packs/templates/create_starter_pack.html:46
+#: starter_packs/templates/create_starter_pack.html:51
+msgid "Continue"
+msgstr "Nadaljuj"
+
+#: starter_packs/templates/delete_starter_pack.html:8
+msgid "Are you sure you want to delete the starter pack"
+msgstr "Ali ste prepričani, da želite zbrisati začetni paket"
+
+#: starter_packs/templates/delete_starter_pack.html:14
+msgid "Yes, delete"
+msgstr "Ja, zbriši"
+
+#: starter_packs/templates/share_starter_pack.html:20
+#: starter_packs/templates/share_starter_pack.html:32
+#, fuzzy, python-format
+#| msgid "Follow %(num_accounts)s account"
+#| msgid_plural "Follow all %(num_accounts)s accounts"
+msgid "Follow %(count)s account"
+msgid_plural "Follow all %(count)s accounts"
+msgstr[0] "Sledi %(num_accounts)s računu"
+msgstr[1] "Sledi %(num_accounts)s računoma"
+msgstr[2] "Sledi %(num_accounts)s računom"
+msgstr[3] "Sledi %(num_accounts)s računom"
+
+#: starter_packs/templates/share_starter_pack.html:58
+msgid "Add Accounts"
+msgstr "Dodaj raučune"
+
+#: starter_packs/templates/share_starter_pack.html:62
+msgid "Edit"
+msgstr "Uredi"
+
+#: starter_packs/templates/share_starter_pack.html:66
+msgid "Delete"
+msgstr "Izbriši"
+
+#: starter_packs/templates/share_starter_pack.html:71
+msgid "Report"
+msgstr "Prijava"
+
+#: starter_packs/templates/share_starter_pack.html:80
+#, python-format
+msgid ""
+"<strong>%(count)s</strong> account hidden due to their privacy settings."
+msgid_plural ""
+"<strong>%(count)s</strong> accounts hidden due to their privacy settings."
+msgstr[0] ""
+"<strong>%(count)s</strong> račun je skrit zaradi njihovih nastavitev "
+"zasebnosti."
+msgstr[1] ""
+"<strong>%(count)s</strong> računa sta skrita zaradi njunih nastavitev "
+"zasebnosti."
+msgstr[2] ""
+"<strong>%(count)s</strong> računi so skriti zaradi njihovih nastavitev "
+"zasebnosti."
+msgstr[3] ""
+"<strong>%(count)s</strong> računov je skritih zaradi njihovih nastavitev "
+"zasebnosti."
+
+#: starter_packs/templates/starter_pack_accounts.html:57
+#: starter_packs/templates/starter_pack_accounts.html:65
+msgid "Switch to Project"
+msgstr "Preklopi na projekt"
+
+#: starter_packs/templates/starter_pack_accounts.html:61
+#: starter_packs/templates/starter_pack_accounts.html:68
+msgid "Switch to Human"
+msgstr "Preklopi na človeka"
+
+#: starter_packs/templates/starter_pack_stats.html:6
+#, python-format
+msgid "%(counter)s account in your starter pack."
+msgid_plural "%(counter)s accounts in your starter pack."
+msgstr[0] "%(counter)s račun v vašem začetnem paketu."
+msgstr[1] "%(counter)s računa v vašem začetnem paketu."
+msgstr[2] "%(counter)s računi v vašem začetnem paketu."
+msgstr[3] "%(counter)s računov v vašem začetnem paketu."
+
+#: starter_packs/templates/starter_pack_stats.html:16
+#: starter_packs/templates/starter_pack_stats.html:20
+msgid "Finish"
+msgstr "Končaj"
+
+#: starter_packs/templates/starter_packs.html:11
+msgid "Community Starter Packs"
+msgstr "Začetni paketi skupnosti"
+
+#: starter_packs/templates/starter_packs.html:17
+msgid "Your Starter Packs"
+msgstr "Tvoji začetni paketi"
+
+#: starter_packs/templates/starter_packs.html:23
+msgid "Starter Packs Containing You"
+msgstr "Začetni paketi, ki vsebujejo vas"
+
+#: starter_packs/templates/starter_packs.html:44
+#: starter_packs/templates/starter_packs.html:68
+msgid "Go"
+msgstr "Pojdi"
+
+#: starter_packs/templates/starter_packs.html:73
+msgid "Search..."
+msgstr "Išči..."
+
+#: starter_packs/templates/starter_packs.html:99
+msgid "No starter packs containing"
+msgstr "Brez začetnih paketov, ki vsebujejo"
+
+#: starter_packs/templates/starter_packs.html:104
+msgid "Please login to see your starter packs."
+msgstr "Prosimo, prijavite se, da si ogledate svoje začetne pakete."
+
+#: starter_packs/templates/starter_packs.html:107
+msgid ""
+"Please login to see your starter packs or search for your "
+"username@instance.org in the search form above"
+msgstr ""
+"Prosimo, prijavite se, da si ogledate svoje začetne pakete, ali pa v "
+"iskalnem obrazcu zgoraj poiščite svoje uporabniškoime@instanci.org"
+
+#: starter_packs/templates/starter_packs.html:112
+msgid "You haven't created any starter packs yet."
+msgstr "Ustvarili niste še nobenega začetnega paketa."
+
+#: starter_packs/templates/starter_packs.html:114
+msgid "You haven't been added to any starter packs yet."
+msgstr "Dodani niste še v noben začetni paket."
+
+#: starter_packs/templates/starter_packs.html:124
+msgid "Invite your friends to follow your favorite people on Mastodon."
+msgstr ""
+"Povabite svoje prijatelje, da spremljajo vaše najljubše osebe na Mastodonu."
+
+#: starter_packs/templates/starter_packs.html:132
+#: starter_packs/templates/starter_packs.html:136
+msgid "Create your starter pack"
+msgstr "Ustvarite svoj začetni paket"
+
+#: starter_packs/views.py:93
+msgid "Mastodon Starter Pack Directory | Fedidevs"
+msgstr "Imenik začetnih paketov Mastodon | Fedidevs"
+
+#: starter_packs/views.py:162
+msgid "Add accounts to your starter pack"
+msgstr "Dodajte račune v svoj začetni paket"
+
+#: starter_packs/views.py:195
+msgid "Edit your starter pack"
+msgstr "Uredite svoj začetni paket"
+
+#: starter_packs/views.py:221
+msgid "You already have a starter pack with this title."
+msgstr "Že imate začetni paket s tem naslovom."
+
+#: starter_packs/views.py:231
+msgid "Create a new starter pack"
+msgstr "Ustvarite nov začetni paket"
+
+#: starter_packs/views.py:258
+msgid "You have reached the maximum number of accounts in a starter pack."
+msgstr "Dosegli ste največje število računov v začetnem paketu."
+
+#: starter_packs/views.py:303
+msgid " - Mastodon Starter Pack"
+msgstr " - Začetni paket Mastodon"
+
+#: starter_packs/views.py:351
+msgid "Following all accounts in the starter pack. 🎉"
+msgstr "Spremljanje vseh računov v začetnem paketu. 🎉"
