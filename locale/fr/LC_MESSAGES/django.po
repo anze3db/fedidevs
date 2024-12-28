@@ -236,7 +236,7 @@ msgstr "Nous n'avons pas pu trouver de compte correspondant à votre requête da
 msgid ""
 "<strong>Tip:</strong> Try searching for <strong>@username@instance.org</"
 "strong> to find the user directly on their instance."
-msgstr "<strong>Astuce :</strong> Essayez de chercher <strong>@utilisateur@instance.org"</strong> pour trouver l'utilisateur directement sur son instance."
+msgstr "<strong>Astuce :</strong> Essayez de chercher <strong>@utilisateur@instance.org</strong> pour trouver l'utilisateur directement sur son instance."
 
 #: starter_packs/templates/add_accounts_list.html:81
 msgid ""
