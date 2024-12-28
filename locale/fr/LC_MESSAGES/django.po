@@ -174,7 +174,7 @@ msgid "Failed to follow"
 msgstr "La demande de suivi a échoué"
 
 #: mastodon_auth/views.py:300
-msgid "Unothorized"
+msgid "Unauthorized"
 msgstr ""
 
 #: mastodon_auth/views.py:312
