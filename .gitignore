@@ -1,6 +1,7 @@
 .env
 .venv
 db.*
+django.mo
 staticfiles
 __pycache__/
 static/CACHE
