@@ -3,6 +3,7 @@ set -e
 pushd "$(dirname "$0")/.."
 git pull
 uv sync --locked
+uv run python manage.py compilemessages
 uv run python manage.py collectstatic --noinput
 uv run python manage.py migrate
 sudo systemctl reload fedidevs
