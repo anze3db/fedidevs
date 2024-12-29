@@ -31,8 +31,8 @@ jobs:
       run: uv sync --locked
     - name: Collect static files
       run: uv run python manage.py collectstatic
-    - name: Compile translations
-      run: uv run python manage.py compilemessages
+    #- name: Compile translations
+    #  run: uv run python manage.py compilemessages
     - name: Check migrations
       run: uv run python manage.py makemigrations --check
     - name: Run Tests
