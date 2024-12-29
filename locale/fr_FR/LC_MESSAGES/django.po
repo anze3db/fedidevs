@@ -2,6 +2,25 @@
 # Copyright (C) 2024 Anže
 # This file is distributed under the same license as the Fedidevs package.
 # Benjamin Sonntag <benjamin@sonntag.fr>, 2024.
+#
+# Choix de traductions vers le français :
+#
+# - followers : on a repris la terminologie mastodon : Abonné·e·s
+#
+# - starter packs : pour l'instant on a choisi de traduire ça en "Packs à suivre".
+# Si vous avez mieux on prend.
+# Le côté "starter" / "démarrage" n'est pas pertinent :
+# on peut avoir déjà 1000 comptes suivis et être quand même intéressé par les "starter packs" :)
+#
+# - FAQ = FAQ (oui : Foire Aux Questions)
+#
+# - Neutralité de langue : nous avons choisi d'utiliser le point médian · pour proposer une écriture épicène / inclusive.
+# et faire de Mastodon et de la fédiverse un espace accueillant <3
+# Si vous voulez en savoir plus, Scilabus a fait une vidéo scientifique intéressante au sujet de l'écriture inclusive ;)
+# https://www.youtube.com/watch?v=url1TFdHlSI
+#
+# - espaces insécables : le développeur inclut des émojis dans son code, et utilise donc UTF-8. On part donc du principe qu'on peut utiliser le caractère d'espace insécable pour mettre avant les ? ! : ;. Si vous avez besoin de le copier-coller utilisez le caractère entre les * ci-dessous.
+# On pensait utiliser &nbsp; mais n'étant pas sûr que ce code sera interprété correctement, on préfère le caractère unicode.
 msgid ""
 msgstr ""
 "Project-Id-Version: Fedidevs\n"
