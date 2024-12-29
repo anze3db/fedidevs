@@ -196,7 +196,7 @@ msgstr "Račun je bil premaknjen"
 
 #: starter_packs/templates/add_accounts.html:7
 msgid "Add accounts to"
-msgstr "Dodaj računov v"
+msgstr "Dodaj račune v"
 
 #: starter_packs/templates/add_accounts.html:14
 #: starter_packs/templates/add_accounts.html:34
