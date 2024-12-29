@@ -336,7 +336,7 @@ msgstr[3] "Sledi %(num_accounts)s računom"
 
 #: starter_packs/templates/share_starter_pack.html:58
 msgid "Add Accounts"
-msgstr "Dodaj raučune"
+msgstr "Dodaj račune"
 
 #: starter_packs/templates/share_starter_pack.html:62
 msgid "Edit"
