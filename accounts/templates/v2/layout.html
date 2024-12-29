@@ -150,6 +150,42 @@
                     <span class="block w-6 h-6 dark:hidden">{% heroicon_outline 'moon' %}</span>
                 </button>
                 </theme-toggle>
+                <div>
+                    {% get_current_language as LANGUAGE_CODE %}
+                    <button type="button"
+                            data-dropdown-toggle="lang_dropdown"
+                            class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
+                        {% if LANGUAGE_CODE == 'en' %}
+                            🇺🇸
+                        {% elif LANGUAGE_CODE == 'fr' %}
+                            🇫🇷
+                        {% elif LANGUAGE_CODE == 'sl' %}
+                            🇸🇮
+                        {% endif %}
+                    </button>
+                    <div id="lang_dropdown"
+                         class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                        <form action="{% url 'set_language' %}" method="post">
+                            {% csrf_token %}
+                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                aria-labelledby="dropdownDefaultButton">
+                                <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    <button type="submit" value="en" name="language" class="block px-4 py-2">🇺🇸 English</button>
+                                </li>
+                                <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    <button type="submit" value="fr" name="language" class="block px-4 py-2">🇫🇷 Français</button>
+                                </li>
+                                <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    <button type="submit" value="sl" name="language" class="block px-4 py-2">🇸🇮 Slovenščina</button>
+                                </li>
+                                <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    <a class="block px-4 py-2 text-sm"
+                                       href="https://github.com/anze3db/fedidevs/tree/main/locale">{% trans "Help with translations" %}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
                 {% if request.user.is_authenticated %}
                     <button type="button"
                             data-dropdown-toggle="dropdown"
