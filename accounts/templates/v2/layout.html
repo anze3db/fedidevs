@@ -135,9 +135,9 @@
                     {{ page_header }}
                 </h2>
                 <nav class="hidden md:flex gap-2 sm:gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
-                    <a href="{% url 'index' %}"><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Accounts" %}</span></a>
+                    <a class="whitespace-nowrap" href="{% url 'starter_packs' %}"><span class="{% if page == 'starter_packs' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Starter Packs" %}</span></a>
+                    <a class="pl-4" href="{% url 'index' %}"><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Accounts" %}</span></a>
                     <a class="pl-4" href="{% url 'conferences' %}"><span class="{% if page == 'conferences' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Conferences" %}</span></a>
-                    <a class="pl-4 whitespace-nowrap" href="{% url 'starter_packs' %}"><span class="{% if page == 'starter_packs' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Starter Packs" %}</span></a>
                     <a class="pl-4" href="{% url 'stats' %}"><span class="{% if page == 'stats' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Stats" %}</span></a>
                 </nav>
             </div>
@@ -191,7 +191,10 @@
                             data-dropdown-toggle="dropdown"
                             class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
                         <span class="sr-only">{% trans "Account" %}</span>
-                        <img src={{ user.accountaccess.account.avatar_static }} loading="lazy" alt="avatar" class="w-8 h-8 rounded-full" />
+                        <img src="{{ user.accountaccess.account.avatar_static }}"
+                             loading="lazy"
+                             alt="avatar"
+                             class="w-8 h-8 rounded-full" />
                     </button>
                     <div id="dropdown"
                          class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
@@ -237,13 +240,13 @@
                 <nav class="flex md:hidden gap-2 sm:gap-4 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
                     <ul class="pb-8">
                         <li>
+                            <a href="{% url 'starter_packs' %}"><span class="{% if page == 'starter_packs' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Starter Packs" %}</span></a>
+                        </li>
+                        <li>
                             <a href="{% url 'index' %}"><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Accounts" %}</span></a>
                         </li>
                         <li>
                             <a class="pt-8" href="{% url 'conferences' %}"><span class="{% if page == 'conferences' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Conferences" %}</span></a>
-                        </li>
-                        <li>
-                            <a href="{% url 'starter_packs' %}"><span class="{% if page == 'starter_packs' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Starter Packs" %}</span></a>
                         </li>
                         <li>
                             <a href="{% url 'stats' %}"><span class="{% if page == 'stats' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Stats" %}</span></a>
