@@ -4,7 +4,7 @@
 # Enrico Bonardi <e.bonardi@me.com>, 2024.
 #
 # Scelte di traduzione verso l'italiano:
-# 
+#
 # - followers : ho mantenuto la traduzione inglese di Mastodon (eliminando la s finale al plurale) : follower
 #
 # - starter packs: ho deciso di non tradurlo in quanto di uso comune e di facile comprensione.
