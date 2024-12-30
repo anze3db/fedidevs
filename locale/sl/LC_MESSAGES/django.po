@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fedidevs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-30 10:40+0000\n"
+"POT-Creation-Date: 2024-12-30 16:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,8 +25,9 @@ msgid "Follow"
 msgstr "Sledi"
 
 #: accounts/templates/cotton/follow_button.html:11
-#: accounts/templates/v2/accounts.html:112
-#: starter_packs/templates/starter_pack_accounts.html:112
+#, fuzzy
+#| msgid "Following"
+msgctxt "You are already *following* this account."
 msgid "Following"
 msgstr "Slediš"
 
@@ -72,6 +73,13 @@ msgstr "Objave"
 #: starter_packs/templates/starter_pack_accounts.html:96
 msgid "Followers"
 msgstr "Sledilci"
+
+#: accounts/templates/v2/accounts.html:112
+#, fuzzy
+#| msgid "Following"
+msgctxt "This account is *following* this many people"
+msgid "Following"
+msgstr "Slediš"
 
 #: accounts/templates/v2/accounts.html:132
 msgid "No accounts found."
@@ -330,6 +338,9 @@ msgstr "V začetnem paketu ni računov"
 
 #: starter_packs/templates/share_starter_pack.html:20
 #: starter_packs/templates/share_starter_pack.html:32
+#, fuzzy, python-format
+#| msgid "Follow %(count)s account"
+#| msgid_plural "Follow all %(count)s accounts"
 msgid "Follow %(count)s account"
 msgid_plural "Follow all %(count)s accounts"
 msgstr[0] "Sledi %(num_accounts)s računu"
@@ -381,6 +392,10 @@ msgstr "Preklopi na projekt"
 #: starter_packs/templates/starter_pack_accounts.html:68
 msgid "Switch to Human"
 msgstr "Preklopi na človeka"
+
+#: starter_packs/templates/starter_pack_accounts.html:112
+msgid "Following"
+msgstr "Slediš"
 
 #: starter_packs/templates/starter_pack_stats.html:6
 #, python-format

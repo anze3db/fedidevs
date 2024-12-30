@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-30 11:40+0000\n"
+"POT-Creation-Date: 2024-12-30 16:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,8 +24,7 @@ msgid "Follow"
 msgstr ""
 
 #: accounts/templates/cotton/follow_button.html:11
-#: accounts/templates/v2/accounts.html:112
-#: starter_packs/templates/starter_pack_accounts.html:112
+msgctxt "You are already *following* this account."
 msgid "Following"
 msgstr ""
 
@@ -68,6 +67,11 @@ msgstr ""
 #: accounts/templates/v2/accounts.html:96
 #: starter_packs/templates/starter_pack_accounts.html:96
 msgid "Followers"
+msgstr ""
+
+#: accounts/templates/v2/accounts.html:112
+msgctxt "This account is *following* this many people"
+msgid "Following"
 msgstr ""
 
 #: accounts/templates/v2/accounts.html:132
@@ -344,6 +348,10 @@ msgstr ""
 #: starter_packs/templates/starter_pack_accounts.html:61
 #: starter_packs/templates/starter_pack_accounts.html:68
 msgid "Switch to Human"
+msgstr ""
+
+#: starter_packs/templates/starter_pack_accounts.html:112
+msgid "Following"
 msgstr ""
 
 #: starter_packs/templates/starter_pack_stats.html:6

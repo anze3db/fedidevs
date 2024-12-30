@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fedidevs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-30 10:40+0000\n"
+"POT-Creation-Date: 2024-12-30 16:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Benjamin Sonntag <benjamin@octopuce.fr>\n"
 "Language-Team: \n"
@@ -41,8 +41,9 @@ msgid "Follow"
 msgstr "Suivre"
 
 #: accounts/templates/cotton/follow_button.html:11
-#: accounts/templates/v2/accounts.html:112
-#: starter_packs/templates/starter_pack_accounts.html:112
+#, fuzzy
+#| msgid "Following"
+msgctxt "You are already *following* this account."
 msgid "Following"
 msgstr "Suivi"
 
@@ -88,6 +89,13 @@ msgstr "Posts"
 #: starter_packs/templates/starter_pack_accounts.html:96
 msgid "Followers"
 msgstr "Abonné·e·s"
+
+#: accounts/templates/v2/accounts.html:112
+#, fuzzy
+#| msgid "Following"
+msgctxt "This account is *following* this many people"
+msgid "Following"
+msgstr "Suivi"
 
 #: accounts/templates/v2/accounts.html:132
 msgid "No accounts found."
@@ -391,6 +399,10 @@ msgstr "Marquer comme Projet"
 #: starter_packs/templates/starter_pack_accounts.html:68
 msgid "Switch to Human"
 msgstr "Marquer comme Humain"
+
+#: starter_packs/templates/starter_pack_accounts.html:112
+msgid "Following"
+msgstr "Suivi"
 
 #: starter_packs/templates/starter_pack_stats.html:6
 #, python-format
