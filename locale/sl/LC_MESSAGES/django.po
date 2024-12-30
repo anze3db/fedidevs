@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fedidevs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-29 00:06+0000\n"
+"POT-Creation-Date: 2024-12-30 10:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,20 +97,20 @@ msgstr "Zapri"
 msgid "Open sidebar"
 msgstr "Odpri stransko vrstico"
 
-#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:241
+#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:246
+msgid "Starter Packs"
+msgstr "Začetni Paketi"
+
+#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:249
 #: starter_packs/templates/cotton/starter_pack_card.html:27
 msgid "Accounts"
 msgstr "Računi"
 
-#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:244
+#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:252
 msgid "Conferences"
 msgstr "Konference"
 
-#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:247
-msgid "Starter Packs"
-msgstr "Začetni Paketi"
-
-#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:250
+#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:255
 msgid "Stats"
 msgstr "Statistika"
 
@@ -118,35 +118,35 @@ msgstr "Statistika"
 msgid "Toggle Theme"
 msgstr "Preklopi temo"
 
-#: accounts/templates/v2/layout.html:183
+#: accounts/templates/v2/layout.html:185
 msgid "Help with translations"
 msgstr ""
 
-#: accounts/templates/v2/layout.html:193 accounts/templates/v2/layout.html:210
+#: accounts/templates/v2/layout.html:195 accounts/templates/v2/layout.html:215
 msgid "Account"
 msgstr "Račun"
 
-#: accounts/templates/v2/layout.html:202
+#: accounts/templates/v2/layout.html:207
 msgid "Sign out"
 msgstr "Odjavi se"
 
-#: accounts/templates/v2/layout.html:222
+#: accounts/templates/v2/layout.html:227
 msgid "Sign in"
 msgstr "Prijavi se"
 
-#: accounts/templates/v2/layout.html:290
+#: accounts/templates/v2/layout.html:295
 msgid "FAQ"
 msgstr "Pogosta vprašanja"
 
-#: accounts/templates/v2/layout.html:293
+#: accounts/templates/v2/layout.html:298
 msgid "Mastodon instances"
 msgstr "Mastodon instance"
 
-#: accounts/templates/v2/layout.html:296
+#: accounts/templates/v2/layout.html:301
 msgid "Newsletter"
 msgstr "Glasilo"
 
-#: accounts/templates/v2/layout.html:301
+#: accounts/templates/v2/layout.html:306
 msgid ""
 "Created by <a href=\"https://fosstodon.org/@anze3db\">Anže</a> and <a "
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">friends.</a>"
@@ -195,6 +195,7 @@ msgid "Account has moved"
 msgstr "Račun je bil premaknjen"
 
 #: starter_packs/templates/add_accounts.html:7
+#: starter_packs/templates/review_starter_pack.html:7
 msgid "Add accounts to"
 msgstr "Dodaj račune v"
 
@@ -208,6 +209,7 @@ msgid "Search @username@instance.org"
 msgstr "Išči @username@instance.org"
 
 #: starter_packs/templates/add_accounts_list.html:20
+#: starter_packs/templates/review_starter_pack_list.html:20
 #, python-format
 msgid ""
 "⚠️ The account is not set as <a href=\"%(url)s\">discoverable</a> and cannot "
@@ -322,11 +324,12 @@ msgstr "Ali ste prepričani, da želite zbrisati začetni paket"
 msgid "Yes, delete"
 msgstr "Ja, zbriši"
 
+#: starter_packs/templates/review_starter_pack_list.html:40
+msgid "No accounts in this starter pack"
+msgstr "V začetnem paketu ni računov"
+
 #: starter_packs/templates/share_starter_pack.html:20
 #: starter_packs/templates/share_starter_pack.html:32
-#, fuzzy, python-format
-#| msgid "Follow %(num_accounts)s account"
-#| msgid_plural "Follow all %(num_accounts)s accounts"
 msgid "Follow %(count)s account"
 msgid_plural "Follow all %(count)s accounts"
 msgstr[0] "Sledi %(num_accounts)s računu"
@@ -388,10 +391,15 @@ msgstr[1] "%(counter)s računa v vašem začetnem paketu."
 msgstr[2] "%(counter)s računi v vašem začetnem paketu."
 msgstr[3] "%(counter)s računov v vašem začetnem paketu."
 
-#: starter_packs/templates/starter_pack_stats.html:16
-#: starter_packs/templates/starter_pack_stats.html:20
+#: starter_packs/templates/starter_pack_stats.html:17
+#: starter_packs/templates/starter_pack_stats.html:21
 msgid "Finish"
 msgstr "Končaj"
+
+#: starter_packs/templates/starter_pack_stats.html:26
+#: starter_packs/templates/starter_pack_stats.html:30
+msgid "Review"
+msgstr ""
 
 #: starter_packs/templates/starter_packs.html:11
 msgid "Community Starter Packs"
@@ -452,30 +460,36 @@ msgstr "Ustvarite svoj začetni paket"
 msgid "Mastodon Starter Pack Directory | Fedidevs"
 msgstr "Imenik začetnih paketov Mastodon | Fedidevs"
 
-#: starter_packs/views.py:162
+#: starter_packs/views.py:142 starter_packs/views.py:210
 msgid "Add accounts to your starter pack"
 msgstr "Dodajte račune v svoj začetni paket"
 
-#: starter_packs/views.py:195
+#: starter_packs/views.py:144
+msgid ""
+"Add accounts to your starter pack to help new users find interesting "
+"accounts to follow."
+msgstr ""
+
+#: starter_packs/views.py:243
 msgid "Edit your starter pack"
 msgstr "Uredite svoj začetni paket"
 
-#: starter_packs/views.py:221
+#: starter_packs/views.py:269
 msgid "You already have a starter pack with this title."
 msgstr "Že imate začetni paket s tem naslovom."
 
-#: starter_packs/views.py:231
+#: starter_packs/views.py:279
 msgid "Create a new starter pack"
 msgstr "Ustvarite nov začetni paket"
 
-#: starter_packs/views.py:258
+#: starter_packs/views.py:306
 msgid "You have reached the maximum number of accounts in a starter pack."
 msgstr "Dosegli ste največje število računov v začetnem paketu."
 
-#: starter_packs/views.py:303
+#: starter_packs/views.py:351
 msgid " - Mastodon Starter Pack"
 msgstr " - Začetni paket Mastodon"
 
-#: starter_packs/views.py:351
+#: starter_packs/views.py:399
 msgid "Following all accounts in the starter pack. 🎉"
 msgstr "Spremljanje vseh računov v začetnem paketu. 🎉"
