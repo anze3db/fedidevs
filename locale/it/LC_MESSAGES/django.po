@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fedidevs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-30 11:40+0000\n"
+"POT-Creation-Date: 2024-12-30 23:28+0000\n"
 "PO-Revision-Date: 2024-12-30 17:11+0100\n"
 "Last-Translator: Enrico Bonardi <e.bonardi@me.com>\n"
 "Language-Team: \n"
@@ -32,8 +32,7 @@ msgid "Follow"
 msgstr "Seguire"
 
 #: accounts/templates/cotton/follow_button.html:11
-#: accounts/templates/v2/accounts.html:112
-#: starter_packs/templates/starter_pack_accounts.html:112
+msgctxt "You are already *following* this account."
 msgid "Following"
 msgstr "Seguici"
 
@@ -79,6 +78,11 @@ msgstr "Messaggi"
 #: starter_packs/templates/starter_pack_accounts.html:96
 msgid "Followers"
 msgstr "Follower"
+
+#: accounts/templates/v2/accounts.html:112
+msgctxt "This account is *following* this many people"
+msgid "Following"
+msgstr "Seguici"
 
 #: accounts/templates/v2/accounts.html:132
 msgid "No accounts found."
@@ -270,8 +274,9 @@ msgid ""
 "<strong>Tip:</strong> Try searching for <strong>@username@instance.org</"
 "strong> to find the user directly on their instance."
 msgstr ""
-"<strong>Consiglio:</strong> Prova ad utilizzare <strong>@username@instance."
-"org</strong> per trovare l'utente direttamente nella sua istanza."
+"<strong>Consiglio:</strong> Prova ad utilizzare "
+"<strong>@username@instance.org</strong> per trovare l'utente direttamente "
+"nella sua istanza."
 
 #: starter_packs/templates/add_accounts_list.html:81
 msgid ""
@@ -381,6 +386,10 @@ msgstr "Passa a Progetto"
 msgid "Switch to Human"
 msgstr "Passa a Umano"
 
+#: starter_packs/templates/starter_pack_accounts.html:112
+msgid "Following"
+msgstr "Seguici"
+
 #: starter_packs/templates/starter_pack_stats.html:6
 #, python-format
 msgid "%(counter)s account in your starter pack."
@@ -429,8 +438,8 @@ msgstr "Per favore esegui il login per vedere i tuoi starter pack."
 
 #: starter_packs/templates/starter_packs.html:107
 msgid ""
-"Please login to see your starter packs or search for your username@instance."
-"org in the search form above"
+"Please login to see your starter packs or search for your "
+"username@instance.org in the search form above"
 msgstr ""
 "Per favore esegui il login per vedere i tuoi starter pack oppure cercare il "
 "tuo username@instance.org nel form di ricerca qua sopra"
