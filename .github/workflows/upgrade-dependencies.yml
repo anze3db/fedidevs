@@ -27,4 +27,3 @@ jobs:
         title: 'Update dependencies'
         body: |
           Updating project dependencies.
-        reviewers: anze3db
