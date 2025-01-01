@@ -1,0 +1,30 @@
+name: Upgrade dependencies
+
+on:
+  schedule:
+  - cron: "0 10 * * MON"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install the latest version of uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: "latest"
+    - name: Upgrade dependencies 
+      run: |
+        uv sync --upgrade
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v7
+      with:
+        token: ${{ secrets.PAT }}
+        commit-message: Update dependencies
+        branch: bot/update_dependencies
+        delete-branch: true
+        title: 'Update dependencies'
+        body: |
+          Updating project dependencies.
+        reviewers: anze3db
