@@ -36,6 +36,7 @@ dev-dependencies = [
   "djlint",
   "flakytest",
   "mypy",
+  "pre-commit>=4.0.1",
   "pytest-cov",
   "pytest-django",
   "rich",

@@ -14,7 +14,7 @@ jobs:
       uses: astral-sh/setup-uv@v5
       with:
         version: "latest"
-    - name: Upgrade dependencies 
+    - name: Upgrade dependencies
       run: |
         uv sync --upgrade
     - name: Create Pull Request
