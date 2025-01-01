@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fedidevs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-30 23:28+0000\n"
+"POT-Creation-Date: 2025-01-01 15:45+0000\n"
 "PO-Revision-Date: 2024-12-30 17:11+0100\n"
 "Last-Translator: Enrico Bonardi <e.bonardi@me.com>\n"
 "Language-Team: \n"
@@ -25,6 +25,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.5\n"
+
+#: accounts/models.py:190
+#, fuzzy
+#| msgid "Last posted"
+msgid "Never posted"
+msgstr "Ultimo messaggio"
+
+#: accounts/models.py:193
+msgid "Less than a day ago"
+msgstr ""
+
+#: accounts/models.py:197
+#, python-format
+msgid "%(days)d day ago"
+msgid_plural "%(days)d days ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: accounts/models.py:204
+#, python-format
+msgid "%(weeks)d week ago"
+msgid_plural "%(weeks)d weeks ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: accounts/models.py:210
+#, python-format
+msgid "%(months)d month ago"
+msgid_plural "%(months)d months ago"
+msgstr[0] ""
+msgstr[1] ""
 
 #: accounts/templates/cotton/follow_button.html:6
 #: accounts/templates/cotton/follow_button.html:23
@@ -108,20 +139,20 @@ msgstr "Chiudi"
 msgid "Open sidebar"
 msgstr "Apri la barra laterale"
 
-#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:246
+#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:256
 msgid "Starter Packs"
 msgstr "Starter Pack"
 
-#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:249
+#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:259
 #: starter_packs/templates/cotton/starter_pack_card.html:27
 msgid "Accounts"
 msgstr "Account"
 
-#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:252
+#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:262
 msgid "Conferences"
 msgstr "Conferenze"
 
-#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:255
+#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:265
 msgid "Stats"
 msgstr "Statistiche"
 
@@ -129,35 +160,35 @@ msgstr "Statistiche"
 msgid "Toggle Theme"
 msgstr "Cambia Tema"
 
-#: accounts/templates/v2/layout.html:185
+#: accounts/templates/v2/layout.html:195
 msgid "Help with translations"
 msgstr "Aiuta con le traduzioni"
 
-#: accounts/templates/v2/layout.html:195 accounts/templates/v2/layout.html:215
+#: accounts/templates/v2/layout.html:205 accounts/templates/v2/layout.html:225
 msgid "Account"
 msgstr "Account"
 
-#: accounts/templates/v2/layout.html:207
+#: accounts/templates/v2/layout.html:217
 msgid "Sign out"
 msgstr "Esci"
 
-#: accounts/templates/v2/layout.html:227
+#: accounts/templates/v2/layout.html:237
 msgid "Sign in"
 msgstr "Entra"
 
-#: accounts/templates/v2/layout.html:295
+#: accounts/templates/v2/layout.html:305
 msgid "FAQ"
 msgstr "FAQ"
 
-#: accounts/templates/v2/layout.html:298
+#: accounts/templates/v2/layout.html:308
 msgid "Mastodon instances"
 msgstr "Instanze di Mastodon"
 
-#: accounts/templates/v2/layout.html:301
+#: accounts/templates/v2/layout.html:311
 msgid "Newsletter"
 msgstr "Newsletter"
 
-#: accounts/templates/v2/layout.html:306
+#: accounts/templates/v2/layout.html:316
 msgid ""
 "Created by <a href=\"https://fosstodon.org/@anze3db\">Anže</a> and <a "
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">friends.</a>"

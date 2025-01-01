@@ -8,16 +8,52 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fedidevs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-30 16:30+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2025-01-01 15:45+0000\n"
+"PO-Revision-Date: 2025-01-01 15:52+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: sl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100>=3 && "
 "n%100<=4 ? 2 : 3);\n"
+"X-Generator: Poedit 3.5\n"
+
+#: accounts/models.py:190
+msgid "Never posted"
+msgstr "Nazadnje objevljeno"
+
+#: accounts/models.py:193
+msgid "Less than a day ago"
+msgstr "Pred manj kot enim dnevom"
+
+#: accounts/models.py:197
+#, python-format
+msgid "%(days)d day ago"
+msgid_plural "%(days)d days ago"
+msgstr[0] "Pred %(days)d dnevom"
+msgstr[1] "Pred %(days)d dnevoma"
+msgstr[2] "Pred %(days)d dnevi"
+msgstr[3] "Pred %(days)d dnevi"
+
+#: accounts/models.py:204
+#, python-format
+msgid "%(weeks)d week ago"
+msgid_plural "%(weeks)d weeks ago"
+msgstr[0] "Pred %(weeks)d tednom"
+msgstr[1] "Pred %(weeks)d tednoma"
+msgstr[2] "Pred %(weeks)d tedni"
+msgstr[3] "Pred %(weeks)d tedni"
+
+#: accounts/models.py:210
+#, python-format
+msgid "%(months)d month ago"
+msgid_plural "%(months)d months ago"
+msgstr[0] "Pred %(months)d mesecem"
+msgstr[1] "Pred %(months)d meseci"
+msgstr[2] "Pred %(months)d meseci"
+msgstr[3] "Pred %(months)d meseci"
 
 #: accounts/templates/cotton/follow_button.html:6
 #: accounts/templates/cotton/follow_button.html:23
@@ -25,8 +61,6 @@ msgid "Follow"
 msgstr "Sledi"
 
 #: accounts/templates/cotton/follow_button.html:11
-#, fuzzy
-#| msgid "Following"
 msgctxt "You are already *following* this account."
 msgid "Following"
 msgstr "Slediš"
@@ -75,11 +109,9 @@ msgid "Followers"
 msgstr "Sledilci"
 
 #: accounts/templates/v2/accounts.html:112
-#, fuzzy
-#| msgid "Following"
 msgctxt "This account is *following* this many people"
 msgid "Following"
-msgstr "Slediš"
+msgstr "Sledi"
 
 #: accounts/templates/v2/accounts.html:132
 msgid "No accounts found."
@@ -105,20 +137,20 @@ msgstr "Zapri"
 msgid "Open sidebar"
 msgstr "Odpri stransko vrstico"
 
-#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:246
+#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:256
 msgid "Starter Packs"
 msgstr "Začetni Paketi"
 
-#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:249
+#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:259
 #: starter_packs/templates/cotton/starter_pack_card.html:27
 msgid "Accounts"
 msgstr "Računi"
 
-#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:252
+#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:262
 msgid "Conferences"
 msgstr "Konference"
 
-#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:255
+#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:265
 msgid "Stats"
 msgstr "Statistika"
 
@@ -126,35 +158,35 @@ msgstr "Statistika"
 msgid "Toggle Theme"
 msgstr "Preklopi temo"
 
-#: accounts/templates/v2/layout.html:185
+#: accounts/templates/v2/layout.html:195
 msgid "Help with translations"
-msgstr ""
+msgstr "Pomagaj s prevodi"
 
-#: accounts/templates/v2/layout.html:195 accounts/templates/v2/layout.html:215
+#: accounts/templates/v2/layout.html:205 accounts/templates/v2/layout.html:225
 msgid "Account"
 msgstr "Račun"
 
-#: accounts/templates/v2/layout.html:207
+#: accounts/templates/v2/layout.html:217
 msgid "Sign out"
 msgstr "Odjavi se"
 
-#: accounts/templates/v2/layout.html:227
+#: accounts/templates/v2/layout.html:237
 msgid "Sign in"
 msgstr "Prijavi se"
 
-#: accounts/templates/v2/layout.html:295
+#: accounts/templates/v2/layout.html:305
 msgid "FAQ"
 msgstr "Pogosta vprašanja"
 
-#: accounts/templates/v2/layout.html:298
+#: accounts/templates/v2/layout.html:308
 msgid "Mastodon instances"
 msgstr "Mastodon instance"
 
-#: accounts/templates/v2/layout.html:301
+#: accounts/templates/v2/layout.html:311
 msgid "Newsletter"
 msgstr "Glasilo"
 
-#: accounts/templates/v2/layout.html:306
+#: accounts/templates/v2/layout.html:316
 msgid ""
 "Created by <a href=\"https://fosstodon.org/@anze3db\">Anže</a> and <a "
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">friends.</a>"
@@ -338,15 +370,13 @@ msgstr "V začetnem paketu ni računov"
 
 #: starter_packs/templates/share_starter_pack.html:20
 #: starter_packs/templates/share_starter_pack.html:32
-#, fuzzy, python-format
-#| msgid "Follow %(count)s account"
-#| msgid_plural "Follow all %(count)s accounts"
+#, python-format
 msgid "Follow %(count)s account"
 msgid_plural "Follow all %(count)s accounts"
-msgstr[0] "Sledi %(num_accounts)s računu"
-msgstr[1] "Sledi %(num_accounts)s računoma"
-msgstr[2] "Sledi %(num_accounts)s računom"
-msgstr[3] "Sledi %(num_accounts)s računom"
+msgstr[0] "Sledi %(count)s računu"
+msgstr[1] "Sledi %(count)s računoma"
+msgstr[2] "Sledi %(count)s računom"
+msgstr[3] "Sledi %(count)s računom"
 
 #: starter_packs/templates/share_starter_pack.html:58
 msgid "Add Accounts"
@@ -414,7 +444,7 @@ msgstr "Končaj"
 #: starter_packs/templates/starter_pack_stats.html:26
 #: starter_packs/templates/starter_pack_stats.html:30
 msgid "Review"
-msgstr ""
+msgstr "Preglej"
 
 #: starter_packs/templates/starter_packs.html:11
 msgid "Community Starter Packs"
@@ -447,8 +477,8 @@ msgstr "Prosimo, prijavite se, da si ogledate svoje začetne pakete."
 
 #: starter_packs/templates/starter_packs.html:107
 msgid ""
-"Please login to see your starter packs or search for your "
-"username@instance.org in the search form above"
+"Please login to see your starter packs or search for your username@instance."
+"org in the search form above"
 msgstr ""
 "Prosimo, prijavite se, da si ogledate svoje začetne pakete, ali pa v "
 "iskalnem obrazcu zgoraj poiščite svoje uporabniškoime@instanci.org"
@@ -484,6 +514,8 @@ msgid ""
 "Add accounts to your starter pack to help new users find interesting "
 "accounts to follow."
 msgstr ""
+"Dodajte račune v svoj začetni paket, da boste novim uporabnikom pomagali "
+"najti zanimive račune, ki jim bodo sledili."
 
 #: starter_packs/views.py:243
 msgid "Edit your starter pack"

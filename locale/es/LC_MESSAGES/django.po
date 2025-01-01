@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-30 10:48+0000\n"
-"PO-Revision-Date: 2024-12-31 00:13+0100\n"
+"POT-Creation-Date: 2025-01-01 15:45+0000\n"
+"PO-Revision-Date: 2025-01-01 15:54+0000\n"
 "Last-Translator: Juanjo Salvador <juanjosalvador@netc.eu>\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -18,6 +18,38 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
 "1 : 2;\n"
 "X-Generator: Poedit 3.5\n"
+
+#: accounts/models.py:190
+msgid "Never posted"
+msgstr "Nunca publicado"
+
+#: accounts/models.py:193
+msgid "Less than a day ago"
+msgstr ""
+
+#: accounts/models.py:197
+#, python-format
+msgid "%(days)d day ago"
+msgid_plural "%(days)d days ago"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: accounts/models.py:204
+#, python-format
+msgid "%(weeks)d week ago"
+msgid_plural "%(weeks)d weeks ago"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: accounts/models.py:210
+#, python-format
+msgid "%(months)d month ago"
+msgid_plural "%(months)d months ago"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: accounts/templates/cotton/follow_button.html:6
 #: accounts/templates/cotton/follow_button.html:23
@@ -101,20 +133,20 @@ msgstr "Cerrar"
 msgid "Open sidebar"
 msgstr "Abrir barra lateral"
 
-#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:246
+#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:256
 msgid "Starter Packs"
 msgstr "Packs de Inicio"
 
-#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:249
+#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:259
 #: starter_packs/templates/cotton/starter_pack_card.html:27
 msgid "Accounts"
 msgstr "Cuentas"
 
-#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:252
+#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:262
 msgid "Conferences"
 msgstr "Conferencias"
 
-#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:255
+#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:265
 msgid "Stats"
 msgstr "Estadísticas"
 
@@ -122,35 +154,35 @@ msgstr "Estadísticas"
 msgid "Toggle Theme"
 msgstr "Alternar tema"
 
-#: accounts/templates/v2/layout.html:185
+#: accounts/templates/v2/layout.html:195
 msgid "Help with translations"
 msgstr "Ayudar con las traducciones"
 
-#: accounts/templates/v2/layout.html:195 accounts/templates/v2/layout.html:215
+#: accounts/templates/v2/layout.html:205 accounts/templates/v2/layout.html:225
 msgid "Account"
 msgstr "Cuenta"
 
-#: accounts/templates/v2/layout.html:207
+#: accounts/templates/v2/layout.html:217
 msgid "Sign out"
 msgstr "Cerrar sesión"
 
-#: accounts/templates/v2/layout.html:227
+#: accounts/templates/v2/layout.html:237
 msgid "Sign in"
 msgstr "Iniciar sesión"
 
-#: accounts/templates/v2/layout.html:295
+#: accounts/templates/v2/layout.html:305
 msgid "FAQ"
 msgstr "FAQ"
 
-#: accounts/templates/v2/layout.html:298
+#: accounts/templates/v2/layout.html:308
 msgid "Mastodon instances"
 msgstr "Instancias de Mastodon"
 
-#: accounts/templates/v2/layout.html:301
+#: accounts/templates/v2/layout.html:311
 msgid "Newsletter"
 msgstr "Boletín"
 
-#: accounts/templates/v2/layout.html:306
+#: accounts/templates/v2/layout.html:316
 msgid ""
 "Created by <a href=\"https://fosstodon.org/@anze3db\">Anže</a> and <a "
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">friends.</a>"
@@ -385,7 +417,7 @@ msgstr "Cambiar a Humano"
 
 #: starter_packs/templates/starter_pack_accounts.html:112
 msgid "Following"
-msgstr ""
+msgstr "Siguiendo"
 
 #: starter_packs/templates/starter_pack_stats.html:6
 #, python-format
