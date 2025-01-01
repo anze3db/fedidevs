@@ -75,7 +75,7 @@ msgstr "Seguidores"
 #: accounts/templates/v2/accounts.html:112
 msgctxt "This account is *following* this many people"
 msgid "Following"
-msgstr ""
+msgstr "Siguiendo"
 
 #: accounts/templates/v2/accounts.html:132
 msgid "No accounts found."
