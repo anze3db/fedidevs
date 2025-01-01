@@ -16,7 +16,7 @@ jobs:
         version: "latest"
     - name: Upgrade dependencies
       run: |
-        uv sync --upgrade
+        uv sync --upgrade 2>&1 | tee update.log
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v7
       with:
@@ -25,5 +25,4 @@ jobs:
         branch: bot/update_dependencies
         delete-branch: true
         title: 'Update dependencies'
-        body: |
-          Updating project dependencies.
+        body-path: update.log
