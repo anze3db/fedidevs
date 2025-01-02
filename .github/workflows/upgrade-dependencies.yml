@@ -16,9 +16,9 @@ jobs:
         version: "latest"
     - name: Upgrade dependencies
       run: |
-        echo "# Upgrading dependencies\n\n\`\`\`" > update.log
+        printf "# Upgrading dependencies\n\n\`\`\`\n" > update.log
         uv lock --upgrade 2>&1 | tee -a update.log
-        echo "\`\`\`" >> update.log
+        printf "\`\`\`" >> update.log
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v7
       with:
