@@ -16,9 +16,7 @@ jobs:
         version: "latest"
     - name: Upgrade dependencies
       run: |
-        echo "# Upgrading dependencies\n```" > update.log
-        uv lock --upgrade 2>&1 | tee --append update.log
-        echo "```" >> update.log
+        uv lock --upgrade 2>&1 | tee update.log
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v7
       with:
