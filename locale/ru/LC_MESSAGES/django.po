@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-01 15:45+0000\n"
+"POT-Creation-Date: 2025-01-02 14:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,41 +19,6 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
-
-#: accounts/models.py:190
-msgid "Never posted"
-msgstr ""
-
-#: accounts/models.py:193
-msgid "Less than a day ago"
-msgstr ""
-
-#: accounts/models.py:197
-#, python-format
-msgid "%(days)d day ago"
-msgid_plural "%(days)d days ago"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-
-#: accounts/models.py:204
-#, python-format
-msgid "%(weeks)d week ago"
-msgid_plural "%(weeks)d weeks ago"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-
-#: accounts/models.py:210
-#, python-format
-msgid "%(months)d month ago"
-msgid_plural "%(months)d months ago"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
 
 #: accounts/templates/cotton/follow_button.html:6
 #: accounts/templates/cotton/follow_button.html:23
@@ -107,6 +72,7 @@ msgid "Followers"
 msgstr ""
 
 #: accounts/templates/v2/accounts.html:112
+#: starter_packs/templates/starter_pack_accounts.html:112
 msgctxt "This account is *following* this many people"
 msgid "Following"
 msgstr ""
@@ -228,7 +194,6 @@ msgid "Account has moved"
 msgstr ""
 
 #: starter_packs/templates/add_accounts.html:7
-#: starter_packs/templates/review_starter_pack.html:7
 msgid "Add accounts to"
 msgstr ""
 
@@ -242,7 +207,6 @@ msgid "Search @username@instance.org"
 msgstr ""
 
 #: starter_packs/templates/add_accounts_list.html:20
-#: starter_packs/templates/review_starter_pack_list.html:20
 #, python-format
 msgid ""
 "⚠️ The account is not set as <a href=\"%(url)s\">discoverable</a> and cannot "
@@ -340,10 +304,6 @@ msgstr ""
 msgid "Yes, delete"
 msgstr ""
 
-#: starter_packs/templates/review_starter_pack_list.html:40
-msgid "No accounts in this starter pack"
-msgstr ""
-
 #: starter_packs/templates/share_starter_pack.html:20
 #: starter_packs/templates/share_starter_pack.html:32
 #, python-format
@@ -387,10 +347,6 @@ msgstr ""
 msgid "Switch to Human"
 msgstr ""
 
-#: starter_packs/templates/starter_pack_accounts.html:112
-msgid "Following"
-msgstr ""
-
 #: starter_packs/templates/starter_pack_stats.html:6
 #, python-format
 msgid "%(counter)s account in your starter pack."
@@ -398,14 +354,9 @@ msgid_plural "%(counter)s accounts in your starter pack."
 msgstr[0] ""
 msgstr[1] ""
 
-#: starter_packs/templates/starter_pack_stats.html:17
-#: starter_packs/templates/starter_pack_stats.html:21
+#: starter_packs/templates/starter_pack_stats.html:16
+#: starter_packs/templates/starter_pack_stats.html:20
 msgid "Finish"
-msgstr ""
-
-#: starter_packs/templates/starter_pack_stats.html:26
-#: starter_packs/templates/starter_pack_stats.html:30
-msgid "Review"
 msgstr ""
 
 #: starter_packs/templates/starter_packs.html:11
@@ -439,8 +390,8 @@ msgstr ""
 
 #: starter_packs/templates/starter_packs.html:107
 msgid ""
-"Please login to see your starter packs or search for your "
-"username@instance.org in the search form above"
+"Please login to see your starter packs or search for your username@instance."
+"org in the search form above"
 msgstr ""
 
 #: starter_packs/templates/starter_packs.html:112
@@ -464,36 +415,30 @@ msgstr ""
 msgid "Mastodon Starter Pack Directory | Fedidevs"
 msgstr ""
 
-#: starter_packs/views.py:142 starter_packs/views.py:210
+#: starter_packs/views.py:162
 msgid "Add accounts to your starter pack"
 msgstr ""
 
-#: starter_packs/views.py:144
-msgid ""
-"Add accounts to your starter pack to help new users find interesting "
-"accounts to follow."
-msgstr ""
-
-#: starter_packs/views.py:243
+#: starter_packs/views.py:195
 msgid "Edit your starter pack"
 msgstr ""
 
-#: starter_packs/views.py:269
+#: starter_packs/views.py:221
 msgid "You already have a starter pack with this title."
 msgstr ""
 
-#: starter_packs/views.py:279
+#: starter_packs/views.py:231
 msgid "Create a new starter pack"
 msgstr ""
 
-#: starter_packs/views.py:306
+#: starter_packs/views.py:258
 msgid "You have reached the maximum number of accounts in a starter pack."
 msgstr ""
 
-#: starter_packs/views.py:351
+#: starter_packs/views.py:303
 msgid " - Mastodon Starter Pack"
 msgstr ""
 
-#: starter_packs/views.py:399
+#: starter_packs/views.py:351
 msgid "Following all accounts in the starter pack. 🎉"
 msgstr ""
