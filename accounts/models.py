@@ -197,20 +197,20 @@ class Account(models.Model):
                 "%(days)d day ago",
                 "%(days)d days ago",
                 diff.days,
-            )
+            ) % {"days": diff.days}
 
         if diff < timedelta(days=30):
             return ngettext_lazy(
                 "%(weeks)d week ago",
                 "%(weeks)d weeks ago",
                 diff.days // 7,
-            )
+            ) % {"weeks": diff.days // 7}
 
         return ngettext_lazy(
             "%(months)d month ago",
             "%(months)d months ago",
             diff.days // 30,
-        )
+        ) % {"months": diff.days // 30}
 
     def get_username_at_instance(self):
         if self.instance_model:
