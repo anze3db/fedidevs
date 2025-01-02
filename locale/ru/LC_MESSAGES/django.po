@@ -6,241 +6,248 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-01-02 14:48+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2025-01-02 16:41+0100\n"
+"Last-Translator: Nikita Karamov <me@kytta.dev>\n"
+"Language-Team: \n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
+"X-Generator: Poedit 3.5\n"
 
 #: accounts/models.py:190
 msgid "Never posted"
-msgstr ""
+msgstr "Нет постов"
 
 #: accounts/models.py:193
 msgid "Less than a day ago"
-msgstr ""
+msgstr "Меньше дня назад"
 
 #: accounts/models.py:197
 #, python-format
 msgid "%(days)d day ago"
 msgid_plural "%(days)d days ago"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "%(days)d день назад"
+msgstr[1] "%(days)d дня назад"
+msgstr[2] "%(days)d дней назад"
+msgstr[3] "%(days)d дня назад"
 
 #: accounts/models.py:204
 #, python-format
 msgid "%(weeks)d week ago"
 msgid_plural "%(weeks)d weeks ago"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "%(weeks)d неделю назад"
+msgstr[1] "%(weeks)d недели назад"
+msgstr[2] "%(weeks)d недель назад"
+msgstr[3] "%(weeks)d недель назад"
 
 #: accounts/models.py:210
 #, python-format
 msgid "%(months)d month ago"
 msgid_plural "%(months)d months ago"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "%(months)d месяц назад"
+msgstr[1] "%(months)d месяца назад"
+msgstr[2] "%(months)d месяцев назад"
+msgstr[3] "%(months)d месяца назад"
 
 #: accounts/templates/cotton/follow_button.html:6
 #: accounts/templates/cotton/follow_button.html:23
 msgid "Follow"
-msgstr ""
+msgstr "Подписаться"
 
 #: accounts/templates/cotton/follow_button.html:11
 msgctxt "You are already *following* this account."
 msgid "Following"
-msgstr ""
+msgstr "Вы подписаны"
 
 #: accounts/templates/cotton/follow_button.html:16
 msgid "You!"
-msgstr ""
+msgstr "Это вы!"
 
 #: accounts/templates/login_form.html:7
 msgid "Sign in to your Mastodon instance"
-msgstr ""
+msgstr "Войти в ваш сервер Mastodon"
 
 #: accounts/templates/login_form.html:19
 msgid "Close modal"
-msgstr ""
+msgstr "Закрыть попап"
 
 #: accounts/templates/login_form.html:31
 msgid "Your instance"
-msgstr ""
+msgstr "Ваш сервер"
 
 #: accounts/templates/login_form.html:41
 msgid ""
 "<strong>Write</strong> permissions will be requested to be able to follow "
 "accounts on your behalf."
 msgstr ""
+"Разрешение на <strong>запись</strong> нужно, чтобы иметь возможность "
+"подписываться на аккаунты от вашего имени."
 
 #: accounts/templates/login_form.html:48
 msgid "Authorize"
-msgstr ""
+msgstr "Авторизовать"
 
 #: accounts/templates/v2/accounts.html:74
 #: starter_packs/templates/starter_pack_accounts.html:74
 msgid "Last posted"
-msgstr ""
+msgstr "Последний пост"
 
 #: accounts/templates/v2/accounts.html:80
 #: starter_packs/templates/starter_pack_accounts.html:80
 msgid "Posts"
-msgstr ""
+msgstr "Посты"
 
 #: accounts/templates/v2/accounts.html:96
 #: starter_packs/templates/starter_pack_accounts.html:96
 msgid "Followers"
-msgstr ""
+msgstr "Подписчики"
 
 #: accounts/templates/v2/accounts.html:112
 #: starter_packs/templates/starter_pack_accounts.html:112
 msgctxt "This account is *following* this many people"
 msgid "Following"
-msgstr ""
+msgstr "Подписки"
 
 #: accounts/templates/v2/accounts.html:132
 msgid "No accounts found."
-msgstr ""
+msgstr "Ничего не найдено."
 
 #: accounts/templates/v2/accounts.html:132
 msgid "Reset the filters"
-msgstr ""
+msgstr "Сбросить фильтр"
 
 #: accounts/templates/v2/layout.html:15
 msgid "Discover amazing people on Mastodon."
-msgstr ""
+msgstr "Найдите потрясающих людей на Mastodon."
 
 #: accounts/templates/v2/layout.html:42 accounts/templates/v2/layout.html:53
 msgid "Discover amazing people from across the fediverse."
-msgstr ""
+msgstr "Найдите потрясающих людей в Федивёрсе."
 
 #: accounts/templates/v2/layout.html:94
 msgid "Close"
-msgstr ""
+msgstr "Закрыть"
 
 #: accounts/templates/v2/layout.html:114
 msgid "Open sidebar"
-msgstr ""
+msgstr "Открыть боковую панель"
 
 #: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:256
 msgid "Starter Packs"
-msgstr ""
+msgstr "Стартовые наборы"
 
 #: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:259
 #: starter_packs/templates/cotton/starter_pack_card.html:27
 msgid "Accounts"
-msgstr ""
+msgstr "Аккаунты"
 
 #: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:262
 msgid "Conferences"
-msgstr ""
+msgstr "Конференции"
 
 #: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:265
 msgid "Stats"
-msgstr ""
+msgstr "Статистика"
 
 #: accounts/templates/v2/layout.html:148
 msgid "Toggle Theme"
-msgstr ""
+msgstr "Сменить тему"
 
 #: accounts/templates/v2/layout.html:195
 msgid "Help with translations"
-msgstr ""
+msgstr "Помочь с переводом"
 
 #: accounts/templates/v2/layout.html:205 accounts/templates/v2/layout.html:225
 msgid "Account"
-msgstr ""
+msgstr "Аккаунт"
 
 #: accounts/templates/v2/layout.html:217
 msgid "Sign out"
-msgstr ""
+msgstr "Выйти"
 
 #: accounts/templates/v2/layout.html:237
 msgid "Sign in"
-msgstr ""
+msgstr "Войти"
 
 #: accounts/templates/v2/layout.html:305
 msgid "FAQ"
-msgstr ""
+msgstr "ЧаВо"
 
 #: accounts/templates/v2/layout.html:308
 msgid "Mastodon instances"
-msgstr ""
+msgstr "Сервера Mastodon"
 
 #: accounts/templates/v2/layout.html:311
 msgid "Newsletter"
-msgstr ""
+msgstr "Рассылка"
 
 #: accounts/templates/v2/layout.html:316
 msgid ""
 "Created by <a href=\"https://fosstodon.org/@anze3db\">Anže</a> and <a "
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">friends.</a>"
 msgstr ""
+"Разработано <a href=\"https://fosstodon.org/@anze3db\">Анже</a> и <a "
+"href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">друзьями.</a>"
 
 #: mastodon_auth/views.py:84
 msgid "Network error, is the instance url correct?"
-msgstr ""
+msgstr "Ошибка сети, правильно ли указан адрес сервера?"
 
 #: mastodon_auth/views.py:89
 msgid ""
 "Unable to create app on your instance. Is it a Mastodon compatible instance?"
 msgstr ""
+"Не получилось создать приложение на вашем сервере. Это сервер, совместимый с "
+"Mastodon?"
 
 #: mastodon_auth/views.py:140 mastodon_auth/views.py:145
 msgid "Invalid request, please try again"
-msgstr ""
+msgstr "Неверный запрос, попробуйте ещё раз"
 
 #: mastodon_auth/views.py:281
 msgid "Service unavailable"
-msgstr ""
+msgstr "Сервис недоступен"
 
 #: mastodon_auth/views.py:291 mastodon_auth/views.py:310
 msgid "Account not found"
-msgstr ""
+msgstr "Аккаунт не найден"
 
 #: mastodon_auth/views.py:294
 msgid "Not Authorized"
-msgstr ""
+msgstr "Не авторизован"
 
 #: mastodon_auth/views.py:297 mastodon_auth/views.py:318
 msgid "Failed to follow"
-msgstr ""
+msgstr "Не получилось подписаться"
 
 #: mastodon_auth/views.py:303
 msgid "Unauthorized"
-msgstr ""
+msgstr "Не авторизован"
 
 #: mastodon_auth/views.py:315
 msgid "Account has moved"
-msgstr ""
+msgstr "Аккаунт переехал"
 
 #: starter_packs/templates/add_accounts.html:7
 #: starter_packs/templates/review_starter_pack.html:7
 msgid "Add accounts to"
-msgstr ""
+msgstr "Добавить аккаунты в"
 
 #: starter_packs/templates/add_accounts.html:14
 #: starter_packs/templates/add_accounts.html:34
 msgid "Search"
-msgstr ""
+msgstr "Поиск"
 
 #: starter_packs/templates/add_accounts.html:31
 msgid "Search @username@instance.org"
-msgstr ""
+msgstr "Искать @username@server.org"
 
 #: starter_packs/templates/add_accounts_list.html:20
 #: starter_packs/templates/review_starter_pack_list.html:20
@@ -249,10 +256,12 @@ msgid ""
 "⚠️ The account is not set as <a href=\"%(url)s\">discoverable</a> and cannot "
 "be added."
 msgstr ""
+"⚠️ Этот аккаунт не может быть добавлен, так как он не может <a "
+"href=\"%(url)s\">быть обнаружен</a>."
 
 #: starter_packs/templates/add_accounts_list.html:42
 msgid "No results found 😞"
-msgstr ""
+msgstr "Ничего не найдено 😞"
 
 #: starter_packs/templates/add_accounts_list.html:44
 msgid ""
@@ -260,12 +269,16 @@ msgid ""
 "or at the instance itself. Double check the username and instance and try "
 "again."
 msgstr ""
+"Мы не смогли найти ни одного аккаунта по вашему запросу ни в базе Fedidevs, "
+"ни на самом сервере. Проверьте имя пользователя и сервер и повторите попытку."
 
 #: starter_packs/templates/add_accounts_list.html:47
 msgid ""
 "<strong>Note:</strong> Only <strong>Mastodon</strong> instances are "
 "supported at the moment."
 msgstr ""
+"<strong>Внимание:</strong> На данный момент поддерживаются только сервера "
+"<strong>Mastodon</strong>."
 
 #: starter_packs/templates/add_accounts_list.html:53
 #, python-format
@@ -273,6 +286,8 @@ msgid ""
 "<strong>Tip:</strong> Reach out to us through <a href=\"%(mail)s\">email</a> "
 "or <a href=\"%(url)s\">Mastodon</a> and we'll try to help you out!"
 msgstr ""
+"<strong>Совет:</strong> Напишите нам <a href=\"%(mail)s\">e-mail</a> или в <a "
+"href=\"%(url)s\">Mastodon</a>, и мы постараемся вам помочь!"
 
 #: starter_packs/templates/add_accounts_list.html:63
 msgid ""
@@ -280,12 +295,17 @@ msgid ""
 "Keep in mind, our database only includes a small portion of all the accounts "
 "in the fediverse!"
 msgstr ""
+"Мы не нашли в базе данных Fedidevs ни одного аккаунта, соответствующего "
+"вашему запросу. Имейте в виду, что наша база данных включает лишь малую часть "
+"всех аккаунтов в Федивёрсе!"
 
 #: starter_packs/templates/add_accounts_list.html:66
 msgid ""
 "<strong>Tip:</strong> Try searching for <strong>@username@instance.org</"
 "strong> to find the user directly on their instance."
 msgstr ""
+"<strong>Совет:</strong> Попробуйте поискать <strong>@username@server.org</"
+"strong>, чтобы найти пользователя непосредственно на его сервере."
 
 #: starter_packs/templates/add_accounts_list.html:81
 msgid ""
@@ -293,81 +313,86 @@ msgid ""
 "<strong>@username@instance.org</strong> to find the user directly on their "
 "instance."
 msgstr ""
+"<strong>Совет:</strong> Не можете найти, что ищете? Попробуйте поискать "
+"<strong>@username@server.org</strong>, чтобы найти пользователя "
+"непосредственно на его сервере."
 
 #: starter_packs/templates/cotton/starter_pack_card.html:14
 #: starter_packs/templates/share_starter_pack.html:11
 msgid "By"
-msgstr ""
+msgstr "От"
 
 #: starter_packs/templates/cotton/starter_pack_card.html:23
 msgid "Created"
-msgstr ""
+msgstr "Создан"
 
 #: starter_packs/templates/create_starter_pack.html:6
 #: starter_packs/templates/starter_packs.html:123
 msgid "Mastodon starter packs"
-msgstr ""
+msgstr "Стартовые наборы Mastodon"
 
 #: starter_packs/templates/create_starter_pack.html:7
 msgid "Invite your friends to follow your favorite people on Mastodon"
-msgstr ""
+msgstr "Пригласите своих друзей подписаться на ваших любимых людей в Mastodon"
 
 #: starter_packs/templates/create_starter_pack.html:16
 msgid "Starter pack title"
-msgstr ""
+msgstr "Название стартового набора"
 
 #: starter_packs/templates/create_starter_pack.html:22
 msgid "My Awesome Starter Pack"
-msgstr ""
+msgstr "Мой крутой набор"
 
 #: starter_packs/templates/create_starter_pack.html:30
 msgid "Starter pack description"
-msgstr ""
+msgstr "Описание стартового набора"
 
 #: starter_packs/templates/create_starter_pack.html:36
 msgid "My favorite people on Mastodon - join me!"
-msgstr ""
+msgstr "Мои любимые подписки в Мастодоне — присоединяйтесь!"
 
 #: starter_packs/templates/create_starter_pack.html:46
 #: starter_packs/templates/create_starter_pack.html:51
 msgid "Continue"
-msgstr ""
+msgstr "Продолжить"
 
 #: starter_packs/templates/delete_starter_pack.html:8
 msgid "Are you sure you want to delete the starter pack"
-msgstr ""
+msgstr "Вы уверены, что вы хотите удалить этот стартовый набор"
 
 #: starter_packs/templates/delete_starter_pack.html:14
 msgid "Yes, delete"
-msgstr ""
+msgstr "Да, удалить"
 
 #: starter_packs/templates/review_starter_pack_list.html:40
 msgid "No accounts in this starter pack"
-msgstr ""
+msgstr "В этом стартовом наборе нет аккаунтов"
 
 #: starter_packs/templates/share_starter_pack.html:20
 #: starter_packs/templates/share_starter_pack.html:32
 #, python-format
 msgid "Follow %(count)s account"
 msgid_plural "Follow all %(count)s accounts"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Подписаться на %(count)s аккаунт"
+msgstr[1] "Подписаться на %(count)s аккаунта"
+msgstr[2] "Подписаться на %(count)s аккаунтов"
+msgstr[3] "Подписаться на %(count)s аккаунта"
 
 #: starter_packs/templates/share_starter_pack.html:58
 msgid "Add Accounts"
-msgstr ""
+msgstr "Добавить аккаунты"
 
 #: starter_packs/templates/share_starter_pack.html:62
 msgid "Edit"
-msgstr ""
+msgstr "Редактировать"
 
 #: starter_packs/templates/share_starter_pack.html:66
 msgid "Delete"
-msgstr ""
+msgstr "Удалить"
 
 #: starter_packs/templates/share_starter_pack.html:71
 msgid "Report"
-msgstr ""
+msgstr "Пожаловаться"
 
 #: starter_packs/templates/share_starter_pack.html:80
 #, python-format
@@ -376,121 +401,133 @@ msgid ""
 msgid_plural ""
 "<strong>%(count)s</strong> accounts hidden due to their privacy settings."
 msgstr[0] ""
+"<strong>%(count)s</strong> аккаунт спрятан из-за настроек приватности."
 msgstr[1] ""
+"<strong>%(count)s</strong> аккаунта спрятаны из-за настроек приватности."
+msgstr[2] ""
+"<strong>%(count)s</strong> аккаунтов спрятано из-за настроек приватности."
+msgstr[3] ""
+"<strong>%(count)s</strong> аккаунта спрятаны из-за настроек приватности."
 
 #: starter_packs/templates/starter_pack_accounts.html:57
 #: starter_packs/templates/starter_pack_accounts.html:65
 msgid "Switch to Project"
-msgstr ""
+msgstr "Сменить тип на «Проект»"
 
 #: starter_packs/templates/starter_pack_accounts.html:61
 #: starter_packs/templates/starter_pack_accounts.html:68
 msgid "Switch to Human"
-msgstr ""
+msgstr "Сменить тип на «Человек»"
 
 #: starter_packs/templates/starter_pack_stats.html:6
 #, python-format
 msgid "%(counter)s account in your starter pack."
 msgid_plural "%(counter)s accounts in your starter pack."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(counter)s аккаунт в вашем стартовом наборе."
+msgstr[1] "%(counter)s аккаунта в вашем стартовом наборе."
+msgstr[2] "%(counter)s аккаунтов в вашем стартовом наборе."
+msgstr[3] "%(counter)s аккаунта в вашем стартовом наборе."
 
 #: starter_packs/templates/starter_pack_stats.html:17
 #: starter_packs/templates/starter_pack_stats.html:21
 msgid "Finish"
-msgstr ""
+msgstr "Готово"
 
 #: starter_packs/templates/starter_pack_stats.html:26
 #: starter_packs/templates/starter_pack_stats.html:30
 msgid "Review"
-msgstr ""
+msgstr "Проверить"
 
 #: starter_packs/templates/starter_packs.html:11
 msgid "Community Starter Packs"
-msgstr ""
+msgstr "Стартовые наборы сообщества"
 
 #: starter_packs/templates/starter_packs.html:17
 msgid "Your Starter Packs"
-msgstr ""
+msgstr "Ваши стартовые наборы"
 
 #: starter_packs/templates/starter_packs.html:23
 msgid "Starter Packs Containing You"
-msgstr ""
+msgstr "Стартовые наборы с вами"
 
 #: starter_packs/templates/starter_packs.html:44
 #: starter_packs/templates/starter_packs.html:68
 msgid "Go"
-msgstr ""
+msgstr "Найти"
 
 #: starter_packs/templates/starter_packs.html:73
 msgid "Search..."
-msgstr ""
+msgstr "Искать..."
 
 #: starter_packs/templates/starter_packs.html:99
 msgid "No starter packs containing"
-msgstr ""
+msgstr "Нет стартовых наборов, содержащих"
 
 #: starter_packs/templates/starter_packs.html:104
 msgid "Please login to see your starter packs."
-msgstr ""
+msgstr "Пожалуйста, войдите, чтобы увидеть ваши стартовые наборы."
 
 #: starter_packs/templates/starter_packs.html:107
 msgid ""
 "Please login to see your starter packs or search for your "
 "username@instance.org in the search form above"
 msgstr ""
+"Пожалуйста, войдите, чтобы увидеть ваши стартовые наборы или найдите свой "
+"username@server.org в поиске выше"
 
 #: starter_packs/templates/starter_packs.html:112
 msgid "You haven't created any starter packs yet."
-msgstr ""
+msgstr "Вы не создали ни одного стартового набора."
 
 #: starter_packs/templates/starter_packs.html:114
 msgid "You haven't been added to any starter packs yet."
-msgstr ""
+msgstr "Вас пока не добавили ни в один стартовый набор."
 
 #: starter_packs/templates/starter_packs.html:124
 msgid "Invite your friends to follow your favorite people on Mastodon."
-msgstr ""
+msgstr "Пригласите своих друзей подписаться на ваших любимых людей в Mastodon."
 
 #: starter_packs/templates/starter_packs.html:132
 #: starter_packs/templates/starter_packs.html:136
 msgid "Create your starter pack"
-msgstr ""
+msgstr "Создать стартовый набор"
 
 #: starter_packs/views.py:93
 msgid "Mastodon Starter Pack Directory | Fedidevs"
-msgstr ""
+msgstr "Каталог стартовых наборов Mastodon | Fedidevs"
 
 #: starter_packs/views.py:142 starter_packs/views.py:210
 msgid "Add accounts to your starter pack"
-msgstr ""
+msgstr "Добавьте аккаунты в свой стартовый набор"
 
 #: starter_packs/views.py:144
 msgid ""
 "Add accounts to your starter pack to help new users find interesting "
 "accounts to follow."
 msgstr ""
+"Добавьте аккаунты в свой стартовый набор, чтобы помочь новым пользователям "
+"найти интересные аккаунты, на которые стоит подписаться."
 
 #: starter_packs/views.py:243
 msgid "Edit your starter pack"
-msgstr ""
+msgstr "Редактировать стартовый набор"
 
 #: starter_packs/views.py:269
 msgid "You already have a starter pack with this title."
-msgstr ""
+msgstr "У вас уже есть стартовый набор с таким названием."
 
 #: starter_packs/views.py:279
 msgid "Create a new starter pack"
-msgstr ""
+msgstr "Создать новый стартовый набор"
 
 #: starter_packs/views.py:306
 msgid "You have reached the maximum number of accounts in a starter pack."
-msgstr ""
+msgstr "Вы достигли максимального числа аккаунтов в стартовом наборе."
 
 #: starter_packs/views.py:351
 msgid " - Mastodon Starter Pack"
-msgstr ""
+msgstr " - стартовый набор Mastodon"
 
 #: starter_packs/views.py:399
 msgid "Following all accounts in the starter pack. 🎉"
-msgstr ""
+msgstr "Вы подписаны на все аккаунты в наборе. 🎉"
