@@ -157,12 +157,16 @@
                             class="inline-flex items-center justify-center text-gray-900 transition rounded-full h-14 w-14 dark:text-white ring-gray-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 dark:hover:bg-primary-400/10">
                         {% if LANGUAGE_CODE == 'en' %}
                             🇺🇸
+                        {% elif LANGUAGE_CODE == 'de' %}
+                            🇩🇪
                         {% elif LANGUAGE_CODE == 'fr' %}
                             🇫🇷
                         {% elif LANGUAGE_CODE == 'it' %}
                             🇮🇹
                         {% elif LANGUAGE_CODE == 'es' %}
                             🇪🇸
+                        {% elif LANGUAGE_CODE == 'ru' %}
+                            🇷🇺
                         {% elif LANGUAGE_CODE == 'sl' %}
                             🇸🇮
                         {% else %}
@@ -179,6 +183,9 @@
                                     <button type="submit" value="en" name="language" class="block px-4 py-2">🇺🇸 English</button>
                                 </li>
                                 <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    <button type="submit" value="de" name="language" class="block px-4 py-2">🇩🇪 Deutsch</button>
+                                </li>
+                                <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                     <button type="submit" value="fr" name="language" class="block px-4 py-2">🇫🇷 Français</button>
                                 </li>
                                 <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
@@ -186,6 +193,9 @@
                                 </li>
                                 <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                     <button type="submit" value="es" name="language" class="block px-4 py-2">🇪🇸 Español</button>
+                                </li>
+                                <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    <button type="submit" value="ru" name="language" class="block px-4 py-2">🇷🇺 Русский</button>
                                 </li>
                                 <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                     <button type="submit" value="sl" name="language" class="block px-4 py-2">🇸🇮 Slovenščina</button>

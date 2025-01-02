@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-02 14:48+0000\n"
+"POT-Creation-Date: 2025-01-02 16:52+0000\n"
 "PO-Revision-Date: 2025-01-02 16:41+0100\n"
 "Last-Translator: Nikita Karamov <me@kytta.dev>\n"
 "Language-Team: \n"
@@ -154,20 +154,20 @@ msgstr "Закрыть"
 msgid "Open sidebar"
 msgstr "Открыть боковую панель"
 
-#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:256
+#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:266
 msgid "Starter Packs"
 msgstr "Стартовые наборы"
 
-#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:259
+#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:269
 #: starter_packs/templates/cotton/starter_pack_card.html:27
 msgid "Accounts"
 msgstr "Аккаунты"
 
-#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:262
+#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:272
 msgid "Conferences"
 msgstr "Конференции"
 
-#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:265
+#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:275
 msgid "Stats"
 msgstr "Статистика"
 
@@ -175,41 +175,42 @@ msgstr "Статистика"
 msgid "Toggle Theme"
 msgstr "Сменить тему"
 
-#: accounts/templates/v2/layout.html:195
+#: accounts/templates/v2/layout.html:205
 msgid "Help with translations"
 msgstr "Помочь с переводом"
 
-#: accounts/templates/v2/layout.html:205 accounts/templates/v2/layout.html:225
+#: accounts/templates/v2/layout.html:215 accounts/templates/v2/layout.html:235
 msgid "Account"
 msgstr "Аккаунт"
 
-#: accounts/templates/v2/layout.html:217
+#: accounts/templates/v2/layout.html:227
 msgid "Sign out"
 msgstr "Выйти"
 
-#: accounts/templates/v2/layout.html:237
+#: accounts/templates/v2/layout.html:247
 msgid "Sign in"
 msgstr "Войти"
 
-#: accounts/templates/v2/layout.html:305
+#: accounts/templates/v2/layout.html:315
 msgid "FAQ"
 msgstr "ЧаВо"
 
-#: accounts/templates/v2/layout.html:308
+#: accounts/templates/v2/layout.html:318
 msgid "Mastodon instances"
 msgstr "Сервера Mastodon"
 
-#: accounts/templates/v2/layout.html:311
+#: accounts/templates/v2/layout.html:321
 msgid "Newsletter"
 msgstr "Рассылка"
 
-#: accounts/templates/v2/layout.html:316
+#: accounts/templates/v2/layout.html:326
 msgid ""
 "Created by <a href=\"https://fosstodon.org/@anze3db\">Anže</a> and <a "
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">friends.</a>"
 msgstr ""
 "Разработано <a href=\"https://fosstodon.org/@anze3db\">Анже</a> и <a "
-"href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">друзьями.</a>"
+"href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">друзьями.</"
+"a>"
 
 #: mastodon_auth/views.py:84
 msgid "Network error, is the instance url correct?"
@@ -301,8 +302,8 @@ msgid ""
 "<strong>Tip:</strong> Reach out to us through <a href=\"%(mail)s\">email</a> "
 "or <a href=\"%(url)s\">Mastodon</a> and we'll try to help you out!"
 msgstr ""
-"<strong>Совет:</strong> Напишите нам <a href=\"%(mail)s\">e-mail</a> или в <a "
-"href=\"%(url)s\">Mastodon</a>, и мы постараемся вам помочь!"
+"<strong>Совет:</strong> Напишите нам <a href=\"%(mail)s\">e-mail</a> или в "
+"<a href=\"%(url)s\">Mastodon</a>, и мы постараемся вам помочь!"
 
 #: starter_packs/templates/add_accounts_list.html:63
 msgid ""
@@ -311,8 +312,8 @@ msgid ""
 "in the fediverse!"
 msgstr ""
 "Мы не нашли в базе данных Fedidevs ни одного аккаунта, соответствующего "
-"вашему запросу. Имейте в виду, что наша база данных включает лишь малую часть "
-"всех аккаунтов в Федивёрсе!"
+"вашему запросу. Имейте в виду, что наша база данных включает лишь малую "
+"часть всех аккаунтов в Федивёрсе!"
 
 #: starter_packs/templates/add_accounts_list.html:66
 msgid ""

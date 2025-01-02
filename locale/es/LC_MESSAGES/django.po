@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-02 14:48+0000\n"
+"POT-Creation-Date: 2025-01-02 16:52+0000\n"
 "PO-Revision-Date: 2025-01-01 15:54+0000\n"
 "Last-Translator: Juanjo Salvador <juanjosalvador@netc.eu>\n"
 "Language-Team: \n"
@@ -134,20 +134,20 @@ msgstr "Cerrar"
 msgid "Open sidebar"
 msgstr "Abrir barra lateral"
 
-#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:256
+#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:266
 msgid "Starter Packs"
 msgstr "Packs de Inicio"
 
-#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:259
+#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:269
 #: starter_packs/templates/cotton/starter_pack_card.html:27
 msgid "Accounts"
 msgstr "Cuentas"
 
-#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:262
+#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:272
 msgid "Conferences"
 msgstr "Conferencias"
 
-#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:265
+#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:275
 msgid "Stats"
 msgstr "Estadísticas"
 
@@ -155,35 +155,35 @@ msgstr "Estadísticas"
 msgid "Toggle Theme"
 msgstr "Alternar tema"
 
-#: accounts/templates/v2/layout.html:195
+#: accounts/templates/v2/layout.html:205
 msgid "Help with translations"
 msgstr "Ayudar con las traducciones"
 
-#: accounts/templates/v2/layout.html:205 accounts/templates/v2/layout.html:225
+#: accounts/templates/v2/layout.html:215 accounts/templates/v2/layout.html:235
 msgid "Account"
 msgstr "Cuenta"
 
-#: accounts/templates/v2/layout.html:217
+#: accounts/templates/v2/layout.html:227
 msgid "Sign out"
 msgstr "Cerrar sesión"
 
-#: accounts/templates/v2/layout.html:237
+#: accounts/templates/v2/layout.html:247
 msgid "Sign in"
 msgstr "Iniciar sesión"
 
-#: accounts/templates/v2/layout.html:305
+#: accounts/templates/v2/layout.html:315
 msgid "FAQ"
 msgstr "FAQ"
 
-#: accounts/templates/v2/layout.html:308
+#: accounts/templates/v2/layout.html:318
 msgid "Mastodon instances"
 msgstr "Instancias de Mastodon"
 
-#: accounts/templates/v2/layout.html:311
+#: accounts/templates/v2/layout.html:321
 msgid "Newsletter"
 msgstr "Boletín"
 
-#: accounts/templates/v2/layout.html:316
+#: accounts/templates/v2/layout.html:326
 msgid ""
 "Created by <a href=\"https://fosstodon.org/@anze3db\">Anže</a> and <a "
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">friends.</a>"
