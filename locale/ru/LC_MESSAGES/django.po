@@ -3,6 +3,21 @@
 # This file is distributed under the same license as the Fedidevs package.
 # Nikita Karamov <me@kytta.dev>, 2025.
 #
+# Примечания переводчикам:
+# Для перевода были определены следующие "стандарты":
+#
+# - буква Ё используется везде
+#
+# - обращение на "вы"; "вы" всегда с маленькой буквы (кроме как в начале
+#   предложения)
+#
+# - starter pack => "стартовый набор", по аналогии с Bluesky
+#
+# - instance => "сервер"; instance.org => "server.org"
+#   - здесь и в иных местах терминология взята у Mastodon
+#
+# - FAQ => "ЧаВо" (ЧАсто задаваемые ВОпросы)
+#
 #, fuzzy
 msgid ""
 msgstr ""
