@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fedidevs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-01 15:45+0000\n"
+"POT-Creation-Date: 2025-01-02 14:15+0000\n"
 "PO-Revision-Date: 2025-01-01 15:52+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -19,41 +19,6 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100>=3 && "
 "n%100<=4 ? 2 : 3);\n"
 "X-Generator: Poedit 3.5\n"
-
-#: accounts/models.py:190
-msgid "Never posted"
-msgstr "Nazadnje objevljeno"
-
-#: accounts/models.py:193
-msgid "Less than a day ago"
-msgstr "Pred manj kot enim dnevom"
-
-#: accounts/models.py:197
-#, python-format
-msgid "%(days)d day ago"
-msgid_plural "%(days)d days ago"
-msgstr[0] "Pred %(days)d dnevom"
-msgstr[1] "Pred %(days)d dnevoma"
-msgstr[2] "Pred %(days)d dnevi"
-msgstr[3] "Pred %(days)d dnevi"
-
-#: accounts/models.py:204
-#, python-format
-msgid "%(weeks)d week ago"
-msgid_plural "%(weeks)d weeks ago"
-msgstr[0] "Pred %(weeks)d tednom"
-msgstr[1] "Pred %(weeks)d tednoma"
-msgstr[2] "Pred %(weeks)d tedni"
-msgstr[3] "Pred %(weeks)d tedni"
-
-#: accounts/models.py:210
-#, python-format
-msgid "%(months)d month ago"
-msgid_plural "%(months)d months ago"
-msgstr[0] "Pred %(months)d mesecem"
-msgstr[1] "Pred %(months)d meseci"
-msgstr[2] "Pred %(months)d meseci"
-msgstr[3] "Pred %(months)d meseci"
 
 #: accounts/templates/cotton/follow_button.html:6
 #: accounts/templates/cotton/follow_button.html:23
@@ -109,6 +74,7 @@ msgid "Followers"
 msgstr "Sledilci"
 
 #: accounts/templates/v2/accounts.html:112
+#: starter_packs/templates/starter_pack_accounts.html:112
 msgctxt "This account is *following* this many people"
 msgid "Following"
 msgstr "Sledi"
@@ -235,7 +201,6 @@ msgid "Account has moved"
 msgstr "Račun je bil premaknjen"
 
 #: starter_packs/templates/add_accounts.html:7
-#: starter_packs/templates/review_starter_pack.html:7
 msgid "Add accounts to"
 msgstr "Dodaj račune v"
 
@@ -249,7 +214,6 @@ msgid "Search @username@instance.org"
 msgstr "Išči @username@instance.org"
 
 #: starter_packs/templates/add_accounts_list.html:20
-#: starter_packs/templates/review_starter_pack_list.html:20
 #, python-format
 msgid ""
 "⚠️ The account is not set as <a href=\"%(url)s\">discoverable</a> and cannot "
@@ -364,10 +328,6 @@ msgstr "Ali ste prepričani, da želite zbrisati začetni paket"
 msgid "Yes, delete"
 msgstr "Ja, zbriši"
 
-#: starter_packs/templates/review_starter_pack_list.html:40
-msgid "No accounts in this starter pack"
-msgstr "V začetnem paketu ni računov"
-
 #: starter_packs/templates/share_starter_pack.html:20
 #: starter_packs/templates/share_starter_pack.html:32
 #, python-format
@@ -423,10 +383,6 @@ msgstr "Preklopi na projekt"
 msgid "Switch to Human"
 msgstr "Preklopi na človeka"
 
-#: starter_packs/templates/starter_pack_accounts.html:112
-msgid "Following"
-msgstr "Slediš"
-
 #: starter_packs/templates/starter_pack_stats.html:6
 #, python-format
 msgid "%(counter)s account in your starter pack."
@@ -436,15 +392,10 @@ msgstr[1] "%(counter)s računa v vašem začetnem paketu."
 msgstr[2] "%(counter)s računi v vašem začetnem paketu."
 msgstr[3] "%(counter)s računov v vašem začetnem paketu."
 
-#: starter_packs/templates/starter_pack_stats.html:17
-#: starter_packs/templates/starter_pack_stats.html:21
+#: starter_packs/templates/starter_pack_stats.html:16
+#: starter_packs/templates/starter_pack_stats.html:20
 msgid "Finish"
 msgstr "Končaj"
-
-#: starter_packs/templates/starter_pack_stats.html:26
-#: starter_packs/templates/starter_pack_stats.html:30
-msgid "Review"
-msgstr "Preglej"
 
 #: starter_packs/templates/starter_packs.html:11
 msgid "Community Starter Packs"
@@ -505,38 +456,76 @@ msgstr "Ustvarite svoj začetni paket"
 msgid "Mastodon Starter Pack Directory | Fedidevs"
 msgstr "Imenik začetnih paketov Mastodon | Fedidevs"
 
-#: starter_packs/views.py:142 starter_packs/views.py:210
+#: starter_packs/views.py:162
 msgid "Add accounts to your starter pack"
 msgstr "Dodajte račune v svoj začetni paket"
 
-#: starter_packs/views.py:144
-msgid ""
-"Add accounts to your starter pack to help new users find interesting "
-"accounts to follow."
-msgstr ""
-"Dodajte račune v svoj začetni paket, da boste novim uporabnikom pomagali "
-"najti zanimive račune, ki jim bodo sledili."
-
-#: starter_packs/views.py:243
+#: starter_packs/views.py:195
 msgid "Edit your starter pack"
 msgstr "Uredite svoj začetni paket"
 
-#: starter_packs/views.py:269
+#: starter_packs/views.py:221
 msgid "You already have a starter pack with this title."
 msgstr "Že imate začetni paket s tem naslovom."
 
-#: starter_packs/views.py:279
+#: starter_packs/views.py:231
 msgid "Create a new starter pack"
 msgstr "Ustvarite nov začetni paket"
 
-#: starter_packs/views.py:306
+#: starter_packs/views.py:258
 msgid "You have reached the maximum number of accounts in a starter pack."
 msgstr "Dosegli ste največje število računov v začetnem paketu."
 
-#: starter_packs/views.py:351
+#: starter_packs/views.py:303
 msgid " - Mastodon Starter Pack"
 msgstr " - Začetni paket Mastodon"
 
-#: starter_packs/views.py:399
+#: starter_packs/views.py:351
 msgid "Following all accounts in the starter pack. 🎉"
 msgstr "Spremljanje vseh računov v začetnem paketu. 🎉"
+
+#~ msgid "Never posted"
+#~ msgstr "Nazadnje objevljeno"
+
+#~ msgid "Less than a day ago"
+#~ msgstr "Pred manj kot enim dnevom"
+
+#, python-format
+#~ msgid "%(days)d day ago"
+#~ msgid_plural "%(days)d days ago"
+#~ msgstr[0] "Pred %(days)d dnevom"
+#~ msgstr[1] "Pred %(days)d dnevoma"
+#~ msgstr[2] "Pred %(days)d dnevi"
+#~ msgstr[3] "Pred %(days)d dnevi"
+
+#, python-format
+#~ msgid "%(weeks)d week ago"
+#~ msgid_plural "%(weeks)d weeks ago"
+#~ msgstr[0] "Pred %(weeks)d tednom"
+#~ msgstr[1] "Pred %(weeks)d tednoma"
+#~ msgstr[2] "Pred %(weeks)d tedni"
+#~ msgstr[3] "Pred %(weeks)d tedni"
+
+#, python-format
+#~ msgid "%(months)d month ago"
+#~ msgid_plural "%(months)d months ago"
+#~ msgstr[0] "Pred %(months)d mesecem"
+#~ msgstr[1] "Pred %(months)d meseci"
+#~ msgstr[2] "Pred %(months)d meseci"
+#~ msgstr[3] "Pred %(months)d meseci"
+
+#~ msgid "No accounts in this starter pack"
+#~ msgstr "V začetnem paketu ni računov"
+
+#~ msgid "Following"
+#~ msgstr "Slediš"
+
+#~ msgid "Review"
+#~ msgstr "Preglej"
+
+#~ msgid ""
+#~ "Add accounts to your starter pack to help new users find interesting "
+#~ "accounts to follow."
+#~ msgstr ""
+#~ "Dodajte račune v svoj začetni paket, da boste novim uporabnikom pomagali "
+#~ "najti zanimive račune, ki jim bodo sledili."

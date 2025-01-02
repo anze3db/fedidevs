@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fedidevs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-01 15:45+0000\n"
+"POT-Creation-Date: 2025-01-02 14:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Benjamin Sonntag <benjamin@octopuce.fr>\n"
 "Language-Team: \n"
@@ -34,37 +34,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
-#: accounts/models.py:190
-#, fuzzy
-#| msgid "Last posted"
-msgid "Never posted"
-msgstr "Dernier post"
-
-#: accounts/models.py:193
-msgid "Less than a day ago"
-msgstr ""
-
-#: accounts/models.py:197
-#, python-format
-msgid "%(days)d day ago"
-msgid_plural "%(days)d days ago"
-msgstr[0] ""
-msgstr[1] ""
-
-#: accounts/models.py:204
-#, python-format
-msgid "%(weeks)d week ago"
-msgid_plural "%(weeks)d weeks ago"
-msgstr[0] ""
-msgstr[1] ""
-
-#: accounts/models.py:210
-#, python-format
-msgid "%(months)d month ago"
-msgid_plural "%(months)d months ago"
-msgstr[0] ""
-msgstr[1] ""
 
 #: accounts/templates/cotton/follow_button.html:6
 #: accounts/templates/cotton/follow_button.html:23
@@ -122,6 +91,7 @@ msgid "Followers"
 msgstr "Abonné·e·s"
 
 #: accounts/templates/v2/accounts.html:112
+#: starter_packs/templates/starter_pack_accounts.html:112
 #, fuzzy
 #| msgid "Following"
 msgctxt "This account is *following* this many people"
@@ -249,7 +219,6 @@ msgid "Account has moved"
 msgstr "Le compte a migré"
 
 #: starter_packs/templates/add_accounts.html:7
-#: starter_packs/templates/review_starter_pack.html:7
 msgid "Add accounts to"
 msgstr "Ajouter des comptes à"
 
@@ -263,7 +232,6 @@ msgid "Search @username@instance.org"
 msgstr "Rechercher @utilisateur@instance.org"
 
 #: starter_packs/templates/add_accounts_list.html:20
-#: starter_packs/templates/review_starter_pack_list.html:20
 #, python-format
 msgid ""
 "⚠️ The account is not set as <a href=\"%(url)s\">discoverable</a> and cannot "
@@ -319,9 +287,8 @@ msgid ""
 "<strong>Tip:</strong> Try searching for <strong>@username@instance.org</"
 "strong> to find the user directly on their instance."
 msgstr ""
-"<strong>Astuce :</strong> Essayez de chercher "
-"<strong>@utilisateur@instance.org</strong> pour trouver l'utilisateur "
-"directement sur son instance."
+"<strong>Astuce :</strong> Essayez de chercher <strong>@utilisateur@instance."
+"org</strong> pour trouver l'utilisateur directement sur son instance."
 
 #: starter_packs/templates/add_accounts_list.html:81
 msgid ""
@@ -380,10 +347,6 @@ msgstr "Êtes-vous sûr de vouloir effacer ce Pack à suivre"
 msgid "Yes, delete"
 msgstr "Oui, effacer"
 
-#: starter_packs/templates/review_starter_pack_list.html:40
-msgid "No accounts in this starter pack"
-msgstr ""
-
 #: starter_packs/templates/share_starter_pack.html:20
 #: starter_packs/templates/share_starter_pack.html:32
 #, python-format
@@ -431,10 +394,6 @@ msgstr "Marquer comme Projet"
 msgid "Switch to Human"
 msgstr "Marquer comme Humain"
 
-#: starter_packs/templates/starter_pack_accounts.html:112
-msgid "Following"
-msgstr "Suivi"
-
 #: starter_packs/templates/starter_pack_stats.html:6
 #, python-format
 msgid "%(counter)s account in your starter pack."
@@ -442,15 +401,10 @@ msgid_plural "%(counter)s accounts in your starter pack."
 msgstr[0] "%(counter)s compte dans votre Pack à suivre."
 msgstr[1] "%(counter)s comptes dans votre Pack à suivre."
 
-#: starter_packs/templates/starter_pack_stats.html:17
-#: starter_packs/templates/starter_pack_stats.html:21
+#: starter_packs/templates/starter_pack_stats.html:16
+#: starter_packs/templates/starter_pack_stats.html:20
 msgid "Finish"
 msgstr "Terminer"
-
-#: starter_packs/templates/starter_pack_stats.html:26
-#: starter_packs/templates/starter_pack_stats.html:30
-msgid "Review"
-msgstr ""
 
 #: starter_packs/templates/starter_packs.html:11
 msgid "Community Starter Packs"
@@ -483,8 +437,8 @@ msgstr "Connectez-vous pour voir vos Packs à suivre."
 
 #: starter_packs/templates/starter_packs.html:107
 msgid ""
-"Please login to see your starter packs or search for your "
-"username@instance.org in the search form above"
+"Please login to see your starter packs or search for your username@instance."
+"org in the search form above"
 msgstr ""
 "Connectez-vous pour voir vos Packs à suivre ou chercher des "
 "utilisateurs@instance.org dans le formulaire ci-dessus"
@@ -510,37 +464,39 @@ msgstr "Créez votre Pack à suivre"
 msgid "Mastodon Starter Pack Directory | Fedidevs"
 msgstr "Répertoire des Packs à suivre Mastodon | Fedidevs"
 
-#: starter_packs/views.py:142 starter_packs/views.py:210
+#: starter_packs/views.py:162
 msgid "Add accounts to your starter pack"
 msgstr "Ajouter des comptes à votre Pack à suivre"
 
-#: starter_packs/views.py:144
-msgid ""
-"Add accounts to your starter pack to help new users find interesting "
-"accounts to follow."
-msgstr ""
-
-#: starter_packs/views.py:243
+#: starter_packs/views.py:195
 msgid "Edit your starter pack"
 msgstr "Modifier votre Pack à suivre"
 
-#: starter_packs/views.py:269
+#: starter_packs/views.py:221
 msgid "You already have a starter pack with this title."
 msgstr "Vous avez déjà un Pack à suivre avec ce nom."
 
-#: starter_packs/views.py:279
+#: starter_packs/views.py:231
 msgid "Create a new starter pack"
 msgstr "Créer un noueau Pack à suivre"
 
-#: starter_packs/views.py:306
+#: starter_packs/views.py:258
 msgid "You have reached the maximum number of accounts in a starter pack."
 msgstr ""
 "Vous avez atteint le nombre maximum de comptes dans votre Pack à suivre."
 
-#: starter_packs/views.py:351
+#: starter_packs/views.py:303
 msgid " - Mastodon Starter Pack"
 msgstr " - Pack à suivre Mastodon"
 
-#: starter_packs/views.py:399
+#: starter_packs/views.py:351
 msgid "Following all accounts in the starter pack. 🎉"
 msgstr "Suivre tous les comptes dans ce Pack à suivre. 🎉"
+
+#, fuzzy
+#~| msgid "Last posted"
+#~ msgid "Never posted"
+#~ msgstr "Dernier post"
+
+#~ msgid "Following"
+#~ msgstr "Suivi"
