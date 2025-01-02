@@ -8,6 +8,8 @@ from django.contrib.postgres.search import SearchVectorField
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext_lazy
 
 
 @dataclass
@@ -185,18 +187,30 @@ class Account(models.Model):
     @property
     def last_status_at_cached(self):
         if self.last_status_at is None:
-            return "Never posted"
+            return _("Never posted")
         diff = timezone.now() - self.last_status_at
         if diff < timedelta(days=1):
-            return "Less than a day ago"
+            return _("Less than a day ago")
 
         if diff < timedelta(days=7):
-            return f"{diff.days} day{"s" if diff.days > 1 else ""} ago"
+            return ngettext_lazy(
+                "%(days)d day ago",
+                "%(days)d days ago",
+                diff.days,
+            )
 
         if diff < timedelta(days=30):
-            return f"{diff.days // 7} week{"s" if diff.days // 7 > 1 else ""} ago"
+            return ngettext_lazy(
+                "%(weeks)d week ago",
+                "%(weeks)d weeks ago",
+                diff.days // 7,
+            )
 
-        return f"{diff.days // 30} month{"s" if diff.days // 30 > 1 else ""} ago"
+        return ngettext_lazy(
+            "%(months)d month ago",
+            "%(months)d months ago",
+            diff.days // 30,
+        )
 
     def get_username_at_instance(self):
         if self.instance_model:
