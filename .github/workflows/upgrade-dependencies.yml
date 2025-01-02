@@ -16,15 +16,15 @@ jobs:
         version: "latest"
     - name: Upgrade dependencies
       run: |
-        printf "# Upgrading dependencies\n\n\`\`\`\n" > update.log
+        printf "### Upgraded dependencies\n\n\`\`\`\n" > update.log
         uv lock --upgrade 2>&1 | tee -a update.log
         printf "\`\`\`" >> update.log
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v7
       with:
         token: ${{ secrets.PAT }}
-        commit-message: Update dependencies
-        branch: bot/update_dependencies
+        commit-message: Upgrade dependencies
+        branch: bot/upgrade-dependencies
         delete-branch: true
-        title: 'Update dependencies'
+        title: 'Upgrade dependencies'
         body-path: update.log
