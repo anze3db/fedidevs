@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-01-02 16:52+0000\n"
-"PO-Revision-Date: 2025-01-01 15:54+0000\n"
+"PO-Revision-Date: 2025-01-03 13:31+0100\n"
 "Last-Translator: Juanjo Salvador <juanjosalvador@netc.eu>\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -25,31 +25,31 @@ msgstr "Nunca publicado"
 
 #: accounts/models.py:193
 msgid "Less than a day ago"
-msgstr ""
+msgstr "Hace menos de un día"
 
 #: accounts/models.py:197
 #, python-format
 msgid "%(days)d day ago"
 msgid_plural "%(days)d days ago"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "hace %(days)d día"
+msgstr[1] "hace %(days)d día"
+msgstr[2] "hace %(days)d días"
 
 #: accounts/models.py:204
 #, python-format
 msgid "%(weeks)d week ago"
 msgid_plural "%(weeks)d weeks ago"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "hace %(weeks)d semana"
+msgstr[1] "hace %(weeks)d semana"
+msgstr[2] "hace %(weeks)d semanas"
 
 #: accounts/models.py:210
 #, python-format
 msgid "%(months)d month ago"
 msgid_plural "%(months)d months ago"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "hace %(months)d mes"
+msgstr[1] "hace %(months)d mes"
+msgstr[2] "hace %(months)d meses"
 
 #: accounts/templates/cotton/follow_button.html:6
 #: accounts/templates/cotton/follow_button.html:23
@@ -465,8 +465,8 @@ msgstr "Por favor, inicia sesión para ver tus packs de inicio."
 
 #: starter_packs/templates/starter_packs.html:107
 msgid ""
-"Please login to see your starter packs or search for your "
-"username@instance.org in the search form above"
+"Please login to see your starter packs or search for your username@instance."
+"org in the search form above"
 msgstr ""
 "Por favor, inicia sesión para ver tus packs de inicio o busca tu "
 "@usuario@instancia.org en la barra de búsqueda"
