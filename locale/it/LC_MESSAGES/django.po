@@ -60,12 +60,12 @@ msgstr[1] ""
 #: accounts/templates/cotton/follow_button.html:6
 #: accounts/templates/cotton/follow_button.html:23
 msgid "Follow"
-msgstr "Seguire"
+msgstr "Segui"
 
 #: accounts/templates/cotton/follow_button.html:11
 msgctxt "You are already *following* this account."
 msgid "Following"
-msgstr "Seguici"
+msgstr "Seguendo"
 
 #: accounts/templates/cotton/follow_button.html:16
 msgid "You!"
@@ -114,7 +114,7 @@ msgstr "Follower"
 #: starter_packs/templates/starter_pack_accounts.html:112
 msgctxt "This account is *following* this many people"
 msgid "Following"
-msgstr "Seguici"
+msgstr "Seguendo"
 
 #: accounts/templates/v2/accounts.html:132
 msgid "No accounts found."
