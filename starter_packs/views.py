@@ -175,6 +175,52 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
 
 
 @login_required
+def review_starter_pack(request, starter_pack_slug):
+    starter_pack = get_object_or_404(
+        StarterPack, slug=starter_pack_slug, created_by=request.user, deleted_at__isnull=True
+    )
+    accounts = (
+        Account.objects.filter()
+        .prefetch_related("instance_model")
+        .annotate(
+            in_starter_pack=Exists(
+                StarterPackAccount.objects.filter(
+                    starter_pack=starter_pack,
+                    account_id=OuterRef("pk"),
+                )
+            ),
+            is_followed=Exists(
+                AccountFollowing.objects.filter(account=request.user.accountaccess.account, url=OuterRef("url")),
+            ),
+        )
+        .filter(in_starter_pack=True)
+        .order_by("-is_followed", "-followers_count")
+    )
+
+    paginator = Paginator(accounts, 50)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        "review_starter_pack_list.html" if "HX-Request" in request.headers else "review_starter_pack.html",
+        {
+            "page": "starter_packs",
+            "page_title": _("Review your starter pack"),
+            "page_description": _("Review your starter pack to make sure everything is in order."),
+            "page_header": "FEDIDEVS",
+            "page_subheader": "",
+            "review": True,
+            "num_accounts": StarterPackAccount.objects.filter(
+                account__discoverable=True, starter_pack=starter_pack
+            ).count(),
+            "accounts": page_obj,
+            "starter_pack": starter_pack,
+        },
+    )
+
+
+@login_required
 def edit_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(
         StarterPack, slug=starter_pack_slug, created_by=request.user, deleted_at__isnull=True
@@ -193,7 +239,7 @@ def edit_starter_pack(request, starter_pack_slug):
         {
             "page": "starter_packs",
             "page_title": _("Edit your starter pack"),
-            "page_description": "Edit your starter pack to help new users find interesting accounts to follow.",
+            "page_description": _("Edit your starter pack to help new users find interesting accounts to follow."),
             "page_header": "FEDIDEVS",
             "page_subheader": "",
             "form": form,
@@ -229,7 +275,7 @@ def create_starter_pack(request):
         {
             "page": "starter_packs",
             "page_title": _("Create a new starter pack"),
-            "page_description": "Create a new starter pack to help new users find interesting accounts to follow.",
+            "page_description": _("Create a new starter pack to help new users find interesting accounts to follow."),
             "page_header": "FEDIDEVS",
             "page_subheader": "",
             "form": form,
@@ -268,6 +314,7 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
         "starter_pack_stats.html",
         {
             "starter_pack": starter_pack,
+            "review": request.POST.get("review"),
             "num_accounts": StarterPackAccount.objects.filter(starter_pack=starter_pack).count(),
         },
     )

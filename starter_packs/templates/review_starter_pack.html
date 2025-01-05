@@ -1,0 +1,24 @@
+{% extends "v2/layout.html" %}
+{% load account_extras %}
+{% load static %}
+{% block content %}
+    <main class="h-[calc(100vh-120px)] flex flex-col max-w-lg px-4 mx-auto">
+        <div class="text-center">
+            <p class="prose dark:prose-invert">
+                {% url "edit_accounts_starter_pack" starter_pack.slug as url %}
+                {% blocktrans trimmed %}
+                    Review accounts or <a href="{{ url }}">go back</a> to add more accounts.
+                {% endblocktrans %}
+            </p>
+            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white p-4 pb-8">
+                {% render_language_emojis starter_pack.title %}
+            </h1>
+        </div>
+        <div class="flex-0 overflow-y-scroll">{% include "review_starter_pack_list.html" %}</div>
+        <div id="starter_pack_stats">{% include "starter_pack_stats.html" %}</div>
+    </main>
+{% endblock content %}
+{% block sidebar %}
+    <section class="mb-8">
+    </section>
+{% endblock sidebar %}

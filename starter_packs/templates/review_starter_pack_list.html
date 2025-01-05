@@ -27,9 +27,10 @@
                 {% if account.discoverable %}
                     <input id="checkbox-{{ account.id }}"
                            type="checkbox"
-                           value=""
+                           name="{{ account.id }}"
                            {% if not account.discoverable %}disabled="disabled"{% endif %}
                            hx-target="#starter_pack_stats"
+                           {% if review %}hx-params="review"{% endif %}
                            hx-post="{% url 'toggle_account_to_starter_pack' starter_pack.slug account.id %}"
                            {% if account.in_starter_pack %}checked="checked"{% endif %}
                            class="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2  dark:border-gray-600">
@@ -37,52 +38,11 @@
             </div>
         </li>
     {% empty %}
-        {% if is_username %}
-            <li class="p-8 prose dark:prose-invert">
-                <h2 class="text-center">{% trans "No results found 😞" %}</h2>
-                <p>
-                    {% trans "We couldn't find any accounts matching your query in the Fedidevs database or at the instance itself. Double check the username and instance and try again." %}
-                </p>
-                <p>
-                    {% blocktrans trimmed %}
-                        <strong>Note:</strong> Only <strong>Mastodon</strong> instances are supported at the moment.
-                    {% endblocktrans %}
-                </p>
-                {% with email="mailto:hello@fedidevs.com" url="https://fosstodon.org/@Fedidevs" %}
-                    <p>
-                        {% blocktrans trimmed %}
-                            <strong>Tip:</strong> Reach out to us through <a href="{{ mail }}">email</a> or <a href="{{ url }}">Mastodon</a> and we'll try to help you out!
-                        {% endblocktrans %}
-                    </p>
-                {% endwith %}
-            </li>
-        {% else %}
-            <li class="p-8 prose dark:prose-invert">
-                <h2 class="text-center">No results found 😞</h2>
-                <p>
-                    {% trans "We couldn't find any accounts matching your query in the Fedidevs database. Keep in mind, our database only includes a small portion of all the accounts in the fediverse!" %}
-                </p>
-                <p>
-                    {% blocktrans trimmed %}
-                        <strong>Tip:</strong> Try searching for <strong>@username@instance.org</strong> to find the user directly on their instance.
-                    {% endblocktrans %}
-                </p>
-            </li>
-        {% endif %}
+        {% trans "No accounts in this starter pack" %}
     {% endfor %}
     {% if accounts.has_next %}
         <li hx-get="{% url 'edit_accounts_starter_pack' starter_pack.slug %}{% querystring page=accounts.next_page_number %}"
             hx-trigger="intersect once"
             hx-swap="afterend"></li>
-    {% else %}
-        {% if accounts %}
-            <li class="p-4 prose text-s dark:prose-invert">
-                <p>
-                    {% blocktrans trimmed %}
-                        <strong>Tip:</strong> Not finding a specific account? Try searching for <strong>@username@instance.org</strong> to find the user directly on their instance.
-                    {% endblocktrans %}
-                </p>
-            </li>
-        {% endif %}
     {% endif %}
 </ul>

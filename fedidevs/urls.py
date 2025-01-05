@@ -264,6 +264,11 @@ urlpatterns = [
         starter_packs_views.add_accounts_to_starter_pack,
         name="edit_accounts_starter_pack",
     ),
+    path(
+        "starter-packs/<str:starter_pack_slug>/review",
+        starter_packs_views.review_starter_pack,
+        name="review_starter_pack",
+    ),
     path("starter-packs/", starter_packs_views.starter_packs, name="starter_packs"),
     path("fwd50/", confs_views.fwd50, name="fwd50"),
     path(
