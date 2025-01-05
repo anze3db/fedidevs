@@ -150,7 +150,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
                 search=SearchQuery(search, search_type="websearch"),
             )
 
-    paginator = Paginator(accounts, 50)
+    paginator = Paginator(accounts.order_by("followers_count"), 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
