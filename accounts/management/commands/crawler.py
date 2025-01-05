@@ -107,7 +107,14 @@ class Command(RichCommand):
                         if account.get("id")
                     ]
                 inserted_accounts = fetched_accounts
-
+                logger.info(
+                    "Inserting accounts on instances %s",
+                    extra={
+                        "inserted_accounts": [
+                            f"{account.instance} {account.account_id}" for account in inserted_accounts
+                        ]
+                    },
+                )
                 await Account.objects.abulk_create(
                     inserted_accounts,
                     unique_fields=["account_id", "instance"],
