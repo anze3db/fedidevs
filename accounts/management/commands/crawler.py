@@ -62,18 +62,6 @@ class Command(RichCommand):
                 to_index = [
                     i async for i in Instance.objects.filter(deleted_at__isnull=True).values_list("instance", flat=True)
                 ]
-            to_index = [
-                "mathstodon.xyz",
-                "mstdn.social",
-                "toots.dgplug.org",
-                "wetdry.world",
-                "mstdn.in.th",
-                "mtd.pythonasia.org",
-                "mastodon-belgium.be",
-                "aus.social",
-                "social.tinygo.org",
-                "graphics.social",
-            ]
             while to_index:
                 now = timezone.now()
                 results = await asyncio.gather(
