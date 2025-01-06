@@ -9,7 +9,7 @@
                      role="alert">
                     <h4 class="text-xl font-bold py-4">{% trans "Not published!" %}</h4>
                     <p class="text-lg">
-                        {% trans "The starter pack won't appear in the list of community starter packs until it's published." %}
+                        {% trans "This starter pack won't appear in the list of community starter packs until it's published." %}
                     </p>
                     <button hx-post="{% url "publish_starter_pack" starter_pack.slug %}"
                             class="mt-4 text-gray-900 bg-yellow-100 border border-yellow-800 dark:border-yellow-800 focus:outline-none hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-400 font-small rounded-lg text-sm px-5 py-2.5 ms-2 me-2 dark:bg-gray-800 dark:text-white  dark:hover:bg-yellow-700 dark:hover:border-yellow-600 dark:focus:ring-yellow-700">
