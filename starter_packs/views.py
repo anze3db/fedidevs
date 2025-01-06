@@ -11,6 +11,7 @@ from django.core import management
 from django.core.paginator import Paginator
 from django.db import IntegrityError, models, transaction
 from django.db.models import Exists, OuterRef, Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -42,7 +43,7 @@ def starter_packs(request):
 
     starter_packs = StarterPack.objects.none()
     if tab == "community":
-        starter_packs = StarterPack.objects.all()
+        starter_packs = StarterPack.objects.filter(published_at__isnull=False)
     elif tab == "your" and not request.user.is_anonymous:
         starter_packs = StarterPack.objects.filter(created_by=request.user)
     elif tab == "containing" and not request.user.is_anonymous:
@@ -91,7 +92,9 @@ def starter_packs(request):
             "page": "starter_packs",
             "page_url": reverse("starter_packs"),
             "page_title": _("Mastodon Starter Pack Directory | Fedidevs"),
-            "page_description": "Discover, create, and share Mastodon starter packs to help new users find interesting accounts to follow.",
+            "page_description": _(
+                "Discover, create, and share Mastodon starter packs to help new users find interesting accounts to follow."
+            ),
             "page_header": "FEDIDEVS",
             "page_image": "og-starterpacks.png",
             "page_subheader": "",
@@ -281,6 +284,21 @@ def create_starter_pack(request):
             "form": form,
         },
     )
+
+
+@transaction.atomic
+def publish_starter_pack(request, starter_pack_slug):
+    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, created_by=request.user)
+    if request.method == "POST":
+        if starter_pack.published_at:
+            starter_pack.published_at = None
+        else:
+            starter_pack.published_at = timezone.now()
+        starter_pack.save(update_fields=["published_at", "updated_at"])
+
+    response = HttpResponse()
+    response["HX-Redirect"] = reverse("share_starter_pack", kwargs={"starter_pack_slug": starter_pack.slug})
+    return response
 
 
 @transaction.atomic

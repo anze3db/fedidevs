@@ -4,6 +4,19 @@
 {% block content %}
     <main>
         <div class="max-w-4xl mb-8">
+            {% if starter_pack.created_by == request.user and not starter_pack.published_at %}
+                <div class=" p-4 mb-4 text-center text-sm text-yellow-800 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-yellow-300"
+                     role="alert">
+                    <h4 class="text-xl font-bold py-4">{% trans "Not published!" %}</h4>
+                    <p class="text-lg">
+                        {% trans "The starter pack won't appear in the list of community starter packs until it's published." %}
+                    </p>
+                    <button hx-post="{% url "publish_starter_pack" starter_pack.slug %}"
+                            class="mt-4 text-gray-900 bg-yellow-100 border border-yellow-800 dark:border-yellow-800 focus:outline-none hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-400 font-small rounded-lg text-sm px-5 py-2.5 ms-2 me-2 dark:bg-gray-800 dark:text-white  dark:hover:bg-yellow-700 dark:hover:border-yellow-600 dark:focus:ring-yellow-700">
+                        {% trans "Publish now" %}
+                    </button>
+                </div>
+            {% endif %}
             <div class="w-full p-4 text-center bg-blue-100 border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-blue-950 dark:border-blue-800">
                 <h5 class="mb-4 text-3xl font-bold text-gray-900 dark:text-white">{% render_language_emojis starter_pack.title %}</h5>
                 <a href="{{ starter_pack.created_by.accountaccess.account.url }}"
@@ -68,6 +81,24 @@
                                     <a href="{% url 'delete_starter_pack' starter_pack.slug %}"
                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Delete" %}</a>
                                 </li>
+                                {% if not starter_pack.published_at %}
+                                    <li>
+                                        <a href="#"
+                                           hx-post="{% url 'publish_starter_pack' starter_pack.slug %}"
+                                           class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                            {% trans "Publish now" %}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                {% if starter_pack.published_at %}
+                                    <li>
+                                        <a href="#"
+                                           hx-post="{% url 'publish_starter_pack' starter_pack.slug %}"
+                                           class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                            {% trans "Unpublish" %}
+                                        </a>
+                                    </li>
+                                {% endif %}
                             {% endif %}
                             <li>
                                 <a href="{% url 'faq' %}#report-issue"

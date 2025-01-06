@@ -4,7 +4,10 @@
 <div>
     <div class="p-4 no-underline bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-900">
         <a href="{% url 'share_starter_pack' starter_pack.slug %}" class="block">
-            <h4 class="prose dark:prose-invert text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            {% if not starter_pack.published_at %}
+                <span class=" bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">{% trans "Not published" %}</span>
+            {% endif %}
+            <h4 class="prose dark:prose-invert pt-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {% render_language_emojis starter_pack.title %}
             </h4>
         </a>
