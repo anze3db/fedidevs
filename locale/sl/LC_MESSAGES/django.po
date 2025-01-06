@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fedidevs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-02 16:52+0000\n"
+"POT-Creation-Date: 2025-01-06 00:39+0000\n"
 "PO-Revision-Date: 2025-01-01 15:52+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -143,7 +143,7 @@ msgid "Starter Packs"
 msgstr "Začetni Paketi"
 
 #: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:269
-#: starter_packs/templates/cotton/starter_pack_card.html:27
+#: starter_packs/templates/cotton/starter_pack_card.html:30
 msgid "Accounts"
 msgstr "Računi"
 
@@ -236,7 +236,6 @@ msgid "Account has moved"
 msgstr "Račun je bil premaknjen"
 
 #: starter_packs/templates/add_accounts.html:7
-#: starter_packs/templates/review_starter_pack.html:7
 msgid "Add accounts to"
 msgstr "Dodaj račune v"
 
@@ -318,12 +317,16 @@ msgstr ""
 "<strong>@uporabniškoime@instanca.org</strong>, da poiščete uporabnika "
 "neposredno na njihovi instanci."
 
-#: starter_packs/templates/cotton/starter_pack_card.html:14
-#: starter_packs/templates/share_starter_pack.html:11
+#: starter_packs/templates/cotton/starter_pack_card.html:8
+msgid "Not published"
+msgstr "Ni objavljen"
+
+#: starter_packs/templates/cotton/starter_pack_card.html:17
+#: starter_packs/templates/share_starter_pack.html:24
 msgid "By"
 msgstr "Ustvaril"
 
-#: starter_packs/templates/cotton/starter_pack_card.html:23
+#: starter_packs/templates/cotton/starter_pack_card.html:26
 msgid "Created"
 msgstr "Ustvarjen"
 
@@ -365,12 +368,33 @@ msgstr "Ali ste prepričani, da želite zbrisati začetni paket"
 msgid "Yes, delete"
 msgstr "Ja, zbriši"
 
-#: starter_packs/templates/review_starter_pack_list.html:40
+#: starter_packs/templates/review_starter_pack.html:9
+#, python-format
+msgid ""
+"Review accounts or <a href=\"%(url)s\">go back</a> to add more accounts."
+msgstr "Preglejte račune ali pa <a href=\"%(url)s\">se vrnite</a> in dodajte več računov."
+
+#: starter_packs/templates/review_starter_pack_list.html:41
 msgid "No accounts in this starter pack"
 msgstr "V začetnem paketu ni računov"
 
-#: starter_packs/templates/share_starter_pack.html:20
-#: starter_packs/templates/share_starter_pack.html:32
+#: starter_packs/templates/share_starter_pack.html:10
+msgid "Not published!"
+msgstr "Ni objavljen!"
+
+#: starter_packs/templates/share_starter_pack.html:12
+msgid ""
+"This starter pack won't appear in the list of community starter packs until "
+"it's published."
+msgstr "Ta začetni paket ne bo prikazan na seznamu začetnih paketov skupnosti, dokler ne bo objavljen."
+
+#: starter_packs/templates/share_starter_pack.html:16
+#: starter_packs/templates/share_starter_pack.html:90
+msgid "Publish now"
+msgstr "Objavi sedaj"
+
+#: starter_packs/templates/share_starter_pack.html:33
+#: starter_packs/templates/share_starter_pack.html:45
 #, python-format
 msgid "Follow %(count)s account"
 msgid_plural "Follow all %(count)s accounts"
@@ -379,23 +403,31 @@ msgstr[1] "Sledi %(count)s računoma"
 msgstr[2] "Sledi %(count)s računom"
 msgstr[3] "Sledi %(count)s računom"
 
-#: starter_packs/templates/share_starter_pack.html:58
+#: starter_packs/templates/share_starter_pack.html:71
 msgid "Add Accounts"
 msgstr "Dodaj račune"
 
-#: starter_packs/templates/share_starter_pack.html:62
+#: starter_packs/templates/share_starter_pack.html:75
+msgid "Review Accounts"
+msgstr "Preglej račune"
+
+#: starter_packs/templates/share_starter_pack.html:79
 msgid "Edit"
 msgstr "Uredi"
 
-#: starter_packs/templates/share_starter_pack.html:66
+#: starter_packs/templates/share_starter_pack.html:83
 msgid "Delete"
 msgstr "Izbriši"
 
-#: starter_packs/templates/share_starter_pack.html:71
+#: starter_packs/templates/share_starter_pack.html:99
+msgid "Unpublish"
+msgstr "Prekliči objavo"
+
+#: starter_packs/templates/share_starter_pack.html:106
 msgid "Report"
 msgstr "Prijava"
 
-#: starter_packs/templates/share_starter_pack.html:80
+#: starter_packs/templates/share_starter_pack.html:115
 #, python-format
 msgid ""
 "<strong>%(count)s</strong> account hidden due to their privacy settings."
@@ -498,43 +530,66 @@ msgstr ""
 msgid "Create your starter pack"
 msgstr "Ustvarite svoj začetni paket"
 
-#: starter_packs/views.py:93
+#: starter_packs/views.py:94
 msgid "Mastodon Starter Pack Directory | Fedidevs"
 msgstr "Imenik začetnih paketov Mastodon | Fedidevs"
 
-#: starter_packs/views.py:142 starter_packs/views.py:210
-msgid "Add accounts to your starter pack"
-msgstr "Dodajte račune v svoj začetni paket"
-
-#: starter_packs/views.py:144
+#: starter_packs/views.py:96
 msgid ""
-"Add accounts to your starter pack to help new users find interesting "
-"accounts to follow."
+"Discover, create, and share Mastodon starter packs to help new users find "
+"interesting accounts to follow."
 msgstr ""
 "Dodajte račune v svoj začetni paket, da boste novim uporabnikom pomagali "
 "najti zanimive račune, ki jim bodo sledili."
 
-#: starter_packs/views.py:243
+#: starter_packs/views.py:165
+msgid "Add accounts to your starter pack"
+msgstr "Dodajte račune v svoj začetni paket"
+
+#: starter_packs/views.py:212
+msgid "Review your starter pack"
+msgstr "Preglej svoj začetni paket"
+
+#: starter_packs/views.py:213
+msgid "Review your starter pack to make sure everything is in order."
+msgstr "Preglejte svoj začetni paket in se prepričajte, da je vse v redu."
+
+#: starter_packs/views.py:244
 msgid "Edit your starter pack"
 msgstr "Uredite svoj začetni paket"
 
-#: starter_packs/views.py:269
+#: starter_packs/views.py:245
+msgid ""
+"Edit your starter pack to help new users find interesting accounts to follow."
+msgstr ""
+"Uredi svoj svoj začetni paket, da boste novim uporabnikom pomagali "
+"najti zanimive račune, ki jim bodo sledili."
+
+#: starter_packs/views.py:270
 msgid "You already have a starter pack with this title."
 msgstr "Že imate začetni paket s tem naslovom."
 
-#: starter_packs/views.py:279
+#: starter_packs/views.py:280
 msgid "Create a new starter pack"
 msgstr "Ustvarite nov začetni paket"
 
-#: starter_packs/views.py:306
+#: starter_packs/views.py:281
+msgid ""
+"Create a new starter pack to help new users find interesting accounts to "
+"follow."
+msgstr ""
+"Ustvari nov začetni paket, da boste novim uporabnikom pomagali "
+"najti zanimive račune, ki jim bodo sledili."
+
+#: starter_packs/views.py:322
 msgid "You have reached the maximum number of accounts in a starter pack."
 msgstr "Dosegli ste največje število računov v začetnem paketu."
 
-#: starter_packs/views.py:351
+#: starter_packs/views.py:368
 msgid " - Mastodon Starter Pack"
 msgstr " - Začetni paket Mastodon"
 
-#: starter_packs/views.py:399
+#: starter_packs/views.py:416
 msgid "Following all accounts in the starter pack. 🎉"
 msgstr "Spremljanje vseh računov v začetnem paketu. 🎉"
 

@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fedidevs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-02 16:52+0000\n"
+"POT-Creation-Date: 2025-01-06 00:39+0000\n"
 "PO-Revision-Date: 2024-12-30 17:11+0100\n"
 "Last-Translator: Enrico Bonardi <e.bonardi@me.com>\n"
 "Language-Team: \n"
@@ -145,7 +145,7 @@ msgid "Starter Packs"
 msgstr "Starter Pack"
 
 #: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:269
-#: starter_packs/templates/cotton/starter_pack_card.html:27
+#: starter_packs/templates/cotton/starter_pack_card.html:30
 msgid "Accounts"
 msgstr "Account"
 
@@ -237,7 +237,6 @@ msgid "Account has moved"
 msgstr "L'account è stato spostato"
 
 #: starter_packs/templates/add_accounts.html:7
-#: starter_packs/templates/review_starter_pack.html:7
 msgid "Add accounts to"
 msgstr "Aggiungi account a"
 
@@ -320,12 +319,16 @@ msgstr ""
 "Prova ad utilizzare <strong>@username@instance.org</strong> per trovare "
 "l'utente direttamente nella sua istanza."
 
-#: starter_packs/templates/cotton/starter_pack_card.html:14
-#: starter_packs/templates/share_starter_pack.html:11
+#: starter_packs/templates/cotton/starter_pack_card.html:8
+msgid "Not published"
+msgstr ""
+
+#: starter_packs/templates/cotton/starter_pack_card.html:17
+#: starter_packs/templates/share_starter_pack.html:24
 msgid "By"
 msgstr "Di"
 
-#: starter_packs/templates/cotton/starter_pack_card.html:23
+#: starter_packs/templates/cotton/starter_pack_card.html:26
 msgid "Created"
 msgstr "Creato"
 
@@ -367,35 +370,66 @@ msgstr "Sei sicuro di voler eliminare il tuo starter pack"
 msgid "Yes, delete"
 msgstr "Si, elimina"
 
-#: starter_packs/templates/review_starter_pack_list.html:40
+#: starter_packs/templates/review_starter_pack.html:9
+#, python-format
+msgid ""
+"Review accounts or <a href=\"%(url)s\">go back</a> to add more accounts."
+msgstr ""
+
+#: starter_packs/templates/review_starter_pack_list.html:41
 msgid "No accounts in this starter pack"
 msgstr "Nessun account in questo starter pack"
 
-#: starter_packs/templates/share_starter_pack.html:20
-#: starter_packs/templates/share_starter_pack.html:32
+#: starter_packs/templates/share_starter_pack.html:10
+msgid "Not published!"
+msgstr ""
+
+#: starter_packs/templates/share_starter_pack.html:12
+msgid ""
+"This starter pack won't appear in the list of community starter packs until "
+"it's published."
+msgstr ""
+
+#: starter_packs/templates/share_starter_pack.html:16
+#: starter_packs/templates/share_starter_pack.html:90
+msgid "Publish now"
+msgstr ""
+
+#: starter_packs/templates/share_starter_pack.html:33
+#: starter_packs/templates/share_starter_pack.html:45
 #, python-format
 msgid "Follow %(count)s account"
 msgid_plural "Follow all %(count)s accounts"
 msgstr[0] "Segui %(count)s account"
 msgstr[1] "Segui %(count)s account"
 
-#: starter_packs/templates/share_starter_pack.html:58
+#: starter_packs/templates/share_starter_pack.html:71
 msgid "Add Accounts"
 msgstr "Aggiungi account"
 
-#: starter_packs/templates/share_starter_pack.html:62
+#: starter_packs/templates/share_starter_pack.html:75
+#, fuzzy
+#| msgid "Accounts"
+msgid "Review Accounts"
+msgstr "Account"
+
+#: starter_packs/templates/share_starter_pack.html:79
 msgid "Edit"
 msgstr "Modifica"
 
-#: starter_packs/templates/share_starter_pack.html:66
+#: starter_packs/templates/share_starter_pack.html:83
 msgid "Delete"
 msgstr "Elimina"
 
-#: starter_packs/templates/share_starter_pack.html:71
+#: starter_packs/templates/share_starter_pack.html:99
+msgid "Unpublish"
+msgstr ""
+
+#: starter_packs/templates/share_starter_pack.html:106
 msgid "Report"
 msgstr "Segnala"
 
-#: starter_packs/templates/share_starter_pack.html:80
+#: starter_packs/templates/share_starter_pack.html:115
 #, python-format
 msgid ""
 "<strong>%(count)s</strong> account hidden due to their privacy settings."
@@ -489,43 +523,80 @@ msgstr "Invita i tuoi amici a seguire le tue persone preferite di Mastodon."
 msgid "Create your starter pack"
 msgstr "Crea il tuo starter pack"
 
-#: starter_packs/views.py:93
+#: starter_packs/views.py:94
 msgid "Mastodon Starter Pack Directory | Fedidevs"
 msgstr "Elenco degli starter pack di Mastodon | Fedidevs"
 
-#: starter_packs/views.py:142 starter_packs/views.py:210
-msgid "Add accounts to your starter pack"
-msgstr "Aggiungi account al tuo starter pack"
-
-#: starter_packs/views.py:144
+#: starter_packs/views.py:96
+#, fuzzy
+#| msgid ""
+#| "Add accounts to your starter pack to help new users find interesting "
+#| "accounts to follow."
 msgid ""
-"Add accounts to your starter pack to help new users find interesting "
-"accounts to follow."
+"Discover, create, and share Mastodon starter packs to help new users find "
+"interesting accounts to follow."
 msgstr ""
 "Aggiungi account al tuo starter pack per aiutare i nuovi utenti a trovare "
 "account interessanti da seguire."
 
-#: starter_packs/views.py:243
+#: starter_packs/views.py:165
+msgid "Add accounts to your starter pack"
+msgstr "Aggiungi account al tuo starter pack"
+
+#: starter_packs/views.py:212
+#, fuzzy
+#| msgid "Create your starter pack"
+msgid "Review your starter pack"
+msgstr "Crea il tuo starter pack"
+
+#: starter_packs/views.py:213
+msgid "Review your starter pack to make sure everything is in order."
+msgstr ""
+
+#: starter_packs/views.py:244
 msgid "Edit your starter pack"
 msgstr "Modifica il tuo starter pack"
 
-#: starter_packs/views.py:269
+#: starter_packs/views.py:245
+#, fuzzy
+#| msgid ""
+#| "Add accounts to your starter pack to help new users find interesting "
+#| "accounts to follow."
+msgid ""
+"Edit your starter pack to help new users find interesting accounts to follow."
+msgstr ""
+"Aggiungi account al tuo starter pack per aiutare i nuovi utenti a trovare "
+"account interessanti da seguire."
+
+#: starter_packs/views.py:270
 msgid "You already have a starter pack with this title."
 msgstr "Hai già uno starter pack con questo titolo."
 
-#: starter_packs/views.py:279
+#: starter_packs/views.py:280
 msgid "Create a new starter pack"
 msgstr "Crea un nuovo starter pack"
 
-#: starter_packs/views.py:306
+#: starter_packs/views.py:281
+#, fuzzy
+#| msgid ""
+#| "Add accounts to your starter pack to help new users find interesting "
+#| "accounts to follow."
+msgid ""
+"Create a new starter pack to help new users find interesting accounts to "
+"follow."
+msgstr ""
+"Aggiungi account al tuo starter pack per aiutare i nuovi utenti a trovare "
+"account interessanti da seguire."
+
+#: starter_packs/views.py:322
 msgid "You have reached the maximum number of accounts in a starter pack."
 msgstr "Hai raggiunto il numero massimo di account in uno starter pack."
 
-#: starter_packs/views.py:351
+#: starter_packs/views.py:368
 msgid " - Mastodon Starter Pack"
 msgstr " - Starter Pack di Mastodon"
 
-#: starter_packs/views.py:399
+#: starter_packs/views.py:416
 msgid "Following all accounts in the starter pack. 🎉"
 msgstr "Stai seguendo tutti gli account di questo starter pack. 🎉"
 
