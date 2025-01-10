@@ -7,7 +7,6 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery
-from django.core import management
 from django.core.paginator import Paginator
 from django.db import IntegrityError, models, transaction
 from django.db.models import Exists, OuterRef, Q
@@ -27,6 +26,7 @@ from mastodon import (
     MastodonVersionError,
 )
 
+from accounts.management.commands.crawlone import crawlone
 from accounts.models import Account
 from mastodon_auth.models import AccountFollowing
 from starter_packs.models import StarterPack, StarterPackAccount
@@ -143,10 +143,11 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
             )
             if not accounts.exists():
                 logger.info("Username not found, crawling the instance")
-                management.call_command("crawlone", user=search[1:])
-                accounts = Account.objects.filter(
-                    username_at_instance=search,
-                )
+                account = crawlone(user=search[1:])
+                if account:
+                    accounts = Account.objects.filter(
+                        username_at_instance=account.username_at_instance,
+                    )
         else:
             logger.info("Using full text search for %s", search)
             accounts = accounts.filter(
