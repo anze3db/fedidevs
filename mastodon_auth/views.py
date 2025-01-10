@@ -73,6 +73,7 @@ def login(request):
     try:
         res = httpx.get(f"https://{api_base_url}/.well-known/host-meta")
         if 300 <= res.status_code < 400:
+            logger.info("Redirected to %s", res.headers["Location"])
             api_base_url = res.headers["Location"].split("/")[2]
     except httpx.RequestError:
         logger.warning("Failed to get host-meta for %s", api_base_url)
