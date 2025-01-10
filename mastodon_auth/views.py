@@ -2,6 +2,7 @@ import logging
 from uuid import uuid4
 
 import dramatiq
+import httpx
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
@@ -68,6 +69,13 @@ def login(request):
 
     if "@" in api_base_url:
         api_base_url = api_base_url.split("@")[-1]
+
+    try:
+        res = httpx.get(f"https://{api_base_url}/.well-known/host-meta")
+        if 300 <= res.status_code < 400:
+            api_base_url = res.headers["Location"].split("/")[2]
+    except httpx.RequestError:
+        logger.warning("Failed to get host-meta for %s", api_base_url)
 
     instance = Instance.objects.filter(url=api_base_url).first()
 
