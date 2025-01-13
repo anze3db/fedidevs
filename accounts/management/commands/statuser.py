@@ -28,7 +28,7 @@ class Command(RichCommand):
             # batch by 100 requests
             for i in range(0, len(accounts), 100):
                 await asyncio.gather(*[self.fetch(client, account) for account in accounts[i : i + 100]])
-                self.console.print(f"Batch {i//100} done, sleeping for 90s")
+                self.console.print(f"Batch {i // 100} done, sleeping for 90s")
                 await asyncio.sleep(90)  # 300 requests per 5 minute is the default rate limit for Mastodon
 
     async def fetch(self, client, account: Account):

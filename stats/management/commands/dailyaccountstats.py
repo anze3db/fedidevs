@@ -189,13 +189,13 @@ class Command(RichCommand):
         ending_conferences = Conference.objects.filter(end_date=todays_date.date())
         todays_conferences_msg = "\n".join(
             [
-                f"{conference.name} https://fedidevs.com{reverse("conference", kwargs={"conference_slug":conference.slug})}, with {conference.posts.count()} posts is starting today!"
+                f"{conference.name} https://fedidevs.com{reverse('conference', kwargs={'conference_slug': conference.slug})}, with {conference.posts.count()} posts is starting today!"
                 for conference in todays_conferences
             ]
         )
         ending_conferences_msg = "\n".join(
             [
-                f"{conference.name} https://fedidevs.com{reverse("conference", kwargs={"conference_slug":conference.slug})}, with {conference.posts.count()} posts is ending today!"
+                f"{conference.name} https://fedidevs.com{reverse('conference', kwargs={'conference_slug': conference.slug})}, with {conference.posts.count()} posts is ending today!"
                 for conference in ending_conferences
             ]
         )
