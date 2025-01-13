@@ -107,7 +107,6 @@
                 {% for instance in instances %}
                     <li>
                         <a href="https://{{ instance.instance }}/">{{ instance.instance }}</a>
-                        {% if instance.deleted_at %}[disabled, API was returning errors]{% endif %}
                     </li>
                 {% endfor %}
             </ul>

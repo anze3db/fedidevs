@@ -27,7 +27,7 @@ from mastodon import (
 )
 
 from accounts.management.commands.crawlone import crawlone
-from accounts.models import Account
+from accounts.models import Account, Instance
 from mastodon_auth.models import AccountFollowing
 from starter_packs.models import StarterPack, StarterPackAccount
 from stats.models import FollowAllClick
@@ -143,6 +143,28 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
             )
             if not accounts.exists():
                 logger.info("Username not found, crawling the instance")
+                instance_name = search.split("@")[1]
+                if Instance.objects.filter(instance=instance_name, deleted_at__isnull=False).exists():
+                    logger.info("Instance is deleted")
+                    return render(
+                        request,
+                        "add_accounts.html",
+                        {
+                            "page": "starter_packs",
+                            "page_title": _("Add accounts to your starter pack"),
+                            "page_description": "Add accounts to your starter pack to help new users find interesting accounts to follow.",
+                            "page_header": "FEDIDEVS",
+                            "page_subheader": "",
+                            "q": q,
+                            "is_username": is_username,
+                            "num_accounts": StarterPackAccount.objects.filter(
+                                account__discoverable=True, starter_pack=starter_pack
+                            ).count(),
+                            "accounts": accounts,
+                            "starter_pack": starter_pack,
+                            "deleted_instance": instance_name,
+                        },
+                    )
                 account = crawlone(user=search[1:])
                 if account:
                     accounts = Account.objects.filter(
@@ -152,6 +174,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
             logger.info("Using full text search for %s", search)
             accounts = accounts.filter(
                 search=SearchQuery(search, search_type="websearch"),
+                instance_model__deleted_at__isnull=True,
             )
 
     paginator = Paginator(accounts.order_by("-followers_count"), 50)

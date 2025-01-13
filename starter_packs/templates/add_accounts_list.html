@@ -37,7 +37,20 @@
             </div>
         </li>
     {% empty %}
-        {% if is_username %}
+        {% if deleted_instance %}
+            <li class="p-8 prose dark:prose-invert">
+                <h2 class="text-center">
+                    {% blocktrans trimmed %}
+                        Instance <i>`{{ deleted_instance }}`</i> was deleted 😞
+                    {% endblocktrans %}
+                </h2>
+                <p>
+                    {% blocktrans trimmed %}
+                        The instance Admin has requested to remove the instance.
+                    {% endblocktrans %}
+                </p>
+            </li>
+        {% elif is_username %}
             <li class="p-8 prose dark:prose-invert">
                 <h2 class="text-center">{% trans "No results found 😞" %}</h2>
                 <p>

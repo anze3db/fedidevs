@@ -83,6 +83,11 @@ class Command(RichCommand):
             instance_model = await Instance.objects.filter(instance=instance).afirst()
             if instance_model is None:
                 logger.warning("Instance %s not found", instance)
+                return
+
+        if instance_model.deleted_at:
+            logger.warning("Instance %s is deleted", instance)
+            return
 
         tags = list({tag.strip().replace("#", "").lower() for tag in conference.tags.split(",") if conference.tags})
         min_ids = MinId.objects.filter(conference=conference, instance=instance)
