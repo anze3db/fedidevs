@@ -134,6 +134,8 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
     is_username = False
     if q := request.GET.get("q", ""):
         search = q.strip().lower()
+        if search[0] != "@":
+            search = "@" + search
         if username_regex.match(search):
             logger.info("Searching for username %s", search)
             is_username = True
@@ -144,7 +146,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
             )
             if not accounts.exists():
                 logger.info("Username not found, crawling the instance")
-                instance_name = search.split("@")[1]
+                instance_name = search.split("@")[2]
                 if Instance.objects.filter(instance=instance_name, deleted_at__isnull=False).exists():
                     logger.info("Instance is deleted")
                     return render(
@@ -221,7 +223,7 @@ def review_starter_pack(request, starter_pack_slug):
                 AccountFollowing.objects.filter(account=request.user.accountaccess.account, url=OuterRef("url")),
             ),
         )
-        .filter(in_starter_pack=True)
+        .filter(in_starter_pack=True, instance_model__deleted_at__isnull=True)
         .order_by("-is_followed", "-followers_count")
     )
 
@@ -368,6 +370,7 @@ def share_starter_pack(request, starter_pack_slug):
     accounts = (
         Account.objects.filter(
             starterpackaccount__starter_pack=starter_pack,
+            instance_model__deleted_at__isnull=True,
             discoverable=True,
         )
         .select_related("accountlookup", "instance_model")
@@ -399,7 +402,7 @@ def share_starter_pack(request, starter_pack_slug):
             "page_description": starter_pack.description,
             "starter_pack": starter_pack,
             "num_accounts": accounts.count(),
-            "num_hidden_accounts": Account.objects.exclude(discoverable=True)
+            "num_hidden_accounts": Account.objects.exclude(discoverable=True, instance_model__deleted_at__isnull=True)
             .filter(starterpackaccount__starter_pack=starter_pack)
             .count(),
             "accounts": page_obj,
@@ -430,6 +433,7 @@ def follow_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, deleted_at__isnull=True)
     accounts = Account.objects.filter(
         starterpackaccount__starter_pack=starter_pack,
+        instance_model__deleted_at__isnull=True,
     ).select_related("accountlookup", "instance_model")
     account_following = []
     for account in accounts:
@@ -458,6 +462,7 @@ def follow_bg(user_id: int, starter_pack_slug: str):
 
     starter_pack_accounts = Account.objects.filter(
         starterpackaccount__starter_pack__slug=starter_pack_slug,
+        instance_model__deleted_at__isnull=True,
         discoverable=True,
     )
 
