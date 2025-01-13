@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-06 00:39+0000\n"
-"PO-Revision-Date: 2025-01-02 17:38+0100\n"
+"POT-Creation-Date: 2025-01-13 06:23+0000\n"
+"PO-Revision-Date: 2025-01-13 07:42+0100\n"
 "Last-Translator: Nikita Karamov <me@kytta.dev>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -189,42 +189,42 @@ msgstr ""
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">Freunden.</"
 "a>"
 
-#: mastodon_auth/views.py:84
+#: mastodon_auth/views.py:93
 msgid "Network error, is the instance url correct?"
 msgstr "Netzwerkfehler, ist die Instanz-URL korrekt?"
 
-#: mastodon_auth/views.py:89
+#: mastodon_auth/views.py:98
 msgid ""
 "Unable to create app on your instance. Is it a Mastodon compatible instance?"
 msgstr ""
 "Es konnte keine App auf Ihrer Instanz erstellt werden. Ist es eine Mastodon-"
 "kompatible Instanz?"
 
-#: mastodon_auth/views.py:140 mastodon_auth/views.py:145
+#: mastodon_auth/views.py:149 mastodon_auth/views.py:154
 msgid "Invalid request, please try again"
 msgstr "Ungültige Anfrage, bitte versuchen Sie es erneut"
 
-#: mastodon_auth/views.py:281
+#: mastodon_auth/views.py:290
 msgid "Service unavailable"
 msgstr "Dienst nicht verfügbar"
 
-#: mastodon_auth/views.py:291 mastodon_auth/views.py:310
+#: mastodon_auth/views.py:300 mastodon_auth/views.py:319
 msgid "Account not found"
 msgstr "Kein Konto gefunden"
 
-#: mastodon_auth/views.py:294
+#: mastodon_auth/views.py:303
 msgid "Not Authorized"
 msgstr "Nicht autorisiert"
 
-#: mastodon_auth/views.py:297 mastodon_auth/views.py:318
+#: mastodon_auth/views.py:306 mastodon_auth/views.py:327
 msgid "Failed to follow"
 msgstr "Konnte nicht folgen"
 
-#: mastodon_auth/views.py:303
+#: mastodon_auth/views.py:312
 msgid "Unauthorized"
 msgstr "Nicht autorisiert"
 
-#: mastodon_auth/views.py:315
+#: mastodon_auth/views.py:324
 msgid "Account has moved"
 msgstr "Konto ist umgezogen"
 
@@ -312,7 +312,7 @@ msgstr ""
 
 #: starter_packs/templates/cotton/starter_pack_card.html:8
 msgid "Not published"
-msgstr ""
+msgstr "Nicht veröffentlicht"
 
 #: starter_packs/templates/cotton/starter_pack_card.html:17
 #: starter_packs/templates/share_starter_pack.html:24
@@ -367,6 +367,8 @@ msgstr "Ja, löschen"
 msgid ""
 "Review accounts or <a href=\"%(url)s\">go back</a> to add more accounts."
 msgstr ""
+"Überprüfen Sie Konten oder <a href=\"%(url)s\">gehen Sie zurück</a>, um "
+"weitere Konten hinzuzufügen."
 
 #: starter_packs/templates/review_starter_pack_list.html:41
 msgid "No accounts in this starter pack"
@@ -374,18 +376,20 @@ msgstr "Keine Konten in diesem Startpaket"
 
 #: starter_packs/templates/share_starter_pack.html:10
 msgid "Not published!"
-msgstr ""
+msgstr "Nicht veröffentlicht!"
 
 #: starter_packs/templates/share_starter_pack.html:12
 msgid ""
 "This starter pack won't appear in the list of community starter packs until "
 "it's published."
 msgstr ""
+"Dieses Startpaket wird nicht in der Liste der Community-Startpakete "
+"erscheinen, bis es veröffentlicht wird."
 
 #: starter_packs/templates/share_starter_pack.html:16
 #: starter_packs/templates/share_starter_pack.html:90
 msgid "Publish now"
-msgstr ""
+msgstr "Jetzt veröffentlichen"
 
 #: starter_packs/templates/share_starter_pack.html:33
 #: starter_packs/templates/share_starter_pack.html:45
@@ -400,10 +404,8 @@ msgid "Add Accounts"
 msgstr "Konten hinzufügen"
 
 #: starter_packs/templates/share_starter_pack.html:75
-#, fuzzy
-#| msgid "Accounts"
 msgid "Review Accounts"
-msgstr "Konten"
+msgstr "Konten überprüfen"
 
 #: starter_packs/templates/share_starter_pack.html:79
 msgid "Edit"
@@ -415,7 +417,7 @@ msgstr "Löschen"
 
 #: starter_packs/templates/share_starter_pack.html:99
 msgid "Unpublish"
-msgstr ""
+msgstr "Nicht mehr veröffentlichen"
 
 #: starter_packs/templates/share_starter_pack.html:106
 msgid "Report"
@@ -432,7 +434,7 @@ msgstr[0] ""
 "ausgeblendet."
 msgstr[1] ""
 "<strong>%(count)s</strong> Konten sind aufgrund der Datenschutzeinstellungen "
-"ausgeblendet"
+"ausgeblendet."
 
 #: starter_packs/templates/starter_pack_accounts.html:57
 #: starter_packs/templates/starter_pack_accounts.html:65
@@ -521,74 +523,61 @@ msgid "Mastodon Starter Pack Directory | Fedidevs"
 msgstr "Mastodon-Startpaket-Verzeichnis | Fedidevs"
 
 #: starter_packs/views.py:96
-#, fuzzy
-#| msgid ""
-#| "Add accounts to your starter pack to help new users find interesting "
-#| "accounts to follow."
 msgid ""
 "Discover, create, and share Mastodon starter packs to help new users find "
 "interesting accounts to follow."
 msgstr ""
-"Fügen Sie Konten Ihrem Startpaket hinzu, damit neue Nutzer interessante "
-"Konten finden, denen sie folgen können."
+"Entdecken, erstellen und teilen Sie Mastodon-Startpakete, damit neue Nutzer "
+"interessante Accounts finden, denen sie folgen können."
 
-#: starter_packs/views.py:165
+#: starter_packs/views.py:166
 msgid "Add accounts to your starter pack"
 msgstr "Konten zu Ihrem Startpaket hinzufügen"
 
-#: starter_packs/views.py:212
-#, fuzzy
-#| msgid "Create your starter pack"
-msgid "Review your starter pack"
-msgstr "Erstellen Sie Ihr Startpaket"
-
 #: starter_packs/views.py:213
+msgid "Review your starter pack"
+msgstr "Überprüfen Sie Ihr Startpaket"
+
+#: starter_packs/views.py:214
 msgid "Review your starter pack to make sure everything is in order."
 msgstr ""
+"Überprüfen Sie Ihr Startpaket, um sicherzustellen, dass alles in Ordnung ist."
 
-#: starter_packs/views.py:244
+#: starter_packs/views.py:245
 msgid "Edit your starter pack"
 msgstr "Ihr Startpaket bearbeiten"
 
-#: starter_packs/views.py:245
-#, fuzzy
-#| msgid ""
-#| "Add accounts to your starter pack to help new users find interesting "
-#| "accounts to follow."
+#: starter_packs/views.py:246
 msgid ""
 "Edit your starter pack to help new users find interesting accounts to follow."
 msgstr ""
-"Fügen Sie Konten Ihrem Startpaket hinzu, damit neue Nutzer interessante "
-"Konten finden, denen sie folgen können."
+"Bearbeiten Sie Ihr Startpaket, damit neue Nutzer interessante Konten finden, "
+"denen sie folgen können."
 
-#: starter_packs/views.py:270
+#: starter_packs/views.py:271
 msgid "You already have a starter pack with this title."
 msgstr "Sie haben bereits ein Startpaket mit diesem Titel."
 
-#: starter_packs/views.py:280
+#: starter_packs/views.py:281
 msgid "Create a new starter pack"
 msgstr "Neues Startpaket erstellen"
 
-#: starter_packs/views.py:281
-#, fuzzy
-#| msgid ""
-#| "Add accounts to your starter pack to help new users find interesting "
-#| "accounts to follow."
+#: starter_packs/views.py:282
 msgid ""
 "Create a new starter pack to help new users find interesting accounts to "
 "follow."
 msgstr ""
-"Fügen Sie Konten Ihrem Startpaket hinzu, damit neue Nutzer interessante "
-"Konten finden, denen sie folgen können."
+"Erstellen Sie ein neues Startpaket, damit neue Nutzer interessante Konten "
+"finden, denen sie folgen können."
 
-#: starter_packs/views.py:322
+#: starter_packs/views.py:323
 msgid "You have reached the maximum number of accounts in a starter pack."
 msgstr "Sie haben die maximale Anzahl von Konten in einem Startpaket erreicht."
 
-#: starter_packs/views.py:368
+#: starter_packs/views.py:369
 msgid " - Mastodon Starter Pack"
 msgstr " - Mastodon-Startpaket"
 
-#: starter_packs/views.py:416
+#: starter_packs/views.py:417
 msgid "Following all accounts in the starter pack. 🎉"
 msgstr "Sie folgen alle Konten im Startpaket. 🎉"

@@ -23,17 +23,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-06 00:39+0000\n"
-"PO-Revision-Date: 2025-01-02 16:41+0100\n"
+"POT-Creation-Date: 2025-01-13 06:23+0000\n"
+"PO-Revision-Date: 2025-01-13 07:30+0100\n"
 "Last-Translator: Nikita Karamov <me@kytta.dev>\n"
 "Language-Team: \n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
-"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 "X-Generator: Poedit 3.5\n"
 
 #: accounts/models.py:190
@@ -51,7 +50,6 @@ msgid_plural "%(days)d days ago"
 msgstr[0] "%(days)d день назад"
 msgstr[1] "%(days)d дня назад"
 msgstr[2] "%(days)d дней назад"
-msgstr[3] "%(days)d дня назад"
 
 #: accounts/models.py:204
 #, python-format
@@ -60,7 +58,6 @@ msgid_plural "%(weeks)d weeks ago"
 msgstr[0] "%(weeks)d неделю назад"
 msgstr[1] "%(weeks)d недели назад"
 msgstr[2] "%(weeks)d недель назад"
-msgstr[3] "%(weeks)d недель назад"
 
 #: accounts/models.py:210
 #, python-format
@@ -69,7 +66,6 @@ msgid_plural "%(months)d months ago"
 msgstr[0] "%(months)d месяц назад"
 msgstr[1] "%(months)d месяца назад"
 msgstr[2] "%(months)d месяцев назад"
-msgstr[3] "%(months)d месяца назад"
 
 #: accounts/templates/cotton/follow_button.html:6
 #: accounts/templates/cotton/follow_button.html:23
@@ -212,42 +208,42 @@ msgstr ""
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">друзьями.</"
 "a>"
 
-#: mastodon_auth/views.py:84
+#: mastodon_auth/views.py:93
 msgid "Network error, is the instance url correct?"
 msgstr "Ошибка сети, правильно ли указан адрес сервера?"
 
-#: mastodon_auth/views.py:89
+#: mastodon_auth/views.py:98
 msgid ""
 "Unable to create app on your instance. Is it a Mastodon compatible instance?"
 msgstr ""
 "Не получилось создать приложение на вашем сервере. Это сервер, совместимый с "
 "Mastodon?"
 
-#: mastodon_auth/views.py:140 mastodon_auth/views.py:145
+#: mastodon_auth/views.py:149 mastodon_auth/views.py:154
 msgid "Invalid request, please try again"
 msgstr "Неверный запрос, попробуйте ещё раз"
 
-#: mastodon_auth/views.py:281
+#: mastodon_auth/views.py:290
 msgid "Service unavailable"
 msgstr "Сервис недоступен"
 
-#: mastodon_auth/views.py:291 mastodon_auth/views.py:310
+#: mastodon_auth/views.py:300 mastodon_auth/views.py:319
 msgid "Account not found"
 msgstr "Аккаунт не найден"
 
-#: mastodon_auth/views.py:294
+#: mastodon_auth/views.py:303
 msgid "Not Authorized"
 msgstr "Не авторизован"
 
-#: mastodon_auth/views.py:297 mastodon_auth/views.py:318
+#: mastodon_auth/views.py:306 mastodon_auth/views.py:327
 msgid "Failed to follow"
 msgstr "Не получилось подписаться"
 
-#: mastodon_auth/views.py:303
+#: mastodon_auth/views.py:312
 msgid "Unauthorized"
 msgstr "Не авторизован"
 
-#: mastodon_auth/views.py:315
+#: mastodon_auth/views.py:324
 msgid "Account has moved"
 msgstr "Аккаунт переехал"
 
@@ -334,7 +330,7 @@ msgstr ""
 
 #: starter_packs/templates/cotton/starter_pack_card.html:8
 msgid "Not published"
-msgstr ""
+msgstr "Не опубликовано"
 
 #: starter_packs/templates/cotton/starter_pack_card.html:17
 #: starter_packs/templates/share_starter_pack.html:24
@@ -388,6 +384,7 @@ msgstr "Да, удалить"
 msgid ""
 "Review accounts or <a href=\"%(url)s\">go back</a> to add more accounts."
 msgstr ""
+"Проверьте аккаунты или <a href=\"%(url)s\">вернитесь</a>, чтобы добавить ещё."
 
 #: starter_packs/templates/review_starter_pack_list.html:41
 msgid "No accounts in this starter pack"
@@ -395,18 +392,20 @@ msgstr "В этом стартовом наборе нет аккаунтов"
 
 #: starter_packs/templates/share_starter_pack.html:10
 msgid "Not published!"
-msgstr ""
+msgstr "Не опубликовано!"
 
 #: starter_packs/templates/share_starter_pack.html:12
 msgid ""
 "This starter pack won't appear in the list of community starter packs until "
 "it's published."
 msgstr ""
+"Этот стартовый набор не появится в общем списке до тех пор, пока он не будет "
+"опубликован."
 
 #: starter_packs/templates/share_starter_pack.html:16
 #: starter_packs/templates/share_starter_pack.html:90
 msgid "Publish now"
-msgstr ""
+msgstr "Опубликовать"
 
 #: starter_packs/templates/share_starter_pack.html:33
 #: starter_packs/templates/share_starter_pack.html:45
@@ -416,17 +415,14 @@ msgid_plural "Follow all %(count)s accounts"
 msgstr[0] "Подписаться на %(count)s аккаунт"
 msgstr[1] "Подписаться на %(count)s аккаунта"
 msgstr[2] "Подписаться на %(count)s аккаунтов"
-msgstr[3] "Подписаться на %(count)s аккаунта"
 
 #: starter_packs/templates/share_starter_pack.html:71
 msgid "Add Accounts"
 msgstr "Добавить аккаунты"
 
 #: starter_packs/templates/share_starter_pack.html:75
-#, fuzzy
-#| msgid "Accounts"
 msgid "Review Accounts"
-msgstr "Аккаунты"
+msgstr "Проверить аккаунты"
 
 #: starter_packs/templates/share_starter_pack.html:79
 msgid "Edit"
@@ -438,7 +434,7 @@ msgstr "Удалить"
 
 #: starter_packs/templates/share_starter_pack.html:99
 msgid "Unpublish"
-msgstr ""
+msgstr "Снять с публикации"
 
 #: starter_packs/templates/share_starter_pack.html:106
 msgid "Report"
@@ -456,8 +452,6 @@ msgstr[1] ""
 "<strong>%(count)s</strong> аккаунта спрятаны из-за настроек приватности."
 msgstr[2] ""
 "<strong>%(count)s</strong> аккаунтов спрятано из-за настроек приватности."
-msgstr[3] ""
-"<strong>%(count)s</strong> аккаунта спрятаны из-за настроек приватности."
 
 #: starter_packs/templates/starter_pack_accounts.html:57
 #: starter_packs/templates/starter_pack_accounts.html:65
@@ -476,7 +470,6 @@ msgid_plural "%(counter)s accounts in your starter pack."
 msgstr[0] "%(counter)s аккаунт в вашем стартовом наборе."
 msgstr[1] "%(counter)s аккаунта в вашем стартовом наборе."
 msgstr[2] "%(counter)s аккаунтов в вашем стартовом наборе."
-msgstr[3] "%(counter)s аккаунта в вашем стартовом наборе."
 
 #: starter_packs/templates/starter_pack_stats.html:17
 #: starter_packs/templates/starter_pack_stats.html:21
@@ -519,8 +512,8 @@ msgstr "Пожалуйста, войдите, чтобы увидеть ваши
 
 #: starter_packs/templates/starter_packs.html:107
 msgid ""
-"Please login to see your starter packs or search for your "
-"username@instance.org in the search form above"
+"Please login to see your starter packs or search for your username@instance."
+"org in the search form above"
 msgstr ""
 "Пожалуйста, войдите, чтобы увидеть ваши стартовые наборы или найдите свой "
 "username@server.org в поиске выше"
@@ -547,74 +540,60 @@ msgid "Mastodon Starter Pack Directory | Fedidevs"
 msgstr "Каталог стартовых наборов Mastodon | Fedidevs"
 
 #: starter_packs/views.py:96
-#, fuzzy
-#| msgid ""
-#| "Add accounts to your starter pack to help new users find interesting "
-#| "accounts to follow."
 msgid ""
 "Discover, create, and share Mastodon starter packs to help new users find "
 "interesting accounts to follow."
 msgstr ""
-"Добавьте аккаунты в свой стартовый набор, чтобы помочь новым пользователям "
-"найти интересные аккаунты, на которые стоит подписаться."
+"Находите, создавайте и делитесь стартовыми наборами Mastodon, чтобы помочь "
+"новым пользователям найти интересные аккаунты, на которые стоит подписаться."
 
-#: starter_packs/views.py:165
+#: starter_packs/views.py:166
 msgid "Add accounts to your starter pack"
 msgstr "Добавьте аккаунты в свой стартовый набор"
 
-#: starter_packs/views.py:212
-#, fuzzy
-#| msgid "Create your starter pack"
-msgid "Review your starter pack"
-msgstr "Создать стартовый набор"
-
 #: starter_packs/views.py:213
-msgid "Review your starter pack to make sure everything is in order."
-msgstr ""
+msgid "Review your starter pack"
+msgstr "Проверьте ваш стартовый набор"
 
-#: starter_packs/views.py:244
+#: starter_packs/views.py:214
+msgid "Review your starter pack to make sure everything is in order."
+msgstr "Проверьте ваш стартовый набор, чтобы убедиться, что всё в порядке."
+
+#: starter_packs/views.py:245
 msgid "Edit your starter pack"
 msgstr "Редактировать стартовый набор"
 
-#: starter_packs/views.py:245
-#, fuzzy
-#| msgid ""
-#| "Add accounts to your starter pack to help new users find interesting "
-#| "accounts to follow."
+#: starter_packs/views.py:246
 msgid ""
 "Edit your starter pack to help new users find interesting accounts to follow."
 msgstr ""
-"Добавьте аккаунты в свой стартовый набор, чтобы помочь новым пользователям "
-"найти интересные аккаунты, на которые стоит подписаться."
+"Отредактируйте свой стартовый набор, чтобы помочь новым пользователям найти "
+"интересные аккаунты, на которые стоит подписаться."
 
-#: starter_packs/views.py:270
+#: starter_packs/views.py:271
 msgid "You already have a starter pack with this title."
 msgstr "У вас уже есть стартовый набор с таким названием."
 
-#: starter_packs/views.py:280
+#: starter_packs/views.py:281
 msgid "Create a new starter pack"
 msgstr "Создать новый стартовый набор"
 
-#: starter_packs/views.py:281
-#, fuzzy
-#| msgid ""
-#| "Add accounts to your starter pack to help new users find interesting "
-#| "accounts to follow."
+#: starter_packs/views.py:282
 msgid ""
 "Create a new starter pack to help new users find interesting accounts to "
 "follow."
 msgstr ""
-"Добавьте аккаунты в свой стартовый набор, чтобы помочь новым пользователям "
-"найти интересные аккаунты, на которые стоит подписаться."
+"Создайте новый стартовый набор, чтобы помочь новым пользователям найти "
+"интересные аккаунты, на которые стоит подписаться."
 
-#: starter_packs/views.py:322
+#: starter_packs/views.py:323
 msgid "You have reached the maximum number of accounts in a starter pack."
 msgstr "Вы достигли максимального числа аккаунтов в стартовом наборе."
 
-#: starter_packs/views.py:368
+#: starter_packs/views.py:369
 msgid " - Mastodon Starter Pack"
 msgstr " - стартовый набор Mastodon"
 
-#: starter_packs/views.py:416
+#: starter_packs/views.py:417
 msgid "Following all accounts in the starter pack. 🎉"
 msgstr "Вы подписаны на все аккаунты в наборе. 🎉"
