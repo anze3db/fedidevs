@@ -165,6 +165,12 @@
                             🇮🇹
                         {% elif LANGUAGE_CODE == 'es' %}
                             🇪🇸
+                        {% elif LANGUAGE_CODE == 'ca' %}
+                            <img width="17"
+                                 height="17"
+                                 class="py-1 mr-1 inline-block"
+                                 src="{% static 'languages/catalan-flag.webp' %}"
+                                 alt="Catalan flag" />
                         {% elif LANGUAGE_CODE == 'ru' %}
                             🇷🇺
                         {% elif LANGUAGE_CODE == 'sl' %}
@@ -193,6 +199,16 @@
                                 </li>
                                 <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                     <button type="submit" value="es" name="language" class="block px-4 py-2">🇪🇸 Español</button>
+                                </li>
+                                <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    <button type="submit" value="ca" name="language" class="block px-4 py-2">
+                                        <img width="17"
+                                             height="17"
+                                             class="py-1 mr-1 inline-block"
+                                             src="{% static 'languages/catalan-flag.webp' %}"
+                                             alt="Catalan flag" />
+                                        Català
+                                    </button>
                                 </li>
                                 <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                     <button type="submit" value="ru" name="language" class="block px-4 py-2">🇷🇺 Русский</button>
