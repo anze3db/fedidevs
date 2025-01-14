@@ -51,7 +51,7 @@ def djangoconus(request, date: dt.date | None = None):
     dates = [
         {
             "value": date,
-            "pre_display": f"Talks: Day {i+1}" if i < 3 else f"Sprints: Day {i-2}",
+            "pre_display": f"Talks: Day {i + 1}" if i < 3 else f"Sprints: Day {i - 2}",
             "display": date,
             "count": counts_dict.get(date, 0),
         }

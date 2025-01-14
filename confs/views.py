@@ -343,7 +343,7 @@ def fwd50(request, date: dt.date | None = None):
     dates = [
         {
             "value": date,
-            "pre_display": f"Day {i+1}",
+            "pre_display": f"Day {i + 1}",
             "display": date,
             "count": counts_dict.get(date, 0),
         }
@@ -442,7 +442,7 @@ def djangoconafrica(request, date: dt.date | None = None):
     dates = [
         {
             "value": date,
-            "pre_display": f"Day {i+1}",
+            "pre_display": f"Day {i + 1}",
             "display": date,
             "count": counts_dict.get(date, 0),
         }
@@ -545,7 +545,7 @@ def dotnetconf(request, date: dt.date | None = None):
     dates = [
         {
             "value": date,
-            "pre_display": f"Day {i+1}",
+            "pre_display": f"Day {i + 1}",
             "display": date,
             "count": counts_dict.get(date, 0),
         }

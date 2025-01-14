@@ -366,7 +366,7 @@ def switch_account_type(_, accountlookup_id: int, account_type: str):
         to_switch = "H"
 
     return HttpResponse(
-        f"""<button hx-post="{reverse("switch_account_type", args=[accountlookup_id, to_switch])}" hx-target="#switch_account_type" hx-swap="innerHTML">Switch to {"Human" if to_switch == 'H' else "Project"}</button>"""
+        f"""<button hx-post="{reverse("switch_account_type", args=[accountlookup_id, to_switch])}" hx-target="#switch_account_type" hx-swap="innerHTML">Switch to {"Human" if to_switch == "H" else "Project"}</button>"""
     )
 
 
