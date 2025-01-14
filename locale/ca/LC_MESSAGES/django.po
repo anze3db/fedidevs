@@ -1,0 +1,606 @@
+# Traducció al català des del castellà
+# Copyright (C) 2025
+# This file is distributed under the same license as the PACKAGE package.
+# Pau Kokura paukokura@anartist.org, 2025.
+# packs d'inici... o paquets d'inici?
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-13 00:39+0000\n"
+"PO-Revision-Date: 2025-01-13 13:31+0100\n"
+"Last-Translator: Pau Kokura <paukokura@anartist.org>\n"
+"Language-Team: \n"
+"Language: ca\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
+"X-Generator: Poedit 3.5\n"
+
+#: accounts/models.py:190
+msgid "Never posted"
+msgstr "Mai ha publicat"
+
+#: accounts/models.py:193
+msgid "Less than a day ago"
+msgstr "Fa menys d'un día"
+
+#: accounts/models.py:197
+#, python-format
+msgid "%(days)d day ago"
+msgid_plural "%(days)d days ago"
+msgstr[0] "fa %(days)d dia"
+msgstr[1] "fa %(days)d dies"
+msgstr[2] "fa %(days)d dies"
+
+#: accounts/models.py:204
+#, python-format
+msgid "%(weeks)d week ago"
+msgid_plural "%(weeks)d weeks ago"
+msgstr[0] "fa %(weeks)d setmana"
+msgstr[1] "fa %(weeks)d setmanes"
+msgstr[2] "fa %(weeks)d setmanes"
+
+#: accounts/models.py:210
+#, python-format
+msgid "%(months)d month ago"
+msgid_plural "%(months)d months ago"
+msgstr[0] "fa %(months)d mes"
+msgstr[1] "fa %(months)d mesos"
+msgstr[2] "fa %(months)d meseos"
+
+#: accounts/templates/cotton/follow_button.html:6
+#: accounts/templates/cotton/follow_button.html:23
+msgid "Follow"
+msgstr "Segueix"
+
+#: accounts/templates/cotton/follow_button.html:11
+msgctxt "You are already *following* this account."
+msgid "Following"
+msgstr "Seguint"
+
+#: accounts/templates/cotton/follow_button.html:16
+msgid "You!"
+msgstr "Tu!"
+
+#: accounts/templates/login_form.html:7
+msgid "Sign in to your Mastodon instance"
+msgstr "Inicia sessió a la teva instància de Mastodon"
+
+#: accounts/templates/login_form.html:19
+msgid "Close modal"
+msgstr "Tancar modal"
+
+#: accounts/templates/login_form.html:31
+msgid "Your instance"
+msgstr "La teva instància"
+
+#: accounts/templates/login_form.html:41
+msgid ""
+"<strong>Write</strong> permissions will be requested to be able to follow "
+"accounts on your behalf."
+msgstr ""
+"Es demanaràn permisos d'<strong>escriptura</strong> per a poder continuar "
+"comptes al seu nom."
+
+#: accounts/templates/login_form.html:48
+msgid "Authorize"
+msgstr "Autoritzar"
+
+#: accounts/templates/v2/accounts.html:74
+#: starter_packs/templates/starter_pack_accounts.html:74
+msgid "Last posted"
+msgstr "Darrera publicació"
+
+#: accounts/templates/v2/accounts.html:80
+#: starter_packs/templates/starter_pack_accounts.html:80
+msgid "Posts"
+msgstr "Publicacions"
+
+#: accounts/templates/v2/accounts.html:96
+#: starter_packs/templates/starter_pack_accounts.html:96
+msgid "Followers"
+msgstr "Seguidors"
+
+#: accounts/templates/v2/accounts.html:112
+#: starter_packs/templates/starter_pack_accounts.html:112
+msgctxt "This account is *following* this many people"
+msgid "Following"
+msgstr "Seguint"
+
+#: accounts/templates/v2/accounts.html:132
+msgid "No accounts found."
+msgstr "No s'han trobat comptes."
+
+#: accounts/templates/v2/accounts.html:132
+msgid "Reset the filters"
+msgstr "Reiniciar els filtres"
+
+#: accounts/templates/v2/layout.html:15
+msgid "Discover amazing people on Mastodon."
+msgstr "Descobreix gent increïble a Mastodon."
+
+#: accounts/templates/v2/layout.html:42 accounts/templates/v2/layout.html:53
+msgid "Discover amazing people from across the fediverse."
+msgstr "Descobreix gent increïble de tot el fedivers."
+
+#: accounts/templates/v2/layout.html:94
+msgid "Close"
+msgstr "tancar"
+
+#: accounts/templates/v2/layout.html:114
+msgid "Open sidebar"
+msgstr "Obrir barra lateral"
+
+#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:266
+msgid "Starter Packs"
+msgstr "Packs d'Inici"
+
+#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:269
+#: starter_packs/templates/cotton/starter_pack_card.html:30
+msgid "Accounts"
+msgstr "Comptes"
+
+#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:272
+msgid "Conferences"
+msgstr "Conferències"
+
+#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:275
+msgid "Stats"
+msgstr "Estadístiques"
+
+#: accounts/templates/v2/layout.html:148
+msgid "Toggle Theme"
+msgstr "Canviar tema"
+
+#: accounts/templates/v2/layout.html:205
+msgid "Help with translations"
+msgstr "Ajuda amb les traduccions"
+
+#: accounts/templates/v2/layout.html:215 accounts/templates/v2/layout.html:235
+msgid "Account"
+msgstr "Compte"
+
+#: accounts/templates/v2/layout.html:227
+msgid "Sign out"
+msgstr "Tancar sessió"
+
+#: accounts/templates/v2/layout.html:247
+msgid "Sign in"
+msgstr "Iniciar sessió"
+
+#: accounts/templates/v2/layout.html:315
+msgid "FAQ"
+msgstr "FAQ"
+
+#: accounts/templates/v2/layout.html:318
+msgid "Mastodon instances"
+msgstr "Instàncies de Mastodon"
+
+#: accounts/templates/v2/layout.html:321
+msgid "Newsletter"
+msgstr "Butlletí"
+
+#: accounts/templates/v2/layout.html:326
+msgid ""
+"Created by <a href=\"https://fosstodon.org/@anze3db\">Anže</a> and <a "
+"href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">friends.</a>"
+msgstr ""
+"Creat per <a href=\"https://fosstodon.org/@anze3db\">Anže</a> i <a "
+"href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">amiguis.</a>"
+
+#: mastodon_auth/views.py:84
+msgid "Network error, is the instance url correct?"
+msgstr "Error de xarxa, ¿l'URL de la instància és correcta?"
+
+#: mastodon_auth/views.py:89
+msgid ""
+"Unable to create app on your instance. Is it a Mastodon compatible instance?"
+msgstr ""
+"No s'ha pogut crear una app a la teva instància. ¿Es una instància compatible "
+"amb Mastodon?"
+
+#: mastodon_auth/views.py:140 mastodon_auth/views.py:145
+msgid "Invalid request, please try again"
+msgstr "Sol·licitud no vàlida, si us plau prova de nou"
+
+#: mastodon_auth/views.py:281
+msgid "Service unavailable"
+msgstr "Servei no disponible"
+
+#: mastodon_auth/views.py:291 mastodon_auth/views.py:310
+msgid "Account not found"
+msgstr "Compte no trobada"
+
+#: mastodon_auth/views.py:294
+msgid "Not Authorized"
+msgstr "No autoritzat"
+
+#: mastodon_auth/views.py:297 mastodon_auth/views.py:318
+msgid "Failed to follow"
+msgstr "No s'ha pogut seguir"
+
+#: mastodon_auth/views.py:303
+msgid "Unauthorized"
+msgstr "Sense autorització"
+
+#: mastodon_auth/views.py:315
+msgid "Account has moved"
+msgstr "El compte s'ha traslladat
+
+#: starter_packs/templates/add_accounts.html:7
+msgid "Add accounts to"
+msgstr "Afegir comptes a"
+
+#: starter_packs/templates/add_accounts.html:14
+#: starter_packs/templates/add_accounts.html:34
+msgid "Search"
+msgstr "Cerca"
+
+#: starter_packs/templates/add_accounts.html:31
+msgid "Search @username@instance.org"
+msgstr "Cerca @usuari@instancia.org"
+
+#: starter_packs/templates/add_accounts_list.html:20
+#: starter_packs/templates/review_starter_pack_list.html:20
+#, python-format
+msgid ""
+"⚠️ The account is not set as <a href=\"%(url)s\">discoverable</a> and cannot "
+"be added."
+msgstr ""
+"⚠️ El compte no està marcat com <a href=\"%(url)s\">trobable</a> i no "
+"pot ser afegida."
+
+#: starter_packs/templates/add_accounts_list.html:42
+msgid "No results found 😞"
+msgstr "No s'han trobat resultats 😞"
+
+#: starter_packs/templates/add_accounts_list.html:44
+msgid ""
+"We couldn't find any accounts matching your query in the Fedidevs database "
+"or at the instance itself. Double check the username and instance and try "
+"again."
+msgstr ""
+"No hem pogut trobar cap compte que coincideixi amb la teva cerca a la "
+"base de dades de Fedidevs o a la pròpia instancia. Comprova de nou el "
+"nom d'usuari i instancia i torna a provar."
+
+#: starter_packs/templates/add_accounts_list.html:47
+msgid ""
+"<strong>Note:</strong> Only <strong>Mastodon</strong> instances are "
+"supported at the moment."
+msgstr ""
+"<strong>Nota:</strong> Només estàn suportades instàncies de <strong>Mastodon</"
+"stron>en aquest moment."
+
+#: starter_packs/templates/add_accounts_list.html:53
+#, python-format
+msgid ""
+"<strong>Tip:</strong> Reach out to us through <a href=\"%(mail)s\">email</a> "
+"or <a href=\"%(url)s\">Mastodon</a> and we'll try to help you out!"
+msgstr ""
+"<strong>Consejo:</strong> ¡Contáctan'ns via <a "
+"href=\"%(mail)s\">email</a> o <a href=\"%(url)s\">Mastodon</a> e "
+"mirarem d'ajudar-te!"
+
+#: starter_packs/templates/add_accounts_list.html:63
+msgid ""
+"We couldn't find any accounts matching your query in the Fedidevs database. "
+"Keep in mind, our database only includes a small portion of all the accounts "
+"in the fediverse!"
+msgstr ""
+"No hem pogut trobar cap compte que coincideixi amb la teva cerca a la "
+"base de dades de Fedidevs. Tingues en compte que la nostra base de dades inclou "
+"una petita part de tots els comptes del fedivers!"
+
+#: starter_packs/templates/add_accounts_list.html:66
+msgid ""
+"<strong>Tip:</strong> Try searching for <strong>@username@instance.org</"
+"strong> to find the user directly on their instance."
+msgstr ""
+"<strong>Consell:</strong> Prova a cercar <strong>@usuari@instancia.org</"
+"strong> per a trobar l'usuari directament a la seva instància."
+
+#: starter_packs/templates/add_accounts_list.html:81
+msgid ""
+"<strong>Tip:</strong> Not finding a specific account? Try searching for "
+"<strong>@username@instance.org</strong> to find the user directly on their "
+"instance."
+msgstr ""
+"<strong>Consell:</strong> ¿No trobes un compte concret? Prova "
+"a cercar <strong>@usuari@instancia.org</strong> per a trobar un usuari "
+"directament a la seva instància."
+
+#: starter_packs/templates/cotton/starter_pack_card.html:8
+msgid "Not published"
+msgstr "No publicat"
+
+#: starter_packs/templates/cotton/starter_pack_card.html:17
+#: starter_packs/templates/share_starter_pack.html:24
+msgid "By"
+msgstr "Per"
+
+#: starter_packs/templates/cotton/starter_pack_card.html:26
+msgid "Created"
+msgstr "Creat"
+
+#: starter_packs/templates/create_starter_pack.html:6
+#: starter_packs/templates/starter_packs.html:123
+msgid "Mastodon starter packs"
+msgstr "Packs d'Inici de Mastodon"
+
+#: starter_packs/templates/create_starter_pack.html:7
+msgid "Invite your friends to follow your favorite people on Mastodon"
+msgstr "Convida a les teves amistats a seguir a les teves perrsones favorites de Mastodon"
+
+#: starter_packs/templates/create_starter_pack.html:16
+msgid "Starter pack title"
+msgstr "Títol del pack d'inici"
+
+#: starter_packs/templates/create_starter_pack.html:22
+msgid "My Awesome Starter Pack"
+msgstr "El meu Increïble Pack d'Inici"
+
+#: starter_packs/templates/create_starter_pack.html:30
+msgid "Starter pack description"
+msgstr "Descripció del pack d'inici"
+
+#: starter_packs/templates/create_starter_pack.html:36
+msgid "My favorite people on Mastodon - join me!"
+msgstr "La meva gent preferida de Mastodon - uneix-te!"
+
+#: starter_packs/templates/create_starter_pack.html:46
+#: starter_packs/templates/create_starter_pack.html:51
+msgid "Continue"
+msgstr "Continuar"
+
+#: starter_packs/templates/delete_starter_pack.html:8
+msgid "Are you sure you want to delete the starter pack"
+msgstr "Segur que vols eliminar aquest pack d'inici"
+
+#: starter_packs/templates/delete_starter_pack.html:14
+msgid "Yes, delete"
+msgstr "Sí, elimina'l"
+
+#: starter_packs/templates/review_starter_pack.html:9
+#, python-format
+msgid ""
+"Review accounts or <a href=\"%(url)s\">go back</a> to add more accounts."
+msgstr "Reviseu els comptes o <a href=\"%(url)s\">torneu enrere</a> per afegir més comptes."
+
+#: starter_packs/templates/review_starter_pack_list.html:41
+msgid "No accounts in this starter pack"
+msgstr "No hi ha comptes en aquest paquet d'inici"
+
+#: starter_packs/templates/share_starter_pack.html:10
+msgid "Not published!"
+msgstr "No publicat!"
+
+#: starter_packs/templates/share_starter_pack.html:12
+msgid ""
+"This starter pack won't appear in the list of community starter packs until "
+"it's published."
+msgstr ""
+"Aquest paquet d'inici no apareixerà a la llista de paquets d'inici de la comunitat fins que"
+"sigui publicat".
+
+#: starter_packs/templates/share_starter_pack.html:16
+#: starter_packs/templates/share_starter_pack.html:90
+msgid "Publish now"
+msgstr "Publica ara"
+
+#: starter_packs/templates/share_starter_pack.html:33
+#: starter_packs/templates/share_starter_pack.html:45
+#, python-format
+msgid "Follow %(count)s account"
+msgid_plural "Follow all %(count)s accounts"
+msgstr[0] "Seguir %(count)s compte"
+msgstr[1] "Seguir %(count)s comptes"
+msgstr[2] "Seguir %(count)s comptes"
+
+#: starter_packs/templates/share_starter_pack.html:71
+msgid "Add Accounts"
+msgstr "Afegir comptes"
+
+#: starter_packs/templates/share_starter_pack.html:75
+#, fuzzy
+#| msgid "Accounts"
+msgid "Review Accounts"
+msgstr "Revisar comptes"
+
+#: starter_packs/templates/share_starter_pack.html:79
+msgid "Edit"
+msgstr "Editar"
+
+#: starter_packs/templates/share_starter_pack.html:83
+msgid "Delete"
+msgstr "Eliminar"
+
+#: starter_packs/templates/share_starter_pack.html:99
+msgid "Unpublish"
+msgstr "Despublicar"
+
+#: starter_packs/templates/share_starter_pack.html:106
+msgid "Report"
+msgstr "Informar"
+
+#: starter_packs/templates/share_starter_pack.html:115
+#, python-format
+msgid ""
+"<strong>%(count)s</strong> account hidden due to their privacy settings."
+msgid_plural ""
+"<strong>%(count)s</strong> accounts hidden due to their privacy settings."
+msgstr[0] ""
+"<strong>%(count)s</strong> compte ocult degut a les seves preferències de "
+"privacitat."
+msgstr[1] ""
+"<strong>%(count)s</strong> compte ocult degut a les seves preferències de "
+"privacitat."
+msgstr[2] ""
+"<strong>%(count)s</strong> comptes ocults degut a les seves preferències de "
+"privacitat."
+
+#: starter_packs/templates/starter_pack_accounts.html:57
+#: starter_packs/templates/starter_pack_accounts.html:65
+msgid "Switch to Project"
+msgstr "Canviar a Projecte"
+
+#: starter_packs/templates/starter_pack_accounts.html:61
+#: starter_packs/templates/starter_pack_accounts.html:68
+msgid "Switch to Human"
+msgstr "Canviar a Humà"
+
+#: starter_packs/templates/starter_pack_stats.html:6
+#, python-format
+msgid "%(counter)s account in your starter pack."
+msgid_plural "%(counter)s accounts in your starter pack."
+msgstr[0] "%(counter)s compte al teu pack d'inici."
+msgstr[1] "%(counter)s ccompte al teu pack d'inici."
+msgstr[2] "%(counter)s comptes al teu pack d'inici."
+
+#: starter_packs/templates/starter_pack_stats.html:17
+#: starter_packs/templates/starter_pack_stats.html:21
+msgid "Finish"
+msgstr "Acabar"
+
+#: starter_packs/templates/starter_pack_stats.html:26
+#: starter_packs/templates/starter_pack_stats.html:30
+msgid "Review"
+msgstr "Revisar"
+
+#: starter_packs/templates/starter_packs.html:11
+msgid "Community Starter Packs"
+msgstr "Packs d'Inici comunitaris"
+
+#: starter_packs/templates/starter_packs.html:17
+msgid "Your Starter Packs"
+msgstr "Els teus Packs d'Inici"
+
+#: starter_packs/templates/starter_packs.html:23
+msgid "Starter Packs Containing You"
+msgstr "Packs d'Inici on hi ets"
+
+#: starter_packs/templates/starter_packs.html:44
+#: starter_packs/templates/starter_packs.html:68
+msgid "Go"
+msgstr "Anar"
+
+#: starter_packs/templates/starter_packs.html:73
+msgid "Search..."
+msgstr "Cercar..."
+
+#: starter_packs/templates/starter_packs.html:99
+msgid "No starter packs containing"
+msgstr "Cap pack d'inicio conté"
+
+#: starter_packs/templates/starter_packs.html:104
+msgid "Please login to see your starter packs."
+msgstr "Si us plau, inicieu la sessió per veure els vostres packs d'inici."
+
+#: starter_packs/templates/starter_packs.html:107
+msgid ""
+"Please login to see your starter packs or search for your "
+"username@instance.org in the search form above"
+msgstr ""
+"Si us plau, inicia sessió para veure els teus packs d'inicio o cerca el teu "
+"@usuari@instancia.org a la barra de cerca"
+
+#: starter_packs/templates/starter_packs.html:112
+msgid "You haven't created any starter packs yet."
+msgstr "No has creat cap pack de'inici encara."
+
+#: starter_packs/templates/starter_packs.html:114
+msgid "You haven't been added to any starter packs yet."
+msgstr "No t'han afegit a cap pack d'inicio encara."
+
+#: starter_packs/templates/starter_packs.html:124
+msgid "Invite your friends to follow your favorite people on Mastodon."
+msgstr "Convida a les teves amistats a seguir a tus usuarios favoritos en Mastodon."
+
+#: starter_packs/templates/starter_packs.html:132
+#: starter_packs/templates/starter_packs.html:136
+msgid "Create your starter pack"
+msgstr "Crea el teu pack d'inici"
+
+#: starter_packs/views.py:94
+msgid "Mastodon Starter Pack Directory | Fedidevs"
+msgstr "Directori de Packs d'Inici de Mastodon | Fedidevs"
+
+#: starter_packs/views.py:96
+#, fuzzy
+#| msgid ""
+#| "Add accounts to your starter pack to help new users find interesting "
+#| "accounts to follow."
+msgid ""
+"Discover, create, and share Mastodon starter packs to help new users find "
+"interesting accounts to follow."
+msgstr ""
+"Afegeix comptes al vostre paquet d'inici per ajudar a nous usuaris a trobar "
+"comptes interesants per seguir."
+
+#: starter_packs/views.py:165
+msgid "Add accounts to your starter pack"
+msgstr "Afegeix comptes al teu pack d'inici"
+
+#: starter_packs/views.py:212
+#, fuzzy
+#| msgid "Create your starter pack"
+msgid "Review your starter pack"
+msgstr "Crea el teu pack d'inici"
+
+#: starter_packs/views.py:213
+msgid "Review your starter pack to make sure everything is in order."
+msgstr "Revisa el teu pack d'inici per assegurar-te que tot està en ordre."
+
+#: starter_packs/views.py:244
+msgid "Edit your starter pack"
+msgstr "Editar el teu pack d'inici"
+
+#: starter_packs/views.py:245
+#, fuzzy
+#| msgid ""
+#| "Add accounts to your starter pack to help new users find interesting "
+#| "accounts to follow."
+msgid ""
+"Edit your starter pack to help new users find interesting accounts to follow."
+msgstr ""
+"Afegiu comptes al vostre paquet d'inici per ajudar a nous usuaris a trobar "
+"comptes interessants per seguir."
+
+#: starter_packs/views.py:270
+msgid "You already have a starter pack with this title."
+msgstr "Ja has creat un pack d'inici amb aquest títol."
+
+#: starter_packs/views.py:280
+msgid "Create a new starter pack"
+msgstr "Crear un nou pack d'inici"
+
+#: starter_packs/views.py:281
+#, fuzzy
+#| msgid ""
+#| "Add accounts to your starter pack to help new users find interesting "
+#| "accounts to follow."
+msgid ""
+"Create a new starter pack to help new users find interesting accounts to "
+"follow."
+msgstr ""
+"Afegeix comptes al teu pack d'inici per ajudar nous usuaris a trobar"
+"comptes interessants per seguir."
+
+#: starter_packs/views.py:322
+msgid "You have reached the maximum number of accounts in a starter pack."
+msgstr "Heu assolit el màxim de comptes a un pack d'inici."
+
+#: starter_packs/views.py:368
+msgid " - Mastodon Starter Pack"
+msgstr " - Pack d'Inici de Mastodon"
+
+#: starter_packs/views.py:416
+msgid "Following all accounts in the starter pack. 🎉"
+msgstr "Seguint tots els comptes del pack d'inici. 🎉"
+
+#~ msgid "Following"
+#~ msgstr "Seguint"
