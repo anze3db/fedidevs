@@ -229,7 +229,7 @@ msgstr "Sense autorització"
 
 #: mastodon_auth/views.py:315
 msgid "Account has moved"
-msgstr "El compte s'ha traslladat
+msgstr "El compte s'ha traslladat"
 
 #: starter_packs/templates/add_accounts.html:7
 msgid "Add accounts to"
@@ -384,8 +384,8 @@ msgid ""
 "This starter pack won't appear in the list of community starter packs until "
 "it's published."
 msgstr ""
-"Aquest paquet d'inici no apareixerà a la llista de paquets d'inici de la comunitat fins que"
-"sigui publicat".
+"Aquest paquet d'inici no apareixerà a la llista de paquets d'inici de la comunitat fins que "
+"sigui publicat."
 
 #: starter_packs/templates/share_starter_pack.html:16
 #: starter_packs/templates/share_starter_pack.html:90
