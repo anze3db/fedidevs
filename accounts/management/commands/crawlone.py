@@ -108,7 +108,7 @@ async def fetch_user(client, instance: str, user: str) -> dict:
             },
             timeout=30,
         )
-        if response.status_code == 301:
+        if response.status_code in (301, 302):
             response = await client.get(
                 response.headers["Location"],
                 params={
