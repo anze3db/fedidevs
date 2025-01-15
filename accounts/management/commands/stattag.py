@@ -86,7 +86,7 @@ class Command(RichCommand):
                 return
 
         if instance_model.deleted_at:
-            logger.warning("Instance %s is deleted", instance)
+            logger.info("Instance %s is deleted", instance)
             return
 
         tags = list({tag.strip().replace("#", "").lower() for tag in conference.tags.split(",") if conference.tags})
