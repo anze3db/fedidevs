@@ -30,28 +30,11 @@ from stats.models import FollowClick
 logger = logging.getLogger(__name__)
 app_scopes = (
     "read:accounts",
-    "read:blocks",
-    "read:favourites",
-    "read:filters",
     "read:follows",
-    "read:lists",
-    "read:mutes",
-    "read:notifications",
     "read:search",
-    "read:statuses",
-    "read:bookmarks",
-    "write:accounts",
-    "write:blocks",
-    "write:favourites",
-    "write:filters",
     "write:follows",
+    "read:lists",
     "write:lists",
-    "write:media",
-    "write:mutes",
-    "write:notifications",
-    "write:reports",
-    "write:statuses",
-    "write:bookmarks",
 )
 login_scopes = ("read:accounts", "read:follows", "write:follows", "read:search")
 
