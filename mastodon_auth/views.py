@@ -59,7 +59,8 @@ def login(request):
             logger.info("Redirected to %s", res.headers["Location"])
             api_base_url = res.headers["Location"].split("/")[2]
     except httpx.RequestError:
-        logger.warning("Failed to get host-meta for %s", api_base_url)
+        messages.error(request, f"Mastodon instance not found. Is the URL correct? `{api_base_url}`")
+        return redirect("/")
 
     instance = Instance.objects.filter(url=api_base_url).first()
 
