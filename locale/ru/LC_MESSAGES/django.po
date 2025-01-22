@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-13 06:23+0000\n"
+"POT-Creation-Date: 2025-01-22 17:36+0000\n"
 "PO-Revision-Date: 2025-01-13 07:30+0100\n"
 "Last-Translator: Nikita Karamov <me@kytta.dev>\n"
 "Language-Team: \n"
@@ -35,15 +35,15 @@ msgstr ""
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 "X-Generator: Poedit 3.5\n"
 
-#: accounts/models.py:190
+#: accounts/models.py:192
 msgid "Never posted"
 msgstr "Нет постов"
 
-#: accounts/models.py:193
+#: accounts/models.py:195
 msgid "Less than a day ago"
 msgstr "Меньше дня назад"
 
-#: accounts/models.py:197
+#: accounts/models.py:199
 #, python-format
 msgid "%(days)d day ago"
 msgid_plural "%(days)d days ago"
@@ -51,7 +51,7 @@ msgstr[0] "%(days)d день назад"
 msgstr[1] "%(days)d дня назад"
 msgstr[2] "%(days)d дней назад"
 
-#: accounts/models.py:204
+#: accounts/models.py:206
 #, python-format
 msgid "%(weeks)d week ago"
 msgid_plural "%(weeks)d weeks ago"
@@ -59,7 +59,7 @@ msgstr[0] "%(weeks)d неделю назад"
 msgstr[1] "%(weeks)d недели назад"
 msgstr[2] "%(weeks)d недель назад"
 
-#: accounts/models.py:210
+#: accounts/models.py:212
 #, python-format
 msgid "%(months)d month ago"
 msgid_plural "%(months)d months ago"
@@ -150,20 +150,20 @@ msgstr "Закрыть"
 msgid "Open sidebar"
 msgstr "Открыть боковую панель"
 
-#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:266
+#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:282
 msgid "Starter Packs"
 msgstr "Стартовые наборы"
 
-#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:269
+#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:285
 #: starter_packs/templates/cotton/starter_pack_card.html:30
 msgid "Accounts"
 msgstr "Аккаунты"
 
-#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:272
+#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:288
 msgid "Conferences"
 msgstr "Конференции"
 
-#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:275
+#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:291
 msgid "Stats"
 msgstr "Статистика"
 
@@ -171,35 +171,35 @@ msgstr "Статистика"
 msgid "Toggle Theme"
 msgstr "Сменить тему"
 
-#: accounts/templates/v2/layout.html:205
+#: accounts/templates/v2/layout.html:221
 msgid "Help with translations"
 msgstr "Помочь с переводом"
 
-#: accounts/templates/v2/layout.html:215 accounts/templates/v2/layout.html:235
+#: accounts/templates/v2/layout.html:231 accounts/templates/v2/layout.html:251
 msgid "Account"
 msgstr "Аккаунт"
 
-#: accounts/templates/v2/layout.html:227
+#: accounts/templates/v2/layout.html:243
 msgid "Sign out"
 msgstr "Выйти"
 
-#: accounts/templates/v2/layout.html:247
+#: accounts/templates/v2/layout.html:263
 msgid "Sign in"
 msgstr "Войти"
 
-#: accounts/templates/v2/layout.html:315
+#: accounts/templates/v2/layout.html:331
 msgid "FAQ"
 msgstr "ЧаВо"
 
-#: accounts/templates/v2/layout.html:318
+#: accounts/templates/v2/layout.html:334
 msgid "Mastodon instances"
 msgstr "Сервера Mastodon"
 
-#: accounts/templates/v2/layout.html:321
+#: accounts/templates/v2/layout.html:337
 msgid "Newsletter"
 msgstr "Рассылка"
 
-#: accounts/templates/v2/layout.html:326
+#: accounts/templates/v2/layout.html:342
 msgid ""
 "Created by <a href=\"https://fosstodon.org/@anze3db\">Anže</a> and <a "
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">friends.</a>"
@@ -208,42 +208,42 @@ msgstr ""
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">друзьями.</"
 "a>"
 
-#: mastodon_auth/views.py:93
+#: mastodon_auth/views.py:78
 msgid "Network error, is the instance url correct?"
 msgstr "Ошибка сети, правильно ли указан адрес сервера?"
 
-#: mastodon_auth/views.py:98
+#: mastodon_auth/views.py:83
 msgid ""
 "Unable to create app on your instance. Is it a Mastodon compatible instance?"
 msgstr ""
 "Не получилось создать приложение на вашем сервере. Это сервер, совместимый с "
 "Mastodon?"
 
-#: mastodon_auth/views.py:149 mastodon_auth/views.py:154
+#: mastodon_auth/views.py:135 mastodon_auth/views.py:140
 msgid "Invalid request, please try again"
 msgstr "Неверный запрос, попробуйте ещё раз"
 
-#: mastodon_auth/views.py:290
+#: mastodon_auth/views.py:277
 msgid "Service unavailable"
 msgstr "Сервис недоступен"
 
-#: mastodon_auth/views.py:300 mastodon_auth/views.py:319
+#: mastodon_auth/views.py:287 mastodon_auth/views.py:306
 msgid "Account not found"
 msgstr "Аккаунт не найден"
 
-#: mastodon_auth/views.py:303
+#: mastodon_auth/views.py:290
 msgid "Not Authorized"
 msgstr "Не авторизован"
 
-#: mastodon_auth/views.py:306 mastodon_auth/views.py:327
+#: mastodon_auth/views.py:293 mastodon_auth/views.py:314
 msgid "Failed to follow"
 msgstr "Не получилось подписаться"
 
-#: mastodon_auth/views.py:312
+#: mastodon_auth/views.py:299
 msgid "Unauthorized"
 msgstr "Не авторизован"
 
-#: mastodon_auth/views.py:324
+#: mastodon_auth/views.py:311
 msgid "Account has moved"
 msgstr "Аккаунт переехал"
 
@@ -270,11 +270,20 @@ msgstr ""
 "⚠️ Этот аккаунт не может быть добавлен, так как он не может <a "
 "href=\"%(url)s\">быть обнаружен</a>."
 
-#: starter_packs/templates/add_accounts_list.html:42
+#: starter_packs/templates/add_accounts_list.html:43
+#, python-format
+msgid "Instance <i>`%(deleted_instance)s`</i> was deleted 😞"
+msgstr ""
+
+#: starter_packs/templates/add_accounts_list.html:48
+msgid "The instance Admin has requested to remove the instance."
+msgstr ""
+
+#: starter_packs/templates/add_accounts_list.html:55
 msgid "No results found 😞"
 msgstr "Ничего не найдено 😞"
 
-#: starter_packs/templates/add_accounts_list.html:44
+#: starter_packs/templates/add_accounts_list.html:57
 msgid ""
 "We couldn't find any accounts matching your query in the Fedidevs database "
 "or at the instance itself. Double check the username and instance and try "
@@ -283,7 +292,7 @@ msgstr ""
 "Мы не смогли найти ни одного аккаунта по вашему запросу ни в базе Fedidevs, "
 "ни на самом сервере. Проверьте имя пользователя и сервер и повторите попытку."
 
-#: starter_packs/templates/add_accounts_list.html:47
+#: starter_packs/templates/add_accounts_list.html:60
 msgid ""
 "<strong>Note:</strong> Only <strong>Mastodon</strong> instances are "
 "supported at the moment."
@@ -291,7 +300,7 @@ msgstr ""
 "<strong>Внимание:</strong> На данный момент поддерживаются только сервера "
 "<strong>Mastodon</strong>."
 
-#: starter_packs/templates/add_accounts_list.html:53
+#: starter_packs/templates/add_accounts_list.html:66
 #, python-format
 msgid ""
 "<strong>Tip:</strong> Reach out to us through <a href=\"%(mail)s\">email</a> "
@@ -300,7 +309,7 @@ msgstr ""
 "<strong>Совет:</strong> Напишите нам <a href=\"%(mail)s\">e-mail</a> или в "
 "<a href=\"%(url)s\">Mastodon</a>, и мы постараемся вам помочь!"
 
-#: starter_packs/templates/add_accounts_list.html:63
+#: starter_packs/templates/add_accounts_list.html:76
 msgid ""
 "We couldn't find any accounts matching your query in the Fedidevs database. "
 "Keep in mind, our database only includes a small portion of all the accounts "
@@ -310,7 +319,7 @@ msgstr ""
 "вашему запросу. Имейте в виду, что наша база данных включает лишь малую "
 "часть всех аккаунтов в Федивёрсе!"
 
-#: starter_packs/templates/add_accounts_list.html:66
+#: starter_packs/templates/add_accounts_list.html:79
 msgid ""
 "<strong>Tip:</strong> Try searching for <strong>@username@instance.org</"
 "strong> to find the user directly on their instance."
@@ -318,7 +327,7 @@ msgstr ""
 "<strong>Совет:</strong> Попробуйте поискать <strong>@username@server.org</"
 "strong>, чтобы найти пользователя непосредственно на его сервере."
 
-#: starter_packs/templates/add_accounts_list.html:81
+#: starter_packs/templates/add_accounts_list.html:94
 msgid ""
 "<strong>Tip:</strong> Not finding a specific account? Try searching for "
 "<strong>@username@instance.org</strong> to find the user directly on their "
@@ -512,8 +521,8 @@ msgstr "Пожалуйста, войдите, чтобы увидеть ваши
 
 #: starter_packs/templates/starter_packs.html:107
 msgid ""
-"Please login to see your starter packs or search for your username@instance."
-"org in the search form above"
+"Please login to see your starter packs or search for your "
+"username@instance.org in the search form above"
 msgstr ""
 "Пожалуйста, войдите, чтобы увидеть ваши стартовые наборы или найдите свой "
 "username@server.org в поиске выше"
@@ -547,38 +556,38 @@ msgstr ""
 "Находите, создавайте и делитесь стартовыми наборами Mastodon, чтобы помочь "
 "новым пользователям найти интересные аккаунты, на которые стоит подписаться."
 
-#: starter_packs/views.py:166
+#: starter_packs/views.py:157 starter_packs/views.py:192
 msgid "Add accounts to your starter pack"
 msgstr "Добавьте аккаунты в свой стартовый набор"
 
-#: starter_packs/views.py:213
+#: starter_packs/views.py:239
 msgid "Review your starter pack"
 msgstr "Проверьте ваш стартовый набор"
 
-#: starter_packs/views.py:214
+#: starter_packs/views.py:240
 msgid "Review your starter pack to make sure everything is in order."
 msgstr "Проверьте ваш стартовый набор, чтобы убедиться, что всё в порядке."
 
-#: starter_packs/views.py:245
+#: starter_packs/views.py:271
 msgid "Edit your starter pack"
 msgstr "Редактировать стартовый набор"
 
-#: starter_packs/views.py:246
+#: starter_packs/views.py:272
 msgid ""
 "Edit your starter pack to help new users find interesting accounts to follow."
 msgstr ""
 "Отредактируйте свой стартовый набор, чтобы помочь новым пользователям найти "
 "интересные аккаунты, на которые стоит подписаться."
 
-#: starter_packs/views.py:271
+#: starter_packs/views.py:297
 msgid "You already have a starter pack with this title."
 msgstr "У вас уже есть стартовый набор с таким названием."
 
-#: starter_packs/views.py:281
+#: starter_packs/views.py:307
 msgid "Create a new starter pack"
 msgstr "Создать новый стартовый набор"
 
-#: starter_packs/views.py:282
+#: starter_packs/views.py:308
 msgid ""
 "Create a new starter pack to help new users find interesting accounts to "
 "follow."
@@ -586,14 +595,14 @@ msgstr ""
 "Создайте новый стартовый набор, чтобы помочь новым пользователям найти "
 "интересные аккаунты, на которые стоит подписаться."
 
-#: starter_packs/views.py:323
+#: starter_packs/views.py:349
 msgid "You have reached the maximum number of accounts in a starter pack."
 msgstr "Вы достигли максимального числа аккаунтов в стартовом наборе."
 
-#: starter_packs/views.py:369
+#: starter_packs/views.py:396
 msgid " - Mastodon Starter Pack"
 msgstr " - стартовый набор Mastodon"
 
-#: starter_packs/views.py:417
+#: starter_packs/views.py:445
 msgid "Following all accounts in the starter pack. 🎉"
 msgstr "Вы подписаны на все аккаунты в наборе. 🎉"

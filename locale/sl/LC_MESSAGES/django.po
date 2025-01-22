@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fedidevs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-06 00:39+0000\n"
+"POT-Creation-Date: 2025-01-22 17:36+0000\n"
 "PO-Revision-Date: 2025-01-01 15:52+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -20,15 +20,15 @@ msgstr ""
 "n%100<=4 ? 2 : 3);\n"
 "X-Generator: Poedit 3.5\n"
 
-#: accounts/models.py:190
+#: accounts/models.py:192
 msgid "Never posted"
 msgstr "Nazadnje objevljeno"
 
-#: accounts/models.py:193
+#: accounts/models.py:195
 msgid "Less than a day ago"
 msgstr "Pred manj kot enim dnevom"
 
-#: accounts/models.py:197
+#: accounts/models.py:199
 #, python-format
 msgid "%(days)d day ago"
 msgid_plural "%(days)d days ago"
@@ -37,7 +37,7 @@ msgstr[1] "Pred %(days)d dnevoma"
 msgstr[2] "Pred %(days)d dnevi"
 msgstr[3] "Pred %(days)d dnevi"
 
-#: accounts/models.py:204
+#: accounts/models.py:206
 #, python-format
 msgid "%(weeks)d week ago"
 msgid_plural "%(weeks)d weeks ago"
@@ -46,7 +46,7 @@ msgstr[1] "Pred %(weeks)d tednoma"
 msgstr[2] "Pred %(weeks)d tedni"
 msgstr[3] "Pred %(weeks)d tedni"
 
-#: accounts/models.py:210
+#: accounts/models.py:212
 #, python-format
 msgid "%(months)d month ago"
 msgid_plural "%(months)d months ago"
@@ -138,20 +138,20 @@ msgstr "Zapri"
 msgid "Open sidebar"
 msgstr "Odpri stransko vrstico"
 
-#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:266
+#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:282
 msgid "Starter Packs"
 msgstr "Začetni Paketi"
 
-#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:269
+#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:285
 #: starter_packs/templates/cotton/starter_pack_card.html:30
 msgid "Accounts"
 msgstr "Računi"
 
-#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:272
+#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:288
 msgid "Conferences"
 msgstr "Konference"
 
-#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:275
+#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:291
 msgid "Stats"
 msgstr "Statistika"
 
@@ -159,35 +159,35 @@ msgstr "Statistika"
 msgid "Toggle Theme"
 msgstr "Preklopi temo"
 
-#: accounts/templates/v2/layout.html:205
+#: accounts/templates/v2/layout.html:221
 msgid "Help with translations"
 msgstr "Pomagaj s prevodi"
 
-#: accounts/templates/v2/layout.html:215 accounts/templates/v2/layout.html:235
+#: accounts/templates/v2/layout.html:231 accounts/templates/v2/layout.html:251
 msgid "Account"
 msgstr "Račun"
 
-#: accounts/templates/v2/layout.html:227
+#: accounts/templates/v2/layout.html:243
 msgid "Sign out"
 msgstr "Odjavi se"
 
-#: accounts/templates/v2/layout.html:247
+#: accounts/templates/v2/layout.html:263
 msgid "Sign in"
 msgstr "Prijavi se"
 
-#: accounts/templates/v2/layout.html:315
+#: accounts/templates/v2/layout.html:331
 msgid "FAQ"
 msgstr "Pogosta vprašanja"
 
-#: accounts/templates/v2/layout.html:318
+#: accounts/templates/v2/layout.html:334
 msgid "Mastodon instances"
 msgstr "Mastodon instance"
 
-#: accounts/templates/v2/layout.html:321
+#: accounts/templates/v2/layout.html:337
 msgid "Newsletter"
 msgstr "Glasilo"
 
-#: accounts/templates/v2/layout.html:326
+#: accounts/templates/v2/layout.html:342
 msgid ""
 "Created by <a href=\"https://fosstodon.org/@anze3db\">Anže</a> and <a "
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">friends.</a>"
@@ -196,42 +196,42 @@ msgstr ""
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">prijatelji."
 "</a>"
 
-#: mastodon_auth/views.py:84
+#: mastodon_auth/views.py:78
 msgid "Network error, is the instance url correct?"
 msgstr "Omrežna napaka, ali je URL pravilen?"
 
-#: mastodon_auth/views.py:89
+#: mastodon_auth/views.py:83
 msgid ""
 "Unable to create app on your instance. Is it a Mastodon compatible instance?"
 msgstr ""
 "Na vaši instanci ni mogoče ustvariti aplikacije. Ali je vaša instanca "
 "združljiva z Mastodonom?"
 
-#: mastodon_auth/views.py:140 mastodon_auth/views.py:145
+#: mastodon_auth/views.py:135 mastodon_auth/views.py:140
 msgid "Invalid request, please try again"
 msgstr "Neveljavna zahteva, poskusite znova"
 
-#: mastodon_auth/views.py:281
+#: mastodon_auth/views.py:277
 msgid "Service unavailable"
 msgstr "Storitev ni na voljo"
 
-#: mastodon_auth/views.py:291 mastodon_auth/views.py:310
+#: mastodon_auth/views.py:287 mastodon_auth/views.py:306
 msgid "Account not found"
 msgstr "Račun ni bil najden"
 
-#: mastodon_auth/views.py:294
+#: mastodon_auth/views.py:290
 msgid "Not Authorized"
 msgstr "Ni dovoljeno"
 
-#: mastodon_auth/views.py:297 mastodon_auth/views.py:318
+#: mastodon_auth/views.py:293 mastodon_auth/views.py:314
 msgid "Failed to follow"
 msgstr "Sledenje ni uspelo"
 
-#: mastodon_auth/views.py:303
+#: mastodon_auth/views.py:299
 msgid "Unauthorized"
 msgstr "Nepooblaščeno"
 
-#: mastodon_auth/views.py:315
+#: mastodon_auth/views.py:311
 msgid "Account has moved"
 msgstr "Račun je bil premaknjen"
 
@@ -258,11 +258,20 @@ msgstr ""
 "⚠️ Račun ni nastavljen kot <a href=\"%(url)s\">viden</a> in ga ni mogoče "
 "dodati."
 
-#: starter_packs/templates/add_accounts_list.html:42
+#: starter_packs/templates/add_accounts_list.html:43
+#, python-format
+msgid "Instance <i>`%(deleted_instance)s`</i> was deleted 😞"
+msgstr ""
+
+#: starter_packs/templates/add_accounts_list.html:48
+msgid "The instance Admin has requested to remove the instance."
+msgstr ""
+
+#: starter_packs/templates/add_accounts_list.html:55
 msgid "No results found 😞"
 msgstr "Ni rezultatov 😞"
 
-#: starter_packs/templates/add_accounts_list.html:44
+#: starter_packs/templates/add_accounts_list.html:57
 msgid ""
 "We couldn't find any accounts matching your query in the Fedidevs database "
 "or at the instance itself. Double check the username and instance and try "
@@ -272,7 +281,7 @@ msgstr ""
 "računa, ki bi ustrezal vaši poizvedbi. Še enkrat preverite uporabniško ime "
 "in primerek ter poskusite znova."
 
-#: starter_packs/templates/add_accounts_list.html:47
+#: starter_packs/templates/add_accounts_list.html:60
 msgid ""
 "<strong>Note:</strong> Only <strong>Mastodon</strong> instances are "
 "supported at the moment."
@@ -280,7 +289,7 @@ msgstr ""
 "<strong>Opomba:</strong> Trenutno so podprti samo <strong>Mastodon</strong> "
 "instance."
 
-#: starter_packs/templates/add_accounts_list.html:53
+#: starter_packs/templates/add_accounts_list.html:66
 #, python-format
 msgid ""
 "<strong>Tip:</strong> Reach out to us through <a href=\"%(mail)s\">email</a> "
@@ -289,7 +298,7 @@ msgstr ""
 "<strong>Nasvet:</strong> Pišite nam prek <a href=\"%(mail)s\">e-pošte</a> "
 "ali <a href=\"%(url)s\">Mastodona</a> in poskušali vam bomo pomagati!"
 
-#: starter_packs/templates/add_accounts_list.html:63
+#: starter_packs/templates/add_accounts_list.html:76
 msgid ""
 "We couldn't find any accounts matching your query in the Fedidevs database. "
 "Keep in mind, our database only includes a small portion of all the accounts "
@@ -299,7 +308,7 @@ msgstr ""
 "vaši poizvedbi. Upoštevajte, da naša zbirka podatkov vključuje le majhen del "
 "vseh računov v fediversu!"
 
-#: starter_packs/templates/add_accounts_list.html:66
+#: starter_packs/templates/add_accounts_list.html:79
 msgid ""
 "<strong>Tip:</strong> Try searching for <strong>@username@instance.org</"
 "strong> to find the user directly on their instance."
@@ -307,7 +316,7 @@ msgstr ""
 "<strong>Nasvet:</strong> Za iskanje neposredno na uporabnikovi instanci, "
 "iščite v formatu: <strong>@uporabniškoime@instanca.org</strong>."
 
-#: starter_packs/templates/add_accounts_list.html:81
+#: starter_packs/templates/add_accounts_list.html:94
 msgid ""
 "<strong>Tip:</strong> Not finding a specific account? Try searching for "
 "<strong>@username@instance.org</strong> to find the user directly on their "
@@ -372,7 +381,9 @@ msgstr "Ja, zbriši"
 #, python-format
 msgid ""
 "Review accounts or <a href=\"%(url)s\">go back</a> to add more accounts."
-msgstr "Preglejte račune ali pa <a href=\"%(url)s\">se vrnite</a> in dodajte več računov."
+msgstr ""
+"Preglejte račune ali pa <a href=\"%(url)s\">se vrnite</a> in dodajte več "
+"računov."
 
 #: starter_packs/templates/review_starter_pack_list.html:41
 msgid "No accounts in this starter pack"
@@ -386,7 +397,9 @@ msgstr "Ni objavljen!"
 msgid ""
 "This starter pack won't appear in the list of community starter packs until "
 "it's published."
-msgstr "Ta začetni paket ne bo prikazan na seznamu začetnih paketov skupnosti, dokler ne bo objavljen."
+msgstr ""
+"Ta začetni paket ne bo prikazan na seznamu začetnih paketov skupnosti, "
+"dokler ne bo objavljen."
 
 #: starter_packs/templates/share_starter_pack.html:16
 #: starter_packs/templates/share_starter_pack.html:90
@@ -542,54 +555,54 @@ msgstr ""
 "Dodajte račune v svoj začetni paket, da boste novim uporabnikom pomagali "
 "najti zanimive račune, ki jim bodo sledili."
 
-#: starter_packs/views.py:165
+#: starter_packs/views.py:157 starter_packs/views.py:192
 msgid "Add accounts to your starter pack"
 msgstr "Dodajte račune v svoj začetni paket"
 
-#: starter_packs/views.py:212
+#: starter_packs/views.py:239
 msgid "Review your starter pack"
 msgstr "Preglej svoj začetni paket"
 
-#: starter_packs/views.py:213
+#: starter_packs/views.py:240
 msgid "Review your starter pack to make sure everything is in order."
 msgstr "Preglejte svoj začetni paket in se prepričajte, da je vse v redu."
 
-#: starter_packs/views.py:244
+#: starter_packs/views.py:271
 msgid "Edit your starter pack"
 msgstr "Uredite svoj začetni paket"
 
-#: starter_packs/views.py:245
+#: starter_packs/views.py:272
 msgid ""
 "Edit your starter pack to help new users find interesting accounts to follow."
 msgstr ""
-"Uredi svoj svoj začetni paket, da boste novim uporabnikom pomagali "
-"najti zanimive račune, ki jim bodo sledili."
+"Uredi svoj svoj začetni paket, da boste novim uporabnikom pomagali najti "
+"zanimive račune, ki jim bodo sledili."
 
-#: starter_packs/views.py:270
+#: starter_packs/views.py:297
 msgid "You already have a starter pack with this title."
 msgstr "Že imate začetni paket s tem naslovom."
 
-#: starter_packs/views.py:280
+#: starter_packs/views.py:307
 msgid "Create a new starter pack"
 msgstr "Ustvarite nov začetni paket"
 
-#: starter_packs/views.py:281
+#: starter_packs/views.py:308
 msgid ""
 "Create a new starter pack to help new users find interesting accounts to "
 "follow."
 msgstr ""
-"Ustvari nov začetni paket, da boste novim uporabnikom pomagali "
-"najti zanimive račune, ki jim bodo sledili."
+"Ustvari nov začetni paket, da boste novim uporabnikom pomagali najti "
+"zanimive račune, ki jim bodo sledili."
 
-#: starter_packs/views.py:322
+#: starter_packs/views.py:349
 msgid "You have reached the maximum number of accounts in a starter pack."
 msgstr "Dosegli ste največje število računov v začetnem paketu."
 
-#: starter_packs/views.py:368
+#: starter_packs/views.py:396
 msgid " - Mastodon Starter Pack"
 msgstr " - Začetni paket Mastodon"
 
-#: starter_packs/views.py:416
+#: starter_packs/views.py:445
 msgid "Following all accounts in the starter pack. 🎉"
 msgstr "Spremljanje vseh računov v začetnem paketu. 🎉"
 

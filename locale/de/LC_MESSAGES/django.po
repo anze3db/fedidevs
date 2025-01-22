@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-13 06:23+0000\n"
+"POT-Creation-Date: 2025-01-22 17:36+0000\n"
 "PO-Revision-Date: 2025-01-13 07:42+0100\n"
 "Last-Translator: Nikita Karamov <me@kytta.dev>\n"
 "Language-Team: \n"
@@ -19,29 +19,29 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.5\n"
 
-#: accounts/models.py:190
+#: accounts/models.py:192
 msgid "Never posted"
 msgstr "Noch keine Beiträge"
 
-#: accounts/models.py:193
+#: accounts/models.py:195
 msgid "Less than a day ago"
 msgstr "Vor weniger als einem Tag"
 
-#: accounts/models.py:197
+#: accounts/models.py:199
 #, python-format
 msgid "%(days)d day ago"
 msgid_plural "%(days)d days ago"
 msgstr[0] "Vor einem Tag"
 msgstr[1] "Vor %(days)d Tagen"
 
-#: accounts/models.py:204
+#: accounts/models.py:206
 #, python-format
 msgid "%(weeks)d week ago"
 msgid_plural "%(weeks)d weeks ago"
 msgstr[0] "Vor einer Woche"
 msgstr[1] "Vor %(weeks)d Wochen"
 
-#: accounts/models.py:210
+#: accounts/models.py:212
 #, python-format
 msgid "%(months)d month ago"
 msgid_plural "%(months)d months ago"
@@ -131,20 +131,20 @@ msgstr "Schließen"
 msgid "Open sidebar"
 msgstr "Seitenleiste öffnen"
 
-#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:266
+#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:282
 msgid "Starter Packs"
 msgstr "Startpakete"
 
-#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:269
+#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:285
 #: starter_packs/templates/cotton/starter_pack_card.html:30
 msgid "Accounts"
 msgstr "Konten"
 
-#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:272
+#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:288
 msgid "Conferences"
 msgstr "Konferenzen"
 
-#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:275
+#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:291
 msgid "Stats"
 msgstr "Statistiken"
 
@@ -152,35 +152,35 @@ msgstr "Statistiken"
 msgid "Toggle Theme"
 msgstr "Thema umschalten"
 
-#: accounts/templates/v2/layout.html:205
+#: accounts/templates/v2/layout.html:221
 msgid "Help with translations"
 msgstr "Beim Übersetzen helfen"
 
-#: accounts/templates/v2/layout.html:215 accounts/templates/v2/layout.html:235
+#: accounts/templates/v2/layout.html:231 accounts/templates/v2/layout.html:251
 msgid "Account"
 msgstr "Konto"
 
-#: accounts/templates/v2/layout.html:227
+#: accounts/templates/v2/layout.html:243
 msgid "Sign out"
 msgstr "Abmelden"
 
-#: accounts/templates/v2/layout.html:247
+#: accounts/templates/v2/layout.html:263
 msgid "Sign in"
 msgstr "Anmelden"
 
-#: accounts/templates/v2/layout.html:315
+#: accounts/templates/v2/layout.html:331
 msgid "FAQ"
 msgstr "FAQ"
 
-#: accounts/templates/v2/layout.html:318
+#: accounts/templates/v2/layout.html:334
 msgid "Mastodon instances"
 msgstr "Mastodon-Instanzen"
 
-#: accounts/templates/v2/layout.html:321
+#: accounts/templates/v2/layout.html:337
 msgid "Newsletter"
 msgstr "Newsletter"
 
-#: accounts/templates/v2/layout.html:326
+#: accounts/templates/v2/layout.html:342
 msgid ""
 "Created by <a href=\"https://fosstodon.org/@anze3db\">Anže</a> and <a "
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">friends.</a>"
@@ -189,42 +189,42 @@ msgstr ""
 "href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">Freunden.</"
 "a>"
 
-#: mastodon_auth/views.py:93
+#: mastodon_auth/views.py:78
 msgid "Network error, is the instance url correct?"
 msgstr "Netzwerkfehler, ist die Instanz-URL korrekt?"
 
-#: mastodon_auth/views.py:98
+#: mastodon_auth/views.py:83
 msgid ""
 "Unable to create app on your instance. Is it a Mastodon compatible instance?"
 msgstr ""
 "Es konnte keine App auf Ihrer Instanz erstellt werden. Ist es eine Mastodon-"
 "kompatible Instanz?"
 
-#: mastodon_auth/views.py:149 mastodon_auth/views.py:154
+#: mastodon_auth/views.py:135 mastodon_auth/views.py:140
 msgid "Invalid request, please try again"
 msgstr "Ungültige Anfrage, bitte versuchen Sie es erneut"
 
-#: mastodon_auth/views.py:290
+#: mastodon_auth/views.py:277
 msgid "Service unavailable"
 msgstr "Dienst nicht verfügbar"
 
-#: mastodon_auth/views.py:300 mastodon_auth/views.py:319
+#: mastodon_auth/views.py:287 mastodon_auth/views.py:306
 msgid "Account not found"
 msgstr "Kein Konto gefunden"
 
-#: mastodon_auth/views.py:303
+#: mastodon_auth/views.py:290
 msgid "Not Authorized"
 msgstr "Nicht autorisiert"
 
-#: mastodon_auth/views.py:306 mastodon_auth/views.py:327
+#: mastodon_auth/views.py:293 mastodon_auth/views.py:314
 msgid "Failed to follow"
 msgstr "Konnte nicht folgen"
 
-#: mastodon_auth/views.py:312
+#: mastodon_auth/views.py:299
 msgid "Unauthorized"
 msgstr "Nicht autorisiert"
 
-#: mastodon_auth/views.py:324
+#: mastodon_auth/views.py:311
 msgid "Account has moved"
 msgstr "Konto ist umgezogen"
 
@@ -251,11 +251,20 @@ msgstr ""
 "⚠️ Das Konto ist nicht als <a href=\"%(url)s\">auffindbar</a> eingestellt und "
 "kann nicht hinzugefügt werden."
 
-#: starter_packs/templates/add_accounts_list.html:42
+#: starter_packs/templates/add_accounts_list.html:43
+#, python-format
+msgid "Instance <i>`%(deleted_instance)s`</i> was deleted 😞"
+msgstr ""
+
+#: starter_packs/templates/add_accounts_list.html:48
+msgid "The instance Admin has requested to remove the instance."
+msgstr ""
+
+#: starter_packs/templates/add_accounts_list.html:55
 msgid "No results found 😞"
 msgstr "Keine Ergebnisse gefunden 😞"
 
-#: starter_packs/templates/add_accounts_list.html:44
+#: starter_packs/templates/add_accounts_list.html:57
 msgid ""
 "We couldn't find any accounts matching your query in the Fedidevs database "
 "or at the instance itself. Double check the username and instance and try "
@@ -265,7 +274,7 @@ msgstr ""
 "Konten finden, die Ihrer Anfrage entsprechen. Überprüfen Sie den "
 "Benutzernamen und die Instanz und versuchen Sie es erneut."
 
-#: starter_packs/templates/add_accounts_list.html:47
+#: starter_packs/templates/add_accounts_list.html:60
 msgid ""
 "<strong>Note:</strong> Only <strong>Mastodon</strong> instances are "
 "supported at the moment."
@@ -273,7 +282,7 @@ msgstr ""
 "<strong>Hinweis:</strong> Zurzeit werden nur <strong>Mastodon</strong>-"
 "Instanzen unterstützt."
 
-#: starter_packs/templates/add_accounts_list.html:53
+#: starter_packs/templates/add_accounts_list.html:66
 #, python-format
 msgid ""
 "<strong>Tip:</strong> Reach out to us through <a href=\"%(mail)s\">email</a> "
@@ -282,7 +291,7 @@ msgstr ""
 "<strong>Tipp:</strong> Kontaktieren Sie uns per <a href=\"%(mail)s\">E-Mail</"
 "a> oder <a href=\"%(url)s\">Mastodon</a> und wir versuchen, Ihnen zu helfen!"
 
-#: starter_packs/templates/add_accounts_list.html:63
+#: starter_packs/templates/add_accounts_list.html:76
 msgid ""
 "We couldn't find any accounts matching your query in the Fedidevs database. "
 "Keep in mind, our database only includes a small portion of all the accounts "
@@ -292,7 +301,7 @@ msgstr ""
 "entsprechen. Bedenken Sie, dass unsere Datenbank nur einen kleinen Teil "
 "aller Konten im Fediverse umfasst!"
 
-#: starter_packs/templates/add_accounts_list.html:66
+#: starter_packs/templates/add_accounts_list.html:79
 msgid ""
 "<strong>Tip:</strong> Try searching for <strong>@username@instance.org</"
 "strong> to find the user directly on their instance."
@@ -300,7 +309,7 @@ msgstr ""
 "<strong>Tipp:</strong> Versuchen Sie, nach <strong>@username@instance.org</"
 "strong> zu suchen, um den Benutzer direkt auf seiner Instanz zu finden."
 
-#: starter_packs/templates/add_accounts_list.html:81
+#: starter_packs/templates/add_accounts_list.html:94
 msgid ""
 "<strong>Tip:</strong> Not finding a specific account? Try searching for "
 "<strong>@username@instance.org</strong> to find the user directly on their "
@@ -530,39 +539,39 @@ msgstr ""
 "Entdecken, erstellen und teilen Sie Mastodon-Startpakete, damit neue Nutzer "
 "interessante Accounts finden, denen sie folgen können."
 
-#: starter_packs/views.py:166
+#: starter_packs/views.py:157 starter_packs/views.py:192
 msgid "Add accounts to your starter pack"
 msgstr "Konten zu Ihrem Startpaket hinzufügen"
 
-#: starter_packs/views.py:213
+#: starter_packs/views.py:239
 msgid "Review your starter pack"
 msgstr "Überprüfen Sie Ihr Startpaket"
 
-#: starter_packs/views.py:214
+#: starter_packs/views.py:240
 msgid "Review your starter pack to make sure everything is in order."
 msgstr ""
 "Überprüfen Sie Ihr Startpaket, um sicherzustellen, dass alles in Ordnung ist."
 
-#: starter_packs/views.py:245
+#: starter_packs/views.py:271
 msgid "Edit your starter pack"
 msgstr "Ihr Startpaket bearbeiten"
 
-#: starter_packs/views.py:246
+#: starter_packs/views.py:272
 msgid ""
 "Edit your starter pack to help new users find interesting accounts to follow."
 msgstr ""
 "Bearbeiten Sie Ihr Startpaket, damit neue Nutzer interessante Konten finden, "
 "denen sie folgen können."
 
-#: starter_packs/views.py:271
+#: starter_packs/views.py:297
 msgid "You already have a starter pack with this title."
 msgstr "Sie haben bereits ein Startpaket mit diesem Titel."
 
-#: starter_packs/views.py:281
+#: starter_packs/views.py:307
 msgid "Create a new starter pack"
 msgstr "Neues Startpaket erstellen"
 
-#: starter_packs/views.py:282
+#: starter_packs/views.py:308
 msgid ""
 "Create a new starter pack to help new users find interesting accounts to "
 "follow."
@@ -570,14 +579,14 @@ msgstr ""
 "Erstellen Sie ein neues Startpaket, damit neue Nutzer interessante Konten "
 "finden, denen sie folgen können."
 
-#: starter_packs/views.py:323
+#: starter_packs/views.py:349
 msgid "You have reached the maximum number of accounts in a starter pack."
 msgstr "Sie haben die maximale Anzahl von Konten in einem Startpaket erreicht."
 
-#: starter_packs/views.py:369
+#: starter_packs/views.py:396
 msgid " - Mastodon Starter Pack"
 msgstr " - Mastodon-Startpaket"
 
-#: starter_packs/views.py:417
+#: starter_packs/views.py:445
 msgid "Following all accounts in the starter pack. 🎉"
 msgstr "Sie folgen alle Konten im Startpaket. 🎉"
