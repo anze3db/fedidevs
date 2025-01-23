@@ -8,7 +8,9 @@
 {% block content %}
     <main class="flex justify-center">
         <article>
-            <h1 class="prose-xl dark:prose-invert md:hidden mb-4">{{ page_subheader | safe }}</h1>
+            <h1 class="prose-xl dark:prose-invert md:hidden mb-4 break-words text-pretty hyphens-auto">
+                {{ page_subheader | safe }}
+            </h1>
             <section class="mb-8 flex flex-wrap gap-4 justify-end">
                 {# djlint:off #}
                 {% if follower_type == 'best' %}
@@ -159,7 +161,9 @@
 {% endblock content %}
 {% block sidebar %}
     <header>
-        <h1 class="prose-xl dark:prose-invert hidden md:block">{{ page_subheader | safe }}</h1>
+        <h1 class="prose-xl break-words text-pretty hyphens-auto dark:prose-invert hidden md:block">
+            {{ page_subheader | safe }}
+        </h1>
         <section class="mb-8 mt-8">
             <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">Smart Filters ✨</h2>
             <ul class="px-4 -mx-4 text-small">

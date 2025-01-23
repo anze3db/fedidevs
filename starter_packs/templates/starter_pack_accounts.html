@@ -32,7 +32,9 @@
             </div>
             <div class="p-4 pt-16">
                 <div class="relative">
-                    <h5 class="mb-1 text-2xl font-semibold flex gap-2 [&>img]:max-w-8">{% render_emojis account.name account.emojis %}</h5>
+                    <h5 class="mb-1 text-2xl  break-words text-pretty hyphens-auto font-semibold flex gap-2 [&>img]:max-w-8">
+                        {% render_emojis account.name account.emojis %}
+                    </h5>
                     {% if selected_instance and selected_instance != account.source %}
                         <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}"
                            class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2"
@@ -45,7 +47,7 @@
                         </a>
                     {% endif %}
                 </div>
-                <div class="mt-6 mb-2 font-normal text-gray-700 dark:text-gray-400 prose dark:prose-invert text-balance break-all [&_img]:max-h-4 [&_img]:inline-block [&_img]:m-0">
+                <div class="mt-6 mb-2 font-normal text-gray-700 dark:text-gray-400 prose dark:prose-invert break-words text-pretty hyphens-auto [&_img]:max-h-4 [&_img]:inline-block [&_img]:m-0">
                     {% render_emojis account.note account.emojis %}
                 </div>
                 {% if user.is_superuser %}

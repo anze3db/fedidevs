@@ -7,7 +7,7 @@
             {% if not starter_pack.published_at %}
                 <span class=" bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">{% trans "Not published" %}</span>
             {% endif %}
-            <h4 class="prose dark:prose-invert pt-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            <h4 class="prose dark:prose-invert text-balance break-words pt-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {% render_language_emojis starter_pack.title %}
             </h4>
         </a>
@@ -18,7 +18,7 @@
             </a>
         {% endif %}
         <a href="{% url 'share_starter_pack' starter_pack.slug %}" class="block">
-            <p class="prose dark:prose-invert pt-4 font-normal text-gray-700 dark:text-gray-400">
+            <p class="prose dark:prose-invert break-words text-pretty hyphens-auto pt-4 font-normal text-gray-700 dark:text-gray-400">
                 {% render_language_emojis starter_pack.description %}
             </p>
             <div class="prose dark:prose-invert grid grid-cols-2 gap-2 py-4 mt-4 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">

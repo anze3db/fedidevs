@@ -7,7 +7,7 @@
             {% if starter_pack.created_by == request.user and not starter_pack.published_at %}
                 <div class=" p-4 mb-4 text-center text-sm text-yellow-800 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-yellow-300"
                      role="alert">
-                    <h4 class="text-xl font-bold py-4">{% trans "Not published!" %}</h4>
+                    <h4 class="break-words text-balance text-xl font-bold py-4">{% trans "Not published!" %}</h4>
                     <p class="text-lg">
                         {% trans "This starter pack won't appear in the list of community starter packs until it's published." %}
                     </p>
@@ -18,12 +18,16 @@
                 </div>
             {% endif %}
             <div class="w-full p-4 text-center bg-blue-100 border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-blue-950 dark:border-blue-800">
-                <h5 class="mb-4 text-3xl font-bold text-gray-900 dark:text-white">{% render_language_emojis starter_pack.title %}</h5>
+                <h5 class="break-words text-balance mb-4 text-3xl font-bold text-gray-900 dark:text-white">
+                    {% render_language_emojis starter_pack.title %}
+                </h5>
                 <a href="{{ starter_pack.created_by.accountaccess.account.url }}"
-                   class="block text-sm font-medium pb-4 text-gray-700 dark:text-gray-400 hover:underline">
+                   class="block break-words text-balance text-sm font-medium pb-4 text-gray-700 dark:text-gray-400 hover:underline">
                     {% trans "By" %} <span class="text-gray-900 dark:text-gray-200">{% render_emojis starter_pack.created_by.accountaccess.account.display_name starter_pack.created_by.accountaccess.account.emojis %}</span> {{ starter_pack.created_by.accountaccess.account.username_at_instance }}
                 </a>
-                <p class="mb-5 text-base sm:text-lg">{% render_language_emojis starter_pack.description %}</p>
+                <p class="mb-5 break-words text-pretty hyphens-auto text-base sm:text-lg">
+                    {% render_language_emojis starter_pack.description %}
+                </p>
                 <div class="items-center justify-center space-y-4 sm:flex sm:space-y-0 sm:space-x-4 rtl:space-x-reverse">
                     {% if not user.is_authenticated %}
                         <button data-modal-target="authentication-modal"
