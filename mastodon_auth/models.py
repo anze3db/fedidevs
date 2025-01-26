@@ -31,7 +31,7 @@ class AccountAccess(models.Model):
 
 class AccountFollowing(models.Model):
     account = models.ForeignKey("accounts.Account", on_delete=models.CASCADE)
-    url = models.CharField(max_length=255)
+    url = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
