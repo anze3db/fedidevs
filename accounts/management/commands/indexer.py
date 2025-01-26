@@ -1,4 +1,5 @@
 import datetime as dt
+import logging
 from collections import defaultdict
 
 from django.db.models import Q
@@ -6,6 +7,21 @@ from django.utils import timezone
 from django_rich.management import RichCommand
 
 from accounts.models import FRAMEWORKS, LANGUAGES, Account, AccountLookup
+
+logger = logging.getLogger(__name__)
+
+
+def is_dissalowed_in_bio(account: Account) -> bool:
+    for filter_by in (
+        "#noBot",
+        "#noSearch",
+        "#noIndex",
+        "#noArchive",
+    ):
+        if filter_by in account.note:
+            logger.warning("Skipping %s because of %s", account, filter_by)
+            return True
+    return False
 
 
 class Command(RichCommand):
@@ -27,6 +43,9 @@ class Command(RichCommand):
                 noindex=False,
                 last_status_at__gt=timezone.now() - dt.timedelta(days=230),
             ):
+                if is_dissalowed_in_bio(account):
+                    continue
+
                 languages_for_account[account].add(lang.code)
 
         # Delete lookups that are no longer relevant
