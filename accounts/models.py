@@ -243,7 +243,6 @@ class Account(models.Model):
             "#noSearch",
             "#noIndex",
             "#noArchive",
-            "#noPack",
             "#noStarterPack",
             "#noFedidevs",
         ):
