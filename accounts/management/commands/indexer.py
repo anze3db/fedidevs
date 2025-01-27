@@ -11,19 +11,6 @@ from accounts.models import FRAMEWORKS, LANGUAGES, Account, AccountLookup
 logger = logging.getLogger(__name__)
 
 
-def is_dissalowed_in_bio(account: Account) -> bool:
-    for filter_by in (
-        "#noBot",
-        "#noSearch",
-        "#noIndex",
-        "#noArchive",
-    ):
-        if filter_by in account.note:
-            logger.warning("Skipping %s because of %s", account, filter_by)
-            return True
-    return False
-
-
 class Command(RichCommand):
     help = "Indexes accounts in the database"
 
@@ -43,7 +30,8 @@ class Command(RichCommand):
                 noindex=False,
                 last_status_at__gt=timezone.now() - dt.timedelta(days=230),
             ):
-                if is_dissalowed_in_bio(account):
+                if account.is_dissalowed_in_note:
+                    logger.warning("Account %s is disallowed in note", account.id)
                     continue
 
                 languages_for_account[account].add(lang.code)

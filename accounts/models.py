@@ -237,9 +237,24 @@ class Account(models.Model):
         return False
 
     @property
+    def is_dissalowed_in_note(self) -> bool:
+        for filter_by in (
+            "#noBot",
+            "#noSearch",
+            "#noIndex",
+            "#noArchive",
+            "#noPack",
+            "#noStarterPack",
+            "#noFedidevs",
+        ):
+            if filter_by in self.note:
+                return True
+        return False
+
+    @property
     def can_add_to_starter_pack(self):
         if self.instance_model and self.instance_model.private:
-            return self.discoverable and not self.noindex
+            return self.discoverable and not self.noindex and not self.is_dissalowed_in_note
         else:
             return self.discoverable
 
