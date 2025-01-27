@@ -236,6 +236,13 @@ class Account(models.Model):
 
         return False
 
+    @property
+    def can_add_to_starter_pack(self):
+        if self.instance_model.private:
+            return self.discoverable and not self.noindex
+        else:
+            return self.discoverable
+
 
 class AccountLookup(models.Model):
     account = models.OneToOneField(Account, on_delete=models.CASCADE)
@@ -281,6 +288,7 @@ class Instance(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
+    private = models.BooleanField(default=False)
 
     domain = models.TextField()
     title = models.TextField()

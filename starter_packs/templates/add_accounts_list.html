@@ -23,12 +23,18 @@
                             {% endwith %}
                         </p>
                     {% endif %}
+                    {% if account.instance_model.private and account.noindex %}
+                        <p class="text-xs py-2 prose drak:prose-invert text-gray-500 truncate dark:text-gray-400 [&>a]:text-gray [&>a]:truncate [&>a]:dark:text-gray-200">
+                            {% blocktrans trimmed %}
+                                ⚠️ The account has not opted in for search engine indexing and cannot be added.
+                            {% endblocktrans %}
+                        </p>
+                    {% endif %}
                 </label>
-                {% if account.discoverable %}
+                {% if account.can_add_to_starter_pack %}
                     <input id="checkbox-{{ account.id }}"
                            type="checkbox"
                            value=""
-                           {% if not account.discoverable %}disabled="disabled"{% endif %}
                            hx-target="#starter_pack_stats"
                            hx-post="{% url 'toggle_account_to_starter_pack' starter_pack.slug account.id %}"
                            {% if account.in_starter_pack %}checked="checked"{% endif %}

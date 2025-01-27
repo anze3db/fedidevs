@@ -142,6 +142,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
             accounts = accounts.filter(
                 username_at_instance=search,
                 discoverable=True,
+                noindex=False,
                 instance_model__deleted_at__isnull=True,
             )
             if not accounts.exists():
@@ -333,6 +334,7 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
     starter_pack = get_object_or_404(
         StarterPack, slug=starter_pack_slug, deleted_at__isnull=True, created_by=request.user
     )
+    account = get_object_or_404(Account, account_id=account_id)
     if StarterPackAccount.objects.filter(starter_pack=starter_pack, account_id=account_id).exists():
         StarterPackAccount.objects.filter(
             starter_pack=starter_pack,
@@ -347,6 +349,16 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
                     "starter_pack": starter_pack,
                     "num_accounts": StarterPackAccount.objects.filter(starter_pack=starter_pack).count(),
                     "error": _("You have reached the maximum number of accounts in a starter pack."),
+                },
+            )
+        if not account.can_add_to_starter_pack:
+            return render(
+                request,
+                "starter_pack_stats.html",
+                {
+                    "starter_pack": starter_pack,
+                    "num_accounts": StarterPackAccount.objects.filter(starter_pack=starter_pack).count(),
+                    "error": _("The account cannot be added to the starter pack due to privacy settings."),
                 },
             )
         StarterPackAccount.objects.create(
