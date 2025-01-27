@@ -243,8 +243,13 @@ class TestShareStarterPack(TestCase):
         cls.user = baker.make("auth.User")
         baker.make("mastodon_auth.AccountAccess", user=cls.user)
         cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
+        instance = baker.make("accounts.Instance")
         baker.make(
-            "starter_packs.StarterPackAccount", starter_pack=cls.starter_pack, account__discoverable=True, _quantity=5
+            "starter_packs.StarterPackAccount",
+            starter_pack=cls.starter_pack,
+            account__discoverable=True,
+            account__instance_model=instance,
+            _quantity=5,
         )
 
     def test_not_existing_starter_pack(self):

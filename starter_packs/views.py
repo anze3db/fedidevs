@@ -143,6 +143,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
                 username_at_instance=search,
                 discoverable=True,
                 noindex=False,
+                instance_model__isnull=False,
                 instance_model__deleted_at__isnull=True,
             )
             if not accounts.exists():
@@ -178,6 +179,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
             logger.info("Using full text search for %s", search)
             accounts = accounts.filter(
                 search=SearchQuery(search, search_type="websearch"),
+                instance_model__isnull=False,
                 instance_model__deleted_at__isnull=True,
             )
 
@@ -224,7 +226,7 @@ def review_starter_pack(request, starter_pack_slug):
                 AccountFollowing.objects.filter(account=request.user.accountaccess.account, url=OuterRef("url")),
             ),
         )
-        .filter(in_starter_pack=True, instance_model__deleted_at__isnull=True)
+        .filter(in_starter_pack=True, instance_model__isnull=False, instance_model__deleted_at__isnull=True)
         .order_by("-is_followed", "-followers_count")
     )
 
@@ -382,6 +384,7 @@ def share_starter_pack(request, starter_pack_slug):
     accounts = (
         Account.objects.filter(
             starterpackaccount__starter_pack=starter_pack,
+            instance_model__isnull=False,
             instance_model__deleted_at__isnull=True,
             discoverable=True,
         )
@@ -414,7 +417,9 @@ def share_starter_pack(request, starter_pack_slug):
             "page_description": starter_pack.description,
             "starter_pack": starter_pack,
             "num_accounts": accounts.count(),
-            "num_hidden_accounts": Account.objects.exclude(discoverable=True, instance_model__deleted_at__isnull=True)
+            "num_hidden_accounts": Account.objects.exclude(
+                discoverable=True, instance_model__isnull=False, instance_model__deleted_at__isnull=True
+            )
             .filter(starterpackaccount__starter_pack=starter_pack)
             .count(),
             "accounts": page_obj,
