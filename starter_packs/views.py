@@ -334,7 +334,7 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
     starter_pack = get_object_or_404(
         StarterPack, slug=starter_pack_slug, deleted_at__isnull=True, created_by=request.user
     )
-    account = get_object_or_404(Account, account_id=account_id)
+    account = get_object_or_404(Account, id=account_id)
     if StarterPackAccount.objects.filter(starter_pack=starter_pack, account_id=account_id).exists():
         StarterPackAccount.objects.filter(
             starter_pack=starter_pack,

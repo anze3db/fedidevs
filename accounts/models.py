@@ -238,7 +238,7 @@ class Account(models.Model):
 
     @property
     def can_add_to_starter_pack(self):
-        if self.instance_model.private:
+        if self.instance_model and self.instance_model.private:
             return self.discoverable and not self.noindex
         else:
             return self.discoverable
