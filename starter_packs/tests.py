@@ -192,7 +192,9 @@ class TestToggleStarterPackAccount(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(
-            StarterPackAccount.objects.filter(account_id=account.id, starter_pack_id=self.starter_pack.id).exists()
+            StarterPackAccount.objects.filter(
+                account_id=account.id, starter_pack_id=self.starter_pack.id, created_by=self.user
+            ).exists()
         )
 
     def test_remove_account(self):

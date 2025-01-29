@@ -21,5 +21,8 @@ class StarterPackAccount(models.Model):
     starter_pack = models.ForeignKey(StarterPack, on_delete=models.CASCADE)
     account = models.ForeignKey("accounts.Account", on_delete=models.CASCADE)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey("auth.User", on_delete=models.CASCADE)
+
     class Meta:
         unique_together = ("starter_pack", "account")

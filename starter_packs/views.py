@@ -366,6 +366,7 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
         StarterPackAccount.objects.create(
             starter_pack=starter_pack,
             account_id=account_id,
+            created_by=request.user,
         )
 
     return render(
