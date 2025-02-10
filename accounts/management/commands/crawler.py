@@ -160,6 +160,8 @@ class Command(RichCommand):
             )
 
     async def fetch(self, client, offset, instance, skip_inactive_for: int):
+        if offset > 100:
+            return instance, []
         try:
             response = await client.get(
                 f"https://{instance}/api/v1/directory",
