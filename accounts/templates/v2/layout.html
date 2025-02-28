@@ -173,6 +173,8 @@
                                  class="py-1 mr-1 inline-block"
                                  src="{% static 'languages/catalan-flag.webp' %}"
                                  alt="Catalan flag" />
+                        {% elif LANGUAGE_CODE == 'da' %}
+                            🇩🇰
                         {% elif LANGUAGE_CODE == 'ru' %}
                             🇷🇺
                         {% elif LANGUAGE_CODE == 'sl' %}
@@ -204,6 +206,9 @@
                                 </li>
                                 <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                     <button type="submit" value="es" name="language" class="block px-4 py-2">🇪🇸 Español</button>
+                                </li>
+                                <li>
+                                    <button type="submit" value="da" name="language" class="block px-4 py-2">🇩🇰 Dansk</button>
                                 </li>
                                 <li class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                     <button type="submit" value="ca" name="language" class="block px-4 py-2">
