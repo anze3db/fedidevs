@@ -65,7 +65,7 @@ class Command(RichCommand):
             while to_index:
                 now = timezone.now()
                 results = await asyncio.gather(
-                    *[self.fetch(client, offset, instance, skip_inactive_for) for instance in to_index]
+                    *[self.fetch(client, offset, instance, skip_inactive_for) for instance in to_index[:50]]
                 )
                 fetched_accounts = []
                 for instance, response in results:
