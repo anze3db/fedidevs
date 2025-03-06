@@ -64,6 +64,7 @@ class Command(RichCommand):
                 ]
             original_offset = offset
             for batch in range(0, len(all_to_index), 50):
+                self.console.print(f"{batch / len(all_to_index) * 100:.2f}% completed")
                 offset = original_offset
                 to_index = all_to_index[batch : batch + 50]
                 while to_index:
@@ -159,9 +160,9 @@ class Command(RichCommand):
                             f"Fetched {len(fetched_accounts)}, inserted {len(inserted_accounts)}. Current offset {offset}. Max last_status_at {naturaltime(max(account.last_status_at for account in fetched_accounts if account.last_status_at))}"
                         )
                     offset += 1
-                self.console.print(
-                    f"Done. Started at {start_time}. Ended at {timezone.now()}, duration {timezone.now() - start_time}"
-                )
+            self.console.print(
+                f"Done. Started at {start_time}. Ended at {timezone.now()}, duration {timezone.now() - start_time}"
+            )
 
     async def fetch(self, client, offset, instance, skip_inactive_for: int):
         if offset > 100:
@@ -210,11 +211,5 @@ class Command(RichCommand):
                 return False
             return True
 
-        before = len(results)
         results = [r for r in results if is_recently_updated(r)]
-        after = len(results)
-        if before != after:
-            self.console.print(
-                f"[bold yellow]Filtered out {before - after} accounts[/bold yellow] for {instance} at offset {offset}"
-            )
         return instance, results
