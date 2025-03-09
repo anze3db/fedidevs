@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.13.0, <3.14"
 
 [[package]]
@@ -434,6 +433,7 @@ dependencies = [
     { name = "model-bakery" },
     { name = "openai" },
     { name = "psycopg", extra = ["binary", "pool"] },
+    { name = "pytest-watcher" },
     { name = "schedule" },
     { name = "sentry-sdk" },
     { name = "setproctitle" },
@@ -476,6 +476,7 @@ requires-dist = [
     { name = "model-bakery", specifier = ">=1.19.5" },
     { name = "openai", specifier = ">=1.42.0" },
     { name = "psycopg", extras = ["binary", "pool"] },
+    { name = "pytest-watcher", specifier = ">=0.4.3" },
     { name = "schedule" },
     { name = "sentry-sdk" },
     { name = "setproctitle" },
@@ -1047,6 +1048,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/a5/10/a096573b4b896f18a8390d9dafaffc054c1f613c60bf838300732e538890/pytest_django-4.10.0.tar.gz", hash = "sha256:1091b20ea1491fd04a310fc9aaff4c01b4e8450e3b157687625e16a6b5f3a366", size = 84710 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/58/4c/a4fe18205926216e1aebe1f125cba5bce444f91b6e4de4f49fa87e322775/pytest_django-4.10.0-py3-none-any.whl", hash = "sha256:57c74ef3aa9d89cae5a5d73fbb69a720a62673ade7ff13b9491872409a3f5918", size = 23975 },
+]
+
+[[package]]
+name = "pytest-watcher"
+version = "0.4.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "watchdog" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/72/72/a2a1e81f1b272ddd9a1848af4959c87c39aa95c0bbfb3007cacb86c47fa9/pytest_watcher-0.4.3.tar.gz", hash = "sha256:0cb0e4661648c8c0ff2b2d25efa5a8e421784b9e4c60fcecbf9b7c30b2d731b3", size = 10386 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5b/3a/c44a76c6bb5e9e896d9707fb1c704a31a0136950dec9514373ced0684d56/pytest_watcher-0.4.3-py3-none-any.whl", hash = "sha256:d59b1e1396f33a65ea4949b713d6884637755d641646960056a90b267c3460f9", size = 11852 },
 ]
 
 [[package]]
