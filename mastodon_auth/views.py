@@ -43,6 +43,7 @@ login_scopes = ("read:accounts", "read:follows", "write:follows", "read:search")
 def login(request):
     api_base_url = request.POST.get("instance", "").strip().lower()
     api_base_url = api_base_url.replace("https://", "").replace("http://", "")
+    next_url = request.POST.get("next", "/")
 
     if api_base_url.endswith("/"):
         api_base_url = api_base_url[0:-1]
@@ -103,6 +104,7 @@ def login(request):
     )
 
     cache.set(f"oauth:{state}", instance.id, timeout=500)
+    cache.set(f"oauth:{state}:next", next_url, timeout=500)
 
     return redirect(auth_request_url)
 
@@ -136,6 +138,7 @@ def auth(request):
         return redirect("index")
 
     instance_id = cache.get(f"oauth:{state}")
+    next_url = cache.get(f"oauth:{state}:next")
     if not instance_id:
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
@@ -212,6 +215,9 @@ def auth(request):
     auth_login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])
 
     transaction.on_commit(lambda: sync_following.send(user.id))
+
+    if next_url:
+        return redirect(next_url)
 
     return redirect("index")
 
