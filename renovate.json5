@@ -21,7 +21,7 @@
   "pre-commit": {
     enabled: true,
   },
-  "githubActions": {
+  "github-actions": {
     enabled: true,
   },
   packageRules: [
