@@ -1,0 +1,51 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  dependencyDashboard: true,
+  suppressNotifications: [
+    "prEditedNotification"
+  ],
+  extends: [
+    "config:recommended",
+    // For tool versions defined in GitHub Actions:
+    "customManagers:githubActionsVersions",
+  ],
+  schedule: [
+    "before 4am on Wednesday"
+  ],
+  semanticCommits: "disabled",
+  separateMajorMinor: false,
+  prHourlyLimit: 10,
+  "npm": {
+    enabled: true,
+  },
+  "pre-commit": {
+    enabled: true,
+  },
+  "githubActions": {
+    enabled: true,
+  },
+  packageRules: [
+    // Pin GitHub Actions to immutable SHAs.
+    {
+      matchDepTypes: [
+        "action"
+      ],
+      pinDigests: true,
+    },
+    // Annotate GitHub Actions SHAs with a SemVer version.
+    {
+      extends: [
+        "helpers:pinGitHubActionDigests"
+      ],
+      extractVersion: "^(?<version>v?\\d+\\.\\d+\\.\\d+)$",
+      versioning: "regex:^v?(?<major>\\d+)(\\.(?<minor>\\d+)\\.(?<patch>\\d+))?$",
+    },
+    {
+      groupName: "pre-commit dependencies",
+      matchManagers: [
+        "pre-commit"
+      ],
+      description: "Weekly update of pre-commit dependencies",
+    },
+  ],
+}
