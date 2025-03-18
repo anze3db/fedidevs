@@ -32,6 +32,7 @@ class Command(RichCommand):
 
         account_models = Account.objects.filter(username_at_instance__in=accounts)
         starter_pack_accounts = [
-            StarterPackAccount(starter_pack=starter_pack, account=account) for account in account_models
+            StarterPackAccount(starter_pack=starter_pack, account=account, created_by=starter_pack.created_by)
+            for account in account_models
         ]
         StarterPackAccount.objects.bulk_create(starter_pack_accounts, ignore_conflicts=True)
