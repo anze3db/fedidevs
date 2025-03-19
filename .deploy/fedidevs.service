@@ -9,9 +9,10 @@ Type=simple
 Restart=always
 RestartSec=1
 WorkingDirectory=/var/apps/fedidevs
-ExecStart=/var/apps/fedidevs/.venv/bin/gunicorn fedidevs.wsgi
+ExecStart=/var/apps/fedidevs/.venv/bin/newrelic-admin run-program gunicorn fedidevs.wsgi
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MANPID
+Environment="NEW_RELIC_CONFIG_FILE=/var/apps/fedidevs/newrelic.ini"
 User=anze
 
 [Install]
