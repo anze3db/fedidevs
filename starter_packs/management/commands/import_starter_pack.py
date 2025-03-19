@@ -1,6 +1,6 @@
-from django.core import management
 from django_rich.management import RichCommand
 
+from accounts.management.commands.crawlone import crawlone
 from accounts.models import Account
 from starter_packs.models import StarterPack, StarterPackAccount
 
@@ -28,7 +28,7 @@ class Command(RichCommand):
         for account in accounts:
             account_str = account.strip().lower()
             if not Account.objects.filter(username_at_instance=account_str).exists():
-                management.call_command("crawlone", user=account_str[1:])
+                crawlone(account_str, make_visible=True)
 
         account_models = Account.objects.filter(username_at_instance__in=accounts)
         starter_pack_accounts = [
