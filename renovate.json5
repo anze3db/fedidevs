@@ -25,6 +25,14 @@
     enabled: true,
   },
   packageRules: [
+    // Use a single PR for all dependencies.
+    {
+      "groupName": "all dependencies",
+      "groupSlug": "all",
+      "matchPackagePatterns": ["*"],
+      "enabled": true,
+    },
+
     // Pin GitHub Actions to immutable SHAs.
     {
       matchDepTypes: [
