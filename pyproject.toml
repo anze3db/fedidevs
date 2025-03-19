@@ -25,6 +25,7 @@ dependencies = [
   "django-csp>4.0b0",
   "model-bakery>=1.19.5",
   "pytest-watcher>=0.4.3",
+  "newrelic>=10.7.0",
 ]
 
 [tool.uv]

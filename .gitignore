@@ -6,5 +6,5 @@ staticfiles
 __pycache__/
 static/CACHE
 node_modules/
-
+newrelic.ini
 update.log

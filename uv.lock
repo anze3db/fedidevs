@@ -431,6 +431,7 @@ dependencies = [
     { name = "httpx" },
     { name = "mastodon-py" },
     { name = "model-bakery" },
+    { name = "newrelic" },
     { name = "openai" },
     { name = "psycopg", extra = ["binary", "pool"] },
     { name = "pytest-watcher" },
@@ -474,6 +475,7 @@ requires-dist = [
     { name = "httpx" },
     { name = "mastodon-py" },
     { name = "model-bakery", specifier = ">=1.19.5" },
+    { name = "newrelic", specifier = ">=10.7.0" },
     { name = "openai", specifier = ">=1.42.0" },
     { name = "psycopg", extras = ["binary", "pool"] },
     { name = "pytest-watcher", specifier = ">=0.4.3" },
@@ -812,6 +814,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/98/a4/1ab47638b92648243faf97a5aeb6ea83059cc3624972ab6b8d2316078d3f/mypy_extensions-1.0.0.tar.gz", hash = "sha256:75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782", size = 4433 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2a/e2/5d3f6ada4297caebe1a2add3b126fe800c96f56dbe5d1988a2cbe0b267aa/mypy_extensions-1.0.0-py3-none-any.whl", hash = "sha256:4392f6c0eb8a5668a69e23d168ffa70f0be9ccfd32b5cc2d26a34ae5b844552d", size = 4695 },
+]
+
+[[package]]
+name = "newrelic"
+version = "10.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/84/37/734d6ff4fc6d3bbb6bffb65b5538b259bfa9cb84c8ea57a5af6b35e40b88/newrelic-10.7.0.tar.gz", hash = "sha256:ac9716c115ddcf54b54115391a84ed2c318ae943b4f598b4d0248cd6edb12414", size = 1213357 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3f/ea/beb9fc111f2e4e0d1047350f01624f719a959a7a4f884e2146b3ab98e3fa/newrelic-10.7.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6855485d0de0f02271f67617c7a63b44c44f46e50763f37a016a1a117ae8af56", size = 841055 },
+    { url = "https://files.pythonhosted.org/packages/dc/09/8770ba0859fa11aa7c7b24c29a93cc687b27b40bb593ebe35d719c03a79d/newrelic-10.7.0-cp313-cp313-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e78adc209e24cc223ac19104616caa3b8cb789d1ed97d082472d3b7e9d04023d", size = 840718 },
+    { url = "https://files.pythonhosted.org/packages/ee/fa/5bb07a8680ee9204777b29e67e1b2cec6f945804645197b9ef45c86930e3/newrelic-10.7.0-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:bc1f090a115688fe7829e7aea1dcf37913a24450813908d9ce6b4eb0831cbbbf", size = 838972 },
+    { url = "https://files.pythonhosted.org/packages/63/12/66e6251bad33ef5480c58116a745f6520aa52b6313ca21be5209e260057f/newrelic-10.7.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:cf6b8f12abf9c984a4e62b0de66d85e2c5153f367dd6d4149544d931e59bcb8d", size = 838889 },
 ]
 
 [[package]]
