@@ -16,7 +16,7 @@
   separateMajorMinor: false,
   prHourlyLimit: 10,
   "npm": {
-    enabled: true,
+    enabled: false,
   },
   "pre-commit": {
     enabled: true,
