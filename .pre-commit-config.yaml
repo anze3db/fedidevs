@@ -22,3 +22,5 @@ repos:
   rev: v0.9.10
   hooks:
     - id: ruff-format
+ci:
+  autoupdate_schedule: 'quarterly' # updates are managed by renovate
