@@ -1,11 +1,15 @@
 import datetime as dt
 
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
+from model_bakery import baker
 
 from accounts.models import LANGUAGES, Account, AccountLookup
 from posts.models import Post
-from stats.models import Daily, store_daily_stats
+from starter_packs.models import StarterPack
+from stats.management.commands.dailypackstats import starter_pack_stats
+from stats.models import Daily, FollowAllClick, store_daily_stats
 
 
 # Create your tests here.
@@ -161,3 +165,47 @@ class TestStats(TestCase):
         self.assertEqual(today_stats.total_posts, 2)
         self.assertEqual(today_stats.python_posts, 2)
         self.assertEqual(today_stats.total_accounts, 1)
+
+
+class TestStarterPackStats(TestCase):
+    def test_starter_pack_stats(self):
+        # Create a test starter pack using baker
+        self.starter_pack = baker.make(StarterPack)
+
+        # Create test users with baker
+        self.user1 = baker.make(User)
+        self.user2 = baker.make(User)
+        self.user3 = baker.make(User)
+        self.user4 = baker.make(User)
+
+        # Set up current time for consistent testing
+        self.now = timezone.now()
+        self.yesterday = self.now - dt.timedelta(days=1)
+        self.last_week = self.now - dt.timedelta(days=6)
+        self.last_month = self.now - dt.timedelta(days=25)
+
+        # User 1 clicked multiple times
+        baker.make(
+            FollowAllClick, starter_pack=self.starter_pack, user=self.user1, created_at=self.now - dt.timedelta(hours=1)
+        )
+        baker.make(
+            FollowAllClick, starter_pack=self.starter_pack, user=self.user1, created_at=self.now - dt.timedelta(hours=2)
+        )
+
+        # User 2 clicked once this week
+        baker.make(FollowAllClick, starter_pack=self.starter_pack, user=self.user2, created_at=self.last_week)
+
+        # User 3 clicked once this month
+        baker.make(FollowAllClick, starter_pack=self.starter_pack, user=self.user3, created_at=self.last_month)
+
+        # User 4 clicked outside the monthly window
+        baker.make(
+            FollowAllClick, starter_pack=self.starter_pack, user=self.user4, created_at=self.now - dt.timedelta(days=40)
+        )
+
+        starter_pack_stats()
+        self.starter_pack.refresh_from_db()
+
+        self.assertEqual(self.starter_pack.daily_follows, 1)  # Only user1 in the last day
+        self.assertEqual(self.starter_pack.weekly_follows, 2)  # user1 and user2 in the last week
+        self.assertEqual(self.starter_pack.monthly_follows, 3)  # user1, user2, and user3 in the last month

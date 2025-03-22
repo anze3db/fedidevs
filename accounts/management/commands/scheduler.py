@@ -33,6 +33,7 @@ class Command(RichCommand):
         management.call_command("classify")
         self.console.print("Running stats")
         management.call_command("dailystats")
+        management.call_command("dailypackstats")
         management.call_command("dailyaccountstats")
         self.console.print("Archiving conferences")
         management.call_command("confarchiver")
