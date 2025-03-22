@@ -36,4 +36,4 @@ def instances_datalist():
     for instance in instances:
         res += f"<option value='{instance}'>"
     res += "</datalist>"
-    return mark_safe(res)  # noqa: S308)
+    return mark_safe(res)  # noqa: S308
