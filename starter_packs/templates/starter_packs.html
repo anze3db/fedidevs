@@ -27,8 +27,8 @@
         </div>
         <form class="max-w-md mt-4 mx-auto p-4" action="{% url "starter_packs" %}">
             {% if request.GET.tab == 'containing' %}
-                <form class="max-w-sm mx-auto p-4" action="{% url "starter_packs" %}">
-                    <div class="relative">
+                <div class="flex gap-2 items-start">
+                    <div class="relative flex-grow basis-4/5">
                         <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
                             <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
                                  aria-hidden="true"
@@ -39,39 +39,91 @@
                                 </path>
                             </svg>
                         </div>
-                        <button type="submit"
-                                class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                            {% trans "Go" %}
-                        </button>
                         <input type="hidden" name="tab" value="containing">
                         <input type="search"
                                name="username"
-                               class="block w-full p-4 pr-16 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               class="block w-full h-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                placeholder="username@instance.org"
                                value="{{ containing_username }}">
                     </div>
-                </form>
-            {% else %}
-                <div class="relative">
-                    <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                             aria-hidden="true"
-                             xmlns="http://www.w3.org/2000/svg"
-                             fill="none"
-                             viewBox="0 0 20 20">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z">
-                            </path>
-                        </svg>
+                    <div class="w-48">
+                        <select name="order_by"
+                                class="block w-full h-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="popular_day"
+                                    {% if request.GET.order_by == 'popular_day' %}selected{% endif %}>
+                                {% trans "Popular today" %}
+                            </option>
+                            <option value="popular_week"
+                                    {% if request.GET.order_by == 'popular_week' %}selected{% endif %}>
+                                {% trans "Popular this week" %}
+                            </option>
+                            <option value="popular_month"
+                                    {% if request.GET.order_by == 'popular_month' %}selected{% endif %}>
+                                {% trans "Popular this month" %}
+                            </option>
+                            <option value="latest"
+                                    {% if request.GET.order_by == 'latest' %}selected{% endif %}>
+                                {% trans "Latest" %}
+                            </option>
+                            <option value="oldest"
+                                    {% if request.GET.order_by == 'oldest' %}selected{% endif %}>
+                                {% trans "Oldest" %}
+                            </option>
+                        </select>
                     </div>
                     <button type="submit"
-                            class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            class="text-white p-3 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         {% trans "Go" %}
                     </button>
-                    <input type="search"
-                           name="q"
-                           class="block w-full p-4 pr-16 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                           placeholder="{% trans "Search..." %}"
-                           value="{{ request.GET.q }}">
+                </div>
+            {% else %}
+                <div class="flex gap-2 items-start">
+                    <div class="relative flex-grow basis-4/5">
+                        <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
+                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                 aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z">
+                                </path>
+                            </svg>
+                        </div>
+                        <input type="search"
+                               name="q"
+                               class="block w-full h-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               placeholder="{% trans "Search..." %}"
+                               value="{{ request.GET.q }}">
+                    </div>
+                    <div class="w-48">
+                        <select name="order_by"
+                                class="block w-full h-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="popular_day"
+                                    {% if request.GET.order_by == 'popular_day' %}selected{% endif %}>
+                                {% trans "Popular today" %}
+                            </option>
+                            <option value="popular_week"
+                                    {% if request.GET.order_by == 'popular_week' %}selected{% endif %}>
+                                {% trans "Popular this week" %}
+                            </option>
+                            <option value="popular_month"
+                                    {% if request.GET.order_by == 'popular_month' %}selected{% endif %}>
+                                {% trans "Popular this month" %}
+                            </option>
+                            <option value="latest"
+                                    {% if request.GET.order_by == 'latest' %}selected{% endif %}>
+                                {% trans "Latest" %}
+                            </option>
+                            <option value="oldest"
+                                    {% if request.GET.order_by == 'oldest' %}selected{% endif %}>
+                                {% trans "Oldest" %}
+                            </option>
+                        </select>
+                    </div>
+                    <button type="submit"
+                            class="text-white p-3 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        {% trans "Go" %}
+                    </button>
                 </div>
             {% endif %}
         </form>

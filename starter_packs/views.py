@@ -41,6 +41,20 @@ def starter_packs(request):
     if tab not in ("community", "your", "containing"):
         tab = "community"
 
+    order_by = request.GET.get("order_by", "latest")
+    if order_by not in ("popular_day", "popular_week", "popular_month", "latest", "oldest"):
+        order_by = "latest"
+
+    # Map the order_by parameter to actual database fields
+    order_by_mapping = {
+        "latest": ["-created_at"],
+        "oldest": ["created_at"],
+        "popular_day": ["-daily_follows", "-created_at"],
+        "popular_week": ["-weekly_follows", "-created_at"],
+        "popular_month": ["-monthly_follows", "-created_at"],
+    }
+    db_order_by = order_by_mapping[order_by]
+
     starter_packs = StarterPack.objects.none()
     if tab == "community":
         starter_packs = StarterPack.objects.filter(published_at__isnull=False)
@@ -69,7 +83,7 @@ def starter_packs(request):
                 "starterpackaccount", filter=models.Q(starterpackaccount__account__discoverable=True)
             )
         )
-        .order_by("-created_at")
+        .order_by(*db_order_by)
         .prefetch_related("created_by__accountaccess__account")
     )
 
