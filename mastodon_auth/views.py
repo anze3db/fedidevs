@@ -343,7 +343,7 @@ def redirect_to_local(request, query: str):
     try:
         res = mastodon.search_v2(q=query)
         status = res.statuses[0]
-    except:  # noqa
+    except:  # noqa: E722
         logging.warning("Failed to redirect", exc_info=True)
         # TODO: Handle scope error by asking for an additional scope
         return redirect(query)
