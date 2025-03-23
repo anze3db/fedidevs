@@ -81,7 +81,7 @@ class Command(RichCommand):
         logging.info("Created %s conferences", len(confs))
 
         management.call_command("findinstances")
-        logging.info("Rand find instances")
+        logging.info("Run find instances")
 
         management.call_command("stattag")
         logging.info("All done! 🎉")
