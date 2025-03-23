@@ -3,6 +3,7 @@ import datetime as dt
 import logging
 from pathlib import Path
 
+import requests
 from django.core import management
 from django_rich.management import RichCommand
 
