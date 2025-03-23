@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.13.0, <3.14"
 
 [[package]]
@@ -436,6 +435,7 @@ dependencies = [
     { name = "openai" },
     { name = "psycopg", extra = ["binary", "pool"] },
     { name = "pytest-watcher" },
+    { name = "requests" },
     { name = "schedule" },
     { name = "sentry-sdk" },
     { name = "setproctitle" },
@@ -480,6 +480,7 @@ requires-dist = [
     { name = "openai", specifier = ">=1.42.0" },
     { name = "psycopg", extras = ["binary", "pool"] },
     { name = "pytest-watcher", specifier = ">=0.4.3" },
+    { name = "requests", specifier = ">=2.32.3" },
     { name = "schedule" },
     { name = "sentry-sdk" },
     { name = "setproctitle" },

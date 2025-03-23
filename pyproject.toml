@@ -26,6 +26,7 @@ dependencies = [
   "model-bakery>=1.19.5",
   "pytest-watcher>=0.4.3",
   "newrelic>=10.7.0",
+  "requests>=2.32.3",
 ]
 
 [tool.uv]
