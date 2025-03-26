@@ -71,7 +71,7 @@ class Command(RichCommand):
                 mastodon=mastodon,
                 description=description,
                 instances="mastodon.social",
-                tags=slug if tag in ("", "?") else tag,
+                tags=slug if tag in ("", "?") else ",".join(tag.replace(",", " ").split()),
             )
             confs.append(conf)
         if not confs:
