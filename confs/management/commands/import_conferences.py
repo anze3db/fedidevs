@@ -1,6 +1,7 @@
 import csv
 import datetime as dt
 import logging
+import re
 from pathlib import Path
 
 import requests
@@ -59,6 +60,7 @@ class Command(RichCommand):
                 continue
             if imported.lower() == "yes":
                 continue
+            breakpoint()
             conf = Conference(
                 name=name,
                 slug=slug,
@@ -71,7 +73,9 @@ class Command(RichCommand):
                 mastodon=mastodon,
                 description=description,
                 instances="mastodon.social",
-                tags=slug if tag in ("", "?") else ",".join(tag.replace(",", " ").split()),
+                tags=slug
+                if tag in ("", "?")
+                else ", ".join([f"#{t.strip('#')}" for t in re.findall(r"#\w+|[\w-]+", tag)]),
             )
             confs.append(conf)
         if not confs:
