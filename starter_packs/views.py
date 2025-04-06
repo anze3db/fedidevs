@@ -497,10 +497,15 @@ def follow_bg(user_id: int, starter_pack_slug: str):
         instance_model__deleted_at__isnull=True,
         discoverable=True,
     )
-
+    already_following = set(
+        AccountFollowing.objects.filter(account=account_access.account).values_list("url", flat=True)
+    )
     for account in starter_pack_accounts:
         if account == account_access.account:
             # Skip self
+            continue
+        if account.url in already_following:
+            logger.info("Skipping already following")
             continue
         if account.instance == instance.url:
             account_id = account.account_id
