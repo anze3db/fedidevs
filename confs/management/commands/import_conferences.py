@@ -60,7 +60,6 @@ class Command(RichCommand):
                 continue
             if imported.lower() == "yes":
                 continue
-            breakpoint()
             conf = Conference(
                 name=name,
                 slug=slug,
