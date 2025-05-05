@@ -23,6 +23,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.http import HttpResponse
 from django.urls import include, path, register_converter, reverse
 from django.utils import dateparse, timezone
+from ninja import NinjaAPI
 
 from accounts import views
 from accounts.models import FRAMEWORKS, LANGUAGES
@@ -44,6 +45,9 @@ def robots_txt(_):
         """),
         content_type="text/plain",
     )
+
+
+api = NinjaAPI()
 
 
 class StaticViewSitemap(Sitemap):
@@ -201,6 +205,7 @@ urlpatterns = [
         name="django.contrib.sitemaps.views.sitemap",
     ),
     path("admin/", admin.site.urls),
+    path("api/", api.urls),
     path("i18n/", include("django.conf.urls.i18n")),
     path("__debug__/", include("debug_toolbar.urls")),
     path("__reload__/", include("django_browser_reload.urls")),
