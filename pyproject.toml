@@ -27,6 +27,7 @@ dependencies = [
   "pytest-watcher>=0.4.3",
   "newrelic>=10.7.0",
   "requests>=2.32.3",
+  "django-ninja>=1.4.0",
 ]
 
 [tool.uv]

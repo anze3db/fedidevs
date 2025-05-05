@@ -288,6 +288,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-ninja"
+version = "1.4.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/08/16/94521cbbcb5486cc55ce7acf8e50c894e34e68bef08c6947b48b375213e4/django_ninja-1.4.1.tar.gz", hash = "sha256:828a901abdc9c02cc89c9ab646cbafbc972c0a90919b16b37b3197d8d6094abb", size = 3707954, upload_time = "2025-04-08T18:28:15.26Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fd/9f/a6d819a151723f44a85b1bfebfa60cd09d0219313b175023f5593bb47753/django_ninja-1.4.1-py3-none-any.whl", hash = "sha256:a091aa69be6ba75a89c5043d35f99cf9bf4f5c26e1ac6783accf8eaa1f8cb12b", size = 2425909, upload_time = "2025-04-08T18:28:12.981Z" },
+]
+
+[[package]]
 name = "django-rich"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -424,6 +437,7 @@ dependencies = [
     { name = "django-csp" },
     { name = "django-dramatiq" },
     { name = "django-environ" },
+    { name = "django-ninja" },
     { name = "django-tailwind" },
     { name = "django-template-partials" },
     { name = "django-watchfiles" },
@@ -469,6 +483,7 @@ requires-dist = [
     { name = "django-csp", specifier = ">4.0b0" },
     { name = "django-dramatiq" },
     { name = "django-environ" },
+    { name = "django-ninja", specifier = ">=1.4.0" },
     { name = "django-tailwind" },
     { name = "django-template-partials" },
     { name = "django-watchfiles", specifier = ">=0.2.0" },
