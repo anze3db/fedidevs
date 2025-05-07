@@ -33,7 +33,7 @@ from starter_packs.models import StarterPack, StarterPackAccount
 from stats.models import FollowAllClick
 
 logger = logging.getLogger(__name__)
-username_regex = re.compile(r"@?\b([A-Z0-9._%+-]+)@([A-Z0-9.-]+\.[A-Z]{2,})\b", re.IGNORECASE)
+username_regex = re.compile(r"@?\b([\w0-9._%+-]+)@([\w0-9.-]+\.[\w]{2,})\b", re.IGNORECASE | re.UNICODE)
 
 
 def starter_packs(request):
