@@ -316,8 +316,8 @@ OPENAI_API_KEY = env.str("OPENAI_API_KEY", default=None)
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": [NONE],
-        "script-src": [SELF, "https://plausible.io", "https://scripts.simpleanalyticscdn.com", NONCE],
-        "connect-src": [SELF, "https://plausible.io", "https://scripts.simpleanalyticscdn.com"],
+        "script-src": [SELF, "https://scripts.simpleanalyticscdn.com", NONCE],
+        "connect-src": [SELF, "https://scripts.simpleanalyticscdn.com"],
         "img-src": ["*", "data:"],
         "style-src": [SELF, UNSAFE_INLINE],
         "base-uri": [SELF],
