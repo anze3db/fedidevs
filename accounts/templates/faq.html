@@ -7,7 +7,29 @@
             <p>
                 Please reach out through <a href="mailto:hello@fedidevs.com">email</a>, open a <a href="https://github.com/anze3db/fedidevs/issues/new">GitHub issue</a>, or contact me on <a href="https://fosstodon.org/@Fedidevs">Mastodon</a>.
             </p>
-            <h2>How to get listed?</h2>
+            <h2>Starter Packs</h2>
+            <h3>What is a starter pack?</h3>
+            <p>
+                A starter pack is a collection of accounts that you can share with others. It can be used to help new users find accounts to follow, or to promote specific communities or topics.
+            </p>
+            <h3>How to create a starter pack?</h3>
+            <p>
+                Login with your Mastodon account and go to <a href="{% url 'create_starter_pack' %}">Create starter pack</a> page.
+            </p>
+            <h3>How to get added to a starter pack?</h3>
+            <p>
+                If you want to be added to a starter pack, you can reach out to the creator of the starter pack and ask them to add you. You can also create your own starter pack and add yourself to it.
+            </p>
+            <h3>How to see starter packs I am in?</h3>
+            <p>
+                You can see all starter packs you are in by navigating to <a href="{% url 'starter_packs' %}?tab=containing">Starter packs containing you</a> page. You do not need to have a fedidevs account to see starter packs you are in.
+            </p>
+            <h3>How to get removed from a starter pack?</h3>
+            <p>
+                If you want to be removed from a starter packs reach out through <a href="mailto:hello@fedidevs.com">email</a> or on <a href="https://fosstodon.org/@Fedidevs">Mastodon</a>.
+            </p>
+            <h2>Developer listings</h2>
+            <h3>How to get listed as a developer?</h3>
             <p>There are a few prerequisites for your account to be listed on FediDevs.com</p>
             <h4>1. Your account must be discoverable and not opt-out of search engine indexing</h4>
             <p>
@@ -113,18 +135,18 @@
             <p>
                 If you did all the steps above and still don't see your account on FediDevs.com, <a href="mailto:hello@fedidevs.com">reach out</a> and I'll check!
             </p>
-            <h2>How often is the data refreshed?</h2>
+            <h3>How often is the data refreshed?</h3>
             <p>
                 The data is refreshed about <b>once per day</b>, but if you want your profile on FediDevs.com updated sooner, <a href="mailto:hello@fedidevs.com">send me an email</a> and I'll update it manually.
             </p>
-            <h2>How to get your account removed from FediDevs.com?</h2>
+            <h3>How to get your account removed from FediDevs.com?</h3>
             <p>
                 The easiest way is to Opt-out of search engine indexing in your Mastodon Privacy and reach page. Uncheck the checkbox that says "Feature profile and posts in discovery algorithms" or "Include profile page in search engines" at <code>{your_instance}/settings/privacy</code>. This will remove your account on next sync (in about 1 day).
             </p>
             <p>
                 If you don't want to wait until the next sync please reach out through <a href="mailto:hello@fedidevs.com">email</a> and I'll remove you immediately.
             </p>
-            <h2>How to get your instance removed from FediDevs.com?</h2>
+            <h3>How to get your instance removed from FediDevs.com?</h3>
             <p>
                 If you are an admin of an instance that is listed above, but don't want me indexing it anymore, please send <a href="mailto:hello@fedidevs.com">an email</a>. Once I confirm your identity I will remove all accounts from your instance and never index your instance again.
             </p>
