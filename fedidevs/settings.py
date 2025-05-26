@@ -316,10 +316,20 @@ OPENAI_API_KEY = env.str("OPENAI_API_KEY", default=None)
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": [NONE],
-        "script-src": [SELF, "https://scripts.simpleanalyticscdn.com", NONCE],
-        "connect-src": [SELF, "https://scripts.simpleanalyticscdn.com"],
+        "script-src": [
+            SELF,
+            "https://cdn.jsdelivr.net",  # needed for swagger pages
+            "https://scripts.simpleanalyticscdn.com",
+            NONCE,
+            UNSAFE_INLINE,  # Needed for swagger pages
+        ],
+        "connect-src": [
+            SELF,
+            "https://cdn.jsdelivr.net",  # needed for swagger
+            "https://scripts.simpleanalyticscdn.com",
+        ],
         "img-src": ["*", "data:"],
-        "style-src": [SELF, UNSAFE_INLINE],
+        "style-src": [SELF, "https://cdn.jsdelivr.net", UNSAFE_INLINE],
         "base-uri": [SELF],
         "form-action": [SELF, "*"],
         "manifest-src": [SELF],
