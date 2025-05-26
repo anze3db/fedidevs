@@ -33,6 +33,7 @@ from confs.models import LANGUAGES as CONF_LANGUAGES
 from confs.models import Conference, ConferenceAccount
 from mastodon_auth import views as mastodon_views
 from posts import views as post_views
+from starter_packs import api as starter_packs_api
 from starter_packs import views as starter_packs_views
 from stats import views as stats_views
 
@@ -48,6 +49,7 @@ def robots_txt(_):
 
 
 api = NinjaAPI()
+api.add_router("/starter-packs/", starter_packs_api.router, tags=["starter_packs"])
 
 
 class StaticViewSitemap(Sitemap):
