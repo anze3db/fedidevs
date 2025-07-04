@@ -315,7 +315,7 @@ OPENAI_API_KEY = env.str("OPENAI_API_KEY", default=None)
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": [NONE],
-        "script-src": [SELF, "http://gc.zgo.at/count.js", NONCE],
+        "script-src": [SELF, "http://gc.zgo.at/count.js", NONCE, UNSAFE_INLINE],
         "connect-src": [SELF, "http://gc.zgo.at/count.js", "https://fedidevs.goatcounter.com/count"],
         "img-src": ["*", "data:"],
         "style-src": [SELF, UNSAFE_INLINE],
