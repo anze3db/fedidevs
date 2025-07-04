@@ -369,7 +369,8 @@
         <script src="{% static "htmx.min.js" %}"></script>
         <script src="{% static "flowbite.min.js" %}"></script>
         <script data-goatcounter="https://fedidevs.goatcounter.com/count"
-                nonce="{{ request.csp_nonce }}"
+                integrity="sha384-ibA+WLRCY3W4rrf/Qi6Z02iu3FWDJOW41oKXAKzGUka17bnDTswba03X3emshpZS"
+                crossorigin="anonymous"
                 async
                 src="//gc.zgo.at/count.js"></script>
     </body>
