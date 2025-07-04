@@ -59,11 +59,6 @@
         {% block head %}
         {% endblock head %}
         <script src="{% static "src/components.js" %}"></script>
-        <script defer
-                data-domain="fedidevs.com"
-                integrity="sha384-5K2w7sx6zEZRy9BiHaHzdSifmO4uglyF7hJAecWrwOWL1OJEBDlwif162+0T8ZuW"
-                src="https://plausible.io/js/script.tagged-events.js"
-                crossorigin="anonymous"></script>
     </head>
     <body class="min-h-screen bg-gray-100 dark:bg-gray-950 text-black dark:text-white"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
