@@ -316,7 +316,7 @@ CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": [NONE],
         "script-src": [SELF, "http://gc.zgo.at/count.js", NONCE],
-        "connect-src": [SELF, "http://gc.zgo.at/count.js"],
+        "connect-src": [SELF, "http://gc.zgo.at/count.js", "https://fedidevs.goatcounter.com/count"],
         "img-src": ["*", "data:"],
         "style-src": [SELF, UNSAFE_INLINE],
         "base-uri": [SELF],
