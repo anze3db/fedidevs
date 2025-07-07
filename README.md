@@ -47,4 +47,3 @@ uv run python manage.py indexer
 ```
 uv run python manage.py createsuperuser
 ```
-
