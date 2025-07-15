@@ -272,6 +272,7 @@ def index(request, lang: str | None = None):
             "followers_count",
             "following_count",
             "statuses_count",
+            "moved",
         )
     )
     accounts = accounts.order_by(sort_order)

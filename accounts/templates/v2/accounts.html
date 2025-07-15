@@ -4,127 +4,145 @@
 <div class="max-w-4xl">
     {% for account in accounts %}
         <div class="p-3 mb-12 bg-white shadow-md rounded-2xl dark:bg-gray-800 break-inside-avoid-column">
-            <div class="relative rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 min-h-24 -z-0">
-                <div class="absolute flex flex-row gap-4 p-3 bg-white rounded-bl-xl dark:bg-gray-800 -top-2 -right-2">
-                    {% for language in account.languages %}
-                        <a href="{% url 'index' language.code %}{% querystring %}"
-                           class="text-sm text-gray-500">
-                            <img src="{% static language.image %}"
-                                 alt="{{ language.code }}"
-                                 loading="lazy"
-                                 class="w-auto h-5" />
-                        </a>
-                    {% endfor %}
+            {% if account.moved %}
+                <div class="flex items-center p-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
+                     role="alert">
+                    <svg class="shrink-0 inline w-4 h-4 me-3"
+                         aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg"
+                         fill="currentColor"
+                         viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                    </svg>
+                    <span class="sr-only">Info</span>
+                    <div>
+                        <span class="font-medium">This account has moved to a new instance!</span> <a href="{{ account.moved.url }}" class="">{{ account.moved.acct }}</a>
+                    </div>
                 </div>
-                <div class="overflow-hidden rounded-lg max-h-64">
+            {% endif %}
+            <div class="{% if account.moved %}opacity-50{% endif %}">
+                <div class="relative rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 min-h-24 -z-0">
+                    <div class="absolute flex flex-row gap-4 p-3 bg-white rounded-bl-xl dark:bg-gray-800 -top-2 -right-2">
+                        {% for language in account.languages %}
+                            <a href="{% url 'index' language.code %}{% querystring %}"
+                               class="text-sm text-gray-500">
+                                <img src="{% static language.image %}"
+                                     alt="{{ language.code }}"
+                                     loading="lazy"
+                                     class="w-auto h-5" />
+                            </a>
+                        {% endfor %}
+                    </div>
+                    <div class="overflow-hidden rounded-lg max-h-64">
+                        <img loading="lazy"
+                             src="{{ account.header }}"
+                             alt="Header Image"
+                             class="object-cover" />
+                    </div>
                     <img loading="lazy"
-                         src="{{ account.header }}"
-                         alt="Header Image"
-                         class="object-cover" />
+                         class="absolute bottom-0 translate-y-1/2 bg-white rounded-full outline-8 outline outline-white dark:outline-gray-800 left-4 dark:bg-gray-800 -outline-offset-1"
+                         src="{{ account.avatar }}"
+                         alt="{{ account.login }}"
+                         width="80"
+                         height="80" />
+                    {% if not account.moved %}<c-follow-button :account="account" :user="user" />{% endif %}
                 </div>
-                <img loading="lazy"
-                     class="absolute bottom-0 translate-y-1/2 bg-white rounded-full outline-8 outline outline-white dark:outline-gray-800 left-4 dark:bg-gray-800 -outline-offset-1"
-                     src="{{ account.avatar }}"
-                     alt="{{ account.login }}"
-                     width="80"
-                     height="80" />
-                <c-follow-button :account="account" :user="user" />
-            </div>
-            <div class="p-4 pt-16">
-                <div class="relative">
-                    <h5 class="mb-1 text-2xl font-semibold flex gap-2 break-words text-pretty hyphens-auto [&>img]:max-w-8">
-                        {% render_emojis account.name account.emojis %}
-                    </h5>
-                    {% if selected_instance and selected_instance != account.source %}
-                        <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}"
-                           class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2"
-                           target="_blank">{{ account.username_at_instance }}</a>
-                    {% else %}
-                        <a href="https://{{ account.source }}/@{{ account.username }}"
-                           target="_blank"
-                           class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2">
-                            {{ account.username_at_instance }}
-                        </a>
-                    {% endif %}
-                </div>
-                <div class="mt-6 mb-2 font-normal text-gray-700 dark:text-gray-400 prose dark:prose-invert break-words text-pretty hyphens-auto [&_img]:max-h-4 [&_img]:inline-block [&_img]:m-0">
-                    {% render_emojis account.note account.emojis %}
-                </div>
-                {% if user.is_superuser %}
-                    <div class="text-xs text-gray-600 dark:text-gray-500"
-                         id="switch_account_type">
-                        {% if account.accountlookup.account_type == 'H' %}
-                            <button hx-post="{% url 'switch_account_type' account.accountlookup.pk 'P' %}"
-                                    hx-target="#switch_account_type"
-                                    hx-swap="innerHTML">Switch to Project</button>
-                        {% elif account.accountlookup.account_type == 'P' %}
-                            <button hx-post="{% url 'switch_account_type' account.accountlookup.pk 'H' %}"
-                                    hx-target="#switch_account_type"
-                                    hx-swap="innerHTML">Switch to Human</button>
-                        {% elif account.accountlookup.account_type == '!' %}
-                            <button hx-post="{% url 'switch_account_type' account.accountlookup.pk 'P' %}"
-                                    hx-target="#switch_account_type"
-                                    hx-swap="innerHTML">Switch to Project</button>
-                            <button hx-post="{% url 'switch_account_type' account.accountlookup.pk 'H' %}"
-                                    hx-target="#switch_account_type"
-                                    hx-swap="innerHTML">Switch to Human</button>
+                <div class="p-4 pt-16">
+                    <div class="relative">
+                        <h5 class="mb-1 text-2xl font-semibold flex gap-2 break-words text-pretty hyphens-auto [&>img]:max-w-8">
+                            {% render_emojis account.name account.emojis %}
+                        </h5>
+                        {% if selected_instance and selected_instance != account.source %}
+                            <a href="https://{% firstof selected_instance %}/@{{ account.username }}@{{ account.source }}"
+                               class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2"
+                               target="_blank">{{ account.username_at_instance }}</a>
+                        {% else %}
+                            <a href="https://{{ account.source }}/@{{ account.username }}"
+                               target="_blank"
+                               class="border-b border-color-gray-700 dark:border-gray-500 text-gray-700 dark:text-gray-400 text-sm [&>img]:max-h-4 inline-flex gap-2">
+                                {{ account.username_at_instance }}
+                            </a>
                         {% endif %}
                     </div>
-                {% endif %}
-                <div class="grid grid-cols-4 gap-2 pt-4 mt-4 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">
-                    <div class="flex flex-col gap-0 text-center" title="Last status">
-                        <span class="text-xs">{% trans "Last posted" %}</span>
-                        <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
-                            {% if sort_order == '-accountlookup__last_status_at' %}▼{% endif %}
-                        {{ account.last_status_at_cached }}</span>
+                    <div class="mt-6 mb-2 font-normal text-gray-700 dark:text-gray-400 prose dark:prose-invert break-words text-pretty hyphens-auto [&_img]:max-h-4 [&_img]:inline-block [&_img]:m-0">
+                        {% render_emojis account.note account.emojis %}
                     </div>
-                    <div class="flex flex-col gap-0 text-center" title="Statuses">
-                        <span class="text-xs">{% trans "Posts" %}</span>
-                        <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
-                            {% if sort_order == '-accountlookup__daily_statuses_count' %}
-                                <span class="{% if account.accountlookup.daily_statuses_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.daily_statuses_count | intcomma }}</span>
-                            {% elif sort_order == '-accountlookup__weekly_statuses_count' %}
-                                <span class="{% if account.accountlookup.weekly_statuses_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.weekly_statuses_count | intcomma }}</span>
-                            {% elif sort_order == '-accountlookup__monthly_statuses_count' %}
-                                <span class="{% if account.accountlookup.monthly_statuses_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.monthly_statuses_count | intcomma }}</span>
-                            {% elif sort_order == '-accountlookup__statuses_count' %}
-                                <span>▼ {{ account.accountlookup.statuses_count | intcomma }}</span>
-                            {% else %}
-                                <span>{{ account.statuses_count | intcomma }}</span>
+                    {% if user.is_superuser %}
+                        <div class="text-xs text-gray-600 dark:text-gray-500"
+                             id="switch_account_type">
+                            {% if account.accountlookup.account_type == 'H' %}
+                                <button hx-post="{% url 'switch_account_type' account.accountlookup.pk 'P' %}"
+                                        hx-target="#switch_account_type"
+                                        hx-swap="innerHTML">Switch to Project</button>
+                            {% elif account.accountlookup.account_type == 'P' %}
+                                <button hx-post="{% url 'switch_account_type' account.accountlookup.pk 'H' %}"
+                                        hx-target="#switch_account_type"
+                                        hx-swap="innerHTML">Switch to Human</button>
+                            {% elif account.accountlookup.account_type == '!' %}
+                                <button hx-post="{% url 'switch_account_type' account.accountlookup.pk 'P' %}"
+                                        hx-target="#switch_account_type"
+                                        hx-swap="innerHTML">Switch to Project</button>
+                                <button hx-post="{% url 'switch_account_type' account.accountlookup.pk 'H' %}"
+                                        hx-target="#switch_account_type"
+                                        hx-swap="innerHTML">Switch to Human</button>
                             {% endif %}
-                        </span>
-                    </div>
-                    <div class="flex flex-col gap-0 text-center" title="Followers">
-                        <span class="text-xs">{% trans "Followers" %}</span>
-                        <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
-                            {% if sort_order == '-accountlookup__daily_followers_count' %}
-                                <span class="{% if account.accountlookup.daily_followers_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.daily_followers_count | intcomma }}</span>
-                            {% elif sort_order == '-accountlookup__weekly_followers_count' %}
-                                <span class="{% if account.accountlookup.weekly_followers_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.weekly_followers_count | intcomma }}</span>
-                            {% elif sort_order == '-accountlookup__monthly_followers_count' %}
-                                <span class="{% if account.accountlookup.monthly_followers_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.monthly_followers_count | intcomma }}</span>
-                            {% elif sort_order == '-accountlookup__followers_count' %}
-                                <span>▼ {{ account.accountlookup.followers_count | intcomma }}</span>
-                            {% else %}
-                                <span>{{ account.followers_count | intcomma }}</span>
-                            {% endif %}
-                        </span>
-                    </div>
-                    <div class="flex flex-col gap-0 text-center" title="Following">
-                        <span class="text-xs">{% trans "Following" context "This account is *following* this many people" %}</span>
-                        <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
-                            {% if sort_order == '-accountlookup__daily_following_count' %}
-                                <span class="{% if account.accountlookup.daily_following_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.daily_following_count | intcomma }}</span>
-                            {% elif sort_order == '-accountlookup__weekly_following_count' %}
-                                <span class="{% if account.accountlookup.weekly_following_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.weekly_following_count | intcomma }}</span>
-                            {% elif sort_order == '-accountlookup__monthly_following_count' %}
-                                <span class="{% if account.accountlookup.monthly_following_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.monthly_following_count | intcomma }}</span>
-                            {% elif sort_order == '-accountlookup__following_count' %}
-                                <span>▼ {{ account.accountlookup.following_count | intcomma }}</span>
-                            {% else %}
-                                <span>{{ account.following_count | intcomma }}</span>
-                            {% endif %}
-                        </span>
+                        </div>
+                    {% endif %}
+                    <div class="grid grid-cols-4 gap-2 pt-4 mt-4 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">
+                        <div class="flex flex-col gap-0 text-center" title="Last status">
+                            <span class="text-xs">{% trans "Last posted" %}</span>
+                            <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
+                                {% if sort_order == '-accountlookup__last_status_at' %}▼{% endif %}
+                            {{ account.last_status_at_cached }}</span>
+                        </div>
+                        <div class="flex flex-col gap-0 text-center" title="Statuses">
+                            <span class="text-xs">{% trans "Posts" %}</span>
+                            <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
+                                {% if sort_order == '-accountlookup__daily_statuses_count' %}
+                                    <span class="{% if account.accountlookup.daily_statuses_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.daily_statuses_count | intcomma }}</span>
+                                {% elif sort_order == '-accountlookup__weekly_statuses_count' %}
+                                    <span class="{% if account.accountlookup.weekly_statuses_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.weekly_statuses_count | intcomma }}</span>
+                                {% elif sort_order == '-accountlookup__monthly_statuses_count' %}
+                                    <span class="{% if account.accountlookup.monthly_statuses_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.monthly_statuses_count | intcomma }}</span>
+                                {% elif sort_order == '-accountlookup__statuses_count' %}
+                                    <span>▼ {{ account.accountlookup.statuses_count | intcomma }}</span>
+                                {% else %}
+                                    <span>{{ account.statuses_count | intcomma }}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="flex flex-col gap-0 text-center" title="Followers">
+                            <span class="text-xs">{% trans "Followers" %}</span>
+                            <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
+                                {% if sort_order == '-accountlookup__daily_followers_count' %}
+                                    <span class="{% if account.accountlookup.daily_followers_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.daily_followers_count | intcomma }}</span>
+                                {% elif sort_order == '-accountlookup__weekly_followers_count' %}
+                                    <span class="{% if account.accountlookup.weekly_followers_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.weekly_followers_count | intcomma }}</span>
+                                {% elif sort_order == '-accountlookup__monthly_followers_count' %}
+                                    <span class="{% if account.accountlookup.monthly_followers_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.monthly_followers_count | intcomma }}</span>
+                                {% elif sort_order == '-accountlookup__followers_count' %}
+                                    <span>▼ {{ account.accountlookup.followers_count | intcomma }}</span>
+                                {% else %}
+                                    <span>{{ account.followers_count | intcomma }}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="flex flex-col gap-0 text-center" title="Following">
+                            <span class="text-xs">{% trans "Following" context "This account is *following* this many people" %}</span>
+                            <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
+                                {% if sort_order == '-accountlookup__daily_following_count' %}
+                                    <span class="{% if account.accountlookup.daily_following_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.daily_following_count | intcomma }}</span>
+                                {% elif sort_order == '-accountlookup__weekly_following_count' %}
+                                    <span class="{% if account.accountlookup.weekly_following_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.weekly_following_count | intcomma }}</span>
+                                {% elif sort_order == '-accountlookup__monthly_following_count' %}
+                                    <span class="{% if account.accountlookup.monthly_following_count > 0 %}text-green-600{% endif %}">▼ {{ account.accountlookup.monthly_following_count | intcomma }}</span>
+                                {% elif sort_order == '-accountlookup__following_count' %}
+                                    <span>▼ {{ account.accountlookup.following_count | intcomma }}</span>
+                                {% else %}
+                                    <span>{{ account.following_count | intcomma }}</span>
+                                {% endif %}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
