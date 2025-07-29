@@ -368,9 +368,9 @@
         {% endif %}
         <script src="{% static "htmx.min.js" %}"></script>
         <script src="{% static "flowbite.min.js" %}"></script>
-        <script integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb"
-                crossorigin="anonymous"
+        <script data-goatcounter="https://fedidevs.goatcounter.com/count"
+                nonce="{{ request.csp_nonce }}"
                 async
-                src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+                src="//gc.zgo.at/count.js"></script>
     </body>
 </html>

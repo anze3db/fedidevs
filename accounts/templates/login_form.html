@@ -29,7 +29,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.get_full_path }}">
                 <div>
-                    <label for="email" class="block mb-2 text-sm font-medium">{% trans "Your instance" %}</label>
+                    <label for="instance" class="block mb-2 text-sm font-medium">{% trans "Your instance" %}</label>
                     <input type="text"
                            name="instance"
                            id="instance"
