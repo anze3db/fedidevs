@@ -153,6 +153,7 @@ class Account(models.Model):
 
     note = models.TextField()
     url = models.URLField(db_index=True)
+    activitypub_id = models.URLField(null=True)
     avatar = models.URLField()
     avatar_static = models.URLField()
     header = models.URLField()
