@@ -65,6 +65,7 @@ async def crawlone(user: str, make_visible: bool = False):
             "statuses_count": account["statuses_count"],
             "note": account["note"],
             "url": account["url"],
+            "activitypub_id": account["uri"],
             "avatar": account["avatar"],
             "avatar_static": account["avatar_static"],
             "header": account["header"],
