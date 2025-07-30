@@ -10,7 +10,7 @@ from django.contrib.postgres.search import SearchQuery
 from django.core.paginator import Paginator
 from django.db import IntegrityError, models, transaction
 from django.db.models import Exists, OuterRef, Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseServerError, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -394,6 +394,18 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
     )
 
 
+def wants_activitypub(request):
+    # Check if a given HTTP request would prefer receiving ActivityPub data rather
+    # than HTML. The following check should cover properly implemented ActivityPub
+    # platforms. See also: https://www.w3.org/TR/activitypub/#retrieving-objects
+    available_types = [
+        'text/html',
+        'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+        'application/activity+json',
+    ]
+    return request.get_preferred_type(available_types) != 'text/html'
+
+
 def share_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, deleted_at__isnull=True)
     accounts = (
@@ -406,6 +418,43 @@ def share_starter_pack(request, starter_pack_slug):
         .select_related("accountlookup", "instance_model")
         .order_by("-followers_count")
     )
+
+    if wants_activitypub(request):
+        author = Account.objects.get(username_at_instance=starter_pack.created_by)
+        if author.activitypub_id is None:
+            # Owner of this starter pack does not have an ActivityPub ID stored yet.
+            # This should be resolved somewhere else by a background task, so we
+            # return an HTTP 500 error and leave it to the client to try again later.
+            return HttpResponseServerError()
+        items = [account.activitypub_id for account in accounts]
+        if None in items:
+            # One or more of the accounts in this starter pack do not have an
+            # ActivityPub ID stored yet. Same consideration as above.
+            return HttpResponseServerError()
+        data = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "type": "Collection",
+            "id": request.build_absolute_uri("/s/" + starter_pack.slug + "/"),
+            "name": re.sub(r":\w+:", "", starter_pack.title).strip(),
+            "summary": starter_pack.description,
+            "attributedTo": author.activitypub_id,
+            "published": starter_pack.created_at,
+            "updated": starter_pack.updated_at,
+            "image": {
+                "type": "Image",
+                "mediaType": "image/png",
+                "url": request.build_absolute_uri("/static/og-starterpack.png"),
+            },
+            "generator": {
+                "type": "Application",
+                "name": "Fedidevs",
+                "url": request.build_absolute_uri("/"),
+            },
+            "totalItems": accounts.count(),
+            "items": items,
+        }
+        response = JsonResponse(data, status=200)
+        return response
 
     if request.user.is_authenticated:
         # Annotate whether the current request user is following the account:
