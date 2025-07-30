@@ -399,11 +399,11 @@ def wants_activitypub(request):
     # than HTML. The following check should cover properly implemented ActivityPub
     # platforms. See also: https://www.w3.org/TR/activitypub/#retrieving-objects
     available_types = [
-        'text/html',
+        "text/html",
         'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-        'application/activity+json',
+        "application/activity+json",
     ]
-    return request.get_preferred_type(available_types) != 'text/html'
+    return request.get_preferred_type(available_types) != "text/html"
 
 
 def share_starter_pack(request, starter_pack_slug):
