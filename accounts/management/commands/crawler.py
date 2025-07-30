@@ -101,7 +101,7 @@ class Command(RichCommand):
                                 statuses_count=account["statuses_count"],
                                 note=account["note"],
                                 url=account["url"],
-                                activitypub_id=account["uri"],
+                                activitypub_id=account.get("uri"),
                                 avatar=account["avatar"],
                                 avatar_static=account["avatar_static"],
                                 header=account["header"],
