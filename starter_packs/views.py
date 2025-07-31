@@ -398,12 +398,21 @@ def wants_activitypub(request):
     # Check if a given HTTP request would prefer receiving ActivityPub data rather
     # than HTML. The following check should cover properly implemented ActivityPub
     # platforms. See also: https://www.w3.org/TR/activitypub/#retrieving-objects
+
+    # Order matters here: If the request has no `Accept` header at all, the function
+    # `get_preferred_type` will return the first type instead of `None`. So as our
+    # fallback format, `text/html` must be listed first.
     available_types = [
         "text/html",
         'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
         "application/activity+json",
     ]
-    return request.get_preferred_type(available_types) != "text/html"
+    preferred_type = request.get_preferred_type(available_types)
+    if preferred_type is None:
+        # If the client wants none of what we can offer, default to HTML
+        return False
+    else:
+        return preferred_type != "text/html"
 
 
 def share_starter_pack(request, starter_pack_slug):
@@ -455,7 +464,7 @@ def share_starter_pack(request, starter_pack_slug):
             "totalItems": accounts.count(),
             "items": items,
         }
-        response = JsonResponse(data, status=200)
+        response = JsonResponse(data, status=200, content_type="application/activity+json; charset=utf-8")
         return response
 
     if request.user.is_authenticated:
