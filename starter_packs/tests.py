@@ -244,6 +244,7 @@ class TestShareStarterPack(TestCase):
     def setUpTestData(cls):
         cls.user = baker.make("auth.User")
         baker.make("mastodon_auth.AccountAccess", user=cls.user)
+        # FIXME: setup for ActivityPub tests
         cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
         instance = baker.make("accounts.Instance")
         baker.make(
@@ -301,3 +302,51 @@ class TestShareStarterPack(TestCase):
         self.assertNotContains(response, "Edit")
         self.assertNotContains(response, "Delete")
         self.assertNotContains(response, "Follow all 5 accounts")
+
+    def test_activitypub(self):
+        # Testing the content negotiation. See: https://www.w3.org/TR/activitypub/#retrieving-objects
+        accept_activitystreams = (
+            'application/ld+json; profile="https://www.w3.org/ns/activitystreams"', # MUST
+            "application/activity+json", # SHOULD
+            "application/activity+json;q=0.5,text/html;q=0.4",
+        )
+        accept_html = (
+            "text/html",
+            "text/plain",
+            "application/activity+json;q=0.4,text/html;q=0.5",
+        )
+        for accept in accept_activitystreams + accept_html:
+            response = self.client.get(
+                reverse("share_starter_pack", args=[self.starter_pack.slug]),
+                headers={ "accept": accept },
+            )
+            self.assertEqual(response.status_code, 200)
+            if accept in accept_activitystreams:
+                self.assertEqual(response.headers["Content-Type"].split(";")[0], "application/activity+json")
+            else:
+                self.assertEqual(response.headers["Content-Type"].split(";")[0], "text/html")
+        response = self.client.get(
+            reverse("share_starter_pack", args=[self.starter_pack.slug]),
+            headers={ "accept": 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"' },
+        )
+
+        # ActivityPub is kind of difficult to test for syntactically, but these will always be in there:
+        self.assertContains(response, '"@context"')
+        self.assertContains(response, '"https://www.w3.org/ns/activitystreams"')
+        payload = response.json()
+        self.assertIn("@context", payload)
+        self.assertIsInstance(payload.get("id"), str)
+
+        # From here we test for compliance with the starter kit schema.
+        # See https://github.com/pixelfed/starter-kits/issues/1
+        self.assertIn(payload.get("type"), ("Collection", "OrderedCollection"))
+        self.assertIsInstance(payload.get("name"), str)
+        self.assertIsInstance(payload.get("summary"), str)
+        self.assertIsInstance(payload.get("totalItems"), int)
+        items = None
+        if payload.get("type") == "Collection":
+            items = payload.get("items")
+        if payload.get("type") == "OrderedCollection":
+            items = payload.get("orderedItems")
+        self.assertIsInstance(items, list)
+        self.assertEqual(len(items), payload.get("totalItems"))
