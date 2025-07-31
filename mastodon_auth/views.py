@@ -190,6 +190,7 @@ def auth(request):
             "statuses_count": logged_in_account.get("statuses_count"),
             "note": logged_in_account.get("note"),
             "url": logged_in_account.get("url"),
+            "activitypub_id": logged_in_account.get("uri"),
             "avatar": logged_in_account.get("avatar"),
             "avatar_static": logged_in_account.get("avatar_static"),
             "header": logged_in_account.get("header"),
