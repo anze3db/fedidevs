@@ -306,8 +306,8 @@ class TestShareStarterPack(TestCase):
     def test_activitypub(self):
         # Testing the content negotiation. See: https://www.w3.org/TR/activitypub/#retrieving-objects
         accept_activitystreams = (
-            'application/ld+json; profile="https://www.w3.org/ns/activitystreams"', # MUST
-            "application/activity+json", # SHOULD
+            'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',  # MUST
+            "application/activity+json",  # SHOULD
             "application/activity+json;q=0.5,text/html;q=0.4",
         )
         accept_html = (
@@ -318,7 +318,7 @@ class TestShareStarterPack(TestCase):
         for accept in accept_activitystreams + accept_html:
             response = self.client.get(
                 reverse("share_starter_pack", args=[self.starter_pack.slug]),
-                headers={ "accept": accept },
+                headers={"accept": accept},
             )
             self.assertEqual(response.status_code, 200)
             if accept in accept_activitystreams:
@@ -327,7 +327,7 @@ class TestShareStarterPack(TestCase):
                 self.assertEqual(response.headers["Content-Type"].split(";")[0], "text/html")
         response = self.client.get(
             reverse("share_starter_pack", args=[self.starter_pack.slug]),
-            headers={ "accept": 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"' },
+            headers={"accept": 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'},
         )
 
         # ActivityPub is kind of difficult to test for syntactically, but these will always be in there:
