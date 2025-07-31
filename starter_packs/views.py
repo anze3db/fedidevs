@@ -434,7 +434,9 @@ def share_starter_pack(request, starter_pack_slug):
         data = {
             "@context": "https://www.w3.org/ns/activitystreams",
             "type": "Collection",
-            "id": request.build_absolute_uri(reverse("share_starter_pack", kwargs={"starter_pack_slug": starter_pack.slug})),
+            "id": request.build_absolute_uri(
+                reverse("share_starter_pack", kwargs={"starter_pack_slug": starter_pack.slug})
+            ),
             "name": re.sub(r":\w+:", "", starter_pack.title).strip(),
             "summary": starter_pack.description,
             "attributedTo": author.activitypub_id,
