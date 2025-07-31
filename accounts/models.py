@@ -216,6 +216,8 @@ class Account(models.Model):
     def get_username_at_instance(self):
         if self.instance_model:
             return f"@{self.username}@{self.instance_model.domain}"
+        if self.instance:
+            return f"@{self.username}@{self.instance}"
         return f"@{self.username}@{self.url.replace('https://', '').split('/@')[0]}"
 
     @property
