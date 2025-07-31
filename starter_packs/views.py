@@ -420,7 +420,7 @@ def share_starter_pack(request, starter_pack_slug):
     )
 
     if wants_activitypub(request):
-        author = Account.objects.get(username_at_instance=starter_pack.created_by)
+        author = Account.objects.get(username_at_instance=starter_pack.created_by.username)
         if author.activitypub_id is None:
             # Owner of this starter pack does not have an ActivityPub ID stored yet.
             # This should be resolved somewhere else by a background task, so we
