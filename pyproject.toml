@@ -3,6 +3,7 @@ name = "fedidevs"
 version = "2024"
 requires-python = "~=3.13.0"
 dependencies = [
+  "defusedxml",
   "django",
   "django-dramatiq",
   "django-environ",
