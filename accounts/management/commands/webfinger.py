@@ -1,8 +1,8 @@
 import logging
 from json import JSONDecodeError
 
+import defusedxml.ElementTree
 import httpx
-import xml.etree.ElementTree
 from asgiref.sync import async_to_sync
 from django_rich.management import RichCommand
 
@@ -16,7 +16,7 @@ async def get_activitypub_id_from_webfinger(acct, instance, client: httpx.AsyncC
         try:
             response = await client.get(
                 f"https://{instance}/.well-known/host-meta",
-                follow_redirects=True, # Should not be required, but who knows
+                follow_redirects=True,  # Should not be required, but who knows
                 timeout=30,
             )
         except httpx.HTTPError:
@@ -25,20 +25,23 @@ async def get_activitypub_id_from_webfinger(acct, instance, client: httpx.AsyncC
             pass
         if response is not None and response.status_code == 200:
             try:
-                host_meta = xml.etree.ElementTree.fromstring(response.text)
-            except xml.etree.ElementTree.ParseError:
+                host_meta = defusedxml.ElementTree.fromstring(response.text)
+            except defusedxml.ElementTree.ParseError:
                 logger.info("%s Error: decoding host-meta XML", acct)
-            for element in host_meta or []:
-                if element.attrib.get("rel") == "lrdd" and "template" in element.attrib:
-                    host_meta_cache[instance] = element.attrib["template"]
-                    break
+            try:
+                for element in host_meta:
+                    if element.attrib.get("rel") == "lrdd" and "template" in element.attrib:
+                        host_meta_cache[instance] = element.attrib["template"]
+                        break
+            except TypeError:
+                logger.info("%s Error: invalid host-meta data", acct)
         # If no WebFinger URL is found by now, use the default.
         if instance not in host_meta_cache:
             # The last "{uri}" is intentionally not an f-string, it is needed verbatim.
             host_meta_cache[instance] = f"https://{instance}/.well-known/webfinger?resource=" + "{uri}"
     try:
         response = await client.get(
-            host_meta_cache[instance].replace('{uri}', 'acct:' + acct),
+            host_meta_cache[instance].replace("{uri}", "acct:" + acct),
             follow_redirects=True,  # Required for some servers depending on their setup
             timeout=30,
         )
@@ -84,7 +87,9 @@ class Command(RichCommand):
                 acct = account.get_username_at_instance()
                 if acct[0] == "@":
                     acct = acct[1:]
-                account.activitypub_id = await get_activitypub_id_from_webfinger(acct, account.instance, client, host_meta_cache)
+                account.activitypub_id = await get_activitypub_id_from_webfinger(
+                    acct, account.instance, client, host_meta_cache
+                )
                 if account.activitypub_id:
                     await account.asave(update_fields=["activitypub_id"])
                     # logger.info("%s: ActivityPub ID set", acct)
