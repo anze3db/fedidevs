@@ -479,7 +479,7 @@ def share_starter_pack(request, starter_pack_slug):
         return response
 
     if get_preferred_format(request) == "activitypub":
-        author = Account.objects.get(username_at_instance=starter_pack.created_by.username)
+        author = starter_pack.created_by.accountaccess.account
         if author.activitypub_id is None:
             # Owner of this starter pack does not have an ActivityPub ID stored yet.
             # This should be resolved somewhere else by a background task, so we
