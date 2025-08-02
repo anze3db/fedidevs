@@ -27,6 +27,7 @@ dependencies = [
   "pytest-watcher>=0.4.3",
   "newrelic>=10.7.0",
   "requests>=2.32.3",
+  "ddt>=1.7.2",
 ]
 
 [tool.uv]
