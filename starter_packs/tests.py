@@ -322,7 +322,7 @@ class TestShareStarterPack(TestCase):
         ("text/plain", "text/html"),
     )
     @unpack
-    def test_activitypub(self, accept_header, expected_content_type):
+    def test_api_formats(self, accept_header, expected_content_type):
         # Testing the content negotiation. See: https://www.w3.org/TR/activitypub/#retrieving-objects
         response = self.client.get(
             reverse("share_starter_pack", args=[self.starter_pack.slug]),
@@ -331,7 +331,7 @@ class TestShareStarterPack(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers["Content-Type"].split(";")[0], expected_content_type)
 
-    def test_activitypub_plain_json(self):
+    def test_api_plain_json(self):
         # Testing the plain JSON response
         url = reverse("share_starter_pack", args=[self.starter_pack.slug])
         response = self.client.get(
@@ -385,7 +385,7 @@ class TestShareStarterPack(TestCase):
             },
         )
 
-    def test_activitypub_response(self):
+    def test_api_activitypub(self):
         # Testing the ActivityPub response
         url = reverse("share_starter_pack", args=[self.starter_pack.slug])
         response = self.client.get(
