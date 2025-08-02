@@ -243,8 +243,11 @@ class TestShareStarterPack(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = baker.make("auth.User")
-        baker.make("mastodon_auth.AccountAccess", user=cls.user)
-        # FIXME: setup for ActivityPub tests
+        baker.make(
+            "mastodon_auth.AccountAccess",
+            user=cls.user,
+            account__activitypub_id="https://instance.org/users/createdbyuser",
+        )
         cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
         instance = baker.make("accounts.Instance")
         baker.make(
@@ -252,6 +255,7 @@ class TestShareStarterPack(TestCase):
             starter_pack=cls.starter_pack,
             account__discoverable=True,
             account__instance_model=instance,
+            account__activitypub_id="https://instance.org/users/user",
             _quantity=5,
         )
 
