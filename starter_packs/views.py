@@ -454,10 +454,7 @@ def share_starter_pack(request, starter_pack_slug):
             "daily_follows": starter_pack.daily_follows,
             "weekly_follows": starter_pack.weekly_follows,
             "monthly_follows": starter_pack.monthly_follows,
-            "accounts": [],
-        }
-        for account in accounts:
-            data["accounts"].append(
+            "accounts": [
                 {
                     "name": account.name,
                     "handle": account.username_at_instance,
@@ -474,11 +471,12 @@ def share_starter_pack(request, starter_pack_slug):
                     "avatar": account.avatar,
                     "header": account.avatar,
                 }
-            )
+                for account in accounts
+            ],
+        }
         response = JsonResponse(data, status=200, content_type="application/json; charset=utf-8")
         return response
-
-    if get_preferred_format(request) == "activitypub":
+    elif get_preferred_format(request) == "activitypub":
         author = starter_pack.created_by.accountaccess.account
         if author.activitypub_id is None:
             # Owner of this starter pack does not have an ActivityPub ID stored yet.
