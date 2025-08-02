@@ -422,6 +422,7 @@ class TestShareStarterPack(TestCase):
                 "type": "Image",
                 "mediaType": "image/png",
                 "url": "http://testserver/static/og-starterpack.png",
+                "summary": "",
             },
             "generator": {
                 "type": "Application",
