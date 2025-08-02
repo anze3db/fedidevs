@@ -394,25 +394,37 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
     )
 
 
-def wants_activitypub(request):
-    # Check if a given HTTP request would prefer receiving ActivityPub data rather
-    # than HTML. The following check should cover properly implemented ActivityPub
-    # platforms. See also: https://www.w3.org/TR/activitypub/#retrieving-objects
+def get_preferred_format(request):
+    # Check which one of the data formats we can supply (HTML, JSON, ActivityPub)
+    # best matches the client's request. There may be a `format` query parameter
+    # asking for a specific one. If there isn't, we use HTTP content negotiation
+    # to react to the client's `Accept` header. If after that there is still no
+    # clear preference, we default to HTML.
+    # See also: https://www.w3.org/TR/activitypub/#retrieving-objects
+
+    if request.GET.get("format") in ["activitypub", "json", "html"]:
+        return request.GET["format"]
 
     # Order matters here: If the request has no `Accept` header at all, the function
     # `get_preferred_type` will return the first type instead of `None`. So as our
     # fallback format, `text/html` must be listed first.
     available_types = [
         "text/html",
+        "application/json",
         'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
         "application/activity+json",
     ]
     preferred_type = request.get_preferred_type(available_types)
-    if preferred_type is None:
-        # If the client wants none of what we can offer, default to HTML
-        return False
-    else:
-        return preferred_type != "text/html"
+    result = "text/html"  # Default
+    if preferred_type in [
+        'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+        "application/activity+json"
+    ]:
+        result = "activitypub"
+    elif preferred_type == "application/json":
+        result = "json"
+
+    return result
 
 
 def share_starter_pack(request, starter_pack_slug):
@@ -428,7 +440,43 @@ def share_starter_pack(request, starter_pack_slug):
         .order_by("-followers_count")
     )
 
-    if wants_activitypub(request):
+    if get_preferred_format(request) == "json":
+        data = {
+            "url": request.build_absolute_uri(
+                reverse("share_starter_pack", kwargs={"starter_pack_slug": starter_pack.slug})
+            ),
+            "title": starter_pack.title,
+            "description": starter_pack.description,
+            "created_by": starter_pack.created_by.username,
+            "created_at": starter_pack.created_at,
+            "updated_at": starter_pack.updated_at,
+            "published_at": starter_pack.published_at,
+            "daily_follows": starter_pack.daily_follows,
+            "weekly_follows": starter_pack.weekly_follows,
+            "monthly_follows": starter_pack.monthly_follows,
+            "accounts": [],
+        }
+        for account in accounts:
+            data["accounts"].append({
+                "name": account.name,
+                "handle": account.username_at_instance,
+                "url": account.url,
+                "activitypub_id": account.activitypub_id,
+                "created_at": account.created_at,
+                "followers_count": account.followers_count,
+                "following_count": account.following_count,
+                "statuses_count": account.statuses_count,
+                "bot": account.bot,
+                "discoverable": account.discoverable,
+                "locked": account.locked,
+                "noindex": account.noindex,
+                "avatar": account.avatar,
+                "header": account.avatar,
+            })
+        response = JsonResponse(data, status=200, content_type="application/json; charset=utf-8")
+        return response
+
+    if get_preferred_format(request) == "activitypub":
         author = Account.objects.get(username_at_instance=starter_pack.created_by.username)
         if author.activitypub_id is None:
             # Owner of this starter pack does not have an ActivityPub ID stored yet.

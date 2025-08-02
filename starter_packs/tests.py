@@ -305,26 +305,50 @@ class TestShareStarterPack(TestCase):
 
     def test_activitypub(self):
         # Testing the content negotiation. See: https://www.w3.org/TR/activitypub/#retrieving-objects
-        accept_activitystreams = (
+        accept_activitypub = (
             'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',  # MUST
             "application/activity+json",  # SHOULD
             "application/activity+json;q=0.5,text/html;q=0.4",
+        )
+        accept_json = (
+            "application/json",
+            "application/json;q=0.5,text/html;q=0.4",
         )
         accept_html = (
             "text/html",
             "text/plain",
             "application/activity+json;q=0.4,text/html;q=0.5",
         )
-        for accept in accept_activitystreams + accept_html:
+        for accept in accept_activitypub + accept_json + accept_html:
             response = self.client.get(
                 reverse("share_starter_pack", args=[self.starter_pack.slug]),
                 headers={"accept": accept},
             )
             self.assertEqual(response.status_code, 200)
-            if accept in accept_activitystreams:
+            if accept in accept_activitypub:
                 self.assertEqual(response.headers["Content-Type"].split(";")[0], "application/activity+json")
+            elif accept in accept_json:
+                self.assertEqual(response.headers["Content-Type"].split(";")[0], "application/json")
             else:
                 self.assertEqual(response.headers["Content-Type"].split(";")[0], "text/html")
+
+        # Testing the plain JSON response
+        response = self.client.get(
+            reverse("share_starter_pack", args=[self.starter_pack.slug]),
+            headers={"accept": "application/json"},
+        )
+
+        payload = response.json()
+        self.assertIn("title", payload)
+        self.assertIsInstance(payload["title"], str)
+        self.assertIn("description", payload)
+        self.assertIsInstance(payload["description"], str)
+        self.assertIn("url", payload)
+        self.assertIsInstance(payload["url"], str)
+        self.assertIn("accounts", payload)
+        self.assertIsInstance(payload["accounts"], list)
+
+        # Testing the ActivityPub response
         response = self.client.get(
             reverse("share_starter_pack", args=[self.starter_pack.slug]),
             headers={"accept": 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'},
@@ -339,7 +363,7 @@ class TestShareStarterPack(TestCase):
 
         # From here we test for compliance with the starter kit schema.
         # See https://github.com/pixelfed/starter-kits/issues/1
-        self.assertIn(payload.get("type"), ("Collection", "OrderedCollection"))
+        self.assertIn(payload.get("type"), ["Collection", "OrderedCollection"])
         self.assertIsInstance(payload.get("name"), str)
         self.assertIsInstance(payload.get("summary"), str)
         self.assertIsInstance(payload.get("totalItems"), int)
