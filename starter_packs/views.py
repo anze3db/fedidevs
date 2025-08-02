@@ -503,6 +503,16 @@ def share_starter_pack(request, starter_pack_slug):
                 "type": "Image",
                 "mediaType": "image/png",
                 "url": request.build_absolute_uri("/static/og-starterpack.png"),
+                # In The ActivityPub ecosystem, the `summary` property is commonly used for image
+                # alt text (analogous to the HTML `alt` attribute). We want to emphasize for other
+                # implementers and consumers that this is possible here. However, we supply an empty
+                # string as our alt text because our starter pack splash images are presumed to be
+                # “either decorative or supplemental to the rest of the content, redundant with
+                # some other information in the document” (WHATWG HTML Living Standard on what it
+                # means when the alt attribute is the empty string). That is, people who do not see
+                # the image lose no information since the title and content of the starter pack are
+                # right here in the same document.
+                "summary": "",
             },
             "generator": {
                 "type": "Application",
