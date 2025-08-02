@@ -167,7 +167,10 @@ def conference(request, conference_slug: str):
 
     date = request.GET.get("date") or None
     if date and (date := parse_date(date)):
-        search_query &= Q(created_at_date__gte=date, created_at_date__lt=date + dt.timedelta(days=1))
+        search_query &= Q(
+            created_at_date__date__gte=date,
+            created_at_date__date__lt=date + dt.timedelta(days=1),
+        )
 
     all_conf_posts_count = (
         ConferencePost.objects.annotate(
@@ -189,8 +192,8 @@ def conference(request, conference_slug: str):
         .filter(
             conference=conference,
             visibility="public",
-            created_at_date__gte=conference.start_date,
-            created_at_date__lt=conference.end_date + dt.timedelta(days=1),
+            created_at_date__date__gte=conference.start_date,
+            created_at_date__date__lt=conference.end_date + dt.timedelta(days=1),
         )
         .values("created_at_date")
         .annotate(count=Count("id"))
