@@ -33,6 +33,7 @@ dependencies = [
 
 [tool.uv]
 dev-dependencies = [
+  "ddt",
   "django-browser-reload",
   "django-coverage-plugin",
   "django-debug-toolbar",
