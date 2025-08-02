@@ -1,3 +1,4 @@
+from ddt import data, ddt, unpack
 from django.test import TestCase
 from django.urls import reverse
 from model_bakery import baker
@@ -239,6 +240,7 @@ class TestToggleStarterPackAccount(TestCase):
         self.assertEqual(self.starter_pack.starterpackaccount_set.count(), 150)
 
 
+@ddt
 class TestShareStarterPack(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -307,54 +309,87 @@ class TestShareStarterPack(TestCase):
         self.assertNotContains(response, "Delete")
         self.assertNotContains(response, "Follow all 5 accounts")
 
-    def test_activitypub(self):
+    @data(
+        # ActivityPub:
+        ('application/ld+json; profile="https://www.w3.org/ns/activitystreams"', "application/activity+json"),  # MUST
+        ("application/activity+json", "application/activity+json"),  # SHOULD
+        ("application/activity+json;q=0.5,text/html;q=0.4", "application/activity+json"),
+        # JSON:
+        ("application/json", "application/json"),
+        ("application/json;q=0.5,text/html;q=0.4", "application/json"),
+        # HTML:
+        ("text/html", "text/html"),
+        ("text/plain", "text/html"),
+    )
+    @unpack
+    def test_activitypub(self, accept_header, expected_content_type):
         # Testing the content negotiation. See: https://www.w3.org/TR/activitypub/#retrieving-objects
-        accept_activitypub = (
-            'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',  # MUST
-            "application/activity+json",  # SHOULD
-            "application/activity+json;q=0.5,text/html;q=0.4",
-        )
-        accept_json = (
-            "application/json",
-            "application/json;q=0.5,text/html;q=0.4",
-        )
-        accept_html = (
-            "text/html",
-            "text/plain",
-            "application/activity+json;q=0.4,text/html;q=0.5",
-        )
-        for accept in accept_activitypub + accept_json + accept_html:
-            response = self.client.get(
-                reverse("share_starter_pack", args=[self.starter_pack.slug]),
-                headers={"accept": accept},
-            )
-            self.assertEqual(response.status_code, 200)
-            if accept in accept_activitypub:
-                self.assertEqual(response.headers["Content-Type"].split(";")[0], "application/activity+json")
-            elif accept in accept_json:
-                self.assertEqual(response.headers["Content-Type"].split(";")[0], "application/json")
-            else:
-                self.assertEqual(response.headers["Content-Type"].split(";")[0], "text/html")
-
-        # Testing the plain JSON response
         response = self.client.get(
             reverse("share_starter_pack", args=[self.starter_pack.slug]),
+            headers={"accept": accept_header},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Content-Type"].split(";")[0], expected_content_type)
+
+    def test_activitypub_plain_json(self):
+        # Testing the plain JSON response
+        url = reverse("share_starter_pack", args=[self.starter_pack.slug])
+        response = self.client.get(
+            url,
             headers={"accept": "application/json"},
         )
 
         payload = response.json()
-        self.assertIn("title", payload)
-        self.assertIsInstance(payload["title"], str)
-        self.assertIn("description", payload)
-        self.assertIsInstance(payload["description"], str)
-        self.assertIn("url", payload)
-        self.assertIsInstance(payload["url"], str)
-        self.assertIn("accounts", payload)
-        self.assertIsInstance(payload["accounts"], list)
+        accounts = (
+            Account.objects.filter(
+                starterpackaccount__starter_pack=self.starter_pack,
+                instance_model__isnull=False,
+                instance_model__deleted_at__isnull=True,
+                discoverable=True,
+            )
+            .select_related("accountlookup", "instance_model")
+            .order_by("-followers_count")
+        )
+        self.assertEqual(
+            payload,
+            {
+                "url": f"http://testserver{url}",
+                "title": self.starter_pack.title,
+                "description": self.starter_pack.description,
+                "created_by": self.starter_pack.created_by.username,
+                "created_at": self.starter_pack.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
+                "updated_at": self.starter_pack.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
+                "published_at": self.starter_pack.published_at,
+                "daily_follows": self.starter_pack.daily_follows,
+                "weekly_follows": self.starter_pack.weekly_follows,
+                "monthly_follows": self.starter_pack.monthly_follows,
+                "accounts": [
+                    {
+                        "name": account.name,
+                        "handle": account.username_at_instance,
+                        "url": account.url,
+                        "activitypub_id": account.activitypub_id,
+                        "created_at": account.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
+                        "followers_count": account.followers_count,
+                        "following_count": account.following_count,
+                        "statuses_count": account.statuses_count,
+                        "bot": account.bot,
+                        "discoverable": account.discoverable,
+                        "locked": account.locked,
+                        "noindex": account.noindex,
+                        "avatar": account.avatar,
+                        "header": account.avatar,
+                    }
+                    for account in accounts
+                ],
+            },
+        )
 
+    def test_activitypub_response(self):
         # Testing the ActivityPub response
+        url = reverse("share_starter_pack", args=[self.starter_pack.slug])
         response = self.client.get(
-            reverse("share_starter_pack", args=[self.starter_pack.slug]),
+            url,
             headers={"accept": 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'},
         )
 
@@ -362,19 +397,39 @@ class TestShareStarterPack(TestCase):
         self.assertContains(response, '"@context"')
         self.assertContains(response, '"https://www.w3.org/ns/activitystreams"')
         payload = response.json()
-        self.assertIn("@context", payload)
-        self.assertIsInstance(payload.get("id"), str)
 
-        # From here we test for compliance with the starter kit schema.
-        # See https://github.com/pixelfed/starter-kits/issues/1
-        self.assertIn(payload.get("type"), ["Collection", "OrderedCollection"])
-        self.assertIsInstance(payload.get("name"), str)
-        self.assertIsInstance(payload.get("summary"), str)
-        self.assertIsInstance(payload.get("totalItems"), int)
-        items = None
-        if payload.get("type") == "Collection":
-            items = payload.get("items")
-        if payload.get("type") == "OrderedCollection":
-            items = payload.get("orderedItems")
-        self.assertIsInstance(items, list)
-        self.assertEqual(len(items), payload.get("totalItems"))
+        accounts = (
+            Account.objects.filter(
+                starterpackaccount__starter_pack=self.starter_pack,
+                instance_model__isnull=False,
+                instance_model__deleted_at__isnull=True,
+                discoverable=True,
+            )
+            .select_related("accountlookup", "instance_model")
+            .order_by("-followers_count")
+        )
+
+        expected_payload = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "type": "Collection",
+            "id": f"http://testserver{url}",
+            "name": self.starter_pack.title,
+            "summary": self.starter_pack.description,
+            "attributedTo": self.starter_pack.created_by.accountaccess.account.activitypub_id,
+            "published": self.starter_pack.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
+            "updated": self.starter_pack.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
+            "image": {
+                "type": "Image",
+                "mediaType": "image/png",
+                "url": "http://testserver/static/og-starterpack.png",
+            },
+            "generator": {
+                "type": "Application",
+                "name": "Fedidevs",
+                "url": "http://testserver/",
+            },
+            "totalItems": accounts.count(),
+            "items": [account.activitypub_id for account in accounts],
+        }
+
+        self.assertEqual(payload, expected_payload)
