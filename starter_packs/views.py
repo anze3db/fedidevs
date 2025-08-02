@@ -418,7 +418,7 @@ def get_preferred_format(request):
     result = "text/html"  # Default
     if preferred_type in [
         'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-        "application/activity+json"
+        "application/activity+json",
     ]:
         result = "activitypub"
     elif preferred_type == "application/json":
@@ -457,22 +457,24 @@ def share_starter_pack(request, starter_pack_slug):
             "accounts": [],
         }
         for account in accounts:
-            data["accounts"].append({
-                "name": account.name,
-                "handle": account.username_at_instance,
-                "url": account.url,
-                "activitypub_id": account.activitypub_id,
-                "created_at": account.created_at,
-                "followers_count": account.followers_count,
-                "following_count": account.following_count,
-                "statuses_count": account.statuses_count,
-                "bot": account.bot,
-                "discoverable": account.discoverable,
-                "locked": account.locked,
-                "noindex": account.noindex,
-                "avatar": account.avatar,
-                "header": account.avatar,
-            })
+            data["accounts"].append(
+                {
+                    "name": account.name,
+                    "handle": account.username_at_instance,
+                    "url": account.url,
+                    "activitypub_id": account.activitypub_id,
+                    "created_at": account.created_at,
+                    "followers_count": account.followers_count,
+                    "following_count": account.following_count,
+                    "statuses_count": account.statuses_count,
+                    "bot": account.bot,
+                    "discoverable": account.discoverable,
+                    "locked": account.locked,
+                    "noindex": account.noindex,
+                    "avatar": account.avatar,
+                    "header": account.avatar,
+                }
+            )
         response = JsonResponse(data, status=200, content_type="application/json; charset=utf-8")
         return response
 
