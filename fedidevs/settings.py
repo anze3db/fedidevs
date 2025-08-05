@@ -162,6 +162,9 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
+
 TAILWIND_APP_NAME = "theme"
 
 STORAGES = {
