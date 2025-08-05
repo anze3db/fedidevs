@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("starter_packs", "0006_starterpack_daily_follows_and_more"),
     ]
