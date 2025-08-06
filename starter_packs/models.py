@@ -13,6 +13,8 @@ class StarterPack(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
     published_at = models.DateTimeField(null=True, blank=True)
 
+    splash_image = models.ImageField(upload_to="splash", blank=True, default="")
+
     daily_follows = models.IntegerField(default=0)
     weekly_follows = models.IntegerField(default=0)
     monthly_follows = models.IntegerField(default=0)
