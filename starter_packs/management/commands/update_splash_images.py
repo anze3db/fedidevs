@@ -53,7 +53,6 @@ class Command(RichCommand):
         else:
             self.run_once(stale_after, seconds_between, host_attribution)
 
-
     def run_once(self, stale_after, seconds_between, host_attribution):
         self.console.print("Checking which starter packs need to have their splash images rerendered.")
         start_time = timezone.now()
@@ -78,7 +77,7 @@ class Command(RichCommand):
     def render_splash_images_for(self, starter_packs, host_attribution, seconds_between):
         for i in range(len(starter_packs)):
             self.console.print(
-                f"({i+1}/{len(starter_packs)}) Rendering splash image for: {starter_packs[i].title} ({starter_packs[i].slug})"
+                f"({i + 1}/{len(starter_packs)}) Rendering splash image for: {starter_packs[i].title} ({starter_packs[i].slug})"
             )
             render_splash_image(starter_packs[i], host_attribution)
             time.sleep(seconds_between)

@@ -395,7 +395,10 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
             account_id=account_id,
             created_by=request.user,
         )
-    if get_splash_image_signature(starter_pack) != starter_pack.splash_image_signature and starter_pack.published_at is not None:
+    if (
+        get_splash_image_signature(starter_pack) != starter_pack.splash_image_signature
+        and starter_pack.published_at is not None
+    ):
         starter_pack.splash_image_needs_update = True
         starter_pack.save(update_fields=["splash_image_needs_update"])
 
@@ -751,8 +754,10 @@ def get_splash_background(width, height, attribution, font, cache_path):
         background.paste(mixed_color, (x, 0, x + 1, height))
 
     draw = ImageDraw.Draw(background)
-    font_size = (font.getmetrics()[0] - font.getmetrics()[1])
-    draw.text((width - 0.6 * font_size, height - 0.3 * font_size), attribution, fill=(255, 255, 255), font=font, anchor="rb")
+    font_size = font.getmetrics()[0] - font.getmetrics()[1]
+    draw.text(
+        (width - 0.6 * font_size, height - 0.3 * font_size), attribution, fill=(255, 255, 255), font=font, anchor="rb"
+    )
     background.save(cache_path)
     return background
 
@@ -849,7 +854,7 @@ def render_splash_image(starter_pack, host_attribution):
         render_resolution[1],
         f"Hosted by {host_attribution}",
         attribution_font,
-        media_dir / f"starterpack_bg_{render_resolution[0]}x{render_resolution[1]}.png"
+        media_dir / f"starterpack_bg_{render_resolution[0]}x{render_resolution[1]}.png",
     )
 
     margin_top = 2.5 * 48 * supersampling_factor
@@ -879,9 +884,9 @@ def render_splash_image(starter_pack, host_attribution):
                 break
         expand_line_count = min(expand_line_count + 2, num_lines)
     for i in range(1, num_lines):
-        if lines[i] < lines[i-1] - 1:
+        if lines[i] < lines[i - 1] - 1:
             lines[i] += 1
-            lines[i-1] -= 1
+            lines[i - 1] -= 1
 
     circle_distance = inner_width / max(lines)
     circle_distance = min(circle_distance, (inner_height / (1 + math.sin(math.pi / 3) * (len(lines) - 1))))
@@ -917,9 +922,9 @@ def render_splash_image(starter_pack, host_attribution):
     for y in range(len(lines)):
         shift = -0.25 + (y % 2) * 0.5
         if y > 0:
-            if lines[y] > lines[y-1] and shift > 0:
+            if lines[y] > lines[y - 1] and shift > 0:
                 line_start -= 1
-            elif lines[y] < lines[y-1] and shift < 0:
+            elif lines[y] < lines[y - 1] and shift < 0:
                 line_start += 1
         for x in range(lines[y]):
             cx = (line_start + x + shift) * circle_distance
@@ -965,11 +970,11 @@ def render_splash_image(starter_pack, host_attribution):
                     starter_pack.title,
                     fill=job[1],
                     font=title_font,
-                    anchor="mm"
+                    anchor="mm",
                 )
             i += 1
 
-    shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(radius=3*supersampling_factor))
+    shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(radius=3 * supersampling_factor))
     image.alpha_composite(shadow_layer)
     image.alpha_composite(outline_layer)
 
@@ -982,4 +987,6 @@ def render_splash_image(starter_pack, host_attribution):
     starter_pack.splash_image_signature = get_splash_image_signature(starter_pack)
     starter_pack.splash_image_updated_at = timezone.now()
     starter_pack.splash_image_needs_update = False
-    starter_pack.save(update_fields=["splash_image", "splash_image_signature", "splash_image_updated_at", "splash_image_needs_update"])
+    starter_pack.save(
+        update_fields=["splash_image", "splash_image_signature", "splash_image_updated_at", "splash_image_needs_update"]
+    )
