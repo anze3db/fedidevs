@@ -183,11 +183,16 @@ def render_splash_image(starter_pack, host_attribution):
     inner_aspect_ratio = inner_width / inner_height
     
     goal_num_avatars = min(len(accounts), SPLASH_IMAGE_NUMBER_OF_AVATARS)
+    if goal_num_avatars == 0:
+        num_lines = 0
+        per_line = 0
+        leftover = 0
+    else:
+        num_lines = 1 + math.floor(math.sqrt(max(goal_num_avatars - 1, 1) / inner_aspect_ratio))
+        per_line = math.floor(goal_num_avatars / num_lines)
+        num_lines = math.floor(goal_num_avatars / per_line)
+        leftover = goal_num_avatars % per_line
 
-    num_lines = 1 + math.floor(math.sqrt(max(goal_num_avatars - 1, 1) / inner_aspect_ratio))
-    per_line = math.floor(goal_num_avatars / num_lines)
-    num_lines = math.floor(goal_num_avatars / per_line)
-    leftover = goal_num_avatars % per_line
     lines = []
     for _i in range(num_lines):
         lines.append(per_line)
@@ -204,8 +209,12 @@ def render_splash_image(starter_pack, host_attribution):
             lines[i] += 1
             lines[i - 1] -= 1
 
-    circle_distance = inner_width / max(lines)
-    circle_distance = min(circle_distance, (inner_height / (1 + math.sin(math.pi / 3) * (len(lines) - 1))))
+    if goal_num_avatars == 0:
+        circle_distance = 0
+    else:
+        circle_distance = inner_width / max(lines)
+        circle_distance = min(circle_distance, (inner_height / (1 + math.sin(math.pi / 3) * (len(lines) - 1))))
+
     # We separate `circle_radius` from `circle_distance` to
     # scale the circles' relative size in the future.
     circle_radius = circle_distance / 2
@@ -271,13 +280,20 @@ def render_splash_image(starter_pack, host_attribution):
     title_font = ImageFont.truetype(font_path, title_font_size)
     title_font.set_variation_by_name("Bold")
 
-    i = 0
-    for y in range(num_lines):
-        for _x in range(lines[y]):
-            pixel_x = round(avatar_positions[i][0] + diff_x - avatar_size / 2)
-            pixel_y = round(avatar_positions[i][1] + diff_y - avatar_size / 2)
-            image.alpha_composite(avatars[i], (pixel_x, pixel_y))
-            for job in ((shadow_draw, (0, 0, 0, 63)), (outline_draw, (255, 255, 255, 255))):
+    for job in ((shadow_draw, (0, 0, 0, 63)), (outline_draw, (255, 255, 255, 255))):
+        job[0].text(
+            (render_resolution[0] / 2, 48 * supersampling_factor),
+            starter_pack.title,
+            fill=job[1],
+            font=title_font,
+            anchor="mm",
+        )
+        i = 0
+        for y in range(num_lines):
+            for _x in range(lines[y]):
+                pixel_x = round(avatar_positions[i][0] + diff_x - avatar_size / 2)
+                pixel_y = round(avatar_positions[i][1] + diff_y - avatar_size / 2)
+                image.alpha_composite(avatars[i], (pixel_x, pixel_y))
                 job[0].circle(
                     (avatar_positions[i][0] + diff_x, avatar_positions[i][1] + diff_y),
                     math.floor(circle_radius + outline_thickness / 2),
@@ -285,14 +301,7 @@ def render_splash_image(starter_pack, host_attribution):
                     fill=None,
                     width=outline_thickness,
                 )
-                job[0].text(
-                    (render_resolution[0] / 2, 48 * supersampling_factor),
-                    starter_pack.title,
-                    fill=job[1],
-                    font=title_font,
-                    anchor="mm",
-                )
-            i += 1
+                i += 1
 
     shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(radius=3 * supersampling_factor))
     image.alpha_composite(shadow_layer)
