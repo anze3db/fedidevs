@@ -155,7 +155,7 @@ def render_splash_image(starter_pack, host_attribution):
     resolution = (1200, 630)  # final rendered image size in pixels
     supersampling_factor = 3  # scaling factor for render canvas size (to avoid aliasing)
     media_dir = settings.BASE_DIR / "media"
-    splash_dir = settings.BASE_DIR / "media" / "splash"
+    splash_dir = media_dir / "splash"
 
     render_resolution = (resolution[0] * supersampling_factor, resolution[1] * supersampling_factor)
     font_path = settings.BASE_DIR / "static" / "InterVariable.ttf"
