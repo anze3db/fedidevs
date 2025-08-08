@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from starter_packs.models import StarterPack
-from starter_packs.views import render_splash_image
+from starter_packs.splash_images import render_splash_image
 
 
 @admin.action(description="Update splash image for selected starter packs")

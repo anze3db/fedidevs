@@ -6,7 +6,7 @@ from django.utils import timezone
 from django_rich.management import RichCommand
 
 from starter_packs.models import StarterPack
-from starter_packs.views import render_splash_image
+from starter_packs.splash_images import render_splash_image
 
 logger = logging.getLogger(__name__)
 
