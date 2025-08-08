@@ -182,7 +182,7 @@ def render_splash_image(starter_pack, host_attribution):
     inner_width = render_resolution[0] - 2 * margin_side
     inner_height = render_resolution[1] - margin_top - margin_bottom
     inner_aspect_ratio = inner_width / inner_height
-    
+
     goal_num_avatars = min(len(accounts), SPLASH_IMAGE_NUMBER_OF_AVATARS)
     if goal_num_avatars == 0:
         num_lines = 0
@@ -215,6 +215,7 @@ def render_splash_image(starter_pack, host_attribution):
     else:
         circle_distance = inner_width / max(lines)
         circle_distance = min(circle_distance, (inner_height / (1 + math.sin(math.pi / 3) * (len(lines) - 1))))
+        circle_distance = min(circle_distance, render_resolution[0] / 3, render_resolution[1] / 3)
 
     # We separate `circle_radius` from `circle_distance` to
     # scale the circles' relative size in the future.
@@ -273,6 +274,11 @@ def render_splash_image(starter_pack, host_attribution):
     shadow_draw = ImageDraw.Draw(shadow_layer)
     outline_draw = ImageDraw.Draw(outline_layer)
 
+    if goal_num_avatars == 0:
+        top_avatar_boundary = inner_height / 2 + margin_top
+    else:
+        top_avatar_boundary = min_y + diff_y - circle_radius
+
     title_font = ImageFont.truetype(font_path, 64)
     title_font.set_variation_by_name("Bold")
     title_width = title_font.getlength(starter_pack.title)
@@ -283,7 +289,7 @@ def render_splash_image(starter_pack, host_attribution):
 
     for job in ((shadow_draw, (0, 0, 0, 63)), (outline_draw, (255, 255, 255, 255))):
         job[0].text(
-            (render_resolution[0] / 2, 48 * supersampling_factor),
+            (render_resolution[0] / 2, round(top_avatar_boundary / 2)),
             starter_pack.title,
             fill=job[1],
             font=title_font,
