@@ -14,6 +14,9 @@ class StarterPack(models.Model):
     published_at = models.DateTimeField(null=True, blank=True)
 
     splash_image = models.ImageField(upload_to="splash", blank=True, default="")
+    splash_image_signature = models.CharField(blank=True, default="", max_length=32)
+    splash_image_updated_at = models.DateTimeField(null=True)
+    splash_image_needs_update = models.BooleanField(default=False)
 
     daily_follows = models.IntegerField(default=0)
     weekly_follows = models.IntegerField(default=0)
