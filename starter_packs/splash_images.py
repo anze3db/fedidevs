@@ -80,8 +80,13 @@ def get_splash_background(width, height, attribution, font, cache_path):
     draw.text(
         (width - 0.6 * font_size, height - 0.3 * font_size), attribution, fill=(255, 255, 255), font=font, anchor="rb"
     )
-    background.save(cache_path)
-    return background
+
+    try:
+        background.save(cache_path)
+        return background
+    except OSError:
+        logger.exception("Unable to save splash image: %s", cache_path)
+        return None
 
 
 def fetch_avatar(url, crop_mask):
@@ -151,22 +156,6 @@ def render_splash_image(starter_pack, host_attribution):
     media_dir = settings.BASE_DIR / "media"
     splash_dir = settings.BASE_DIR / "media" / "splash"
 
-    for directory in (media_dir, splash_dir):
-        try:
-            directory.mkdir(mode=0o770, exist_ok=True)
-        except (FileExistsError, PermissionError) as e:
-            # With `exist_ok=True`, the FileExistsError is only raised if the media path
-            # already exists and is _not_ a directory.
-            logger.exception("Unable to create %s directory: %s", directory, type(e).__name__)
-            return
-        try:
-            write_test_path = directory / "__write_test.lock"
-            write_test_path.touch()
-            write_test_path.unlink()
-        except OSError:
-            logger.exception("Unable to write to directory %s", directory)
-            return
-
     render_resolution = (resolution[0] * supersampling_factor, resolution[1] * supersampling_factor)
     font_path = settings.BASE_DIR / "static" / "InterVariable.ttf"
     attribution_font = ImageFont.truetype(font_path, round(30 * supersampling_factor))
@@ -178,6 +167,9 @@ def render_splash_image(starter_pack, host_attribution):
         attribution_font,
         media_dir / f"starterpack_bg_{render_resolution[0]}x{render_resolution[1]}.png",
     )
+    if image is None:
+        # Background could be neither retrieved from cache nor generated as new
+        return
 
     margin_top = 2.5 * 48 * supersampling_factor
     margin_bottom = 2 * 36 * supersampling_factor
@@ -302,7 +294,14 @@ def render_splash_image(starter_pack, host_attribution):
 
     image.convert("RGB")
     image = image.resize(resolution, resample=Image.Resampling.LANCZOS)
-    image.save(splash_dir / (starter_pack.slug + ".png"))
+    image_path = splash_dir / (starter_pack.slug + ".png")
+
+    try:
+        image.save(image_path)
+    except OSError:
+        logger.exception("Unable to save splash image: %s (is %s writable?)", image_path, splash_dir)
+        return
+
     image.close()
 
     starter_pack.splash_image = f"splash/{starter_pack.slug}.png"
