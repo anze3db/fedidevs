@@ -30,7 +30,7 @@ def get_splash_image_accounts(starter_pack):
         .select_related("accountlookup", "instance_model")
         .order_by("starterpackaccount__created_at")
     )
-    return list(accounts[:SPLASH_IMAGE_NUMBER_OF_AVATARS])
+    return list(accounts)
 
 
 def get_splash_image_signature(starter_pack):
@@ -42,6 +42,7 @@ def get_splash_image_signature(starter_pack):
     the current render settings.
     """
     accounts = get_splash_image_accounts(starter_pack)
+    accounts = accounts[:SPLASH_IMAGE_NUMBER_OF_AVATARS]
     accounts = [account.get_username_at_instance() for account in accounts]
     content = starter_pack.title + ",".join(sorted(accounts))
     return hashlib.sha512(content.encode("utf-8")).hexdigest()[:32]
@@ -176,16 +177,17 @@ def render_splash_image(starter_pack, host_attribution):
     margin_side = 0.05 * resolution[0] * supersampling_factor
 
     accounts = get_splash_image_accounts(starter_pack)
-    random.shuffle(accounts)
 
     inner_width = render_resolution[0] - 2 * margin_side
     inner_height = render_resolution[1] - margin_top - margin_bottom
     inner_aspect_ratio = inner_width / inner_height
+    
+    goal_num_avatars = min(len(accounts), SPLASH_IMAGE_NUMBER_OF_AVATARS)
 
-    num_lines = 1 + math.floor(math.sqrt(max(len(accounts) - 1, 1) / inner_aspect_ratio))
-    per_line = math.floor(len(accounts) / num_lines)
-    num_lines = math.floor(len(accounts) / per_line)
-    leftover = len(accounts) % per_line
+    num_lines = 1 + math.floor(math.sqrt(max(goal_num_avatars - 1, 1) / inner_aspect_ratio))
+    per_line = math.floor(goal_num_avatars / num_lines)
+    num_lines = math.floor(goal_num_avatars / per_line)
+    leftover = goal_num_avatars % per_line
     lines = []
     for _i in range(num_lines):
         lines.append(per_line)
@@ -225,7 +227,11 @@ def render_splash_image(starter_pack, host_attribution):
             avatars.append(avatar)
         else:
             logger.warning("Failed to fetch avatar of account %s for splash image", account.get_username_at_instance())
-            avatars.append(empty_avatar)
+        if len(avatars) >= goal_num_avatars:
+            break
+    if len(avatars) < goal_num_avatars:
+        avatars += [empty_avatar] * (goal_num_avatars - len(avatars))
+    random.shuffle(avatars)
 
     min_x = 9999999
     min_y = 9999999
