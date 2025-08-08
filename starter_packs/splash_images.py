@@ -132,9 +132,10 @@ def fetch_avatar(url, crop_mask):
 
     avatar = avatar.convert("RGBA")
     avatar = avatar.resize((crop_mask.width, crop_mask.height), resample=Image.Resampling.LANCZOS)
-    modified = Image.new("RGBA", (crop_mask.width, crop_mask.height), (127, 127, 127, 255))
+    modified = Image.new("RGBA", (crop_mask.width, crop_mask.height), (191, 191, 191, 85))
     modified.alpha_composite(avatar)
-    modified.putalpha(crop_mask)
+    transparent = Image.new("RGBA", (modified.width, modified.height), (0, 0, 0, 0))
+    modified = Image.composite(modified, transparent, crop_mask)
     return modified
 
 
