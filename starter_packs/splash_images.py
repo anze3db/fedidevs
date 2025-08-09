@@ -4,6 +4,7 @@ import logging
 import math
 import random
 
+import emoji
 import httpx
 from django.conf import settings
 from django.utils import timezone
@@ -139,6 +140,70 @@ def fetch_avatar(url, crop_mask):
     return modified
 
 
+def split_text_emoji_segments(image_draw, text, non_emoji_font, emoji_font):
+    segments = []
+    fonts = {
+        "emoji": emoji_font,
+        "non-emoji": non_emoji_font,
+    }
+    previous_character_type = None
+    skip_next_character = False
+    for i in range(len(text)):
+        if skip_next_character:
+            skip_next_character = False
+            continue
+        character = text[i]
+        character_type = "emoji" if emoji.is_emoji(character) else "non-emoji"
+        # Handle country flag emoji, which are constructed from two non-emoji characters
+        if character_type == "non-emoji" and i < len(text) - 1 and emoji.is_emoji(text[i] + text[i + 1]):
+            character_type = "emoji"
+            character = text[i] + text[i + 1]
+            skip_next_character = True
+        if character_type != previous_character_type:
+            new_segment = {
+                "content": "",
+                "type": character_type,
+                "width": 0,
+            }
+            segments.append(new_segment)
+        segments[-1]["content"] += character
+        segments[-1]["width"] = image_draw.textlength(segments[-1]["content"], fonts[character_type])
+        previous_character_type = character_type
+    for segment in segments:
+        bbox = image_draw.textbbox((0, 0), segment["content"], fonts[segment["type"]])
+        segment["height"] = bbox[3] - bbox[1]
+    return segments
+
+
+def draw_text_with_emoji(image_draw, position, text, fill, non_emoji_font, emoji_font, anchor="lt"):
+    """
+    Use Pillow's text rendering function for a string that contains emoji
+    in cases where the emoji need to be set in a different font. Assumes
+    a single-line string with ltr text direction, may behave strangely
+    under other circumstances.
+    """
+    segments = split_text_emoji_segments(image_draw, text, non_emoji_font, emoji_font)
+    total_width = sum(s["width"] for s in segments)
+    fonts = {
+        "emoji": emoji_font,
+        "non-emoji": non_emoji_font,
+    }
+    current_x = position[0]
+    if anchor[0] == "m":
+        current_x = round(position[0] - total_width / 2)
+    elif anchor[0] == "r":
+        current_x = round(position[0] - total_width)
+    for segment in segments:
+        image_draw.text(
+            (current_x, position[1]),
+            segment["content"],
+            fill=fill,
+            font=fonts[segment["type"]],
+            anchor="l" + anchor[1],
+        )
+        current_x += segment["width"]
+
+
 def render_splash_image(starter_pack, host_attribution):
     """
     Renders (or re-renders) a splash image for a specific starter pack.
@@ -159,8 +224,9 @@ def render_splash_image(starter_pack, host_attribution):
     splash_dir = media_dir / "splash"
 
     render_resolution = (resolution[0] * supersampling_factor, resolution[1] * supersampling_factor)
-    font_path = settings.BASE_DIR / "static" / "InterVariable.ttf"
-    attribution_font = ImageFont.truetype(font_path, round(30 * supersampling_factor))
+    main_font_path = settings.BASE_DIR / "static" / "InterVariable.ttf"
+    emoji_font_path = settings.BASE_DIR / "static" / "NotoEmoji-Bold.ttf"
+    attribution_font = ImageFont.truetype(main_font_path, round(30 * supersampling_factor))
 
     image = get_splash_background(
         render_resolution[0],
@@ -279,20 +345,25 @@ def render_splash_image(starter_pack, host_attribution):
     else:
         top_avatar_boundary = min_y + diff_y - circle_radius
 
-    title_font = ImageFont.truetype(font_path, 64)
+    title_font = ImageFont.truetype(main_font_path, 64)
     title_font.set_variation_by_name("Bold")
-    title_width = title_font.getlength(starter_pack.title)
+    title_emoji_font = ImageFont.truetype(emoji_font_path, 64)
+    title_emoji_segments = split_text_emoji_segments(outline_draw, starter_pack.title, title_font, title_emoji_font)
+    title_width = sum(s["width"] for s in title_emoji_segments)
     title_max_width = 0.9 * resolution[0]  # 5% margin left and right
     title_font_size = round(min(1, title_max_width / title_width) * 64 * supersampling_factor)
-    title_font = ImageFont.truetype(font_path, title_font_size)
+    title_font = ImageFont.truetype(main_font_path, title_font_size)
     title_font.set_variation_by_name("Bold")
+    title_emoji_font = ImageFont.truetype(emoji_font_path, title_font_size)
 
     for job in ((shadow_draw, (0, 0, 0, 63)), (outline_draw, (255, 255, 255, 255))):
-        job[0].text(
-            (render_resolution[0] / 2, round(top_avatar_boundary / 2)),
-            starter_pack.title,
+        draw_text_with_emoji(
+            image_draw=job[0],
+            position=(render_resolution[0] / 2, round(top_avatar_boundary / 2)),
+            text=starter_pack.title,
             fill=job[1],
-            font=title_font,
+            non_emoji_font=title_font,
+            emoji_font=title_emoji_font,
             anchor="mm",
         )
         i = 0
