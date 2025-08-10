@@ -10,6 +10,8 @@ dependencies = [
   "django-tailwind",
   "django-template-partials",
   "dramatiq[redis, watch]",
+  "emoji",
+  "fonttools",
   "gunicorn",
   "heroicons[django]",
   "httpx",

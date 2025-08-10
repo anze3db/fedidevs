@@ -30,6 +30,7 @@ from accounts.management.commands.crawlone import crawlone
 from accounts.models import Account, Instance
 from mastodon_auth.models import AccountFollowing
 from starter_packs.models import StarterPack, StarterPackAccount
+from starter_packs.splash_images import get_splash_image_signature
 from stats.models import FollowAllClick
 
 logger = logging.getLogger(__name__)
@@ -305,6 +306,9 @@ def create_starter_pack(request):
             starter_pack.save()
             starter_pack.slug = urlsafe_base64_encode(str(starter_pack.id).encode())
             starter_pack.save(update_fields=["slug"])
+            if get_splash_image_signature(starter_pack) != starter_pack.splash_image_signature:
+                starter_pack.splash_image_needs_update = True
+                starter_pack.save(update_fields=["splash_image_needs_update"])
             try:
                 starter_pack.save()
                 return redirect("edit_accounts_starter_pack", starter_pack_slug=starter_pack.slug)
@@ -336,9 +340,12 @@ def publish_starter_pack(request, starter_pack_slug):
     if request.method == "POST":
         if starter_pack.published_at:
             starter_pack.published_at = None
+            starter_pack.splash_image_needs_update = False
         else:
             starter_pack.published_at = timezone.now()
-        starter_pack.save(update_fields=["published_at", "updated_at"])
+            if get_splash_image_signature(starter_pack) != starter_pack.splash_image_signature:
+                starter_pack.splash_image_needs_update = True
+        starter_pack.save(update_fields=["published_at", "updated_at", "splash_image_needs_update"])
 
     response = HttpResponse()
     response["HX-Redirect"] = reverse("share_starter_pack", kwargs={"starter_pack_slug": starter_pack.slug})
@@ -382,6 +389,12 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
             account_id=account_id,
             created_by=request.user,
         )
+    if (
+        get_splash_image_signature(starter_pack) != starter_pack.splash_image_signature
+        and starter_pack.published_at is not None
+    ):
+        starter_pack.splash_image_needs_update = True
+        starter_pack.save(update_fields=["splash_image_needs_update"])
 
     return render(
         request,
