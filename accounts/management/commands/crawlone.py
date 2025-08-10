@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @async_to_sync
-async def crawlone(user: str, make_visible: bool = False):
+async def crawlone(user: str, make_visible: bool = False) -> Account | None:
     if user.startswith("@"):
         user = user[1:]
     async with httpx.AsyncClient() as client:
