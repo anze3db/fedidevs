@@ -12,6 +12,7 @@ from django.utils import timezone
 from fontTools.ttLib import TTFont
 from PIL import Image, ImageDraw, ImageFilter, ImageFont, UnidentifiedImageError
 
+from accounts.management.commands.crawlone import crawlone
 from accounts.models import Account
 
 logger = logging.getLogger(__name__)
@@ -321,10 +322,16 @@ def render_splash_image(starter_pack, host_attribution):
     avatars = []
     for account in accounts:
         avatar = fetch_avatar(account.avatar, crop_mask)
-        if avatar is not None:
-            avatars.append(avatar)
-        else:
+        if avatar is None:
+            refresh_account = crawlone(account.get_username_at_instance())
+            if refresh_account and account.avatar != refresh_account.avatar:
+                avatar = fetch_avatar(refresh_account.avatar, crop_mask)
+
+        if avatar is None:
             logger.warning("Failed to fetch avatar of account %s for splash image", account.get_username_at_instance())
+        else:
+            avatars.append(avatar)
+
         if len(avatars) >= goal_num_avatars:
             break
     if len(avatars) < goal_num_avatars:
