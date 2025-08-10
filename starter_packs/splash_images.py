@@ -189,7 +189,9 @@ def split_text_emoji_segments(image_draw, text, default_font, emoji_font, additi
         segments[-1]["width"] = image_draw.textlength(segments[-1]["content"], current_font)
         previous_font = current_font
     if len(unsupported_characters) > 0:
-        logger.warning("Starter pack title contains unsupported characters: %s (%s)", "".join(unsupported_characters), text)
+        logger.warning(
+            "Starter pack title contains unsupported characters: %s (%s)", "".join(unsupported_characters), text
+        )
     for segment in segments:
         bbox = image_draw.textbbox((0, 0), segment["content"], segment["font"])
         segment["height"] = bbox[3] - bbox[1]
@@ -368,7 +370,9 @@ def render_splash_image(starter_pack, host_attribution):
     title_font.set_variation_by_name("Bold")
     title_emoji_font = ImageFont.truetype(emoji_font_path, 64)
     additional_fonts = [ImageFont.truetype(path, 64) for path in additional_font_paths]
-    title_emoji_segments = split_text_emoji_segments(outline_draw, starter_pack.title, title_font, title_emoji_font, additional_fonts)
+    title_emoji_segments = split_text_emoji_segments(
+        outline_draw, starter_pack.title, title_font, title_emoji_font, additional_fonts
+    )
     title_width = sum(s["width"] for s in title_emoji_segments)
     title_max_width = 0.9 * resolution[0]  # 5% margin left and right
     title_font_size = round(min(1, title_max_width / title_width) * 64 * supersampling_factor)
