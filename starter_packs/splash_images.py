@@ -227,23 +227,14 @@ def draw_text_with_emoji(image_draw, position, text, fill, default_font, emoji_f
         current_x += segment["width"]
 
 
-def render_splash_image(starter_pack, host_attribution, media_dir=settings.BASE_DIR / "media"):
+def render_splash_image_to_image_obj(starter_pack, host_attribution, media_dir):
     """
-    Renders (or re-renders) a splash image for a specific starter pack.
-    The result is returned as a PIL image and stored in the media
-    directory. Note that this triggers a download of up to
-    `SPLASH_IMAGE_NUMBER_OF_AVATARS` remote avatars and a good amount
-    of CPU and RAM use -- this operation is _expensive_! The caller is
-    responsible for sensible scheduling.
-
-    Note: `host_attribution` is cached eagerly by the background gradient
-    renderer. The value is only used if no background for the configured
-    render size is in the local cache.
+    Renders a splash image and returns it as a PIL `Image` object
+    without writing it to the file system. See `render_splash_image`
+    for details.
     """
-
     resolution = (1200, 630)  # final rendered image size in pixels
     supersampling_factor = 3  # scaling factor for render canvas size (to avoid aliasing)
-    splash_dir = media_dir / "splash" if media_dir is not None else None
 
     render_resolution = (resolution[0] * supersampling_factor, resolution[1] * supersampling_factor)
     main_font_path = settings.BASE_DIR / "static" / "InterVariable.ttf"
@@ -251,16 +242,12 @@ def render_splash_image(starter_pack, host_attribution, media_dir=settings.BASE_
     additional_font_paths = glob.glob(str(settings.BASE_DIR / "static" / "NotoSans*.ttf"))
     attribution_font = ImageFont.truetype(main_font_path, round(30 * supersampling_factor))
 
-    background_path = None
-    if media_dir is not None:
-        background_path = media_dir / f"starterpack_bg_{render_resolution[0]}x{render_resolution[1]}.png"
-
     image = get_splash_background(
         render_resolution[0],
         render_resolution[1],
         f"Hosted by {host_attribution}",
         attribution_font,
-        background_path,
+        media_dir / f"starterpack_bg_{render_resolution[0]}x{render_resolution[1]}.png",
     )
     if image is None:
         # Background could be neither retrieved from cache nor generated as new
@@ -425,24 +412,41 @@ def render_splash_image(starter_pack, host_attribution, media_dir=settings.BASE_
 
     image.convert("RGB")
     image = image.resize(resolution, resample=Image.Resampling.LANCZOS)
-    if splash_dir is not None:
-        image_path = splash_dir / (starter_pack.slug + ".png")
-        try:
-            image.save(image_path)
-            starter_pack.splash_image = f"splash/{starter_pack.slug}.png"
-            starter_pack.splash_image_signature = get_splash_image_signature(starter_pack)
-            starter_pack.splash_image_updated_at = timezone.now()
-            starter_pack.splash_image_needs_update = False
-            starter_pack.save(
-                update_fields=[
-                    "splash_image",
-                    "splash_image_signature",
-                    "splash_image_updated_at",
-                    "splash_image_needs_update",
-                ]
-            )
-        except OSError:
-            logger.exception("Unable to save splash image: %s (is %s writable?)", image_path, splash_dir)
-            return
-
     return image
+
+
+def render_splash_image(starter_pack, host_attribution):
+    """
+    Renders (or re-renders) a splash image for a specific starter pack.
+    The result is stored in the media directory. Note that this triggers
+    a download of up to `SPLASH_IMAGE_NUMBER_OF_AVATARS` remote avatars
+    and a good amount of CPU and RAM use -- this operation is _expensive_!
+    The caller is responsible for sensible scheduling.
+
+    Note: `host_attribution` is cached eagerly by the background gradient
+    renderer. The value is only used if no background for the configured
+    render size is in the local cache.
+    """
+    media_dir = settings.BASE_DIR / "media"
+    splash_dir = media_dir / "splash"
+
+    image = render_splash_image_to_image_obj(starter_pack, host_attribution, media_dir)
+
+    image_path = splash_dir / (starter_pack.slug + ".png")
+    try:
+        image.save(image_path)
+        starter_pack.splash_image = f"splash/{starter_pack.slug}.png"
+        starter_pack.splash_image_signature = get_splash_image_signature(starter_pack)
+        starter_pack.splash_image_updated_at = timezone.now()
+        starter_pack.splash_image_needs_update = False
+        starter_pack.save(
+            update_fields=[
+                "splash_image",
+                "splash_image_signature",
+                "splash_image_updated_at",
+                "splash_image_needs_update",
+            ]
+        )
+    except OSError:
+        logger.exception("Unable to save splash image: %s (is %s writable?)", image_path, splash_dir)
+        return
