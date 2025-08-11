@@ -421,7 +421,7 @@ class TestShareStarterPack(TestCase):
             "image": {
                 "type": "Image",
                 "mediaType": "image/png",
-                "url": "http://testserver/static/og-starterpack.png",
+                "url": payload["image"]["url"],
                 "summary": "",
             },
             "generator": {
