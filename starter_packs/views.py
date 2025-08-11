@@ -12,6 +12,7 @@ from django.db import IntegrityError, models, transaction
 from django.db.models import Exists, OuterRef, Q
 from django.http import HttpResponse, HttpResponseServerError, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.templatetags.static import static
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_encode
@@ -111,7 +112,7 @@ def starter_packs(request):
                 "Discover, create, and share Mastodon starter packs to help new users find interesting accounts to follow."
             ),
             "page_header": "FEDIDEVS",
-            "page_image": "og-starterpacks.png",
+            "page_image": static("og-starterpacks.png"),
             "page_subheader": "",
             "starter_packs": page_obj,
             "containing_username": request.GET.get("username", ""),
@@ -503,6 +504,8 @@ def share_starter_pack(request, starter_pack_slug):
                 for account in accounts
             ],
         }
+        if starter_pack.splash_image:
+            data["splash_image"] = request.build_absolute_uri(starter_pack.splash_image.url)
         response = JsonResponse(data, status=200, content_type="application/json; charset=utf-8")
         return response
     elif get_preferred_format(request) == "activitypub":
@@ -517,6 +520,10 @@ def share_starter_pack(request, starter_pack_slug):
             # One or more of the accounts in this starter pack do not have an
             # ActivityPub ID stored yet. Same consideration as above.
             return HttpResponseServerError()
+        if starter_pack.splash_image:
+            splash_image_uri = starter_pack.splash_image.url
+        else:
+            splash_image_uri = static("og-starterpack.png")
         data = {
             "@context": "https://www.w3.org/ns/activitystreams",
             "type": "Collection",
@@ -531,7 +538,7 @@ def share_starter_pack(request, starter_pack_slug):
             "image": {
                 "type": "Image",
                 "mediaType": "image/png",
-                "url": request.build_absolute_uri("/static/og-starterpack.png"),
+                "url": request.build_absolute_uri(splash_image_uri),
                 # In The ActivityPub ecosystem, the `summary` property is commonly used for image
                 # alt text (analogous to the HTML `alt` attribute). We want to emphasize for other
                 # implementers and consumers that this is possible here. However, we supply an empty
@@ -575,7 +582,7 @@ def share_starter_pack(request, starter_pack_slug):
             "page_url": reverse("share_starter_pack", kwargs={"starter_pack_slug": starter_pack_slug}),
             "page_header": "FEDIDEVS",
             "page_subheader": "",
-            "page_image": "og-starterpack.png",
+            "page_image": starter_pack.splash_image.url if starter_pack.splash_image else static("og-starterpack.png"),
             "page_description": starter_pack.description,
             "starter_pack": starter_pack,
             "num_accounts": accounts.count(),

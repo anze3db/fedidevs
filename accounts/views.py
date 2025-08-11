@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Exists, OuterRef, Q
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.templatetags.static import static
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
@@ -316,7 +317,7 @@ def index(request, lang: str | None = None):
                 reverse("index", kwargs={"lang": lang}), request.GET, ["t", "f", "post"]
             ),
             "page_description": top_five_accounts if top_five_accounts else page_description,
-            "page_image": "og.png",
+            "page_image": static("og.png"),
             "accounts": page_obj,
             "selected_lang": selected_lang,
             "selected_framework": selected_framework,
@@ -381,7 +382,7 @@ def faq(request):
             "page_title": "FediDevs | FAQ",
             "page_header": "FEDIDEVS FAQ",
             "page_description": "Frequently Asked Questions",
-            "page_image": "faq.png",
+            "page_image": static("faq.png"),
             "instances": instances,
             "languages": LANGUAGES,
             "frameworks": FRAMEWORKS,
@@ -411,7 +412,7 @@ def devs_on_mastodon(request):
             "page_title": "FediDevs | Mastodon instances with software developers",
             "page_header": "FEDIDEVS",
             "page_description": "Which Mastodon instances have the most software developer accounts.",
-            "page_image": "devs-on-mastodon.png",
+            "page_image": static("devs-on-mastodon.png"),
             "all_devs": all_devs,
             "python_devs": by_python_devs,
             "ruby_devs": by_ruby_devs,

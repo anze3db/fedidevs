@@ -1,6 +1,7 @@
 import json
 
 from django.shortcuts import render
+from django.templatetags.static import static
 
 from accounts.models import FRAMEWORKS, LANGUAGES
 from stats.models import Daily
@@ -69,7 +70,7 @@ def stats(request):
             "page_header": "Stats",
             "page_subheader": "See how many developers on Mastodon are using your favorite languages and frameworks.",
             "page_description": "Stats on the number of developers on Mastodon using various programming languages and frameworks.",
-            "page_image": "og-stats.png",
+            "page_image": static("og-stats.png"),
             "period_name": period_name,
             "cards": cards,  # Needed for template rendering
             "cards_json": json.dumps(cards),  # Needed for JavaScript parsing
