@@ -12,6 +12,7 @@ from django.db import IntegrityError, models, transaction
 from django.db.models import Exists, OuterRef, Q
 from django.http import HttpResponse, HttpResponseServerError, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.templatetags.static import static
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_encode
@@ -111,7 +112,7 @@ def starter_packs(request):
                 "Discover, create, and share Mastodon starter packs to help new users find interesting accounts to follow."
             ),
             "page_header": "FEDIDEVS",
-            "page_image": "og-starterpacks.png",
+            "page_image": static("og-starterpacks.png"),
             "page_subheader": "",
             "starter_packs": page_obj,
             "containing_username": request.GET.get("username", ""),
@@ -506,7 +507,7 @@ def share_starter_pack(request, starter_pack_slug):
         if starter_pack.splash_image:
             splash_image_uri = starter_pack.splash_image.url
         else:
-            splash_image_uri = "/static/og-starterpack.png"
+            splash_image_uri = static("og-starterpack.png")
         data = {
             "@context": "https://www.w3.org/ns/activitystreams",
             "type": "Collection",
@@ -565,7 +566,7 @@ def share_starter_pack(request, starter_pack_slug):
             "page_url": reverse("share_starter_pack", kwargs={"starter_pack_slug": starter_pack_slug}),
             "page_header": "FEDIDEVS",
             "page_subheader": "",
-            "page_image": starter_pack.splash_image.url if starter_pack.splash_image else "og-starterpack.png",
+            "page_image": starter_pack.splash_image.url if starter_pack.splash_image else static("og-starterpack.png"),
             "page_description": starter_pack.description,
             "starter_pack": starter_pack,
             "num_accounts": accounts.count(),

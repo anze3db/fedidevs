@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import Trunc
 from django.shortcuts import get_object_or_404, render
+from django.templatetags.static import static
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_date
@@ -119,7 +120,7 @@ def conferences(request, lang: str | None = None):
             "page_header": "Conferences",
             "page_subheader": "",
             "page_description": "",
-            "page_image": "og-conferences.png",
+            "page_image": static("og-conferences.png"),
             "is_superuser": request.user.is_superuser,
             "upcoming_conferences": upcoming_conferences,
             "live_conferences": live_conferences,
@@ -280,7 +281,7 @@ def conference(request, conference_slug: str):
             "canonical_url": build_canonical_url(
                 reverse("conference", kwargs={"conference_slug": conference.slug}), request.GET, ["account", "date"]
             ),
-            "page_image": "og-conferences.png",
+            "page_image": static("og-conferences.png"),
             "page_url": reverse("conference", kwargs={"conference_slug": conference.slug}),
             "conference": conference,
             "conf_posts": page_obj,
@@ -374,7 +375,7 @@ def fwd50(request, date: dt.date | None = None):
             "page_header": "FWD50",
             "page_subheader": "Nov. 6-8, 2023 | Ottawa and online",
             "page_description": "Most Favourited Mastodon Posts about FWD50",
-            "page_image": "og-fwd50.png",
+            "page_image": static("og-fwd50.png"),
             "posts": page_obj,
             "users_with_most_posts": users_with_most_posts,
             "total_posts": stats["total_posts"],
@@ -474,7 +475,7 @@ def djangoconafrica(request, date: dt.date | None = None):
             "page_header": "DjangoCon Africa",
             "page_subheader": "Nov 6 - 11, 2023 | Zanzibar, Tanzania",
             "page_description": "Most Favourited Mastodon Posts about #djangoconafrica",
-            "page_image": "og-djangoconafrica.png",
+            "page_image": static("og-djangoconafrica.png"),
             "posts": page_obj,
             "users_with_most_posts": users_with_most_posts,
             "stats": stats,
@@ -577,7 +578,7 @@ def dotnetconf(request, date: dt.date | None = None):
             "page_header": ".NET Conf 2023",
             "page_subheader": "Nov 14-16, 2023",
             "page_description": "Most Favourited Mastodon Posts about #dotnetconf",
-            "page_image": "og-dotnetconf.png",
+            "page_image": static("og-dotnetconf.png"),
             "posts": page_obj,
             "users_with_most_posts": users_with_most_posts,
             "stats": stats,
