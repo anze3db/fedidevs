@@ -487,6 +487,8 @@ def share_starter_pack(request, starter_pack_slug):
                 for account in accounts
             ],
         }
+        if starter_pack.splash_image is not None:
+            data["splash_image"] = request.build_absolute_uri(starter_pack.splash_image.url)
         response = JsonResponse(data, status=200, content_type="application/json; charset=utf-8")
         return response
     elif get_preferred_format(request) == "activitypub":
@@ -501,6 +503,10 @@ def share_starter_pack(request, starter_pack_slug):
             # One or more of the accounts in this starter pack do not have an
             # ActivityPub ID stored yet. Same consideration as above.
             return HttpResponseServerError()
+        if starter_pack.splash_image is not None:
+            splash_image_uri = starter_pack.splash_image.url
+        else:
+            splash_image_uri = "/static/og-starterpack.png"
         data = {
             "@context": "https://www.w3.org/ns/activitystreams",
             "type": "Collection",
@@ -515,7 +521,7 @@ def share_starter_pack(request, starter_pack_slug):
             "image": {
                 "type": "Image",
                 "mediaType": "image/png",
-                "url": request.build_absolute_uri("/static/og-starterpack.png"),
+                "url": request.build_absolute_uri(splash_image_uri),
                 # In The ActivityPub ecosystem, the `summary` property is commonly used for image
                 # alt text (analogous to the HTML `alt` attribute). We want to emphasize for other
                 # implementers and consumers that this is possible here. However, we supply an empty
