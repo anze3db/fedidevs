@@ -54,15 +54,16 @@ def get_splash_image_signature(starter_pack):
     return hashlib.sha512(content.encode("utf-8")).hexdigest()[:32]
 
 
-def get_splash_background(width, height, attribution, font, cache_path):
+def get_splash_background(width, height, attribution, font, cache_path=None):
     """
     Creates a PIL image according to the given `width` and `height`, fills it
     with a gradient background, and adds a site-specific `attribution` in the
     lower right corner using `font`.
     This function caches its result in `cache_path` and attempts to reuse it
-    for successive images of the same dimensions.
+    for successive images of the same dimensions. Set `cache_path` to `None`
+    to disable caching.
     """
-    if cache_path.is_file():
+    if cache_path is not None and cache_path.is_file():
         try:
             return Image.open(cache_path)
         except UnidentifiedImageError:
@@ -89,7 +90,8 @@ def get_splash_background(width, height, attribution, font, cache_path):
     )
 
     try:
-        background.save(cache_path)
+        if cache_path is not None:
+            background.save(cache_path)
         return background
     except OSError:
         logger.exception("Unable to save splash image: %s", cache_path)
@@ -101,7 +103,7 @@ def fetch_avatar(url, crop_mask):
     Fetches a remote avatar from a URL and returns it as PIL image resized to
     the dimensions of `mask` and with `mask` applied as an alpha mask size in
     pixels (same width and height). If the avatar is non-square, it is squished.
-    If it contains transparency, a gray background is applied before `crop`mask.
+    If it contains transparency, a gray background is applied before `crop_mask`.
 
     Returns `None` if the download fails, the avatar is too large (in bytes or
     in resolution), or pretty much anything else goes wrong.
@@ -225,7 +227,7 @@ def draw_text_with_emoji(image_draw, position, text, fill, default_font, emoji_f
         current_x += segment["width"]
 
 
-def render_splash_image(starter_pack, host_attribution):
+def render_splash_image(starter_pack, host_attribution, media_dir=settings.BASE_DIR / "media"):
     """
     Renders (or re-renders) a splash image for a specific starter pack.
     The result is returned as a PIL image and stored in the media
@@ -241,8 +243,7 @@ def render_splash_image(starter_pack, host_attribution):
 
     resolution = (1200, 630)  # final rendered image size in pixels
     supersampling_factor = 3  # scaling factor for render canvas size (to avoid aliasing)
-    media_dir = settings.BASE_DIR / "media"
-    splash_dir = media_dir / "splash"
+    splash_dir = media_dir / "splash" if media_dir is not None else None
 
     render_resolution = (resolution[0] * supersampling_factor, resolution[1] * supersampling_factor)
     main_font_path = settings.BASE_DIR / "static" / "InterVariable.ttf"
@@ -250,12 +251,16 @@ def render_splash_image(starter_pack, host_attribution):
     additional_font_paths = glob.glob(str(settings.BASE_DIR / "static" / "NotoSans*.ttf"))
     attribution_font = ImageFont.truetype(main_font_path, round(30 * supersampling_factor))
 
+    background_path = None
+    if media_dir is not None:
+        background_path = media_dir / f"starterpack_bg_{render_resolution[0]}x{render_resolution[1]}.png"
+
     image = get_splash_background(
         render_resolution[0],
         render_resolution[1],
         f"Hosted by {host_attribution}",
         attribution_font,
-        media_dir / f"starterpack_bg_{render_resolution[0]}x{render_resolution[1]}.png",
+        background_path,
     )
     if image is None:
         # Background could be neither retrieved from cache nor generated as new
@@ -420,20 +425,24 @@ def render_splash_image(starter_pack, host_attribution):
 
     image.convert("RGB")
     image = image.resize(resolution, resample=Image.Resampling.LANCZOS)
-    image_path = splash_dir / (starter_pack.slug + ".png")
+    if splash_dir is not None:
+        image_path = splash_dir / (starter_pack.slug + ".png")
+        try:
+            image.save(image_path)
+            starter_pack.splash_image = f"splash/{starter_pack.slug}.png"
+            starter_pack.splash_image_signature = get_splash_image_signature(starter_pack)
+            starter_pack.splash_image_updated_at = timezone.now()
+            starter_pack.splash_image_needs_update = False
+            starter_pack.save(
+                update_fields=[
+                    "splash_image",
+                    "splash_image_signature",
+                    "splash_image_updated_at",
+                    "splash_image_needs_update",
+                ]
+            )
+        except OSError:
+            logger.exception("Unable to save splash image: %s (is %s writable?)", image_path, splash_dir)
+            return
 
-    try:
-        image.save(image_path)
-    except OSError:
-        logger.exception("Unable to save splash image: %s (is %s writable?)", image_path, splash_dir)
-        return
-
-    image.close()
-
-    starter_pack.splash_image = f"splash/{starter_pack.slug}.png"
-    starter_pack.splash_image_signature = get_splash_image_signature(starter_pack)
-    starter_pack.splash_image_updated_at = timezone.now()
-    starter_pack.splash_image_needs_update = False
-    starter_pack.save(
-        update_fields=["splash_image", "splash_image_signature", "splash_image_updated_at", "splash_image_needs_update"]
-    )
+    return image
