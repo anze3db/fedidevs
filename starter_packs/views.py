@@ -30,7 +30,7 @@ from accounts.management.commands.crawlone import crawlone
 from accounts.models import Account, Instance
 from mastodon_auth.models import AccountFollowing
 from starter_packs.models import StarterPack, StarterPackAccount
-from starter_packs.splash_images import get_splash_image_signature
+from starter_packs.splash_images import get_splash_image_signature, render_splash_image
 from stats.models import FollowAllClick
 
 logger = logging.getLogger(__name__)
@@ -277,6 +277,15 @@ def edit_starter_pack(request, starter_pack_slug):
         form = StarterPackForm(request.POST, instance=starter_pack)
         if form.is_valid():
             form.save()
+            if (
+                get_splash_image_signature(starter_pack) != starter_pack.splash_image_signature
+                and starter_pack.published_at is not None
+            ):
+                starter_pack.splash_image_needs_update = True
+                starter_pack.save(update_fields=["splash_image_needs_update"])
+                transaction.on_commit(
+                    lambda: update_starter_pack_splash_images.send(starter_pack_slug=starter_pack.slug)
+                )
             return redirect("edit_accounts_starter_pack", starter_pack_slug=starter_pack.slug)
     else:
         form = StarterPackForm(instance=starter_pack)
@@ -309,6 +318,9 @@ def create_starter_pack(request):
             if get_splash_image_signature(starter_pack) != starter_pack.splash_image_signature:
                 starter_pack.splash_image_needs_update = True
                 starter_pack.save(update_fields=["splash_image_needs_update"])
+                transaction.on_commit(
+                    lambda: update_starter_pack_splash_images.send(starter_pack_slug=starter_pack.slug)
+                )
             try:
                 starter_pack.save()
                 return redirect("edit_accounts_starter_pack", starter_pack_slug=starter_pack.slug)
@@ -345,6 +357,9 @@ def publish_starter_pack(request, starter_pack_slug):
             starter_pack.published_at = timezone.now()
             if get_splash_image_signature(starter_pack) != starter_pack.splash_image_signature:
                 starter_pack.splash_image_needs_update = True
+                transaction.on_commit(
+                    lambda: update_starter_pack_splash_images.send(starter_pack_slug=starter_pack.slug)
+                )
         starter_pack.save(update_fields=["published_at", "updated_at", "splash_image_needs_update"])
 
     response = HttpResponse()
@@ -395,6 +410,7 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
     ):
         starter_pack.splash_image_needs_update = True
         starter_pack.save(update_fields=["splash_image_needs_update"])
+        transaction.on_commit(lambda: update_starter_pack_splash_images.send(starter_pack_slug=starter_pack.slug))
 
     return render(
         request,
@@ -608,6 +624,12 @@ def follow_starter_pack(request, starter_pack_slug):
     messages.success(request, _("Following all accounts in the starter pack. 🎉"))
 
     return redirect("share_starter_pack", starter_pack_slug=starter_pack.slug)
+
+
+@dramatiq.actor
+def update_starter_pack_splash_images(starter_pack_slug: str):
+    starter_pack = StarterPack.objects.get(slug=starter_pack_slug)
+    render_splash_image(starter_pack=starter_pack, host_attribution="fedidevs.com")
 
 
 @dramatiq.actor
