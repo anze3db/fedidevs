@@ -565,7 +565,7 @@ def share_starter_pack(request, starter_pack_slug):
             "page_url": reverse("share_starter_pack", kwargs={"starter_pack_slug": starter_pack_slug}),
             "page_header": "FEDIDEVS",
             "page_subheader": "",
-            "page_image": "og-starterpack.png",
+            "page_image": starter_pack.splash_image.url if starter_pack.splash_image else "og-starterpack.png",
             "page_description": starter_pack.description,
             "starter_pack": starter_pack,
             "num_accounts": accounts.count(),

@@ -20,7 +20,7 @@
               content="{% if page_description %}{{ page_description }}{% else %}Discover amazing developers from across the fediverse.{% endif %}">
         {% if page_image %}
             <meta property="og:image"
-                  content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static page_image %}">
+                  content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% if page_image|first == "/" %}{{ page_image }}{% else %}{% static page_image %}{% endif %}">
         {% endif %}
         <!-- Twitter Meta Tags -->
         <meta name="twitter:card" content="summary_large_image">
@@ -31,7 +31,7 @@
               content="{% if page_description %}{{ page_description }}{% else %}Discover amazing developers from across the fediverse.{% endif %}">
         {% if page_image %}
             <meta name="twitter:image"
-                  content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% static page_image %}">
+                  content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% if page_image|first == "/" %}{{ page_image }}{% else %}{% static page_image %}{% endif %}">
         {% endif %}
         <!-- Favicon -->
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
