@@ -487,7 +487,7 @@ def share_starter_pack(request, starter_pack_slug):
                 for account in accounts
             ],
         }
-        if starter_pack.splash_image is not None:
+        if starter_pack.splash_image:
             data["splash_image"] = request.build_absolute_uri(starter_pack.splash_image.url)
         response = JsonResponse(data, status=200, content_type="application/json; charset=utf-8")
         return response
@@ -503,7 +503,7 @@ def share_starter_pack(request, starter_pack_slug):
             # One or more of the accounts in this starter pack do not have an
             # ActivityPub ID stored yet. Same consideration as above.
             return HttpResponseServerError()
-        if starter_pack.splash_image is not None:
+        if starter_pack.splash_image:
             splash_image_uri = starter_pack.splash_image.url
         else:
             splash_image_uri = "/static/og-starterpack.png"
