@@ -37,6 +37,8 @@ class Command(RichCommand):
         management.call_command("dailyaccountstats")
         self.console.print("Archiving conferences")
         management.call_command("confarchiver")
+        self.console.print("Updating splash images")
+        management.call_command("update_splash_images")
         self.console.print("All done! 🎉")
 
     def hourly_job(self):
