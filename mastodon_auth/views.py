@@ -267,7 +267,7 @@ def follow(request, account_id: int):
         client_secret=instance.client_secret,
         access_token=account_access.access_token,
         user_agent="fedidevs",
-        request_timeout=15,
+        request_timeout=5,
     )
     account = Account.objects.get(pk=account_id)
     if account.instance == instance.url:
