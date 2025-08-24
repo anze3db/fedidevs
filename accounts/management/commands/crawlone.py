@@ -26,7 +26,7 @@ async def crawlone(user: str, make_visible: bool = False) -> Account | None:
                 logger.info("Redirected to %s", res.headers["Location"])
                 instance = res.headers["Location"].split("/")[2]
         except httpx.RequestError:
-            logger.warning("Error fetching host-meta for %s", instance)
+            logger.info("Error fetching host-meta for %s", instance)
         try:
             instance_model = await Instance.objects.aget(instance=instance)
         except Instance.DoesNotExist:
