@@ -34,7 +34,7 @@ class Command(RichCommand):
                 last_post_date = datetime.fromisoformat(posts[-1]["created_at"])
                 first_post_date = datetime.fromisoformat(posts[0]["created_at"])
                 if (first_post_date - last_post_date) < timedelta(days=1):
-                    logging.warning(
+                    logging.info(
                         "Might have missed some instances for %s, %s",
                         conference.name,
                         first_post_date - last_post_date,
