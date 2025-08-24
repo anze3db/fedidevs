@@ -117,8 +117,10 @@ async def fetch_user(client, instance: str, user: str) -> dict:
                 },
                 timeout=5,
             )
+        if response.status_code == 404:
+            return {}
         if response.status_code != 200:
-            logger.error(f"Error status code. {response.status_code}")
+            logger.error("Error status code. %s", response.status_code)
             return {}
         return response.json()
     except (
