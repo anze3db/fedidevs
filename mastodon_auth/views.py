@@ -314,7 +314,7 @@ def follow(request, account_id: int):
         if moved := local_account.get("moved"):
             account.moved = moved
             account.save(update_fields=("moved",))
-            logging.warning("Account %s moved", account.username_at_instance)
+            logging.info("Account %s moved", account.username_at_instance)
             return err_response(_("Account has moved"))
 
         logging.error("Unknown error when following %s", account.username_at_instance)

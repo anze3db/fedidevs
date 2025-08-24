@@ -708,7 +708,7 @@ def follow_bg(user_id: int, starter_pack_slug: str):
             if moved := local_account.get("moved"):
                 account.moved = moved
                 account.save(update_fields=("moved",))
-                logger.warning("Account %s moved", account.username_at_instance)
+                logger.info("Account %s moved", account.username_at_instance)
                 continue
 
             logger.error("Unknown error when following %s", account.username_at_instance)
