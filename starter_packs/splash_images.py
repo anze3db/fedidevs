@@ -320,7 +320,7 @@ def render_splash_image_to_image_obj(starter_pack, host_attribution, media_dir):
                 avatar = fetch_avatar(refresh_account.avatar, crop_mask)
 
         if avatar is None:
-            logger.warning("Failed to fetch avatar of account %s for splash image", account.get_username_at_instance())
+            logger.info("Failed to fetch avatar of account %s for splash image", account.get_username_at_instance())
         else:
             avatars.append(avatar)
 
