@@ -679,7 +679,7 @@ def follow_bg(user_id: int, starter_pack_slug: str):
                     logger.exception("Unknown error when searching for %s", account.username_at_instance)
                     continue
                 if not local_accounts:
-                    logger.exception("Account not found on instance %s", account.username_at_instance)
+                    logger.info("Account not found on instance %s", account.username_at_instance)
                     continue
                 local_account = local_accounts[0]
                 if local_account["acct"].lower() != account.username_at_instance[1:]:
@@ -703,7 +703,7 @@ def follow_bg(user_id: int, starter_pack_slug: str):
             try:
                 local_account = mastodon.account_lookup(acct=account.username_at_instance)
             except MastodonNotFoundError:
-                logger.warning("Account not found on instance %s", account.username_at_instance)
+                logger.info("Account not found on instance %s", account.username_at_instance)
                 continue
             if moved := local_account.get("moved"):
                 account.moved = moved
