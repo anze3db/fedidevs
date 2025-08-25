@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
 
-from mastodon_auth.models import AccountFollowing
+from mastodon_auth.models import AccountAccess, AccountFollowing
 from stats.models import Daily
 
 from .models import FRAMEWORKS, LANGUAGES, Account, AccountLookup, Framework, Instance, Language
@@ -277,11 +277,15 @@ def index(request, lang: str | None = None):
         )
     )
     accounts = accounts.order_by(sort_order)
+    try:
+        account_access = request.user.accountaccess.account
+    except AccountAccess.DoesNotExist:
+        account_access = None
     if request.user.is_authenticated:
         # Annotate whether the current request user is following the account:
         accounts = accounts.annotate(
             is_following=Exists(
-                AccountFollowing.objects.filter(account=request.user.accountaccess.account, url=OuterRef("url")),
+                AccountFollowing.objects.filter(account=account_access, url=OuterRef("url")),
             )
         )
     paginator = Paginator(accounts, 20)
@@ -291,7 +295,10 @@ def index(request, lang: str | None = None):
 
     user_instance = None
     if request.user.is_authenticated:
-        user_instance = str(request.user.accountaccess.instance)
+        try:
+            user_instance = str(request.user.accountaccess.instance)
+        except AccountAccess.DoesNotExist:
+            pass
 
     instances = Instance.objects.filter(deleted_at__isnull=True).values_list("instance", flat=True)
 

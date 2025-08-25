@@ -29,7 +29,7 @@ from mastodon import (
 
 from accounts.management.commands.crawlone import crawlone
 from accounts.models import Account, Instance
-from mastodon_auth.models import AccountFollowing
+from mastodon_auth.models import AccountAccess, AccountFollowing
 from starter_packs.models import StarterPack, StarterPackAccount
 from starter_packs.splash_images import get_splash_image_signature, render_splash_image
 from stats.models import FollowAllClick
@@ -131,6 +131,10 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(
         StarterPack, slug=starter_pack_slug, created_by=request.user, deleted_at__isnull=True
     )
+    try:
+        access_account = request.user.accountaccess.account
+    except AccountAccess.DoesNotExist:
+        access_account = None
     accounts = (
         Account.objects.filter()
         .prefetch_related("instance_model")
@@ -142,7 +146,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
                 )
             ),
             is_followed=Exists(
-                AccountFollowing.objects.filter(account=request.user.accountaccess.account, url=OuterRef("url")),
+                AccountFollowing.objects.filter(account=access_account, url=OuterRef("url")),
             ),
         )
         .order_by("-is_followed", "-followers_count")
@@ -228,6 +232,10 @@ def review_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(
         StarterPack, slug=starter_pack_slug, created_by=request.user, deleted_at__isnull=True
     )
+    try:
+        access_account = request.user.accountaccess.account
+    except AccountAccess.DoesNotExist:
+        access_account = None
     accounts = (
         Account.objects.filter()
         .prefetch_related("instance_model")
@@ -239,7 +247,7 @@ def review_starter_pack(request, starter_pack_slug):
                 )
             ),
             is_followed=Exists(
-                AccountFollowing.objects.filter(account=request.user.accountaccess.account, url=OuterRef("url")),
+                AccountFollowing.objects.filter(account=access_account, url=OuterRef("url")),
             ),
         )
         .filter(in_starter_pack=True, instance_model__isnull=False, instance_model__deleted_at__isnull=True)
@@ -563,9 +571,14 @@ def share_starter_pack(request, starter_pack_slug):
 
     if request.user.is_authenticated:
         # Annotate whether the current request user is following the account:
+        try:
+            access_account = request.user.accountaccess.account
+        except AccountAccess.DoesNotExist:
+            access_account = None
+
         accounts = accounts.annotate(
             is_following=Exists(
-                AccountFollowing.objects.filter(account=request.user.accountaccess.account, url=OuterRef("url")),
+                AccountFollowing.objects.filter(account=access_account, url=OuterRef("url")),
             )
         )
 
