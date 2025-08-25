@@ -119,6 +119,8 @@ async def fetch_user(client, instance: str, user: str) -> dict:
             )
         if response.status_code == 404:
             return {}
+        if response.status_code == 401:
+            return {}
         if response.status_code != 200:
             logger.error("Error status code. %s", response.status_code)
             return {}
