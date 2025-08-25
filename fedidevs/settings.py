@@ -341,7 +341,7 @@ if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
         integrations=[
             LoggingIntegration(
                 level=logging.INFO,  # Capture info and above as breadcrumbs (this is the default)
-                event_level=logging.WARNING,  # Send warnings as events (default is logging.ERROR)
+                event_level=logging.ERROR,  # Send warnings as events (default is logging.ERROR)
             ),
             DjangoIntegration(),
         ],
