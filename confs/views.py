@@ -27,6 +27,7 @@ from confs.models import (
     Fwd50Account,
     Fwd50Post,
 )
+from mastodon_auth.models import AccountAccess
 
 
 def conferences(request, lang: str | None = None):
@@ -245,7 +246,10 @@ def conference(request, conference_slug: str):
     page_obj = paginator.get_page(page_number)
     user_instance = None
     if request.user.is_authenticated:
-        user_instance = str(request.user.accountaccess.instance)
+        try:
+            user_instance = str(request.user.accountaccess.instance)
+        except AccountAccess.DoesNotExist:
+            pass
 
     current_account = next((account for account in account_counts if account.account.id == account_id), None)
     current_date = next((d for d in dates if d["value"] == date), None)
