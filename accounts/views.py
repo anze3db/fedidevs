@@ -277,11 +277,12 @@ def index(request, lang: str | None = None):
         )
     )
     accounts = accounts.order_by(sort_order)
-    try:
-        account_access = request.user.accountaccess.account
-    except AccountAccess.DoesNotExist:
-        account_access = None
+
     if request.user.is_authenticated:
+        try:
+            account_access = request.user.accountaccess.account
+        except AccountAccess.DoesNotExist:
+            account_access = None
         # Annotate whether the current request user is following the account:
         accounts = accounts.annotate(
             is_following=Exists(
