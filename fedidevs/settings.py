@@ -152,6 +152,7 @@ TEMPLATES = [
                 "heroicons.templatetags.heroicons",
                 "django.templatetags.i18n",
             ],
+            "debug": DEBUG,
         },
     },
 ]
