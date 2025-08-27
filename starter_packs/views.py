@@ -696,7 +696,7 @@ def follow_bg(user_id: int, starter_pack_slug: str):
                     continue
                 local_account = local_accounts[0]
                 if local_account["acct"].lower() != account.username_at_instance[1:]:
-                    logger.exception("Account mismatch %s %s", account.username_at_instance[1:], local_account["acct"])
+                    logger.info("Account mismatch %s %s", account.username_at_instance[1:], local_account["acct"])
                     continue
             except MastodonUnauthorizedError:
                 logger.exception("Not authorized %s", account.username_at_instance)
