@@ -689,7 +689,7 @@ def follow_bg(user_id: int, starter_pack_slug: str):
                     logger.exception("Service unavailable when searching for %s", account.username_at_instance)
                     continue
                 except Exception:
-                    logger.exception("Unknown error when searching for %s", account.username_at_instance)
+                    logger.info("Unknown error when searching for %s", account.username_at_instance)
                     continue
                 if not local_accounts:
                     logger.info("Account not found on instance %s", account.username_at_instance)

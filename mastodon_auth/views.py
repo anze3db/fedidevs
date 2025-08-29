@@ -283,7 +283,7 @@ def follow(request, account_id: int):
                 logger.exception("Service unavailable when searching for %s", account.username_at_instance)
                 return err_response(_("Service unavailable"))
             except Exception:
-                logger.exception("Unknown error when searching for %s", account.username_at_instance)
+                logger.info("Unknown error when searching for %s", account.username_at_instance)
                 return err_response("Unknown error")
             if not local_accounts:
                 logger.info("Account not found on instance %s", account.username_at_instance)
