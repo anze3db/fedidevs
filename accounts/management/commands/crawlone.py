@@ -100,7 +100,7 @@ async def crawlone(user: str, make_visible: bool = False) -> Account | None:
         return account_obj
 
 
-async def fetch_user(client, instance: str, user: str) -> dict:
+async def fetch_user(client: httpx.AsyncClient, instance: str, user: str) -> dict:
     try:
         response = await client.get(
             f"https://{instance}/api/v1/accounts/lookup",
@@ -108,15 +108,8 @@ async def fetch_user(client, instance: str, user: str) -> dict:
                 "acct": user,
             },
             timeout=30,
+            follow_redirects=True,
         )
-        if response.status_code in (301, 302):
-            response = await client.get(
-                response.headers["Location"],
-                params={
-                    "acct": user,
-                },
-                timeout=5,
-            )
         if response.status_code in (404, 401):
             return {}
         elif response.status_code != 200:
