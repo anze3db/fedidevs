@@ -10,6 +10,7 @@ from django_rich.management import RichCommand
 
 from accounts.models import Account, AccountLookup, Instance
 from confs.models import Conference
+from starter_packs.models import StarterPack
 from stats.models import (
     Daily,
     DailyAccount,
@@ -127,12 +128,7 @@ class Command(RichCommand):
         yesterdays_date = todays_date - timezone.timedelta(days=1)
         week_ago = todays_date - timezone.timedelta(days=7)
         month_ago = todays_date - timezone.timedelta(days=30)
-        latest_daily = Daily.objects.filter().order_by("-date")
-        if len(latest_daily) < 2:
-            yesterday = self.create_yesterday()
-            today = Daily.objects.filter().order_by("-date")[0]
-        else:
-            today, yesterday = latest_daily[:2]
+
         top_growing_daily = AccountLookup.objects.select_related("account").order_by("-daily_followers_count")[:5]
         top_growing_daily = "\n".join(
             [f"{dac.daily_followers_count:>6} {dac.account.username} {dac.account.url}" for dac in top_growing_daily]
@@ -200,6 +196,13 @@ class Command(RichCommand):
             ]
         )
 
+        all_starterpacks = StarterPack.objects.all()
+        todays_starterpacks = all_starterpacks.filter(created_at__gte=yesterdays_date)
+
+        todays_starterpacks_str = "\n".join(
+            [f"{sp.title} https://fedidevs.com/s/{sp.slug}" for sp in todays_starterpacks]
+        )
+
         send_mail(
             f"Fedidevs daily stats for {todays_date.date().isoformat()}",
             dedent(
@@ -216,19 +219,11 @@ class Command(RichCommand):
                     Total instances {total_instances}, created since yesterday {instances_today}
                     {instances_str}
 
-                    Number of accounts today {today.total_accounts} ({today.total_accounts - yesterday.total_accounts:+})
-                    Number of posts today {today.total_posts} ({today.total_posts - yesterday.total_posts:+})
-                    Number of python accounts today {today.python_accounts} ({today.python_accounts - yesterday.python_accounts:+})
-                    Number of python posts today {today.python_posts} ({today.python_posts - yesterday.python_posts:+})
-
-                    Top growing daily accounts:
+                    Total starterpacks {todays_starterpacks.count()}, created since yesterday {todays_starterpacks.count()}
+                    Last starterpacks created:
                     """
             )
-            + top_growing_daily
-            + "\n\nTop growing weekly accounts:\n"
-            + top_growing_weekly
-            + "\n\nTop growing monthly accounts:\n"
-            + top_growing_monthly,
+            + todays_starterpacks_str,
             "anze@fedidevs.com",
             ["anze@pecar.me"],
             fail_silently=False,
