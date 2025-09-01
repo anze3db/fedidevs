@@ -220,7 +220,7 @@ class Command(RichCommand):
                     {instances_str}
 
                     Total starterpacks {todays_starterpacks.count()}, created since yesterday {todays_starterpacks.count()}
-                    Last starterpacks created:
+
                     """
             )
             + todays_starterpacks_str,
