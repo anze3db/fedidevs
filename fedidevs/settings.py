@@ -354,4 +354,5 @@ if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
+        enable_logs=True,
     )
