@@ -1,3 +1,4 @@
+import asyncio
 import datetime as dt
 import logging
 
@@ -100,7 +101,7 @@ async def crawlone(user: str, make_visible: bool = False) -> Account | None:
         return account_obj
 
 
-async def fetch_user(client: httpx.AsyncClient, instance: str, user: str) -> dict:
+async def fetch_user(client: httpx.AsyncClient, instance: str, user: str, retried=False) -> dict:
     try:
         response = await client.get(
             f"https://{instance}/api/v1/accounts/lookup",
@@ -110,6 +111,14 @@ async def fetch_user(client: httpx.AsyncClient, instance: str, user: str) -> dic
             timeout=30,
             follow_redirects=True,
         )
+        if response.status_code == 429:
+            if retried:
+                logger.warning(f"Rate limit exceeded again for {user}, giving up")
+                return {}
+            retry_after = response.headers.get("Retry-After", 60)
+            logger.info(f"Rate limit exceeded, retrying after {retry_after} seconds")
+            await asyncio.sleep(retry_after)
+            return await fetch_user(client, instance, user, retried=True)
         if response.status_code in (404, 401):
             return {}
         elif response.status_code != 200:
