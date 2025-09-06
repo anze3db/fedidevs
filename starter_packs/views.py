@@ -35,7 +35,7 @@ from starter_packs.splash_images import get_splash_image_signature, render_splas
 from stats.models import FollowAllClick
 
 logger = logging.getLogger(__name__)
-username_regex = re.compile(r"@?\b([\w0-9._%+-]+)@([\w0-9.-]+\.[\w]{2,})\b", re.IGNORECASE | re.UNICODE)
+username_regex = re.compile(r"^@?([\w0-9._%+-]+)@([\w0-9.-]+\.[\w]{2,})$", re.IGNORECASE | re.UNICODE)
 
 
 def starter_packs(request):
