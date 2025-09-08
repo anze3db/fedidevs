@@ -313,7 +313,7 @@ LOGGING = {
     },
 }
 
-OPENAI_API_KEY = env.str("OPENAI_API_KEY", default=None)
+ANTHROPIC_API_KEY = env.str("ANTHROPIC_API_KEY", "")
 
 
 CONTENT_SECURITY_POLICY = {
