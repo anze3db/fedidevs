@@ -119,10 +119,7 @@ async def fetch_user(client: httpx.AsyncClient, instance: str, user: str, retrie
             logger.info(f"Rate limit exceeded, retrying after {retry_after} seconds")
             await asyncio.sleep(retry_after)
             return await fetch_user(client, instance, user, retried=True)
-        if response.status_code in (404, 401):
-            return {}
         elif response.status_code != 200:
-            logger.error("Error status code. %s", response.status_code)
             return {}
         return response.json()
     except (
