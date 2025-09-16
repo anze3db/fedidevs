@@ -304,6 +304,8 @@ def follow(request, account_id: int):
         mastodon.account_follow(account_id)
     except MastodonUnauthorizedError:
         return err_response(_("Unauthorized"))
+    except MastodonNotFoundError:
+        return err_response(_("Account not found"))
     except MastodonAPIError:
         # We weren't able to follow the user. Maybe the account was moved?
         try:

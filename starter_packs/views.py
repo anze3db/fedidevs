@@ -711,6 +711,9 @@ def follow_bg(user_id: int, starter_pack_slug: str):
         except MastodonUnauthorizedError:
             logger.exception("Unauthorized error when following")
             continue
+        except MastodonNotFoundError:
+            logger.info("Account not found on instance %s", account.username_at_instance)
+            continue
         except MastodonAPIError:
             # We weren't able to follow the user. Maybe the account was moved?
             try:
