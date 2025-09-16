@@ -16,6 +16,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from mastodon import (
     Mastodon,
+    MastodonError,
     MastodonInternalServerError,
     MastodonNetworkError,
     MastodonServiceUnavailableError,
@@ -306,7 +307,7 @@ def follow(request, account_id: int):
         return err_response(_("Unauthorized"))
     except MastodonNotFoundError:
         return err_response(_("Account not found"))
-    except MastodonAPIError:
+    except MastodonError:
         # We weren't able to follow the user. Maybe the account was moved?
         try:
             local_account = mastodon.account_lookup(acct=account.username_at_instance)
