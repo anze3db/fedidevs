@@ -97,7 +97,7 @@ def starter_packs(request):
             | Q(created_by__accountaccess__account__display_name__icontains=q)
         )
 
-    paginator = Paginator(starter_packs, 100)
+    paginator = Paginator(starter_packs, 30)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
