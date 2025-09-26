@@ -17,6 +17,7 @@ from django.views.decorators.http import require_POST
 from mastodon import (
     Mastodon,
     MastodonError,
+    MastodonIllegalArgumentError,
     MastodonInternalServerError,
     MastodonNetworkError,
     MastodonServiceUnavailableError,
@@ -163,11 +164,16 @@ def auth(request):
         )
         return redirect(auth_request_url)
 
-    access_token = mastodon.log_in(
-        code=code,
-        redirect_uri=settings.MSTDN_REDIRECT_URI,
-        scopes=login_scopes,
-    )
+    try:
+        access_token = mastodon.log_in(
+            code=code,
+            redirect_uri=settings.MSTDN_REDIRECT_URI,
+            scopes=login_scopes,
+        )
+    except MastodonIllegalArgumentError as e:
+        messages.error(request, _("Authorization flow is not supported by this instance."))
+        logger.info("login invalid argument error %s", e)
+        return redirect("index")
 
     now = timezone.now()
     logged_in_account = mastodon.me()
