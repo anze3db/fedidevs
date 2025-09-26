@@ -98,12 +98,17 @@ def login(request):
     state = str(uuid4())
 
     mastodon = Mastodon(api_base_url=api_base_url, user_agent="fedidevs", version_check_mode="none")
-    auth_request_url = mastodon.auth_request_url(
-        client_id=instance.client_id,
-        state=state,
-        redirect_uris=settings.MSTDN_REDIRECT_URI,
-        scopes=login_scopes,
-    )
+    try:
+        auth_request_url = mastodon.auth_request_url(
+            client_id=instance.client_id,
+            state=state,
+            redirect_uris=settings.MSTDN_REDIRECT_URI,
+            scopes=login_scopes,
+        )
+    except MastodonAPIError as e:
+        messages.error(request, _("Unable to connect to the instance. Is it a Mastodon compatible instance?"))
+        logger.info("login api error %s", e)
+        return redirect("index")
 
     cache.set(f"oauth:{state}", instance.id, timeout=500)
     cache.set(f"oauth:{state}:next", next_url, timeout=500)
