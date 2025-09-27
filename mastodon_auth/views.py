@@ -305,10 +305,10 @@ def follow(request, account_id: int):
                 logger.info("Account mismatch %s %s", account.username_at_instance[1:], local_account["acct"])
                 return err_response(_("Account not found"))
         except MastodonUnauthorizedError:
-            logging.exception("Not authorized %s", account.username_at_instance)
+            logging.info("Not authorized %s", account.username_at_instance)
             return err_response(_("Not Authorized"))
         except MastodonAPIError:
-            logging.exception("Unknown error when following %s", account.username_at_instance)
+            logging.info("Unknown error when following %s", account.username_at_instance)
             return err_response(_("Failed to follow"))
         account_id = local_account["id"]
 

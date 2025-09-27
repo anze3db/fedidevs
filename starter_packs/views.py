@@ -699,10 +699,10 @@ def follow_bg(user_id: int, starter_pack_slug: str):
                     logger.info("Account mismatch %s %s", account.username_at_instance[1:], local_account["acct"])
                     continue
             except MastodonUnauthorizedError:
-                logger.exception("Not authorized %s", account.username_at_instance)
+                logger.info("Not authorized %s", account.username_at_instance)
                 continue
             except MastodonAPIError:
-                logger.exception("Unknown error when following %s", account.username_at_instance)
+                logger.info("Unknown error when following %s", account.username_at_instance)
                 continue
             account_id = local_account["id"]
 
