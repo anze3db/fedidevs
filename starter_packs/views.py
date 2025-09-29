@@ -709,7 +709,7 @@ def follow_bg(user_id: int, starter_pack_slug: str):
         try:
             mastodon.account_follow(account_id)
         except MastodonUnauthorizedError:
-            logger.exception("Unauthorized error when following")
+            logger.info("Unauthorized error when following")
             continue
         except MastodonNotFoundError:
             logger.info("Account not found on instance %s", account.username_at_instance)
