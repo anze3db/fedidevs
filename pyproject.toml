@@ -130,6 +130,7 @@ DJANGO_SETTINGS_MODULE = "fedidevs.settings"
 
 [tool.coverage.run]
 plugins = ["django_coverage_plugin"]
+core = "ctrace"
 omit = [
   ".venv/*",
   "staticfiles/*",
