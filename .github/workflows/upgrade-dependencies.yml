@@ -2,7 +2,7 @@ name: Upgrade dependencies
 
 on:
   schedule:
-  - cron: "0 10 * * MON"
+  - cron: "0 6 1 * *"
   workflow_dispatch:
 
 jobs:
