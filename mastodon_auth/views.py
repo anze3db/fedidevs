@@ -78,7 +78,7 @@ def login(request):
                 user_agent="fedidevs",
             )
         except MastodonNetworkError:
-            messages.error(request, _("Network error, is the instance url correct?") + f" `{api_base_url}`")
+            messages.info(request, _("Network error, is the instance url correct?") + f" `{api_base_url}`")
             return redirect("/")
         except KeyError:
             messages.error(
@@ -307,6 +307,9 @@ def follow(request, account_id: int):
         except MastodonUnauthorizedError:
             logging.info("Not authorized %s", account.username_at_instance)
             return err_response(_("Not Authorized"))
+        except MastodonNetworkError:
+            logging.info("Network error when following %s", account.username_at_instance)
+            return err_response(_("Network error"))
         except MastodonAPIError:
             logging.info("Unknown error when following %s", account.username_at_instance)
             return err_response(_("Failed to follow"))
