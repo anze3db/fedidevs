@@ -175,6 +175,9 @@ def auth(request):
             redirect_uri=settings.MSTDN_REDIRECT_URI,
             scopes=login_scopes,
         )
+    except MastodonNetworkError:
+        messages.error(request, _("Network error, please try again."))
+        return redirect("index")
     except MastodonIllegalArgumentError as e:
         messages.error(request, _("Authorization flow is not supported by this instance."))
         logger.info("login invalid argument error %s", e)
