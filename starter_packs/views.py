@@ -727,5 +727,5 @@ def follow_bg(user_id: int, starter_pack_slug: str):
                 logger.info("Account %s moved", account.username_at_instance)
                 continue
 
-            logger.exception("Unknown error when following %s", account.username_at_instance)
+            logger.info("Unknown error when following %s", account.username_at_instance)
             continue

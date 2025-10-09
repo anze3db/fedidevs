@@ -292,7 +292,7 @@ def follow(request, account_id: int):
             try:
                 local_accounts = mastodon.account_search(q=account.username_at_instance, resolve=True, limit=1)
             except MastodonServiceUnavailableError:
-                logger.exception("Service unavailable when searching for %s", account.username_at_instance)
+                logger.info("Service unavailable when searching for %s", account.username_at_instance)
                 return err_response(_("Service unavailable"))
             except Exception:
                 logger.info("Unknown error when searching for %s", account.username_at_instance)

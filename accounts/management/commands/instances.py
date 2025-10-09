@@ -255,7 +255,7 @@ async def fetch(client, instance) -> tuple[dict | None, str]:
         logger.info("Http error when indexing %s", instance)
         return None, instance
     except Exception as e:
-        logger.exception("Unknown error when indexing %s, %s", instance, e)
+        logger.info("Unknown error when indexing %s, %s", instance, e)
         return None, instance
 
     if response.status_code == 200:
