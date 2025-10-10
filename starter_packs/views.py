@@ -628,6 +628,7 @@ def delete_starter_pack(request, starter_pack_slug):
     return redirect("starter_packs")
 
 
+@login_required
 def follow_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, deleted_at__isnull=True)
     accounts = Account.objects.filter(
