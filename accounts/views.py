@@ -382,7 +382,7 @@ def switch_account_type(_, accountlookup_id: int, account_type: str):
 
 @cache_page(60 * 60 * 24, cache="memory")
 def faq(request):
-    instances = Instance.objects.filter(deleted_at__isnull=True).values("instance")
+    instances = Instance.objects.filter(deleted_at__isnull=True).values("instance").order_by("instance")
     return render(
         request,
         "faq.html",
