@@ -105,7 +105,7 @@ def login(request):
             redirect_uris=settings.MSTDN_REDIRECT_URI,
             scopes=login_scopes,
         )
-    except MastodonAPIError as e:
+    except MastodonError as e:
         messages.error(request, _("Unable to connect to the instance. Is it a Mastodon compatible instance?"))
         logger.info("login api error %s", e)
         return redirect("index")
