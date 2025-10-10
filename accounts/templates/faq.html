@@ -127,7 +127,7 @@
             <details>
                 <summary role="button" class="outline">List of instance currently indexed byu FediDevs</summary>
                 <ul>
-                    {% for instance in sorted(instances) %}
+                    {% for instance in instances %}
                         <li>
                             <a href="https://{{ instance.instance }}/">{{ instance.instance }}</a>
                         </li>
