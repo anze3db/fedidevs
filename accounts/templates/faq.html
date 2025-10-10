@@ -125,14 +125,14 @@
             <p>Accounts with no recent posts are not indexed.</p>
             <h4>4. Your instance must be indexed</h4>
             <details>
-            <summary role="button" class="outline">List of instance currently indexed byu FediDevs</summary>
-            <ul>
-                {% for instance in sorted(instances) %}
-                    <li>
-                        <a href="https://{{ instance.instance }}/">{{ instance.instance }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
+                <summary role="button" class="outline">List of instance currently indexed byu FediDevs</summary>
+                <ul>
+                    {% for instance in sorted(instances) %}
+                        <li>
+                            <a href="https://{{ instance.instance }}/">{{ instance.instance }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
             </details>
             <p>
                 If you did all the steps above and still don't see your account on FediDevs.com, <a href="mailto:hello@fedidevs.com">reach out</a> and I'll check!
