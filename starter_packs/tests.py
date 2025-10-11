@@ -250,7 +250,7 @@ class TestShareStarterPack(TestCase):
             user=cls.user,
             account__activitypub_id="https://instance.org/users/createdbyuser",
         )
-        cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
+        cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user, num_accounts=5)
         instance = baker.make("accounts.Instance")
         baker.make(
             "starter_packs.StarterPackAccount",
@@ -296,6 +296,8 @@ class TestShareStarterPack(TestCase):
 
     def test_non_discoverable_accounts(self):
         Account.objects.update(discoverable=False)
+        self.starter_pack.num_accounts = 0
+        self.starter_pack.save()
         response = self.client.get(reverse("share_starter_pack", args=[self.starter_pack.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.starter_pack.title)

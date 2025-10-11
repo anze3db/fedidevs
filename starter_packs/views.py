@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery
 from django.core.paginator import Paginator
-from django.db import IntegrityError, models, transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Exists, OuterRef, Q
 from django.http import HttpResponse, HttpResponseServerError, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -79,11 +79,6 @@ def starter_packs(request):
     starter_packs = (
         starter_packs.filter(
             deleted_at__isnull=True,
-        )
-        .annotate(
-            num_accounts=models.Count(
-                "starterpackaccount", filter=models.Q(starterpackaccount__account__discoverable=True)
-            )
         )
         .order_by(*db_order_by)
         .prefetch_related("created_by__accountaccess__account")
@@ -379,7 +374,10 @@ def publish_starter_pack(request, starter_pack_slug):
 @transaction.atomic
 def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
     starter_pack = get_object_or_404(
-        StarterPack, slug=starter_pack_slug, deleted_at__isnull=True, created_by=request.user
+        StarterPack.objects.select_for_update(),
+        slug=starter_pack_slug,
+        deleted_at__isnull=True,
+        created_by=request.user,
     )
     account = get_object_or_404(Account, id=account_id)
     if StarterPackAccount.objects.filter(starter_pack=starter_pack, account_id=account_id).exists():
@@ -413,6 +411,10 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
             account_id=account_id,
             created_by=request.user,
         )
+    starter_pack.num_accounts = StarterPackAccount.objects.filter(
+        starter_pack=starter_pack, account__discoverable=True
+    ).count()
+    starter_pack.save(update_fields=["num_accounts"])
     if (
         get_splash_image_signature(starter_pack) != starter_pack.splash_image_signature
         and starter_pack.published_at is not None
@@ -598,7 +600,7 @@ def share_starter_pack(request, starter_pack_slug):
             "page_image": starter_pack.splash_image.url if starter_pack.splash_image else static("og-starterpack.png"),
             "page_description": starter_pack.description,
             "starter_pack": starter_pack,
-            "num_accounts": accounts.count(),
+            "num_accounts": starter_pack.num_accounts,
             "num_hidden_accounts": Account.objects.exclude(
                 discoverable=True, instance_model__isnull=False, instance_model__deleted_at__isnull=True
             )

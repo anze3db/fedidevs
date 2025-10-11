@@ -22,6 +22,8 @@ class StarterPack(models.Model):
     weekly_follows = models.IntegerField(default=0)
     monthly_follows = models.IntegerField(default=0)
 
+    num_accounts = models.IntegerField(default=0)
+
     class Meta:
         unique_together = ("created_by", "slug")
 
