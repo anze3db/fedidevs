@@ -131,9 +131,9 @@
                 </h2>
                 <nav class="hidden md:flex gap-2 sm:gap-4 pl-1 text-lg font-semibold divide-x justify-stretch dark:divide-slate-800 divide-slate-300">
                     <a class="whitespace-nowrap" href="{% url 'starter_packs' %}"><span class="{% if page == 'starter_packs' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Starter Packs" %}</span></a>
-                    <a class="pl-4" href="{% url 'index' %}"><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Accounts" %}</span></a>
                     <a class="pl-4" href="{% url 'conferences' %}"><span class="{% if page == 'conferences' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Conferences" %}</span></a>
-                    <a class="pl-4" href="{% url 'stats' %}"><span class="{% if page == 'stats' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Stats" %}</span></a>
+                    <a class="pl-4" href="{% url 'index' %}?q="><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Accounts" %}</span></a>
+                    {% comment %} <a class="pl-4" href="{% url 'stats' %}"><span class="{% if page == 'stats' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Stats" %}</span></a> {% endcomment %}
                 </nav>
             </div>
             <div class="flex justify-between sm:gap-2">
@@ -286,14 +286,14 @@
                             <a href="{% url 'starter_packs' %}"><span class="{% if page == 'starter_packs' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Starter Packs" %}</span></a>
                         </li>
                         <li>
-                            <a href="{% url 'index' %}"><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Accounts" %}</span></a>
-                        </li>
-                        <li>
                             <a class="pt-8" href="{% url 'conferences' %}"><span class="{% if page == 'conferences' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Conferences" %}</span></a>
                         </li>
                         <li>
-                            <a href="{% url 'stats' %}"><span class="{% if page == 'stats' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Stats" %}</span></a>
+                            <a href="{% url 'index' %}?q="><span class="{% if page == 'accounts' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Accounts" %}</span></a>
                         </li>
+                        {% comment %} <li>
+                            <a href="{% url 'stats' %}"><span class="{% if page == 'stats' %}{% else %}opacity-50 hover:opacity-75{% endif %}">{% trans "Stats" %}</span></a>
+                        </li> {% endcomment %}
                     </ul>
                 </nav>
                 <div class="align-top">

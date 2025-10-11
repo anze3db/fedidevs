@@ -167,6 +167,8 @@ def login(request):
 
 
 def index(request, lang: str | None = None):
+    if not request.GET and not lang:
+        return redirect("starter_packs")
     if "selected_instance" in request.GET:
         request.session["selected_instance"] = parse_instance(request.GET.get("selected_instance"))
 
