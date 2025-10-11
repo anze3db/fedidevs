@@ -35,8 +35,8 @@ dependencies = [
   "granian>=2.5.4",
 ]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
   "ddt",
   "django-browser-reload",
   "django-coverage-plugin",
@@ -52,6 +52,7 @@ dev-dependencies = [
   "rich",
   "ruff",
 ]
+
 [tool.ruff]
 line-length = 120
 lint.select = [
