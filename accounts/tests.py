@@ -69,7 +69,7 @@ class TestSelectedInstance(TestCase):
         management.call_command("indexer")
 
     def test_no_selected_instance(self):
-        response = self.client.get("/")
+        response = self.client.get("/?q=")
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.context["selected_instance"])
         self.assertIsNone(self.client.session.get("selected_instance"))
@@ -174,7 +174,7 @@ class TestSelectedInstance(TestCase):
 
     def test_selected_instance_through_session(self):
         self.client.get("/?selected_instance=mastodon.social")
-        response = self.client.get("/")
+        response = self.client.get("/?q=")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["selected_instance"], "mastodon.social")
         self.assertEqual(self.client.session["selected_instance"], "mastodon.social")
