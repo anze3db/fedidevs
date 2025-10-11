@@ -8,7 +8,7 @@ def update_num_accounts(apps, _):
     StarterPack = apps.get_model("starter_packs", "StarterPack")
 
     starter_packs = (
-        StarterPack.objects.filter(published_at__isnull=False, deleted_at__isnull=True)
+        StarterPack.objects.all()
         .annotate(
             num_accounts_computed=Count(
                 "starterpackaccount__id",
