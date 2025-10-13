@@ -337,7 +337,7 @@ def follow(request, account_id: int):
             logging.info("Account %s moved", account.username_at_instance)
             return err_response(_("Account has moved"))
 
-        logging.exception("Unknown error when following %s", account.username_at_instance)
+        logging.info("Unknown error when following %s", account.username_at_instance)
         return err_response(_("Failed to follow"))
 
     AccountFollowing.objects.get_or_create(account=request.user.accountaccess.account, url=account.url)
