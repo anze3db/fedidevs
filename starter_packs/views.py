@@ -20,7 +20,9 @@ from django.utils.translation import gettext as _
 from mastodon import (
     Mastodon,
     MastodonAPIError,
+    MastodonError,
     MastodonInternalServerError,
+    MastodonNetworkError,
     MastodonNotFoundError,
     MastodonServiceUnavailableError,
     MastodonUnauthorizedError,
@@ -717,7 +719,10 @@ def follow_bg(user_id: int, starter_pack_slug: str):
         except MastodonNotFoundError:
             logger.info("Account not found on instance %s", account.username_at_instance)
             continue
-        except MastodonAPIError:
+        except MastodonNetworkError:
+            logger.info("Network error when following %s", account.username_at_instance)
+            continue
+        except MastodonError:
             # We weren't able to follow the user. Maybe the account was moved?
             try:
                 local_account = mastodon.account_lookup(acct=account.username_at_instance)
