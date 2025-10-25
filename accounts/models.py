@@ -171,6 +171,7 @@ class Account(models.Model):
         )
         indexes = [
             models.Index(fields=["noindex", "discoverable"]),
+            models.Index(fields=["username_at_instance"]),
             GinIndex(fields=["search"]),
         ]
 
