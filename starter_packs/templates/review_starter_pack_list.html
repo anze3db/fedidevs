@@ -55,7 +55,7 @@
         {% trans "No accounts in this starter pack" %}
     {% endfor %}
     {% if accounts.has_next %}
-        <li hx-get="{% url 'edit_accounts_starter_pack' starter_pack.slug %}{% querystring page=accounts.next_page_number %}"
+        <li hx-get="{% url 'review_starter_pack' starter_pack.slug %}{% querystring page=accounts.next_page_number %}"
             hx-trigger="intersect once"
             hx-swap="afterend"></li>
     {% endif %}

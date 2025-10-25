@@ -225,8 +225,7 @@ def review_starter_pack(request, starter_pack_slug):
     except AccountAccess.DoesNotExist:
         access_account = None
     accounts = (
-        Account.objects.filter()
-        .prefetch_related("instance_model")
+        Account.objects.prefetch_related("instance_model")
         .annotate(
             in_starter_pack=Exists(
                 StarterPackAccount.objects.filter(
@@ -238,7 +237,12 @@ def review_starter_pack(request, starter_pack_slug):
                 AccountFollowing.objects.filter(account=access_account, url=OuterRef("url")),
             ),
         )
-        .filter(in_starter_pack=True, instance_model__isnull=False, instance_model__deleted_at__isnull=True)
+        .filter(
+            starterpackaccount__starter_pack=starter_pack,
+            in_starter_pack=True,
+            instance_model__isnull=False,
+            instance_model__deleted_at__isnull=True,
+        )
         .order_by("-is_followed", "-followers_count")
     )
 
