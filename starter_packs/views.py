@@ -705,6 +705,12 @@ def follow_bg(user_id: int, starter_pack_slug: str):
             except MastodonAPIError:
                 logger.info("Unknown error when following %s", account.username_at_instance)
                 continue
+            except MastodonNetworkError:
+                logger.info("Network error when looking up %s", account.username_at_instance)
+                continue
+            except MastodonError:
+                logger.info("Unknown error when looking up %s", account.username_at_instance)
+                continue
             account_id = local_account["id"]
 
         try:
@@ -727,6 +733,9 @@ def follow_bg(user_id: int, starter_pack_slug: str):
                 continue
             except MastodonBadGatewayError:
                 logging.info("Bad gateway when for %s", account.username_at_instance)
+                continue
+            except MastodonError:
+                logger.info("Unknown error when checking moved for %s", account.username_at_instance)
                 continue
             if moved := local_account.get("moved"):
                 account.moved = moved

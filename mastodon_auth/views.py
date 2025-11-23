@@ -324,6 +324,9 @@ def follow(request, account_id: int):
         except MastodonAPIError:
             logging.info("Unknown error when following %s", account.username_at_instance)
             return err_response(_("Failed to follow"))
+        except MastodonError:
+            logging.info("Unknown error when following %s", account.username_at_instance)
+            return err_response(_("Failed to follow"))
         account_id = local_account["id"]
 
     try:
@@ -342,6 +345,9 @@ def follow(request, account_id: int):
         except MastodonBadGatewayError:
             logging.info("Bad gateway when checking moved for %s", account.username_at_instance)
             return err_response(_("Mastodon instance responded with a bad gateway error, please try again later"))
+        except MastodonError:
+            logging.info("Unknown error when checking moved for %s", account.username_at_instance)
+            return err_response(_("Failed to follow"))
         if moved := local_account.get("moved"):
             account.moved = moved
             account.save(update_fields=("moved",))
