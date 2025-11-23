@@ -276,7 +276,11 @@ def sync_following(user_id: int):
                     url=following["url"],
                 )
             )
-        accounts = mastodon.fetch_next(accounts)
+        try:
+            accounts = mastodon.fetch_next(accounts)
+        except MastodonError:
+            logger.info("Error fetching following for user %s", user.username)
+            break
     AccountFollowing.objects.filter(account=account).exclude(url__in=[x.url for x in to_create]).delete()
     AccountFollowing.objects.bulk_create(to_create, batch_size=1000, ignore_conflicts=True)
 
