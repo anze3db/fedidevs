@@ -57,8 +57,15 @@ def login(request):
     if "@" in api_base_url:
         api_base_url = api_base_url.split("@")[-1]
 
+    # Encode internationalized domain names (IDN) to ASCII using IDNA encoding
     try:
-        res = httpx.get(f"https://{api_base_url}/.well-known/host-meta")
+        api_base_url = api_base_url.encode("idna").decode("ascii")
+    except (UnicodeError, UnicodeDecodeError, UnicodeEncodeError):
+        messages.error(request, _("Invalid instance URL. Please enter a valid Mastodon instance domain name."))
+        return redirect("/")
+
+    try:
+        res = httpx.get(f"https://{api_base_url}/.well-known/host-meta", timeout=10.0)
         if 300 <= res.status_code < 400:
             logger.info("Redirected to %s", res.headers["Location"])
             api_base_url = res.headers["Location"].split("/")[2]
