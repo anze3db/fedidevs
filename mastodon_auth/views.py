@@ -87,6 +87,13 @@ def login(request):
                 + f" `{api_base_url}`",
             )
             return redirect("/")
+        except TypeError:
+            messages.error(
+                request,
+                _("Unable to create app on your instance. Is it a Mastodon compatible instance?")
+                + f" `{api_base_url}`",
+            )
+            return redirect("/")
 
         instance = Instance(
             url=api_base_url,
