@@ -20,6 +20,7 @@ from django.utils.translation import gettext as _
 from mastodon import (
     Mastodon,
     MastodonAPIError,
+    MastodonBadGatewayError,
     MastodonError,
     MastodonInternalServerError,
     MastodonNetworkError,
@@ -723,6 +724,9 @@ def follow_bg(user_id: int, starter_pack_slug: str):
                 local_account = mastodon.account_lookup(acct=account.username_at_instance)
             except MastodonNotFoundError:
                 logger.info("Account not found on instance %s", account.username_at_instance)
+                continue
+            except MastodonBadGatewayError:
+                logging.info("Bad gateway when for %s", account.username_at_instance)
                 continue
             if moved := local_account.get("moved"):
                 account.moved = moved

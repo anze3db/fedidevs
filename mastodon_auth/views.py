@@ -16,6 +16,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from mastodon import (
     Mastodon,
+    MastodonBadGatewayError,
     MastodonError,
     MastodonIllegalArgumentError,
     MastodonInternalServerError,
@@ -338,6 +339,9 @@ def follow(request, account_id: int):
         except MastodonNotFoundError:
             logging.info("Account not found on instance %s", account.username_at_instance)
             return err_response(_("Account not found"))
+        except MastodonBadGatewayError:
+            logging.info("Bad gateway when checking moved for %s", account.username_at_instance)
+            return err_response(_("Mastodon instance responded with a bad gateway error, please try again later"))
         if moved := local_account.get("moved"):
             account.moved = moved
             account.save(update_fields=("moved",))
