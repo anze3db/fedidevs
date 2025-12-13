@@ -36,6 +36,7 @@ from mastodon_auth.models import AccountAccess, AccountFollowing
 from starter_packs.models import StarterPack, StarterPackAccount
 from starter_packs.splash_images import get_splash_image_signature, render_splash_image
 from stats.models import FollowAllClick
+from utils.pagination import get_validated_page_number
 
 logger = logging.getLogger(__name__)
 username_regex = re.compile(r"^@?([\w0-9._%+-]+)@([\w0-9.-]+\.[\w]{2,})$", re.IGNORECASE | re.UNICODE)
@@ -96,7 +97,7 @@ def starter_packs(request):
         )
 
     paginator = Paginator(starter_packs, 30)
-    page_number = request.GET.get("page")
+    page_number = get_validated_page_number(request)
     page_obj = paginator.get_page(page_number)
 
     return render(
@@ -193,7 +194,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
             )
 
     paginator = Paginator(accounts.order_by("-followers_count"), 50)
-    page_number = request.GET.get("page")
+    page_number = get_validated_page_number(request)
     page_obj = paginator.get_page(page_number)
 
     return render(
@@ -248,7 +249,7 @@ def review_starter_pack(request, starter_pack_slug):
     )
 
     paginator = Paginator(accounts, 50)
-    page_number = request.GET.get("page")
+    page_number = get_validated_page_number(request)
     page_obj = paginator.get_page(page_number)
 
     return render(
@@ -583,7 +584,7 @@ def share_starter_pack(request, starter_pack_slug):
         )
 
     paginator = Paginator(accounts, 50)
-    page_number = request.GET.get("page")
+    page_number = get_validated_page_number(request)
     page_obj = paginator.get_page(page_number)
 
     return render(

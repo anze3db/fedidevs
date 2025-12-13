@@ -12,6 +12,7 @@ from django.views.decorators.cache import cache_page
 
 from mastodon_auth.models import AccountAccess, AccountFollowing
 from stats.models import Daily
+from utils.pagination import get_validated_page_number
 
 from .models import FRAMEWORKS, LANGUAGES, Account, AccountLookup, Framework, Instance, Language
 
@@ -292,7 +293,7 @@ def index(request, lang: str | None = None):
             )
         )
     paginator = Paginator(accounts, 20)
-    page_number = request.GET.get("page")
+    page_number = get_validated_page_number(request)
     page_obj = paginator.get_page(page_number)
     accounts_count = page_obj.paginator.count
 

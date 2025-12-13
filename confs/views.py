@@ -28,6 +28,7 @@ from confs.models import (
     Fwd50Post,
 )
 from mastodon_auth.models import AccountAccess
+from utils.pagination import get_validated_page_number
 
 
 def conferences(request, lang: str | None = None):
@@ -242,7 +243,7 @@ def conference(request, conference_slug: str):
     )
 
     paginator = Paginator(conf_posts, 10)
-    page_number = request.GET.get("page")
+    page_number = get_validated_page_number(request)
     page_obj = paginator.get_page(page_number)
     user_instance = None
     if request.user.is_authenticated:
@@ -359,7 +360,7 @@ def fwd50(request, date: dt.date | None = None):
         if date <= timezone.now().date()
     ]
     paginator = Paginator(posts, 20)
-    page_number = request.GET.get("page")
+    page_number = get_validated_page_number(request)
     page_obj = paginator.get_page(page_number)
 
     stats = Fwd50Post.objects.filter(
@@ -458,7 +459,7 @@ def djangoconafrica(request, date: dt.date | None = None):
         if date <= timezone.now().date()
     ]
     paginator = Paginator(posts, 20)
-    page_number = request.GET.get("page")
+    page_number = get_validated_page_number(request)
     page_obj = paginator.get_page(page_number)
 
     stats = DjangoConAfricaPost.objects.filter(
@@ -561,7 +562,7 @@ def dotnetconf(request, date: dt.date | None = None):
         if date <= timezone.now().date()
     ]
     paginator = Paginator(posts, 20)
-    page_number = request.GET.get("page")
+    page_number = get_validated_page_number(request)
     page_obj = paginator.get_page(page_number)
 
     stats = DotNetConfPost.objects.filter(

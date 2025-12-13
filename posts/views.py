@@ -10,6 +10,7 @@ from django.templatetags.static import static
 from django.utils import timezone
 
 from posts.models import DjangoConUS23Post, PostSubscription
+from utils.pagination import get_validated_page_number
 
 
 def djangoconus(request, date: dt.date | None = None):
@@ -60,7 +61,7 @@ def djangoconus(request, date: dt.date | None = None):
         if date <= timezone.now().date()
     ]
     paginator = Paginator(posts, 20)
-    page_number = request.GET.get("page")
+    page_number = get_validated_page_number(request)
     page_obj = paginator.get_page(page_number)
 
     stats = DjangoConUS23Post.objects.filter(
