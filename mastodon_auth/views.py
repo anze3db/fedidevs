@@ -266,7 +266,11 @@ def sync_following(user_id: int):
         access_token=account_access.access_token,
         user_agent="fedidevs",
     )
-    accounts = mastodon.account_following(account.account_id)
+    try:
+        accounts = mastodon.account_following(account.account_id)
+    except MastodonAPIError:
+        logger.info("Error fetching following for user %s", user.username)
+        return
     to_create = []
     while accounts:
         for following in accounts:
