@@ -149,41 +149,48 @@ class Command(RichCommand):
                 seen_account_ids.add(post["account"]["id"])
                 unique_accounts.append(post["account"])
 
-        accounts = [
-            Account(
-                **{
-                    "url": account["url"],
-                    "account_id": account["id"],
-                    "instance": account["url"].split("/")[2],
-                    "username": account["username"],
-                    "acct": account["acct"],
-                    "display_name": account["display_name"],
-                    "locked": account["locked"],
-                    "bot": account["bot"],
-                    "discoverable": account.get("discoverable", False) or False,
-                    "group": account.get("group", False),
-                    "noindex": account.get("noindex", None),
-                    "created_at": (dt.datetime.fromisoformat(account["created_at"])),
-                    "last_status_at": timezone.make_aware(dt.datetime.fromisoformat(account["last_status_at"]))
-                    if account.get("last_status_at")
-                    else None,
-                    "last_sync_at": timezone.now(),
-                    "followers_count": account["followers_count"],
-                    "following_count": account["following_count"],
-                    "statuses_count": account["statuses_count"],
-                    "note": account["note"],
-                    "avatar": account["avatar"],
-                    "avatar_static": account["avatar_static"],
-                    "header": account["header"],
-                    "header_static": account["header_static"],
-                    "emojis": account["emojis"],
-                    "roles": account.get("roles", []),
-                    "fields": account["fields"],
-                    "instance_model": instance_model,
-                }
+        accounts = []
+        for account in unique_accounts:
+            # Extract last_status_at logic for clarity
+            last_status_at = None
+            if account.get("last_status_at"):
+                dt_obj = dt.datetime.fromisoformat(account["last_status_at"])
+                if dt_obj.tzinfo:
+                    last_status_at = dt_obj
+                else:
+                    last_status_at = timezone.make_aware(dt_obj)
+            accounts.append(
+                Account(
+                    **{
+                        "url": account["url"],
+                        "account_id": account["id"],
+                        "instance": account["url"].split("/")[2],
+                        "username": account["username"],
+                        "acct": account["acct"],
+                        "display_name": account["display_name"],
+                        "locked": account["locked"],
+                        "bot": account["bot"],
+                        "discoverable": account.get("discoverable", False) or False,
+                        "group": account.get("group", False),
+                        "noindex": account.get("noindex", None),
+                        "created_at": (dt.datetime.fromisoformat(account["created_at"])),
+                        "last_status_at": last_status_at,
+                        "last_sync_at": timezone.now(),
+                        "followers_count": account["followers_count"],
+                        "following_count": account["following_count"],
+                        "statuses_count": account["statuses_count"],
+                        "note": account["note"],
+                        "avatar": account["avatar"],
+                        "avatar_static": account["avatar_static"],
+                        "header": account["header"],
+                        "header_static": account["header_static"],
+                        "emojis": account["emojis"],
+                        "roles": account.get("roles", []),
+                        "fields": account["fields"],
+                        "instance_model": instance_model,
+                    }
+                )
             )
-            for account in unique_accounts
-        ]
         accounts = await Account.objects.abulk_create(
             accounts,
             update_conflicts=True,

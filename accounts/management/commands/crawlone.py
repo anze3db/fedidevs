@@ -44,6 +44,14 @@ async def crawlone(user: str, make_visible: bool = False) -> Account | None:
         if not account or not account.get("id"):
             logger.info("account not found")
             return
+        last_status_at = None
+        if account.get("last_status_at"):
+            dt_obj = dt.datetime.fromisoformat(account["last_status_at"])
+            if dt_obj.tzinfo:
+                last_status_at = dt_obj
+            else:
+                last_status_at = timezone.make_aware(dt_obj)
+
         defaults = {
             "username": account["username"],
             "username_at_instance": f"@{account['username'].lower()}@{instance_model.domain}",
@@ -57,9 +65,7 @@ async def crawlone(user: str, make_visible: bool = False) -> Account | None:
             "group": account.get("group", False),
             "noindex": account.get("noindex", None) if not make_visible else False,
             "created_at": (dt.datetime.fromisoformat(account["created_at"])),
-            "last_status_at": timezone.make_aware(dt.datetime.fromisoformat(account["last_status_at"]))
-            if account.get("last_status_at")
-            else None,
+            "last_status_at": last_status_at,
             "last_sync_at": timezone.now(),
             "followers_count": account["followers_count"],
             "following_count": account["following_count"],
