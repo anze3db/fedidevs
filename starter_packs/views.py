@@ -150,8 +150,8 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
         .order_by("-is_followed", "-followers_count")
     )
     is_username = False
-    if q := request.GET.get("q", ""):
-        search = q.strip().lower()
+    if q := request.GET.get("q", "").replace("\x00", "").strip():
+        search = q.lower()
         if search[0] != "@":
             search = "@" + search
         if username_regex.match(search):

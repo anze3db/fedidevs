@@ -230,7 +230,7 @@ def index(request, lang: str | None = None):
 
     order = request.GET.get("o") or "followers"
     period = request.GET.get("p") or "all"
-    query = request.GET.get("q", "").strip()
+    query = request.GET.get("q", "").replace("\x00", "").strip()
 
     account_type = request.GET.get("t")
     if account_type == "human":
