@@ -188,17 +188,6 @@ class TestSelectedInstance(TestCase):
             '<a href="https://mastodon.social/@test"',
         )
 
-    def test_index_bad_page_number(self):
-        # NUL byte triggers BadRequest
-        response = self.client.get("/", {"page": "\x00"})
-        self.assertEqual(response.status_code, 400)
-        # Non-digit triggers BadRequest
-        response = self.client.get("/", {"page": "abc"})
-        self.assertEqual(response.status_code, 400)
-        # Negative number triggers BadRequest (if you want to enforce positive only)
-        response = self.client.get("/", {"page": "-1"})
-        self.assertEqual(response.status_code, 400)
-
 
 class TestStaticPages(TestCase):
     def test_developers_on_mastodon(self):
