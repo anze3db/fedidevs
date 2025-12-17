@@ -12,6 +12,7 @@ class ConferenceLookupInline(admin.StackedInline):
 
 
 # Register your models here.
+@admin.register(Conference)
 class ConferenceAdmin(admin.ModelAdmin):
     list_display = ("name", "slug", "start_date", "end_date", "archived_date", "posts_after")
     prepopulated_fields = {"slug": ("name",)}
@@ -32,6 +33,3 @@ class ConferenceAdmin(admin.ModelAdmin):
         "day_styles",
     )
     # inlines = [ConferenceLookupInline]
-
-
-admin.site.register(Conference, ConferenceAdmin)
