@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    "django.contrib.postgres",
     "heroicons",
     "django_browser_reload",
     "debug_toolbar",
