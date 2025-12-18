@@ -87,7 +87,7 @@ def starter_packs(request):
         .prefetch_related("created_by__accountaccess__account")
     )
 
-    if q := request.GET.get("q"):
+    if q := request.GET.get("q", "").replace("\x00", "").strip():
         starter_packs = starter_packs.filter(
             Q(title__icontains=q)
             | Q(description__icontains=q)
