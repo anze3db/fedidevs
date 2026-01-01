@@ -199,7 +199,12 @@ def auth(request):
         return redirect("index")
 
     now = timezone.now()
-    logged_in_account = mastodon.me()
+    try:
+        logged_in_account = mastodon.me()
+    except MastodonAPIError as e:
+        messages.error(request, _("Unable to fetch account information, please try again."))
+        logger.info("login api error %s", e)
+        return redirect("index")
     account, __ = Account.objects.update_or_create(
         account_id=logged_in_account["id"],
         instance=instance,
