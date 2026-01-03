@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db import transaction
@@ -294,6 +295,7 @@ def sync_following(user_id: int):
     AccountFollowing.objects.bulk_create(to_create, batch_size=1000, ignore_conflicts=True)
 
 
+@login_required
 def follow(request, account_id: int):
     def err_response(msg):
         return render(
