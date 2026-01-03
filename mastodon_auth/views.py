@@ -274,7 +274,7 @@ def sync_following(user_id: int):
     )
     try:
         accounts = mastodon.account_following(account.account_id)
-    except MastodonAPIError:
+    except MastodonError:
         logger.info("Error fetching following for user %s", user.username)
         return
     to_create = []
