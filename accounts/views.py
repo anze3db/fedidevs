@@ -172,7 +172,6 @@ def get_page_title(
 
 
 def get_page_description(
-    accounts_count: int,
     selected_lang: Language | None,
     selected_framework: Framework | None,
     follower_type: str | None,
@@ -180,19 +179,12 @@ def get_page_description(
     posted: str | None,
 ) -> str:
     page_description = ""
-    if accounts_count > 0:
-        page_description += f"{accounts_count} "
-    else:
-        page_description += "No "
-
-    if follower_type == "best" and accounts_count > 0:
-        page_description += "of the best "
-    elif follower_type == "best":
-        page_description += "best "
+    if follower_type == "best":
+        page_description += "The best "
     elif follower_type == "popular":
-        page_description += "popular "
+        page_description += "The most popular "
     else:
-        page_description += "awesome "
+        page_description += "Awesome "
 
     if selected_lang:
         page_description += f"{selected_lang.name} "
@@ -200,17 +192,9 @@ def get_page_description(
         page_description += f"{selected_framework.name} "
 
     if account_type == "human":
-        if accounts_count == 1:
-            page_description += "developer"
-        else:
-            page_description += "developers"
+        page_description += "humans"
     elif account_type == "project":
-        if accounts_count == 1:
-            page_description += "project"
-        else:
-            page_description += "projects"
-    elif accounts_count == 1:
-        page_description += "account"
+        page_description += "projects"
     else:
         page_description += "accounts"
 
@@ -368,7 +352,6 @@ def index(request, lang: str | None = None):
     paginator = CountlessPaginator(accounts, 20)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    accounts_count = 0
 
     user_instance = None
     if request.user.is_authenticated:
@@ -379,15 +362,7 @@ def index(request, lang: str | None = None):
 
     instances = Instance.objects.filter(deleted_at__isnull=True).values_list("instance", flat=True)
 
-    page_description = get_page_description(
-        accounts_count, selected_lang, selected_framework, follower_type, account_type, posted
-    )
-
-    top_five_accounts = ""
-    if accounts_count > 0:
-        top_five_accounts += ", ".join(a.name for a in page_obj[:5])
-        if accounts_count > 5:
-            top_five_accounts += ", and more."
+    page_description = get_page_description(selected_lang, selected_framework, follower_type, account_type, posted)
 
     return render(
         request,
@@ -400,7 +375,7 @@ def index(request, lang: str | None = None):
             "canonical_url": build_canonical_url(
                 reverse("index", kwargs={"lang": lang}), request.GET, ["t", "f", "post"]
             ),
-            "page_description": top_five_accounts if top_five_accounts else page_description,
+            "page_description": page_description,
             "page_image": static("og.png"),
             "accounts": page_obj,
             "selected_lang": selected_lang,
@@ -412,7 +387,6 @@ def index(request, lang: str | None = None):
             "account_type": account_type,
             "follower_type": follower_type,
             "posted": posted,
-            "accounts_count": accounts_count,  # TODO might be slow
             "selected_instance": request.session.get("selected_instance") or user_instance,
             "query": query,
             "sort_order": sort_order,
