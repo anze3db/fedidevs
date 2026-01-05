@@ -5,9 +5,9 @@ from django.db import models
 from accounts.models import Framework, Language
 
 FRAMEWORKS = [
-    Framework("django", "Django", "🐍", r"django", "frameworks/django.svg"),
+    Framework("django", "Django", "🐍", r"django", "frameworks/django.png"),
     Framework("flask", "Flask", "🍶", r"flask", "frameworks/flask.png"),
-    Framework("fastapi", "FastAPI", "🚀", r"fastapi", "frameworks/fastapi.svg"),
+    Framework("fastapi", "FastAPI", "🚀", r"fastapi", "frameworks/fastapi.png"),
     Framework("rails", "Rails", "🛤️", r"rails", "frameworks/rails.png"),
     Framework("laravel", "Laravel", "🎣", r"laravel", "frameworks/laravel.png"),
     Framework("symfony", "Symfony", "🎻", r"symfony", "frameworks/symfony.png"),
@@ -17,9 +17,9 @@ FRAMEWORKS = [
     Framework("react", "React", "⚛️", r"react", "frameworks/react.png"),
     Framework("vue", "Vue", "🎨", r"[^a-z:]vue", "frameworks/vue.png"),
     Framework("angular", "Angular", "🅰️", r"angular", "frameworks/angular.png"),
-    Framework("nextjs", "Next.js", "🖖", r"nextjs", "frameworks/nextjs.svg"),
+    Framework("nextjs", "Next.js", "🖖", r"nextjs", "frameworks/nextjs.png"),
     Framework("svelte", "Svelte", "🎬", r"svelte", "frameworks/svelte.png"),
-    Framework("tailwind", "Tailwind", "🐱", r"tailwind", "frameworks/tailwind.svg"),
+    Framework("tailwind", "Tailwind", "🐱", r"tailwind", "frameworks/tailwind.png"),
     Framework("bootstrap", "Bootstrap", "🥾", r"bootstrap", "frameworks/bootstrap.png"),
     Framework("dotnet", ".NET", "🌐", r" \.net|dotnet", "frameworks/dotnet.png"),
     Framework(
@@ -34,7 +34,7 @@ FRAMEWORKS = [
     Framework(
         "machinelearning", "Machine Learning", "🤖", r"machine[- _]?learning|ML|AI", "frameworks/machine-learning.jpg"
     ),
-    Framework("bsd", "BSD", "😈", r"bsd", "frameworks/bsd.svg"),
+    Framework("bsd", "BSD", "😈", r"bsd", "frameworks/bsd.png"),
     Framework("android", "Android", "🤖", r"roboto|android", "frameworks/android.png"),
     Framework("postgres", "Postgres", "🐧", r"postgres|pg", "frameworks/postgres.png"),
     Framework("flutter", "Flutter", "🐤", r"flutter", "frameworks/flutter.png"),
@@ -66,7 +66,7 @@ LANGUAGES = [
     Language("csharp", "C#", "♫", r"csharp|c#", "languages/csharp.png"),
     Language("fsharp", "F#", "♬", r"fsharp|f#", "languages/fsharp.png"),
     Language("cpp", "C++", "🐯", r"c\+\+|cpp", "languages/cpp.png"),
-    Language("css", "CSS", "🦝", r"[^\.]css", "languages/css.svg"),
+    Language("css", "CSS", "🦝", r"[^\.]css", "languages/css.png"),
     Language("php", "PHP", "🐘", r"php", "languages/php.png"),  # Filters out index.php? and others
     Language("haskell", "Haskell", "🦥", r"haskell", "languages/haskell.png"),
     Language("ocaml", "OCaml", "🐫", r"ocaml", "languages/ocaml.png"),
