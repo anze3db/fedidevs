@@ -4,6 +4,7 @@ import io
 import logging
 import math
 import random
+import re
 
 import emoji
 import httpx
@@ -13,7 +14,7 @@ from fontTools.ttLib import TTFont
 from PIL import Image, ImageDraw, ImageFilter, ImageFont, UnidentifiedImageError
 
 from accounts.management.commands.crawlone import crawlone
-from accounts.models import Account
+from accounts.models import FRAMEWORKS, LANGUAGES, Account
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +24,43 @@ logger = logging.getLogger(__name__)
 SPLASH_IMAGE_NUMBER_OF_AVATARS = 24
 
 TTFONT_CACHE = {}
+CUSTOM_EMOJI_CACHE = {}
+
+
+def get_custom_emoji_image(shortcode, size):
+    """
+    Fetches a custom emoji image from frameworks/languages and returns it as a PIL image.
+    Returns None if the emoji is not found.
+    """
+    # Check cache first
+    cache_key = (shortcode, size)
+    if cache_key in CUSTOM_EMOJI_CACHE:
+        return CUSTOM_EMOJI_CACHE[cache_key]
+
+    # Look for the shortcode in FRAMEWORKS and LANGUAGES
+    emoji_item = None
+    for item in FRAMEWORKS + LANGUAGES:
+        if item.code == shortcode:
+            emoji_item = item
+            break
+
+    if not emoji_item:
+        return None
+
+    # Get the static file path
+    try:
+        # Extract the path from the static URL
+        image_path = settings.BASE_DIR / "static" / emoji_item.image
+
+        if image_path.is_file():
+            img = Image.open(image_path).convert("RGBA")
+            img = img.resize((size, size), resample=Image.Resampling.LANCZOS)
+            CUSTOM_EMOJI_CACHE[cache_key] = img
+            return img
+    except Exception as e:
+        logger.warning("Failed to load custom emoji %s: %s", shortcode, e)
+
+    return None
 
 
 def get_splash_image_accounts(starter_pack):
@@ -156,74 +194,153 @@ def is_character_in_font(character, font_path):
     return False
 
 
-def split_text_emoji_segments(image_draw, text, default_font, emoji_font, additional_fonts):
+def split_text_emoji_segments(image_draw, text, default_font, emoji_font, additional_fonts, emoji_size):
+    """
+    Split text into segments by font type, Unicode emojis, and custom emoji shortcodes.
+    Returns a list of segments with content, font (or 'custom_emoji'), width, and height.
+    """
     segments = []
     previous_font = None
     skip_next_character = False
     unsupported_characters = set()
-    for i in range(len(text)):
-        if skip_next_character:
-            skip_next_character = False
-            continue
-        character = text[i]
-        current_font = emoji_font if emoji.is_emoji(character) else default_font
-        # Handle country flag emoji, which are constructed from two non-emoji characters
-        if current_font == default_font and i < len(text) - 1 and emoji.is_emoji(text[i] + text[i + 1]):
-            current_font = emoji_font
-            character = text[i] + text[i + 1]
-            skip_next_character = True
-        elif not is_character_in_font(character, current_font.path):
-            current_font = None
-            for font in additional_fonts:
-                if is_character_in_font(character, font.path):
-                    current_font = font
-                    break
-        if current_font is None:
-            unsupported_characters.add(character)
-            continue
-        if previous_font != current_font:
+
+    # First pass: extract custom emoji shortcodes
+    custom_emoji_pattern = r":([a-z0-9_]+):"
+    text_parts = []
+    last_end = 0
+
+    for match in re.finditer(custom_emoji_pattern, text):
+        shortcode = match.group(1)
+        # Check if this is a valid custom emoji
+        if get_custom_emoji_image(shortcode, emoji_size) is not None:
+            # Add text before the shortcode
+            if last_end < match.start():
+                text_parts.append(("text", text[last_end : match.start()]))
+            # Add the custom emoji
+            text_parts.append(("custom_emoji", shortcode))
+            last_end = match.end()
+
+    # Add remaining text
+    if last_end < len(text):
+        text_parts.append(("text", text[last_end:]))
+
+    # If no custom emojis found, treat entire text as text
+    if not text_parts:
+        text_parts = [("text", text)]
+
+    # Second pass: process each part
+    for part_type, part_content in text_parts:
+        if part_type == "custom_emoji":
+            # Custom emoji shortcode
+            if previous_font is not None:
+                previous_font = None
             new_segment = {
-                "content": "",
-                "font": current_font,
-                "width": 0,
+                "content": f":{part_content}:",
+                "font": "custom_emoji",
+                "width": emoji_size,
+                "height": emoji_size,
+                "emoji_shortcode": part_content,
             }
             segments.append(new_segment)
-        segments[-1]["content"] += character
-        segments[-1]["width"] = image_draw.textlength(segments[-1]["content"], current_font)
-        previous_font = current_font
+        else:
+            # Regular text - process character by character
+            i = 0
+            while i < len(part_content):
+                skip_next_character = False
+                character = part_content[i]
+                current_font = emoji_font if emoji.is_emoji(character) else default_font
+
+                # Handle country flag emoji, which are constructed from two non-emoji characters
+                if (
+                    current_font == default_font
+                    and i < len(part_content) - 1
+                    and emoji.is_emoji(part_content[i] + part_content[i + 1])
+                ):
+                    current_font = emoji_font
+                    character = part_content[i] + part_content[i + 1]
+                    skip_next_character = True
+                elif not is_character_in_font(character, current_font.path):
+                    current_font = None
+                    for font in additional_fonts:
+                        if is_character_in_font(character, font.path):
+                            current_font = font
+                            break
+
+                if current_font is None:
+                    unsupported_characters.add(character)
+                    i += 1
+                    if skip_next_character:
+                        i += 1
+                    continue
+
+                if previous_font != current_font:
+                    new_segment = {
+                        "content": "",
+                        "font": current_font,
+                        "width": 0,
+                    }
+                    segments.append(new_segment)
+
+                segments[-1]["content"] += character
+                segments[-1]["width"] = image_draw.textlength(segments[-1]["content"], current_font)
+                previous_font = current_font
+
+                i += 1
+                if skip_next_character:
+                    i += 1
+
     if len(unsupported_characters) > 0:
         logger.warning(
             "Starter pack title contains unsupported characters: %s (%s)", "".join(unsupported_characters), text
         )
+
     for segment in segments:
-        bbox = image_draw.textbbox((0, 0), segment["content"], segment["font"])
-        segment["height"] = bbox[3] - bbox[1]
+        if segment["font"] != "custom_emoji":
+            bbox = image_draw.textbbox((0, 0), segment["content"], segment["font"])
+            segment["height"] = bbox[3] - bbox[1]
+
     return segments
 
 
-def draw_text_with_emoji(image_draw, position, text, fill, default_font, emoji_font, additional_fonts, anchor="lt"):
+def draw_text_with_emoji(
+    image_draw, image, position, text, fill, default_font, emoji_font, additional_fonts, emoji_size, anchor="lt"
+):
     """
     Use Pillow's text rendering function for a string that contains characters
     which need to be rendered in different fonts. Emoji are special-cased in
     order to handle country flags, everything else is matched by glyph
-    availability. Assumes a single-line string with ltr text direction, may
-    behave strangely under other circumstances.
+    availability. Custom emoji shortcodes are also rendered as images.
+    Assumes a single-line string with ltr text direction, may behave strangely
+    under other circumstances.
     """
-    segments = split_text_emoji_segments(image_draw, text, default_font, emoji_font, additional_fonts)
+    segments = split_text_emoji_segments(image_draw, text, default_font, emoji_font, additional_fonts, emoji_size)
     total_width = sum(s["width"] for s in segments)
     current_x = position[0]
     if anchor[0] == "m":
         current_x = round(position[0] - total_width / 2)
     elif anchor[0] == "r":
         current_x = round(position[0] - total_width)
+
     for segment in segments:
-        image_draw.text(
-            (current_x, position[1]),
-            segment["content"],
-            fill=fill,
-            font=segment["font"],
-            anchor="l" + anchor[1],
-        )
+        if segment["font"] == "custom_emoji":
+            # Render custom emoji image
+            emoji_img = get_custom_emoji_image(segment["emoji_shortcode"], emoji_size)
+            if emoji_img is not None:
+                # Calculate vertical offset to center emoji with text
+                emoji_y = round(position[1] - emoji_size / 2)
+                if anchor[1] == "m":
+                    emoji_y = round(position[1] - emoji_size / 2)
+                elif anchor[1] == "b":
+                    emoji_y = round(position[1] - emoji_size)
+                image.alpha_composite(emoji_img, (round(current_x), emoji_y))
+        else:
+            image_draw.text(
+                (current_x, position[1]),
+                segment["content"],
+                fill=fill,
+                font=segment["font"],
+                anchor="l" + anchor[1],
+            )
         current_x += segment["width"]
 
 
@@ -369,8 +486,9 @@ def render_splash_image_to_image_obj(starter_pack, host_attribution, media_dir):
     title_font.set_variation_by_name("Bold")
     title_emoji_font = ImageFont.truetype(emoji_font_path, 64)
     additional_fonts = [ImageFont.truetype(path, 64) for path in additional_font_paths]
+    title_emoji_size = 64  # Initial emoji size for measurement
     title_emoji_segments = split_text_emoji_segments(
-        outline_draw, starter_pack.title, title_font, title_emoji_font, additional_fonts
+        outline_draw, starter_pack.title, title_font, title_emoji_font, additional_fonts, title_emoji_size
     )
     title_width = sum(s["width"] for s in title_emoji_segments)
     title_max_width = 0.9 * resolution[0]  # 5% margin left and right
@@ -379,16 +497,19 @@ def render_splash_image_to_image_obj(starter_pack, host_attribution, media_dir):
     title_font.set_variation_by_name("Bold")
     title_emoji_font = ImageFont.truetype(emoji_font_path, title_font_size)
     title_additional_fonts = [ImageFont.truetype(path, title_font_size) for path in additional_font_paths]
+    title_emoji_size = title_font_size  # Update emoji size to match font size
 
     for job in ((shadow_draw, (0, 0, 0, 63)), (outline_draw, (255, 255, 255, 255))):
         draw_text_with_emoji(
             image_draw=job[0],
+            image=image,
             position=(render_resolution[0] / 2, round(top_avatar_boundary / 2)),
             text=starter_pack.title,
             fill=job[1],
             default_font=title_font,
             emoji_font=title_emoji_font,
             additional_fonts=title_additional_fonts,
+            emoji_size=title_emoji_size,
             anchor="mm",
         )
         i = 0
