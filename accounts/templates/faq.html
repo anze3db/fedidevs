@@ -28,6 +28,52 @@
             <p>
                 If you want to be removed from a starter packs reach out through <a href="mailto:hello@fedidevs.com">email</a> or on <a href="https://fosstodon.org/@Fedidevs">Mastodon</a>.
             </p>
+            <h3>Which accounts can I add to a starter pack?</h3>
+            <p>
+                Any Mastodon account or an account from a Mastodon-compatible instance can be added to a starter pack as long as it has expressed consent to be listed by being set as be discoverable and not opt-out of search engine indexing.
+            </p>
+            <p>
+                To make sure your account is discoverable and opt-in to search engine indexing, go to <kbd>Preferences</kbd> - <kbd>Privacy and reach</kbd> tab (<code>{your_instance}/settings/privacy</code>) and check the following checkboxes:
+            </p>
+            <ol>
+                <li>Feature profile and posts in discovery algorithms</li>
+                <li>Include profile page in search engines</li>
+            </ol>
+            <p style="text-align:center; margin: 20px;">
+                <img src="{% static 'faq-checkboxes.png' %}"
+                     width="80%"
+                     height="80%"
+                     alt="Screenshot of the Mastodon Profile page, Privacy and reach tab, showing which checkboxes are required to get listed" />
+            </p>
+            <details>
+                <summary role="button" class="outline">
+                    Older versions of Mastodon have a different preferences page layout. See here.
+                </summary>
+                <p>
+                    Go to <kbd>Preferences</kbd> - <kbd>Public</kbd> - <kbd>Appearance</kbd> (<code>{your_instance}/settings/profile</code>) and check the Suggest account to others checkbox:
+                </p>
+                <p style="text-align:center; margin: 20px;">
+                    <a href="{% static 'faq-discoverable.png' %}">
+                        <img width="80%"
+                             height="80%"
+                             alt="Screenshot of the Mastodon Edit profile page showing the Suggest account to others checkbox"
+                             src="{% static 'faq-discoverable.png' %}"
+                             style="" />
+                    </a>
+                </p>
+                <p>
+                    Then go to <kbd>Preferences</kbd> - <kbd>Other</kbd> (<code>{your_instance}//preferences/other</code>) and <b>UNCHECK</b> the Opt-out of search engine indexing checkbox:
+                </p>
+                <p style="text-align:center; margin: 20px;">
+                    <a href="{% static 'faq-opt-out.png' %}">
+                        <img width="80%"
+                             height="80%"
+                             alt="Screenshot of the Mastodon Preferences page showing the Opt-out of search engine indexing checkbox"
+                             src="{% static 'faq-opt-out.png' %}"
+                             style="" />
+                    </a>
+                </p>
+            </details>
             <h2>Developer listings</h2>
             <h3>How to get listed as a developer?</h3>
             <p>There are a few prerequisites for your account to be listed on FediDevs.com</p>
