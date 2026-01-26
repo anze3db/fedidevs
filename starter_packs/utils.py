@@ -107,5 +107,5 @@ def resolve_and_follow_account(mastodon: Mastodon, account, instance):
             logger.info("Account %s moved", account.username_at_instance)
             raise FollowError(_("Account has moved")) from e
 
-        logger.info("Unknown error when following %s", account.username_at_instance)
+        logger.info("Unknown error when following %s (%s)", account.username_at_instance, str(e), exc_info=True)
         raise FollowError(_("Failed to follow")) from e
