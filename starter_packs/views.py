@@ -19,15 +19,6 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext as _
 from mastodon import (
     Mastodon,
-    MastodonAPIError,
-    MastodonBadGatewayError,
-    MastodonError,
-    MastodonInternalServerError,
-    MastodonNetworkError,
-    MastodonNotFoundError,
-    MastodonServiceUnavailableError,
-    MastodonUnauthorizedError,
-    MastodonVersionError,
 )
 
 from accounts.management.commands.crawlone import crawlone
@@ -35,6 +26,7 @@ from accounts.models import Account, Instance
 from mastodon_auth.models import AccountAccess, AccountFollowing
 from starter_packs.models import StarterPack, StarterPackAccount
 from starter_packs.splash_images import get_splash_image_signature, render_splash_image
+from starter_packs.utils import FollowError, resolve_and_follow_account
 from stats.models import FollowAllClick
 
 logger = logging.getLogger(__name__)
@@ -677,71 +669,8 @@ def follow_bg(user_id: int, starter_pack_slug: str):
             # Skip self
             continue
 
-        if account.instance == instance.url:
-            account_id = account.account_id
-        else:
-            try:
-                local_account = mastodon.account_lookup(acct=account.username_at_instance)
-            except (MastodonNotFoundError, MastodonVersionError, MastodonInternalServerError):
-                # Attempt to resolve through search:
-                try:
-                    local_accounts = mastodon.account_search(q=account.username_at_instance, resolve=True, limit=1)
-                except MastodonServiceUnavailableError:
-                    logger.info("Service unavailable when searching for %s", account.username_at_instance)
-                    continue
-                except Exception:
-                    logger.info("Unknown error when searching for %s", account.username_at_instance)
-                    continue
-                if not local_accounts:
-                    logger.info("Account not found on instance %s", account.username_at_instance)
-                    continue
-                local_account = local_accounts[0]
-                if local_account["acct"].lower() != account.username_at_instance[1:]:
-                    logger.info("Account mismatch %s %s", account.username_at_instance[1:], local_account["acct"])
-                    continue
-            except MastodonUnauthorizedError:
-                logger.info("Not authorized %s", account.username_at_instance)
-                continue
-            except MastodonAPIError:
-                logger.info("Unknown error when following %s", account.username_at_instance)
-                continue
-            except MastodonNetworkError:
-                logger.info("Network error when looking up %s", account.username_at_instance)
-                continue
-            except MastodonError:
-                logger.info("Unknown error when looking up %s", account.username_at_instance)
-                continue
-            account_id = local_account["id"]
-
         try:
-            mastodon.account_follow(account_id)
-        except MastodonUnauthorizedError:
-            logger.info("Unauthorized error when following")
-            continue
-        except MastodonNotFoundError:
-            logger.info("Account not found on instance %s", account.username_at_instance)
-            continue
-        except MastodonNetworkError:
-            logger.info("Network error when following %s", account.username_at_instance)
-            continue
-        except MastodonError:
-            # We weren't able to follow the user. Maybe the account was moved?
-            try:
-                local_account = mastodon.account_lookup(acct=account.username_at_instance)
-            except MastodonNotFoundError:
-                logger.info("Account not found on instance %s", account.username_at_instance)
-                continue
-            except MastodonBadGatewayError:
-                logging.info("Bad gateway when for %s", account.username_at_instance)
-                continue
-            except MastodonError:
-                logger.info("Unknown error when checking moved for %s", account.username_at_instance)
-                continue
-            if moved := local_account.get("moved"):
-                account.moved = moved
-                account.save(update_fields=("moved",))
-                logger.info("Account %s moved", account.username_at_instance)
-                continue
-
-            logger.info("Unknown error when following %s", account.username_at_instance)
+            resolve_and_follow_account(mastodon, account, instance)
+        except FollowError:
+            logger.info("%s failed to follow in bg %s", user.username, account.username_at_instance, exc_info=True)
             continue
