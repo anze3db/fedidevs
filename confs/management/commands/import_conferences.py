@@ -6,6 +6,7 @@ from pathlib import Path
 
 import requests
 from django.core import management
+from django.utils.text import slugify
 from django_rich.management import RichCommand
 
 from confs.models import Conference
@@ -60,6 +61,8 @@ class Command(RichCommand):
                 continue
             if imported.lower() == "yes":
                 continue
+            if not slug:
+                slug = slugify(name)
             conf = Conference(
                 name=name,
                 slug=slug,
