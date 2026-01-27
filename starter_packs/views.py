@@ -341,6 +341,7 @@ def create_starter_pack(request):
 
 
 @transaction.atomic
+@login_required
 def publish_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, created_by=request.user)
     if request.method == "POST":
@@ -362,6 +363,7 @@ def publish_starter_pack(request, starter_pack_slug):
 
 
 @transaction.atomic
+@login_required
 def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
     starter_pack = get_object_or_404(
         StarterPack.objects.select_for_update(),
