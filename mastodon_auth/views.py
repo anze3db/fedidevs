@@ -70,6 +70,9 @@ def login(request):
     except httpx.RequestError:
         messages.error(request, f"Mastodon instance not found. Is the URL correct? `{api_base_url}`")
         return redirect("/")
+    except httpx.InvalidURL:
+        messages.error(request, _("The URL provided is invalid.") + f" `{api_base_url}`")
+        return redirect("/")
 
     instance = Instance.objects.filter(url=api_base_url).first()
 
