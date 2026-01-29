@@ -6,9 +6,9 @@ After=fedidevs.service
 Type=simple
 Restart=always
 RestartSec=1
-WorkingDirectory=/home/anze/projects/fedidevs
-ExecStart=/home/anze/projects/fedidevs/.venv/bin/newrelic-admin run-program /home/anze/projects/fedidevs/.venv/bin/python manage.py scheduler'
-Environment="NEW_RELIC_CONFIG_FILE=/home/anze/projects/fedidevs/newrelic.ini"
+WorkingDirectory=/var/apps/fedidevs
+ExecStart=/var/apps/fedidevs/.venv/bin/newrelic-admin run-program /var/apps/fedidevs/.venv/bin/python manage.py scheduler'
+Environment="NEW_RELIC_CONFIG_FILE=/var/apps/fedidevs/newrelic.ini"
 User=anze
 
 [Install]
