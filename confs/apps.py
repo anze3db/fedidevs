@@ -1,6 +1,7 @@
 import logging
 
 import dramatiq
+import newrelic.agent
 from django.apps import AppConfig
 from django.core import management
 from django.db.models import signals
@@ -13,6 +14,7 @@ def post_save_action(sender, instance, created, **kwargs):  # noqa: ARG001
         bg_taks.send(instance.slug)
 
 
+@newrelic.agent.background_task()
 @dramatiq.actor
 def bg_taks(slug: str):
     management.call_command("findinstances", f"--slug={slug}")

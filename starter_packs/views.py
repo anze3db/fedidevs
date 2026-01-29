@@ -2,6 +2,7 @@ import logging
 import re
 
 import dramatiq
+import newrelic.agent
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -641,12 +642,14 @@ def follow_starter_pack(request, starter_pack_slug):
     return redirect("share_starter_pack", starter_pack_slug=starter_pack.slug)
 
 
+@newrelic.agent.background_task()
 @dramatiq.actor
 def update_starter_pack_splash_images(starter_pack_slug: str):
     starter_pack = StarterPack.objects.get(slug=starter_pack_slug)
     render_splash_image(starter_pack=starter_pack, host_attribution="fedidevs.com")
 
 
+@newrelic.agent.background_task()
 @dramatiq.actor
 def follow_bg(user_id: int, starter_pack_slug: str):
     user = User.objects.get(pk=user_id)

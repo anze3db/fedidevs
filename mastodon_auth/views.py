@@ -3,6 +3,7 @@ from uuid import uuid4
 
 import dramatiq
 import httpx
+import newrelic.agent
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
@@ -259,6 +260,7 @@ def auth(request):
     return redirect("index")
 
 
+@newrelic.agent.background_task()
 @dramatiq.actor
 def sync_following(user_id: int):
     user = User.objects.get(pk=user_id)

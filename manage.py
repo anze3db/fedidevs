@@ -9,12 +9,6 @@ def main():
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "fedidevs.settings")
 
-    # Initialize New Relic for background workers (dramatiq)
-    # This ensures child processes get proper instrumentation
-    if "rundramatiq" in sys.argv or "scheduler" in sys.argv:
-        import newrelic.agent  # noqa: PLC0415
-
-        newrelic.agent.initialize()
     try:
         from django.core.management import execute_from_command_line  # noqa: PLC0415
     except ImportError as exc:

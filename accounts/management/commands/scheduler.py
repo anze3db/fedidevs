@@ -1,5 +1,6 @@
 import time
 
+import newrelic.agent
 import schedule
 from django.core import management
 from django_rich.management import RichCommand
@@ -10,6 +11,7 @@ from mastodon_auth.models import Instance
 class Command(RichCommand):
     help = "Starts the scheduler"
 
+    @newrelic.agent.background_task()
     def daily_job(self):
         self.console.print("Starting daily job")
         if not Instance.objects.exists():
@@ -41,6 +43,7 @@ class Command(RichCommand):
         management.call_command("update_splash_images")
         self.console.print("All done! 🎉")
 
+    @newrelic.agent.background_task()
     def hourly_job(self):
         self.console.print("Starting hourly job")
         management.call_command("stattag", "--active")
