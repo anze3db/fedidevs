@@ -275,6 +275,7 @@ else:  # no cov
             "dramatiq.middleware.Retries",
             "django_dramatiq.middleware.DbConnectionsMiddleware",
             "django_dramatiq.middleware.AdminMiddleware",
+            "fedidevs.newrelic_middleware.NewRelicMiddleware",
         ],
     }
 
