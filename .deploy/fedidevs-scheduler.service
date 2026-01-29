@@ -7,7 +7,7 @@ Type=simple
 Restart=always
 RestartSec=1
 WorkingDirectory=/var/apps/fedidevs
-ExecStart=/var/apps/fedidevs/.venv/bin/newrelic-admin run-program /var/apps/fedidevs/.venv/bin/python manage.py scheduler'
+ExecStart=/var/apps/fedidevs/.venv/bin/newrelic-admin run-program /var/apps/fedidevs/.venv/bin/python manage.py scheduler
 Environment="NEW_RELIC_CONFIG_FILE=/var/apps/fedidevs/newrelic.ini"
 User=anze
 
