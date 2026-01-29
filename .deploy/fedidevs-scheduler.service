@@ -6,7 +6,9 @@ After=fedidevs.service
 Type=simple
 Restart=always
 RestartSec=1
-ExecStart=/bin/bash /home/anze/projects/fedidevs/.deploy/run_scheduler.sh
+WorkingDirectory=/home/anze/projects/fedidevs
+Environment="NEW_RELIC_CONFIG_FILE=newrelic.ini"
+ExecStart=.venv/bin/newrelic-admin run-program .venv/bin/python manage.py scheduler
 User=anze
 
 [Install]
