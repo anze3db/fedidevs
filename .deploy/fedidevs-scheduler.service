@@ -7,8 +7,8 @@ Type=simple
 Restart=always
 RestartSec=1
 WorkingDirectory=/home/anze/projects/fedidevs
-Environment="NEW_RELIC_CONFIG_FILE=newrelic.ini"
-ExecStart=.venv/bin/newrelic-admin run-program .venv/bin/python manage.py scheduler
+ExecStart=/home/anze/projects/fedidevs/.venv/bin/newrelic-admin run-program /home/anze/projects/fedidevs/.venv/bin/python manage.py scheduler'
+Environment="NEW_RELIC_CONFIG_FILE=/home/anze/projects/fedidevs/newrelic.ini"
 User=anze
 
 [Install]
