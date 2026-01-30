@@ -84,11 +84,12 @@ INSTALLED_APPS = [
     "heroicons",
     "django_browser_reload",
     "debug_toolbar",
-    "django_dramatiq",
+    "django_celery_results",
     "django_tui",
     "template_partials.apps.SimpleAppConfig",
     "django_cotton.apps.SimpleAppConfig",
     # "django_watchfiles",
+    "fedidevs",
     "tailwind",
     "theme",
     "mastodon_auth",
@@ -246,51 +247,19 @@ MSTDN_CLIENT_NAME = env.str("MSTDN_CLIENT_NAME", default="local.fedidevs.com")
 MSTDN_REDIRECT_URI = env.str("MSTDN_REDIRECT_URI", default="http://localhost:8000/mastodon_auth/")
 
 
-# Dramatiq settings:
+# Celery settings:
+CELERY_BROKER_URL = "redis://localhost:6379/1"
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_CACHE_BACKEND = "default"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
+
 TESTS_RUNNING = "pytest" in sys.modules
-if TESTS_RUNNING:
-    DRAMATIQ_BROKER = {
-        "BROKER": "dramatiq.brokers.stub.StubBroker",
-        "OPTIONS": {},
-        "MIDDLEWARE": [
-            "dramatiq.middleware.AgeLimit",
-            # "dramatiq.middleware.TimeLimit", # Broken on 3.13
-            "dramatiq.middleware.Callbacks",
-            "dramatiq.middleware.Pipelines",
-            "dramatiq.middleware.Retries",
-            "django_dramatiq.middleware.DbConnectionsMiddleware",
-            "django_dramatiq.middleware.AdminMiddleware",
-        ],
-    }
-else:  # no cov
-    DRAMATIQ_BROKER = {
-        "BROKER": "dramatiq.brokers.redis.RedisBroker",
-        "OPTIONS": {
-            "url": "redis://localhost:6379/1",
-        },
-        "MIDDLEWARE": [
-            "dramatiq.middleware.AgeLimit",
-            # "dramatiq.middleware.TimeLimit", # Broken on 3.13
-            "dramatiq.middleware.Callbacks",
-            "dramatiq.middleware.Retries",
-            "django_dramatiq.middleware.DbConnectionsMiddleware",
-            "django_dramatiq.middleware.AdminMiddleware",
-            "fedidevs.newrelic_middleware.NewRelicMiddleware",
-        ],
-    }
-
-    DRAMATIQ_RESULT_BACKEND = {
-        "BACKEND": "dramatiq.results.backends.redis.RedisBackend",
-        "BACKEND_OPTIONS": {
-            "url": "redis://localhost:6379",
-        },
-        "MIDDLEWARE_OPTIONS": {"result_ttl": 1000 * 60 * 10},
-    }
-
-# Defines which database should be used to persist Task objects when the
-# AdminMiddleware is enabled.  The default value is "default".
-DRAMATIQ_TASKS_DATABASE = "default"
-DRAMATIQ_AUTODISCOVER_MODULES = ["tasks", "views"]
+if TESTS_RUNNING or DEBUG:
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
 
 
 LOGGING = {

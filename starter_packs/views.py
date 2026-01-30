@@ -1,8 +1,7 @@
 import logging
 import re
 
-import dramatiq
-import newrelic.agent
+from celery import shared_task
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -279,7 +278,7 @@ def edit_starter_pack(request, starter_pack_slug):
                 starter_pack.splash_image_needs_update = True
                 starter_pack.save(update_fields=["splash_image_needs_update"])
                 transaction.on_commit(
-                    lambda: update_starter_pack_splash_images.send(starter_pack_slug=starter_pack.slug)
+                    lambda: update_starter_pack_splash_images.delay(starter_pack_slug=starter_pack.slug)
                 )
             return redirect("edit_accounts_starter_pack", starter_pack_slug=starter_pack.slug)
     else:
@@ -314,7 +313,7 @@ def create_starter_pack(request):
                 starter_pack.splash_image_needs_update = True
                 starter_pack.save(update_fields=["splash_image_needs_update"])
                 transaction.on_commit(
-                    lambda: update_starter_pack_splash_images.send(starter_pack_slug=starter_pack.slug)
+                    lambda: update_starter_pack_splash_images.delay(starter_pack_slug=starter_pack.slug)
                 )
             try:
                 starter_pack.save()
@@ -354,7 +353,7 @@ def publish_starter_pack(request, starter_pack_slug):
             if get_splash_image_signature(starter_pack) != starter_pack.splash_image_signature:
                 starter_pack.splash_image_needs_update = True
                 transaction.on_commit(
-                    lambda: update_starter_pack_splash_images.send(starter_pack_slug=starter_pack.slug)
+                    lambda: update_starter_pack_splash_images.delay(starter_pack_slug=starter_pack.slug)
                 )
         starter_pack.save(update_fields=["published_at", "updated_at", "splash_image_needs_update"])
 
@@ -414,7 +413,7 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
     ):
         starter_pack.splash_image_needs_update = True
         starter_pack.save(update_fields=["splash_image_needs_update"])
-        transaction.on_commit(lambda: update_starter_pack_splash_images.send(starter_pack_slug=starter_pack.slug))
+        transaction.on_commit(lambda: update_starter_pack_splash_images.delay(starter_pack_slug=starter_pack.slug))
 
     return render(
         request,
@@ -635,22 +634,20 @@ def follow_starter_pack(request, starter_pack_slug):
         account_following.append(AccountFollowing(account=request.user.accountaccess.account, url=account.url))
 
     AccountFollowing.objects.bulk_create(account_following, ignore_conflicts=True)
-    transaction.on_commit(lambda: follow_bg.send(request.user.id, starter_pack_slug))
+    transaction.on_commit(lambda: follow_bg.delay(request.user.id, starter_pack_slug))
     FollowAllClick.objects.create(user=request.user, starter_pack=starter_pack)
     messages.success(request, _("Following all accounts in the starter pack. 🎉"))
 
     return redirect("share_starter_pack", starter_pack_slug=starter_pack.slug)
 
 
-@newrelic.agent.background_task()
-@dramatiq.actor
+@shared_task
 def update_starter_pack_splash_images(starter_pack_slug: str):
     starter_pack = StarterPack.objects.get(slug=starter_pack_slug)
     render_splash_image(starter_pack=starter_pack, host_attribution="fedidevs.com")
 
 
-@newrelic.agent.background_task()
-@dramatiq.actor
+@shared_task
 def follow_bg(user_id: int, starter_pack_slug: str):
     user = User.objects.get(pk=user_id)
     account_access = user.accountaccess

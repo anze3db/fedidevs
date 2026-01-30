@@ -7,7 +7,7 @@ Type=simple
 Restart=always
 RestartSec=1
 WorkingDirectory=/var/apps/fedidevs
-ExecStart=/bin/bash -c 'exec /var/apps/fedidevs/.venv/bin/newrelic-admin run-program /var/apps/fedidevs/.venv/bin/python manage.py rundramatiq --processes 1 --threads 2'
+ExecStart=/var/apps/fedidevs/.venv/bin/newrelic-admin run-program /var/apps/fedidevs/.venv/bin/celery -A fedidevs worker --loglevel=info --concurrency=2
 Environment="NEW_RELIC_CONFIG_FILE=/var/apps/fedidevs/newrelic.ini"
 User=anze
 

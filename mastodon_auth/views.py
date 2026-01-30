@@ -1,9 +1,8 @@
 import logging
 from uuid import uuid4
 
-import dramatiq
 import httpx
-import newrelic.agent
+from celery import shared_task
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
@@ -252,7 +251,7 @@ def auth(request):
     # force log the user in
     auth_login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])
 
-    transaction.on_commit(lambda: sync_following.send(user.id))
+    transaction.on_commit(lambda: sync_following.delay(user.id))
 
     if next_url:
         return redirect(next_url)
@@ -260,8 +259,7 @@ def auth(request):
     return redirect("index")
 
 
-@newrelic.agent.background_task()
-@dramatiq.actor
+@shared_task
 def sync_following(user_id: int):
     user = User.objects.get(pk=user_id)
     account_access = user.accountaccess

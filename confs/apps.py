@@ -1,7 +1,6 @@
 import logging
 
-import dramatiq
-import newrelic.agent
+from celery import shared_task
 from django.apps import AppConfig
 from django.core import management
 from django.db.models import signals
@@ -11,11 +10,10 @@ logger = logging.getLogger(__name__)
 
 def post_save_action(sender, instance, created, **kwargs):  # noqa: ARG001
     if created:
-        bg_taks.send(instance.slug)
+        bg_taks.delay(instance.slug)
 
 
-@newrelic.agent.background_task()
-@dramatiq.actor
+@shared_task
 def bg_taks(slug: str):
     management.call_command("findinstances", f"--slug={slug}")
     management.call_command("stattag", f"--slug={slug}")
