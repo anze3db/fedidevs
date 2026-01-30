@@ -9,16 +9,13 @@ RestartSec=1
 WorkingDirectory=/var/apps/fedidevs
 RuntimeDirectory=fedidevs-celery
 RuntimeDirectoryMode=0755
-ExecStart=/bin/sh -c '/var/apps/fedidevs/.venv/bin/newrelic-admin run-program /var/apps/fedidevs/.venv/bin/celery -A fedidevs multi start fediworker1 fediworker2 \
-    --pidfile=/var/run/fedidevs-celery/%n.pid --logfile=/var/run/fedidevs-celery/%n%I.log \
-    --loglevel=INFO --concurrency=2'
-ExecStop=/bin/sh -c '/var/apps/fedidevs/.venv/bin/newrelic-admin run-program /var/apps/fedidevs/.venv/bin/celery multi stopwait fediworker1 fediworker2 \
-    --pidfile=/var/run/fedidevs-celery/%n.pid --logfile=/var/run/fedidevs-celery/%n%I.log \
-    --loglevel=INFO'
-ExecReload=/bin/sh -c '/var/apps/fedidevs/.venv/bin/newrelic-admin run-program /var/apps/fedidevs/.venv/bin/celery -A fedidevs multi restart fediworker1 fediworker2 \
-    --pidfile=/var/run/fedidevs-celery/%n.pid --logfile=/var/run/fedidevs-celery/%n%I.log \
-    --loglevel=INFO --concurrency=2'
 Environment="NEW_RELIC_CONFIG_FILE=/var/apps/fedidevs/newrelic.ini"
+Environment="VENV=/var/apps/fedidevs/.venv/bin"
+Environment="CELERY_OPTS=--pidfile=/var/run/fedidevs-celery/%n.pid --logfile=/var/run/fedidevs-celery/%n%I.log --loglevel=INFO"
+Environment="WORKERS=fediworker1 fediworker2"
+ExecStart=/bin/sh -c '${VENV}/newrelic-admin run-program ${VENV}/celery -A fedidevs multi start ${WORKERS} ${CELERY_OPTS} --concurrency=2'
+ExecStop=/bin/sh -c '${VENV}/newrelic-admin run-program ${VENV}/celery multi stopwait ${WORKERS} ${CELERY_OPTS}'
+ExecReload=/bin/sh -c '${VENV}/newrelic-admin run-program ${VENV}/celery -A fedidevs multi restart ${WORKERS} ${CELERY_OPTS} --concurrency=2'
 User=anze
 
 [Install]
