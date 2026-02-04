@@ -98,7 +98,7 @@ def conferences(request, lang: str | None = None):
 
     frameworks = sorted(
         [f for f in frameworks if f["count"] > 0],
-        key=lambda framework: (framework["count"]),
+        key=lambda framework: framework["count"],
         reverse=True,
     )
     languages = sorted(
@@ -162,7 +162,7 @@ def conference(request, conference_slug: str):
 
     try:
         account_id = int(request.GET.get("account"))
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         account_id = None
     if account_id:
         search_query &= Q(account_id=account_id)
@@ -322,7 +322,7 @@ def fwd50(request, date: dt.date | None = None):
 
     try:
         account_id = int(request.GET.get("account"))
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         account_id = None
     if account_id:
         search_query &= Q(account_id=account_id)
@@ -408,7 +408,7 @@ def djangoconafrica(request, date: dt.date | None = None):
 
     try:
         account_id = int(request.GET.get("account"))
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         account_id = None
     if account_id:
         search_query &= Q(account_id=account_id)
@@ -511,7 +511,7 @@ def dotnetconf(request, date: dt.date | None = None):
 
     try:
         account_id = int(request.GET.get("account"))
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         account_id = None
     if account_id:
         search_query &= Q(account_id=account_id)

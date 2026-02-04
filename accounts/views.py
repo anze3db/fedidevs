@@ -79,7 +79,7 @@ class CountlessPaginator:
     def get_page(self, number):
         try:
             number = self.validate_number(number)
-        except (PageNotAnInteger, EmptyPage):
+        except PageNotAnInteger, EmptyPage:
             number = 1
         return self.page(number)
 
@@ -271,7 +271,7 @@ def index(request, lang: str | None = None):
     selected_framework = frameworks_map.get(lang)
     frameworks = sorted(
         frameworks,
-        key=lambda framework: (framework["count"]),
+        key=lambda framework: framework["count"],
         reverse=True,
     )
     languages = sorted(
