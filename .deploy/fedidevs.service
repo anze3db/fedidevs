@@ -9,6 +9,7 @@ Type=simple
 Restart=always
 RestartSec=1
 WorkingDirectory=/var/apps/fedidevs
+ExecStartPre=/bin/rm -f /var/apps/fedidevs/fedidevs.sock
 ExecStart=/var/apps/fedidevs/.venv/bin/newrelic-admin run-program /var/apps/fedidevs/.venv/bin/granian --uds fedidevs.sock --interface wsgi fedidevs.wsgi:application --workers 4 --blocking-threads 4 --backpressure 10 --process-name fedidevs
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MANPID
