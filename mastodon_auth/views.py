@@ -58,7 +58,7 @@ def login(request):
     # Encode internationalized domain names (IDN) to ASCII using IDNA encoding
     try:
         api_base_url = api_base_url.encode("idna").decode("ascii")
-    except (UnicodeError, UnicodeDecodeError, UnicodeEncodeError):
+    except UnicodeError, UnicodeDecodeError, UnicodeEncodeError:
         messages.error(request, _("Invalid instance URL. Please enter a valid Mastodon instance domain name."))
         return redirect("/")
 
