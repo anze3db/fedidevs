@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from ddt import data, ddt, unpack
 from django.test import TestCase
 from django.urls import reverse
@@ -139,6 +141,51 @@ class TestEditStarterPackAccounts(TestCase):
         response = self.client.get(reverse("edit_accounts_starter_pack", args=[self.starter_pack.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Search @username@instance.org")
+
+
+class TestAddAccountsSearch(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = baker.make("auth.User")
+        baker.make("mastodon_auth.AccountAccess", user=cls.user)
+        cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
+        cls.instance = baker.make("accounts.Instance", instance="instance.org")
+        cls.account = baker.make(
+            "accounts.Account",
+            username="testuser",
+            username_at_instance="testuser@instance.org",
+            discoverable=True,
+            instance_model=cls.instance,
+        )
+
+    @patch("starter_packs.views.crawlone")
+    def test_username_search_shows_checked_for_existing_account(self, mock_crawlone):
+        """When searching by username for an account already in the pack, checkbox should be checked."""
+        mock_crawlone.return_value = self.account
+        baker.make(
+            "starter_packs.StarterPackAccount",
+            starter_pack=self.starter_pack,
+            account=self.account,
+        )
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("edit_accounts_starter_pack", args=[self.starter_pack.slug]),
+            {"q": "testuser@instance.org"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'checked="checked"')
+
+    @patch("starter_packs.views.crawlone")
+    def test_username_search_shows_unchecked_for_new_account(self, mock_crawlone):
+        """When searching by username for an account not in the pack, checkbox should be unchecked."""
+        mock_crawlone.return_value = self.account
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("edit_accounts_starter_pack", args=[self.starter_pack.slug]),
+            {"q": "testuser@instance.org"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'checked="checked"')
 
 
 class TestDeleteStarterPack(TestCase):

@@ -173,7 +173,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
                 )
             account = crawlone(user=search[1:])
             if account:
-                accounts = Account.objects.filter(
+                accounts = accounts.filter(
                     username_at_instance=account.username_at_instance,
                 )
         else:
