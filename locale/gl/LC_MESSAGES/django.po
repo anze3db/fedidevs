@@ -1,0 +1,638 @@
+# Traducción ao galego dende o castelán
+# Copyright (C) 2026
+# This file is distributed under the same license as the PACKAGE package.
+# Isaa <isabel89[at]protonmail.com>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-10 21:18+0000\n"
+"PO-Revision-Date: 2026-03-10 21:49+0100\n"
+"Last-Translator: Isaa <isabel89[at]protonmail.com>\n"
+"Language-Team: \n"
+"Language: gl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
+"X-Generator: Poedit 3.5\n"
+
+#: accounts/models.py:190
+msgid "Never posted"
+msgstr "Nunca publicado"
+
+#: accounts/models.py:193
+msgid "Less than a day ago"
+msgstr "Fai menos dun día"
+
+#: accounts/models.py:197
+#, python-format
+msgid "%(days)d day ago"
+msgid_plural "%(days)d days ago"
+msgstr[0] "fai %(days)d día"
+msgstr[1] "fai %(days)d día"
+msgstr[2] "fai %(days)d días"
+
+#: accounts/models.py:204
+#, python-format
+msgid "%(weeks)d week ago"
+msgid_plural "%(weeks)d weeks ago"
+msgstr[0] "fai %(weeks)d semana"
+msgstr[1] "fai %(weeks)d semana"
+msgstr[2] "fai %(weeks)d semanas"
+
+#: accounts/models.py:210
+#, python-format
+msgid "%(months)d month ago"
+msgid_plural "%(months)d months ago"
+msgstr[0] "fai %(months)d mes"
+msgstr[1] "fai %(months)d mes"
+msgstr[2] "fai %(months)d meses"
+
+#: accounts/templates/cotton/follow_button.html:6
+#: accounts/templates/cotton/follow_button.html:23
+msgid "Follow"
+msgstr "Seguir"
+
+#: accounts/templates/cotton/follow_button.html:11
+msgctxt "You are already *following* this account."
+msgid "Following"
+msgstr "Seguindo"
+
+#: accounts/templates/cotton/follow_button.html:16
+msgid "You!"
+msgstr "Ti!"
+
+#: accounts/templates/login_form.html:7
+msgid "Sign in to your Mastodon instance"
+msgstr "Inicia sesión coa túa instancia de Mastodon"
+
+#: accounts/templates/login_form.html:19
+msgid "Close modal"
+msgstr "Pechar modal"
+
+#: accounts/templates/login_form.html:31
+msgid "Your instance"
+msgstr "A túa instancia"
+
+#: accounts/templates/login_form.html:41
+msgid ""
+"<strong>Write</strong> permissions will be requested to be able to follow "
+"accounts on your behalf."
+msgstr ""
+"Solicitaranse permisos de <strong>escritura</strong> para poder continuar "
+"contas no seu nome."
+
+#: accounts/templates/login_form.html:48
+msgid "Authorize"
+msgstr "Autorizar"
+
+#: accounts/templates/v2/accounts.html:76
+#: starter_packs/templates/starter_pack_accounts.html:76
+msgid "Last posted"
+msgstr "Derradeira publicación"
+
+#: accounts/templates/v2/accounts.html:82
+#: starter_packs/templates/starter_pack_accounts.html:82
+msgid "Posts"
+msgstr "Publicacións"
+
+#: accounts/templates/v2/accounts.html:98
+#: starter_packs/templates/starter_pack_accounts.html:98
+msgid "Followers"
+msgstr "Seguidores"
+
+#: accounts/templates/v2/accounts.html:114
+#: starter_packs/templates/starter_pack_accounts.html:114
+msgctxt "This account is *following* this many people"
+msgid "Following"
+msgstr "Seguindo"
+
+#: accounts/templates/v2/accounts.html:134
+msgid "No accounts found."
+msgstr "Non se atoparon contas."
+
+#: accounts/templates/v2/accounts.html:134
+msgid "Reset the filters"
+msgstr "Reiniciar os filtros"
+
+#: accounts/templates/v2/layout.html:15
+msgid "Discover amazing people on Mastodon."
+msgstr "Descobre xente asombrosa en Mastodon."
+
+#: accounts/templates/v2/layout.html:42 accounts/templates/v2/layout.html:53
+msgid "Discover amazing people from across the fediverse."
+msgstr "Descobre xente asombrosa de todo o fediverso."
+
+#: accounts/templates/v2/layout.html:94
+msgid "Close"
+msgstr "Pechar"
+
+#: accounts/templates/v2/layout.html:114
+msgid "Open sidebar"
+msgstr "Abrir barra lateral"
+
+#: accounts/templates/v2/layout.html:138 accounts/templates/v2/layout.html:287
+msgid "Starter Packs"
+msgstr "Packs de Inicio"
+
+#: accounts/templates/v2/layout.html:139 accounts/templates/v2/layout.html:290
+#: starter_packs/templates/cotton/starter_pack_card.html:30
+msgid "Accounts"
+msgstr "Contas"
+
+#: accounts/templates/v2/layout.html:140 accounts/templates/v2/layout.html:293
+msgid "Conferences"
+msgstr "Conferencias"
+
+#: accounts/templates/v2/layout.html:141 accounts/templates/v2/layout.html:296
+msgid "Stats"
+msgstr "Estatísticas"
+
+#: accounts/templates/v2/layout.html:148
+msgid "Toggle Theme"
+msgstr "Alternar tema"
+
+#: accounts/templates/v2/layout.html:226
+msgid "Help with translations"
+msgstr "Axudar coas traduccións"
+
+#: accounts/templates/v2/layout.html:236 accounts/templates/v2/layout.html:256
+msgid "Account"
+msgstr "Conta"
+
+#: accounts/templates/v2/layout.html:248
+msgid "Sign out"
+msgstr "Pechar sesión"
+
+#: accounts/templates/v2/layout.html:268
+msgid "Sign in"
+msgstr "Iniciar sesión"
+
+#: accounts/templates/v2/layout.html:336
+msgid "FAQ"
+msgstr "FAQ"
+
+#: accounts/templates/v2/layout.html:339
+msgid "Mastodon instances"
+msgstr "Instancias de Mastodon"
+
+#: accounts/templates/v2/layout.html:342
+msgid "Newsletter"
+msgstr "Boletín"
+
+#: accounts/templates/v2/layout.html:347
+msgid ""
+"Created by <a href=\"https://fosstodon.org/@anze3db\">Anže</a> and <a "
+"href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">friends.</a>"
+msgstr ""
+"Creado por <a href=\"https://fosstodon.org/@anze3db\">Anže</a> e <a "
+"href=\"https://github.com/anze3db/fedidevs/graphs/contributors\">amigos.</a>"
+
+#: mastodon_auth/views.py:78
+msgid "Network error, is the instance url correct?"
+msgstr "Error de rede, A URL da instancia é correcta?"
+
+#: mastodon_auth/views.py:83
+msgid ""
+"Unable to create app on your instance. Is it a Mastodon compatible instance?"
+msgstr ""
+"Non se puido crear unha app na túa instancia. É unha instancia compatible "
+"con Mastodon?"
+
+#: mastodon_auth/views.py:135 mastodon_auth/views.py:140
+msgid "Invalid request, please try again"
+msgstr "Solicitude non válida, por favor proba outra vez"
+
+#: mastodon_auth/views.py:276
+msgid "Service unavailable"
+msgstr "Servizo non disponible"
+
+#: mastodon_auth/views.py:286 mastodon_auth/views.py:305
+msgid "Account not found"
+msgstr "Conta non atopada"
+
+#: mastodon_auth/views.py:289
+msgid "Not Authorized"
+msgstr "Non Autorizado"
+
+#: mastodon_auth/views.py:292 mastodon_auth/views.py:313
+msgid "Failed to follow"
+msgstr "Fallo ao seguir"
+
+#: mastodon_auth/views.py:298
+msgid "Unauthorized"
+msgstr "Sen autorización"
+
+#: mastodon_auth/views.py:310
+msgid "Account has moved"
+msgstr "A conta trasladouse"
+
+#: starter_packs/templates/add_accounts.html:7
+msgid "Add accounts to"
+msgstr "Engadir contas a"
+
+#: starter_packs/templates/add_accounts.html:14
+#: starter_packs/templates/add_accounts.html:34
+msgid "Search"
+msgstr "Buscar"
+
+#: starter_packs/templates/add_accounts.html:31
+msgid "Search @username@instance.org"
+msgstr "Buscar @usuario@instancia.org"
+
+#: starter_packs/templates/add_accounts_list.html:20
+#: starter_packs/templates/review_starter_pack_list.html:20
+#, python-format
+msgid ""
+"⚠️ The account is not set as <a href=\"%(url)s\">discoverable</a> and cannot "
+"be added."
+msgstr ""
+"⚠️ A conta non está marcada como <a href=\"%(url)s\">descuberta</a> y no "
+"pode ser engadida."
+
+#: starter_packs/templates/add_accounts_list.html:28
+#: starter_packs/templates/review_starter_pack_list.html:28
+#, fuzzy
+#| msgid ""
+#| "⚠️ The account is not set as <a href=\"%(url)s\">discoverable</a> and "
+#| "cannot be added."
+msgid ""
+"⚠️ The account has not opted in for search engine indexing and cannot be "
+"added."
+msgstr ""
+"⚠️ A conta non está marcada como <a href=\"%(url)s\">descuberta</a> e non "
+"pode ser engadida."
+
+#: starter_packs/templates/add_accounts_list.html:35
+#: starter_packs/templates/review_starter_pack_list.html:35
+msgid ""
+"⚠️ The account's description prevents it from being added to starter packs."
+msgstr ""
+
+#: starter_packs/templates/add_accounts_list.html:56
+#, python-format
+msgid "Instance <i>`%(deleted_instance)s`</i> was deleted 😞"
+msgstr ""
+
+#: starter_packs/templates/add_accounts_list.html:61
+msgid "The instance Admin has requested to remove the instance."
+msgstr ""
+
+#: starter_packs/templates/add_accounts_list.html:68
+msgid "No results found 😞"
+msgstr "Non se atoparon resultados 😞"
+
+#: starter_packs/templates/add_accounts_list.html:70
+msgid ""
+"We couldn't find any accounts matching your query in the Fedidevs database "
+"or at the instance itself. Double check the username and instance and try "
+"again."
+msgstr ""
+"Non puidemos atopar ningunha conta que coincida coa túa búsqueda na "
+"base de datos de Fedidevs o na propia instancia. Comproba de novo o "
+"nome de usuario e instancia e proba de novo."
+
+#: starter_packs/templates/add_accounts_list.html:73
+msgid ""
+"<strong>Note:</strong> Only <strong>Mastodon</strong> instances are "
+"supported at the moment."
+msgstr ""
+"<strong>Nota:</strong> Soamente están soportadas instancias de <strong>Mastodon</"
+"stron>neste momento."
+
+#: starter_packs/templates/add_accounts_list.html:79
+#, python-format
+msgid ""
+"<strong>Tip:</strong> Reach out to us through <a href=\"%(mail)s\">email</a> "
+"or <a href=\"%(url)s\">Mastodon</a> and we'll try to help you out!"
+msgstr ""
+"<strong>Consello:</strong> Contáctanos a través de <a "
+"href=\"%(mail)s\">email</a> o <a href=\"%(url)s\">Mastodon</a> e "
+"intentaremos axudarte!"
+
+#: starter_packs/templates/add_accounts_list.html:89
+msgid ""
+"We couldn't find any accounts matching your query in the Fedidevs database. "
+"Keep in mind, our database only includes a small portion of all the accounts "
+"in the fediverse!"
+msgstr ""
+"Non puidemos atopar ningunha conta que coincida coa túa búsqueda na "
+"base de datos de Fedidevs. Ten en conta que a nosa base de datos inclúe "
+"unha pequena porción de todas as contas do fediverso!"
+
+#: starter_packs/templates/add_accounts_list.html:92
+msgid ""
+"<strong>Tip:</strong> Try searching for <strong>@username@instance.org</"
+"strong> to find the user directly on their instance."
+msgstr ""
+"<strong>Consello:</strong> Proba buscando <strong>@usuario@instancia.org</"
+"strong> para atopar ao usuario directamente na súa instancia."
+
+#: starter_packs/templates/add_accounts_list.html:107
+msgid ""
+"<strong>Tip:</strong> Not finding a specific account? Try searching for "
+"<strong>@username@instance.org</strong> to find the user directly on their "
+"instance."
+msgstr ""
+"<strong>Consello:</strong> No atopas unha conta en concreto? Proba "
+"buscando <strong>@usuario@instancia.org</strong> para atopar un usuario "
+"directamente na súa instancia."
+
+#: starter_packs/templates/cotton/starter_pack_card.html:8
+msgid "Not published"
+msgstr ""
+
+#: starter_packs/templates/cotton/starter_pack_card.html:17
+#: starter_packs/templates/share_starter_pack.html:26
+msgid "By"
+msgstr "Por"
+
+#: starter_packs/templates/cotton/starter_pack_card.html:26
+msgid "Created"
+msgstr "Creado"
+
+#: starter_packs/templates/create_starter_pack.html:6
+#: starter_packs/templates/starter_packs.html:123
+msgid "Mastodon starter packs"
+msgstr "Packs de Inicio de Mastodon"
+
+#: starter_packs/templates/create_starter_pack.html:7
+msgid "Invite your friends to follow your favorite people on Mastodon"
+msgstr "Convida aos teus amigos a seguir ás túas persoas favoritas de Mastodon"
+
+#: starter_packs/templates/create_starter_pack.html:16
+msgid "Starter pack title"
+msgstr "Título do pack de inicio"
+
+#: starter_packs/templates/create_starter_pack.html:22
+msgid "My Awesome Starter Pack"
+msgstr "O meu xenial Pack de Inicio"
+
+#: starter_packs/templates/create_starter_pack.html:30
+msgid "Starter pack description"
+msgstr "Descripción do pack de inicio"
+
+#: starter_packs/templates/create_starter_pack.html:36
+msgid "My favorite people on Mastodon - join me!"
+msgstr "A miña xente favorita de Mastodon - Únete a min!"
+
+#: starter_packs/templates/create_starter_pack.html:46
+#: starter_packs/templates/create_starter_pack.html:51
+msgid "Continue"
+msgstr "Continuar"
+
+#: starter_packs/templates/delete_starter_pack.html:8
+msgid "Are you sure you want to delete the starter pack"
+msgstr "Seguro que queres eliminar este pack de inicio"
+
+#: starter_packs/templates/delete_starter_pack.html:14
+msgid "Yes, delete"
+msgstr "Sí, eliminar"
+
+#: starter_packs/templates/review_starter_pack.html:9
+#, python-format
+msgid ""
+"Review accounts or <a href=\"%(url)s\">go back</a> to add more accounts."
+msgstr ""
+
+#: starter_packs/templates/review_starter_pack_list.html:55
+msgid "No accounts in this starter pack"
+msgstr "Non hai contas neste pack de inicio"
+
+#: starter_packs/templates/share_starter_pack.html:10
+msgid "Not published!"
+msgstr ""
+
+#: starter_packs/templates/share_starter_pack.html:12
+msgid ""
+"This starter pack won't appear in the list of community starter packs until "
+"it's published."
+msgstr ""
+
+#: starter_packs/templates/share_starter_pack.html:16
+#: starter_packs/templates/share_starter_pack.html:94
+msgid "Publish now"
+msgstr ""
+
+#: starter_packs/templates/share_starter_pack.html:37
+#: starter_packs/templates/share_starter_pack.html:49
+#, python-format
+msgid "Follow %(count)s account"
+msgid_plural "Follow all %(count)s accounts"
+msgstr[0] "Seguir %(count)s conta"
+msgstr[1] "Seguir %(count)s contas"
+msgstr[2] "Seguir %(count)s contas"
+
+#: starter_packs/templates/share_starter_pack.html:75
+msgid "Add Accounts"
+msgstr "Engadir contas"
+
+#: starter_packs/templates/share_starter_pack.html:79
+#, fuzzy
+#| msgid "Accounts"
+msgid "Review Accounts"
+msgstr "Contas"
+
+#: starter_packs/templates/share_starter_pack.html:83
+msgid "Edit"
+msgstr "Editar"
+
+#: starter_packs/templates/share_starter_pack.html:87
+msgid "Delete"
+msgstr "Eliminar"
+
+#: starter_packs/templates/share_starter_pack.html:103
+msgid "Unpublish"
+msgstr ""
+
+#: starter_packs/templates/share_starter_pack.html:110
+msgid "Report"
+msgstr "Informar"
+
+#: starter_packs/templates/share_starter_pack.html:119
+#, python-format
+msgid ""
+"<strong>%(count)s</strong> account hidden due to their privacy settings."
+msgid_plural ""
+"<strong>%(count)s</strong> accounts hidden due to their privacy settings."
+msgstr[0] ""
+"<strong>%(count)s</strong> conta oculta debido ás súas preferencias de "
+"privacidade."
+msgstr[1] ""
+"<strong>%(count)s</strong> conta oculta debido ás súas preferencias de "
+"privacidade."
+msgstr[2] ""
+"<strong>%(count)s</strong> contas oculta debido ás súas preferencias de "
+"privacidade."
+
+#: starter_packs/templates/starter_pack_accounts.html:59
+#: starter_packs/templates/starter_pack_accounts.html:67
+msgid "Switch to Project"
+msgstr "Cambiar a Proxecto"
+
+#: starter_packs/templates/starter_pack_accounts.html:63
+#: starter_packs/templates/starter_pack_accounts.html:70
+msgid "Switch to Human"
+msgstr "Cambiar a Humano"
+
+#: starter_packs/templates/starter_pack_stats.html:6
+#, python-format
+msgid "%(counter)s account in your starter pack."
+msgid_plural "%(counter)s accounts in your starter pack."
+msgstr[0] "%(counter)s conta no teu pack de inicio."
+msgstr[1] "%(counter)s conta no teu pack de inicio."
+msgstr[2] "%(counter)s contas no teu pack de inicio."
+
+#: starter_packs/templates/starter_pack_stats.html:17
+#: starter_packs/templates/starter_pack_stats.html:21
+msgid "Finish"
+msgstr "Rematar"
+
+#: starter_packs/templates/starter_pack_stats.html:26
+#: starter_packs/templates/starter_pack_stats.html:30
+msgid "Review"
+msgstr "Revisar"
+
+#: starter_packs/templates/starter_packs.html:11
+msgid "Community Starter Packs"
+msgstr "Packs de Inicio comunitarios"
+
+#: starter_packs/templates/starter_packs.html:17
+msgid "Your Starter Packs"
+msgstr "Os teus Packs de Inicio"
+
+#: starter_packs/templates/starter_packs.html:23
+msgid "Starter Packs Containing You"
+msgstr "Packs de Inicio onde estás"
+
+#: starter_packs/templates/starter_packs.html:44
+#: starter_packs/templates/starter_packs.html:68
+msgid "Go"
+msgstr "Ir"
+
+#: starter_packs/templates/starter_packs.html:73
+msgid "Search..."
+msgstr "Buscar..."
+
+#: starter_packs/templates/starter_packs.html:99
+msgid "No starter packs containing"
+msgstr "Ningún pack de inicio que conteñan"
+
+#: starter_packs/templates/starter_packs.html:104
+msgid "Please login to see your starter packs."
+msgstr "Por favor, inicia sesión para ver os teus packs de inicio."
+
+#: starter_packs/templates/starter_packs.html:107
+msgid ""
+"Please login to see your starter packs or search for your "
+"username@instance.org in the search form above"
+msgstr ""
+"Por favor, inicia sesión para ver os teus packs de inicio ou busca o teu "
+"@usuario@instancia.org na barra de búsqueda"
+
+#: starter_packs/templates/starter_packs.html:112
+msgid "You haven't created any starter packs yet."
+msgstr "Non creaches ningún pack de inicio aínda."
+
+#: starter_packs/templates/starter_packs.html:114
+msgid "You haven't been added to any starter packs yet."
+msgstr "Non fuches engadido a ningún pack de inicio aínda."
+
+#: starter_packs/templates/starter_packs.html:124
+msgid "Invite your friends to follow your favorite people on Mastodon."
+msgstr "Convida os teus amigos a seguir aos teus usuarios favoritos en Mastodon."
+
+#: starter_packs/templates/starter_packs.html:132
+#: starter_packs/templates/starter_packs.html:136
+msgid "Create your starter pack"
+msgstr "Crea o teu pack de inicio"
+
+#: starter_packs/views.py:94
+msgid "Mastodon Starter Pack Directory | Fedidevs"
+msgstr "Directorio de Packs de Inicio de Mastodon | Fedidevs"
+
+#: starter_packs/views.py:96
+#, fuzzy
+#| msgid ""
+#| "Add accounts to your starter pack to help new users find interesting "
+#| "accounts to follow."
+msgid ""
+"Discover, create, and share Mastodon starter packs to help new users find "
+"interesting accounts to follow."
+msgstr ""
+"Engaade contas ao teu pack de inicio para axudar a novos usuarios a atopar "
+"contas interesantes para seguir."
+
+#: starter_packs/views.py:159 starter_packs/views.py:195
+msgid "Add accounts to your starter pack"
+msgstr "Engade contas ao teu pack de inicio"
+
+#: starter_packs/views.py:242
+#, fuzzy
+#| msgid "Create your starter pack"
+msgid "Review your starter pack"
+msgstr "Crea o teu pack de inicio"
+
+#: starter_packs/views.py:243
+msgid "Review your starter pack to make sure everything is in order."
+msgstr ""
+
+#: starter_packs/views.py:274
+msgid "Edit your starter pack"
+msgstr "Edita o teu pack de inicio"
+
+#: starter_packs/views.py:275
+#, fuzzy
+#| msgid ""
+#| "Add accounts to your starter pack to help new users find interesting "
+#| "accounts to follow."
+msgid ""
+"Edit your starter pack to help new users find interesting accounts to follow."
+msgstr ""
+"Engade contas ao teu pack de inicio para axudar a novos usuarios a atopar "
+"contas interesantes para seguir."
+
+#: starter_packs/views.py:300
+msgid "You already have a starter pack with this title."
+msgstr "Xa creaches un pack de inicio con este título."
+
+#: starter_packs/views.py:310
+msgid "Create a new starter pack"
+msgstr "Crear un novo pack de inicio"
+
+#: starter_packs/views.py:311
+#, fuzzy
+#| msgid ""
+#| "Add accounts to your starter pack to help new users find interesting "
+#| "accounts to follow."
+msgid ""
+"Create a new starter pack to help new users find interesting accounts to "
+"follow."
+msgstr ""
+"Engade contas ao teu pack de inicio para axudar a novos usuarios a atopar "
+"contas interesantes para seguir."
+
+#: starter_packs/views.py:353
+msgid "You have reached the maximum number of accounts in a starter pack."
+msgstr "Alcanzaches o máximo número de contas nun pack de inicio."
+
+#: starter_packs/views.py:363
+#, fuzzy
+#| msgid "You haven't been added to any starter packs yet."
+msgid ""
+"The account cannot be added to the starter pack due to privacy settings."
+msgstr "Non fuches engadido a ningún pack de inicio aínda."
+
+#: starter_packs/views.py:412
+msgid " - Mastodon Starter Pack"
+msgstr " - Pack de Inicio de Mastodon"
+
+#: starter_packs/views.py:463
+msgid "Following all accounts in the starter pack. 🎉"
+msgstr "Seguindo todas as contas do pack de inicio. 🎉"
+
+#~ msgid "Following"
+#~ msgstr "Seguindo"
