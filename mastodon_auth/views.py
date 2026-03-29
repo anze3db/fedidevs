@@ -19,6 +19,7 @@ from mastodon import (
     Mastodon,
     MastodonError,
     MastodonIllegalArgumentError,
+    MastodonInternalServerError,
     MastodonNetworkError,
 )
 from mastodon.errors import MastodonAPIError
@@ -197,6 +198,10 @@ def auth(request):
     except MastodonIllegalArgumentError as e:
         messages.error(request, _("Authorization flow is not supported by this instance."))
         logger.info("login invalid argument error %s", e)
+        return redirect("index")
+    except MastodonInternalServerError as e:
+        messages.error(request, _("The instance server encountered an error, please try again later."))
+        logger.info("login instance server error %s %s", instance.url, e)
         return redirect("index")
 
     now = timezone.now()
