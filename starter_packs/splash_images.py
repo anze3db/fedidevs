@@ -162,7 +162,7 @@ def fetch_avatar(url, crop_mask):
                 if response.num_bytes_downloaded > max_bytes:
                     return None
                 avatar_bytes.write(chunk)
-    except (httpx.HTTPError, httpx.InvalidURL):
+    except httpx.HTTPError, httpx.InvalidURL:
         return None
     finally:
         client.close()
@@ -171,7 +171,7 @@ def fetch_avatar(url, crop_mask):
     try:
         Image.MAX_IMAGE_PIXELS = 4000 * 4000
         avatar = Image.open(avatar_bytes)
-    except (Image.DecompressionBombError, UnidentifiedImageError):
+    except Image.DecompressionBombError, UnidentifiedImageError:
         return None
     finally:
         Image.MAX_IMAGE_PIXELS = original_max_image_pixels
