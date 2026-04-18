@@ -86,7 +86,6 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django_celery_results",
     "django_tui",
-    "template_partials.apps.SimpleAppConfig",
     "django_cotton.apps.SimpleAppConfig",
     # "django_watchfiles",
     "fedidevs",
@@ -136,16 +135,11 @@ TEMPLATES = [
             ],
             "loaders": [
                 (
-                    "template_partials.loader.Loader",
+                    "django.template.loaders.cached.Loader",
                     [
-                        (
-                            "django.template.loaders.cached.Loader",
-                            [
-                                "django_cotton.cotton_loader.Loader",
-                                "django.template.loaders.filesystem.Loader",
-                                "django.template.loaders.app_directories.Loader",
-                            ],
-                        )
+                        "django_cotton.cotton_loader.Loader",
+                        "django.template.loaders.filesystem.Loader",
+                        "django.template.loaders.app_directories.Loader",
                     ],
                 ),
             ],

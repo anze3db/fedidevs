@@ -303,16 +303,12 @@ wheels = [
 
 [[package]]
 name = "django"
-version = "6.0.1"
-source = { registry = "https://pypi.org/simple" }
+version = "6.1.dev20260418065321"
+source = { git = "https://github.com/django/django.git?rev=main#ed79c5959add54b6e8ea589ec601e0d2e801517e" }
 dependencies = [
     { name = "asgiref" },
     { name = "sqlparse" },
     { name = "tzdata", marker = "sys_platform == 'win32'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/b5/9b/016f7e55e855ee738a352b05139d4f8b278d0b451bd01ebef07456ef3b0e/django-6.0.1.tar.gz", hash = "sha256:ed76a7af4da21551573b3d9dfc1f53e20dd2e6c7d70a3adc93eedb6338130a5f", size = 11069565, upload-time = "2026-01-06T18:55:53.069Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/95/b5/814ed98bd21235c116fd3436a7ed44d47560329a6d694ec8aac2982dbb93/django-6.0.1-py3-none-any.whl", hash = "sha256:a92a4ff14f664a896f9849009cb8afaca7abe0d6fc53325f3d1895a15253433d", size = 8338791, upload-time = "2026-01-06T18:55:46.175Z" },
 ]
 
 [[package]]
@@ -428,18 +424,6 @@ wheels = [
 ]
 
 [[package]]
-name = "django-template-partials"
-version = "25.3"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/b0/2e/957ee4a6ee0a7d46a18676ba8b01d762ef89d00b7769cc532853f9f989e1/django_template_partials-25.3.tar.gz", hash = "sha256:6d11f7bb049ce3032e6fe3331137b771e34239ce1af18c55ef6a9b667cf2ef36", size = 18052, upload-time = "2025-11-14T08:27:21.917Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/9b/9d/48f8721e48b938ca2e2dde577986624543be6ff9bdccac20ccb747be4287/django_template_partials-25.3-py2.py3-none-any.whl", hash = "sha256:a19334934cf40e4e1218802a4ddfdf22b8f78cc5a0b8c75a18b97e6ea4f3c108", size = 9702, upload-time = "2025-11-14T08:27:20.243Z" },
-]
-
-[[package]]
 name = "django-tui"
 version = "24.5"
 source = { registry = "https://pypi.org/simple" }
@@ -537,7 +521,6 @@ dependencies = [
     { name = "django-csp" },
     { name = "django-environ" },
     { name = "django-tailwind" },
-    { name = "django-template-partials" },
     { name = "django-watchfiles" },
     { name = "django-zeal" },
     { name = "emoji" },
@@ -583,13 +566,12 @@ requires-dist = [
     { name = "celery", extras = ["redis"] },
     { name = "ddt", specifier = ">=1.7.2" },
     { name = "defusedxml" },
-    { name = "django" },
+    { name = "django", git = "https://github.com/django/django.git?rev=main" },
     { name = "django-celery-results" },
     { name = "django-cotton", specifier = ">=0.9.27" },
     { name = "django-csp", specifier = ">4.0b0" },
     { name = "django-environ" },
     { name = "django-tailwind" },
-    { name = "django-template-partials" },
     { name = "django-watchfiles", specifier = ">=0.2.0" },
     { name = "django-zeal", specifier = ">=1.3.0" },
     { name = "emoji" },

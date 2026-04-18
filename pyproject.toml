@@ -9,7 +9,6 @@ dependencies = [
   "django-celery-results",
   "django-environ",
   "django-tailwind",
-  "django-template-partials",
   "emoji",
   "fonttools",
   "gunicorn",
@@ -148,3 +147,6 @@ runner = "pytest"
 runner_args = ["--no-cov", "--ff", "-x"]
 patterns = ["*.py", "*.html"]
 ignore_patterns = ["node_modules", ".coverage", ".pytest_cache", ".venv"]
+
+[tool.uv.sources]
+django = { git = "https://github.com/django/django.git", rev = "main" }
