@@ -2,6 +2,7 @@ import logging
 
 from celery import shared_task
 from django.apps import AppConfig
+from django.conf import settings
 from django.core import management
 from django.db.models import signals
 
@@ -24,4 +25,6 @@ class ConfsConfig(AppConfig):
     name = "confs"
 
     def ready(self):
+        if getattr(settings, "TESTS_RUNNING", False):
+            return
         signals.post_save.connect(post_save_action, sender="confs.Conference")
