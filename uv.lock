@@ -303,8 +303,8 @@ wheels = [
 
 [[package]]
 name = "django"
-version = "6.1.dev20260418065321"
-source = { git = "https://github.com/django/django.git?rev=main#ed79c5959add54b6e8ea589ec601e0d2e801517e" }
+version = "6.1.dev20260419120555"
+source = { git = "https://github.com/django/django.git?rev=673fa46d8063577c92cfab3a73a28e9406372e33#673fa46d8063577c92cfab3a73a28e9406372e33" }
 dependencies = [
     { name = "asgiref" },
     { name = "sqlparse" },
@@ -566,7 +566,7 @@ requires-dist = [
     { name = "celery", extras = ["redis"] },
     { name = "ddt", specifier = ">=1.7.2" },
     { name = "defusedxml" },
-    { name = "django", git = "https://github.com/django/django.git?rev=main" },
+    { name = "django", git = "https://github.com/django/django.git?rev=673fa46d8063577c92cfab3a73a28e9406372e33" },
     { name = "django-celery-results" },
     { name = "django-cotton", specifier = ">=0.9.27" },
     { name = "django-csp", specifier = ">4.0b0" },
