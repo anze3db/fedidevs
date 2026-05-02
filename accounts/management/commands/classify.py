@@ -26,8 +26,8 @@ class Command(RichCommand):
         )
         output_tokens = 0
         input_tokens = 0
-        output_token_price = 1.25 / 1_000_000
-        input_token_price = 0.25 / 1_000_000
+        output_token_price = 5.0 / 1_000_000
+        input_token_price = 1.0 / 1_000_000
         processed = 0
         total_accounts = AccountLookup.objects.filter(account_type="!").count()
         while True:
@@ -39,7 +39,7 @@ class Command(RichCommand):
             for account in accounts_lookup:
                 prompt = f"{account.text.replace(',', ' ').replace('\n', ' ')}"
                 message = client.messages.create(
-                    model="claude-3-haiku-20240307",
+                    model="claude-haiku-4-5-20251001",
                     max_tokens=10,
                     system="The input is Mastodon account text data including a bio, name, and link. You have to figure out if the account is a human or project/company/bot. Classify it as a human (H) if it has a name, surname, hobbies, refers to themselves in singular, uses I or has pronounes set. Classify as project (P) if the account is a project/company/bot and it refers to itself in plural (we) and doesn't have a name/surname. Output only the classification letter nothing else.",
                     messages=[
