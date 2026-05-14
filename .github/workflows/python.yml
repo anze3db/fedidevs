@@ -47,7 +47,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
     - name: Deploy
-      uses: appleboy/ssh-action@90162d1e4396c5c4b7671d60cae550a8b1ae1d0b # master
+      uses: appleboy/ssh-action@1530429296e979861824d74fb800013190b5dee0 # master
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
