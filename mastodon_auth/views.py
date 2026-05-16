@@ -25,6 +25,7 @@ from mastodon import (
 from mastodon.errors import MastodonAPIError
 
 from accounts.models import Account
+from mastodon_auth.forms import MastodonLoginForm
 from mastodon_auth.models import AccountAccess, AccountFollowing, Instance
 from starter_packs.utils import FollowError, resolve_and_follow_account
 from stats.models import FollowClick
@@ -43,25 +44,13 @@ login_scopes = ("read:accounts", "read:follows", "write:follows", "read:search")
 
 @require_POST
 def login(request):
-    api_base_url = request.POST.get("instance", "").strip().lower()
-    api_base_url = api_base_url.replace("https://", "").replace("http://", "")
-    next_url = request.POST.get("next", "/")
-
-    if api_base_url.endswith("/"):
-        api_base_url = api_base_url[0:-1]
-
-    if "/" in api_base_url:
-        api_base_url = api_base_url.split("/")[0]
-
-    if "@" in api_base_url:
-        api_base_url = api_base_url.split("@")[-1]
-
-    # Encode internationalized domain names (IDN) to ASCII using IDNA encoding
-    try:
-        api_base_url = api_base_url.encode("idna").decode("ascii")
-    except UnicodeError, UnicodeDecodeError, UnicodeEncodeError:
-        messages.error(request, _("Invalid instance URL. Please enter a valid Mastodon instance domain name."))
+    form = MastodonLoginForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, form.errors["instance"][0])
         return redirect("/")
+
+    api_base_url = form.cleaned_data["instance"]
+    next_url = form.cleaned_data.get("next") or "/"
 
     try:
         res = httpx.get(f"https://{api_base_url}/.well-known/host-meta", timeout=10.0)
