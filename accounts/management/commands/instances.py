@@ -245,9 +245,6 @@ async def fetch(client, instance) -> tuple[dict | None, str]:
                 response.headers["Location"],
                 timeout=5,
             )
-        if response.status_code == 404:
-            logger.info("Probably not a mastodon instance %s", instance)
-            return None, instance
     except httpx.ConnectError:
         logger.info("Connection error when indexing %s", instance)
         return None, instance

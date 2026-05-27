@@ -1,9 +1,10 @@
 import xml.etree.ElementTree as ET
 
 from django.core import management
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
 
+from accounts.misskey import emojis_to_mastodon, user_to_mastodon
 from accounts.models import Account
 from confs.models import Conference, ConferenceAccount
 
@@ -187,6 +188,106 @@ class TestSelectedInstance(TestCase):
             response,
             '<a href="https://mastodon.social/@test"',
         )
+
+
+class TestMisskeyAdapter(SimpleTestCase):
+    instance = "bohio.icu"
+
+    def _base_user(self, **overrides):
+        user = {
+            "id": "ak69hse2tjnq0016",
+            "username": "Ismael",
+            "name": "Ismael",
+            "host": None,
+            "description": "hello",
+            "createdAt": "2026-03-23T04:40:31.226Z",
+            "updatedAt": "2026-05-27T03:04:42.724Z",
+            "followersCount": 43,
+            "followingCount": 271,
+            "notesCount": 141,
+            "avatarUrl": "https://bohio.icu/files/a.webp",
+            "bannerUrl": "https://bohio.icu/files/b.png",
+            "isBot": False,
+            "isLocked": False,
+            "isGroup": False,
+            "noindex": False,
+            "url": None,
+            "uri": None,
+            "emojis": {"tux": "https://bohio.icu/files/tux.png"},
+            "badgeRoles": [{"name": "Moderator"}],
+            "fields": [{"name": "site", "value": "example.com"}],
+        }
+        user.update(overrides)
+        return user
+
+    def test_maps_core_fields(self):
+        result = user_to_mastodon(self._base_user(), self.instance)
+        self.assertEqual(result["id"], "ak69hse2tjnq0016")
+        self.assertEqual(result["username"], "Ismael")
+        self.assertEqual(result["acct"], "Ismael")
+        self.assertEqual(result["display_name"], "Ismael")
+        self.assertEqual(result["followers_count"], 43)
+        self.assertEqual(result["following_count"], 271)
+        self.assertEqual(result["statuses_count"], 141)
+        self.assertEqual(result["note"], "hello")
+        self.assertEqual(result["created_at"], "2026-03-23T04:40:31.226Z")
+        self.assertEqual(result["last_status_at"], "2026-05-27T03:04:42.724Z")
+        self.assertFalse(result["bot"])
+        self.assertTrue(result["discoverable"])
+        self.assertFalse(result["noindex"])
+
+    def test_falls_back_to_constructed_url_when_local(self):
+        result = user_to_mastodon(self._base_user(url=None, uri=None), self.instance)
+        self.assertEqual(result["url"], "https://bohio.icu/@Ismael")
+        self.assertEqual(result["uri"], "https://bohio.icu/@Ismael")
+        # crawler.main derives instance from url.split("/")[2]; verify it lands.
+        self.assertEqual(result["url"].split("/")[2], "bohio.icu")
+
+    def test_remote_user_acct_includes_host(self):
+        result = user_to_mastodon(
+            self._base_user(host="mastodon.social", url="https://mastodon.social/@Ismael"),
+            self.instance,
+        )
+        self.assertEqual(result["acct"], "Ismael@mastodon.social")
+        self.assertEqual(result["url"], "https://mastodon.social/@Ismael")
+
+    def test_emojis_dict_converted_to_list(self):
+        result = user_to_mastodon(self._base_user(), self.instance)
+        self.assertEqual(
+            result["emojis"],
+            [
+                {
+                    "shortcode": "tux",
+                    "url": "https://bohio.icu/files/tux.png",
+                    "static_url": "https://bohio.icu/files/tux.png",
+                    "visible_in_picker": True,
+                }
+            ],
+        )
+
+    def test_emojis_missing_returns_empty_list(self):
+        self.assertEqual(emojis_to_mastodon(None), [])
+        self.assertEqual(emojis_to_mastodon([]), [])
+
+    def test_noindex_flips_discoverable(self):
+        result = user_to_mastodon(self._base_user(noindex=True), self.instance)
+        self.assertTrue(result["noindex"])
+        self.assertFalse(result["discoverable"])
+
+    def test_missing_required_fields_returns_none(self):
+        self.assertIsNone(user_to_mastodon({}, self.instance))
+        self.assertIsNone(user_to_mastodon({"id": "x", "username": "y"}, self.instance))
+
+    def test_missing_display_name_falls_back_to_username(self):
+        result = user_to_mastodon(self._base_user(name=None), self.instance)
+        self.assertEqual(result["display_name"], "Ismael")
+
+    def test_missing_avatar_and_banner_are_empty_strings(self):
+        result = user_to_mastodon(self._base_user(avatarUrl=None, bannerUrl=None), self.instance)
+        self.assertEqual(result["avatar"], "")
+        self.assertEqual(result["avatar_static"], "")
+        self.assertEqual(result["header"], "")
+        self.assertEqual(result["header_static"], "")
 
 
 class TestStaticPages(TestCase):

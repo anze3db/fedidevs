@@ -10,6 +10,9 @@ from django.db import ProgrammingError
 from django.utils import timezone
 from django_rich.management import RichCommand
 
+from accounts.management.commands.instances import process_instances
+from accounts.misskey import MISSKEY_USERS_BODY
+from accounts.misskey import user_to_mastodon as misskey_user_to_mastodon
 from accounts.models import Account, Instance
 
 logger = logging.getLogger(__name__)
@@ -26,6 +29,13 @@ def convert_last_status_at(last_status_at: str | None) -> dt.datetime | None:
 
 class Command(RichCommand):
     help = "Crawles the fosstodon.org API and saves all accounts to the database"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Per-instance API flavor cache: "mastodon", "misskey", or "unknown".
+        # Misskey-family forks (Catodon, Firefish, Sharkey, ...) don't implement
+        # /api/v1/directory, so we fall back to their native /api/users.
+        self._adapters: dict[str, str] = {}
 
     def add_arguments(self, parser):
         parser.add_argument("--offset", type=int, nargs="?", default=0)
@@ -62,6 +72,12 @@ class Command(RichCommand):
                 all_to_index = [
                     i async for i in Instance.objects.filter(deleted_at__isnull=True).values_list("instance", flat=True)
                 ]
+            # Ensure every instance has an Instance row so accounts get a non-null FK.
+            missing = [i for i in all_to_index if i not in instance_models]
+            if missing:
+                self.console.print(f"Indexing missing instances first: {missing}")
+                await process_instances(missing)
+                instance_models = await Instance.objects.ain_bulk(field_name="instance")
             original_offset = offset
             for batch in range(0, len(all_to_index), 50):
                 self.console.print(f"{batch / len(all_to_index) * 100:.2f}% completed")
@@ -79,13 +95,20 @@ class Command(RichCommand):
                             to_index.remove(instance)
                             continue
                         inst = instance_models.get(instance)
+                        if inst is None:
+                            self.console.print(
+                                f"[yellow]Skipping {instance}: no Instance row (run `instances` command first).[/yellow]"
+                            )
+                            to_index.remove(instance)
+                            continue
+                        domain = inst.domain.lower()
                         fetched_accounts += [
                             Account(
                                 account_id=account["id"],
                                 instance=account["url"].split("/")[2],
                                 instance_model=inst,
                                 username=account["username"],
-                                username_at_instance=f"@{account['username'].lower()}@{inst.domain.lower()}",
+                                username_at_instance=f"@{account['username'].lower()}@{domain}",
                                 acct=account["acct"],
                                 display_name=account["display_name"],
                                 locked=account["locked"],
@@ -169,6 +192,29 @@ class Command(RichCommand):
     async def fetch(self, client, offset, instance, skip_inactive_for: int):
         if offset > 100:
             return instance, []
+
+        adapter = self._adapters.get(instance)
+        if adapter == "misskey":
+            results = await self._fetch_misskey(client, offset, instance)
+            return self._apply_inactive_filter(instance, results, skip_inactive_for)
+        if adapter == "unknown":
+            return instance, []
+
+        results, status_code = await self._fetch_mastodon_directory(client, offset, instance)
+        if status_code == 200:
+            self._adapters[instance] = "mastodon"
+            return self._apply_inactive_filter(instance, results, skip_inactive_for)
+
+        if status_code == 404 and adapter is None:
+            misskey_results = await self._fetch_misskey(client, offset, instance)
+            if misskey_results is not None:
+                self._adapters[instance] = "misskey"
+                return self._apply_inactive_filter(instance, misskey_results, skip_inactive_for)
+            self._adapters[instance] = "unknown"
+
+        return instance, []
+
+    async def _fetch_mastodon_directory(self, client, offset, instance):
         try:
             response = await client.get(
                 f"https://{instance}/api/v1/directory",
@@ -182,22 +228,54 @@ class Command(RichCommand):
             )
         except httpx.HTTPError:
             self.console.print(f"[bold red]Error timeout[/bold red] for {instance} at offset {offset}")
-            return instance, []
+            return None, 0
         except Exception as e:
             self.console.print(f"[bold red]Error[/bold red] for {instance} at offset {offset}", e)
-            return instance, []
+            return None, 0
 
-        if response.status_code != 200:
+        if response.status_code == 200:
+            try:
+                return response.json(), 200
+            except JSONDecodeError:
+                logger.info("Error decoding JSON", extra={"response": response.text})
+                return None, 0
+
+        if response.status_code != 404:
             self.console.print(
                 f"[bold red]Error status code[/bold red] for {instance} at offset {offset}. {response.status_code}"
             )
-            return instance, []
-        try:
-            results = response.json()
-        except JSONDecodeError:
-            logger.info("Error decoding JSON", extra={"response": response.text})
-            return instance, []
+        return None, response.status_code
 
+    async def _fetch_misskey(self, client, offset, instance):
+        """Return a Mastodon-shaped list of accounts, or None if the endpoint is unavailable."""
+        try:
+            response = await client.post(
+                f"https://{instance}/api/users",
+                json={**MISSKEY_USERS_BODY, "offset": offset * MISSKEY_USERS_BODY["limit"]},
+                timeout=30,
+            )
+        except httpx.HTTPError:
+            self.console.print(f"[bold red]Misskey timeout[/bold red] for {instance} at offset {offset}")
+            return None
+        except Exception as e:
+            self.console.print(f"[bold red]Misskey error[/bold red] for {instance} at offset {offset}", e)
+            return None
+
+        if response.status_code != 200:
+            self.console.print(f"[yellow]Misskey adapter not available[/yellow] for {instance}. {response.status_code}")
+            return None
+        try:
+            users = response.json()
+        except JSONDecodeError:
+            logger.info("Error decoding Misskey JSON", extra={"response": response.text})
+            return None
+        if not isinstance(users, list):
+            return None
+        return [acc for acc in (misskey_user_to_mastodon(u, instance) for u in users) if acc]
+
+    def _apply_inactive_filter(self, instance, results, skip_inactive_for: int):
+        if results is None:
+            return instance, []
         # Don't skip inactive accounts if skip_inactive_for is None or 0
         if not skip_inactive_for:
             return instance, results
@@ -213,5 +291,4 @@ class Command(RichCommand):
                 return False
             return True
 
-        results = [r for r in results if is_recently_updated(r)]
-        return instance, results
+        return instance, [r for r in results if is_recently_updated(r)]
