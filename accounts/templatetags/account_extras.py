@@ -1,6 +1,6 @@
 from django import template
 from django.templatetags.static import static
-from django.utils.html import escape
+from django.utils.html import escape, format_html
 from django.utils.safestring import mark_safe
 
 from accounts.models import FRAMEWORKS, LANGUAGES, Instance
@@ -10,12 +10,16 @@ register = template.Library()
 
 @register.simple_tag
 def render_emojis(msg: str, emoji_list: list[str]):
+    msg = escape(msg)
     for emoji in emoji_list:
-        msg = msg.replace(
-            f":{emoji['shortcode']}:",
-            f"<img src='{emoji['url']}' class='emojione' alt='{emoji['shortcode']}' title='{emoji['shortcode']}' />",
+        img_tag = format_html(
+            "<img src='{}' class='emojione' alt='{}' title='{}' />",
+            emoji["url"],
+            emoji["shortcode"],
+            emoji["shortcode"],
         )
-    return mark_safe(msg)  # noqa: S308
+        msg = msg.replace(f":{escape(emoji['shortcode'])}:", img_tag)
+    return mark_safe(msg)  # noqa: S308 - msg is escaped above, img tags built via format_html
 
 
 @register.simple_tag
