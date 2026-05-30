@@ -14,9 +14,9 @@ def render_emojis(msg: str, emoji_list: list[str]):
     for emoji in emoji_list:
         img_tag = format_html(
             "<img src='{}' class='emojione' alt='{}' title='{}' />",
-            emoji['url'],
-            emoji['shortcode'],
-            emoji['shortcode'],
+            emoji["url"],
+            emoji["shortcode"],
+            emoji["shortcode"],
         )
         msg = msg.replace(f":{escape(emoji['shortcode'])}:", img_tag)
     return mark_safe(msg)  # noqa: S308 - msg is escaped above, img tags built via format_html
