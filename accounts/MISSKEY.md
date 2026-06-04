@@ -58,7 +58,7 @@ Subsequent pages skip the probe and use the cached adapter directly.
 | `statuses_count` | `notesCount` | |
 | `note` | `description` | |
 | `url` | `url` → fallback `https://{instance}/@{username}` | `url` is null for local users |
-| `uri` | `uri` → fallback constructed url | same |
+| `uri` | `uri` → fallback `https://{instance}/users/{id}` | ⚠️ actor URI uses the Misskey **id**, not the `@handle`. Both `url`/`uri` are null for local users; the fallback must NOT reuse `url` (the profile URL) or `activitypub_id` is wrong. |
 | `avatar` / `avatar_static` | `avatarUrl` → fallback `""` | |
 | `header` / `header_static` | `bannerUrl` → fallback `""` | |
 | `emojis` | `emojis` dict → list `[{shortcode, url, static_url, visible_in_picker}]` | |

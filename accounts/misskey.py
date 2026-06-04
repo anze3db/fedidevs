@@ -40,6 +40,11 @@ def user_to_mastodon(user: dict[str, Any], instance: str) -> dict[str, Any] | No
     host = user.get("host")
     acct = username if host is None else f"{username}@{host}"
     url = user.get("url") or f"https://{instance}/@{username}"
+    # `url` is the human-facing profile (https://host/@username), but the
+    # ActivityPub actor URI is https://host/users/{id} (the Misskey id, not the
+    # @handle). Both are null for local users in /api/users responses, so build
+    # the actor URI from the id rather than reusing the profile url.
+    uri = user.get("uri") or f"https://{instance}/users/{user_id}"
     avatar = user.get("avatarUrl") or ""
     banner = user.get("bannerUrl") or ""
     noindex = bool(user.get("noindex", False))
@@ -63,7 +68,7 @@ def user_to_mastodon(user: dict[str, Any], instance: str) -> dict[str, Any] | No
         "statuses_count": user.get("notesCount") or 0,
         "note": user.get("description") or "",
         "url": url,
-        "uri": user.get("uri") or url,
+        "uri": uri,
         "avatar": avatar,
         "avatar_static": avatar,
         "header": banner,

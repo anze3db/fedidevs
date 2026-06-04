@@ -238,8 +238,10 @@ class TestMisskeyAdapter(SimpleTestCase):
 
     def test_falls_back_to_constructed_url_when_local(self):
         result = user_to_mastodon(self._base_user(url=None, uri=None), self.instance)
+        # url is the human-facing profile; uri is the canonical actor URI built
+        # from the Misskey id (https://host/users/{id}), not the @handle.
         self.assertEqual(result["url"], "https://bohio.icu/@Ismael")
-        self.assertEqual(result["uri"], "https://bohio.icu/@Ismael")
+        self.assertEqual(result["uri"], "https://bohio.icu/users/ak69hse2tjnq0016")
         # crawler.main derives instance from url.split("/")[2]; verify it lands.
         self.assertEqual(result["url"].split("/")[2], "bohio.icu")
 
