@@ -82,22 +82,22 @@
             </section>
             <section data-nosnippet class="max-w-3xl">
                 {% partialdef posts-partial inline %}
-                {% for conf_post in conf_posts %}
-                    {% with post=conf_post.post conference_subtitle="Join the discussion and get hyped for the upcoming conferences." conference_title="Upcoming Conferences" %}
-                        {% include "post.html" %}
-                    {% endwith %}
-                {% empty %}
-                    <p style="text-align:center"
-                       class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                        No results, create a post with <b>{{ conference.tags }}</b> hashtag on Mastodon and it will show up here!
-                    </p>
-                {% endfor %}
-                <div {% if conf_posts.has_next %} class="mt-12" hx-get="{% querystring page=conf_posts.next_page_number %}" hx-trigger="intersect once" hx-swap="afterend" {% endif %}>
-                </div>
-            {% endpartialdef %}
-        </section>
-    </article>
-</main>
+                    {% for conf_post in conf_posts %}
+                        {% with post=conf_post.post conference_subtitle="Join the discussion and get hyped for the upcoming conferences." conference_title="Upcoming Conferences" %}
+                            {% include "post.html" %}
+                        {% endwith %}
+                    {% empty %}
+                        <p style="text-align:center"
+                           class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                            No results, create a post with <b>{{ conference.tags }}</b> hashtag on Mastodon and it will show up here!
+                        </p>
+                    {% endfor %}
+                    <div {% if conf_posts.has_next %} class="mt-12" hx-get="{% querystring page=conf_posts.next_page_number %}" hx-trigger="intersect once" hx-swap="afterend" {% endif %}>
+                    </div>
+                {% endpartialdef %}
+            </section>
+        </article>
+    </main>
 {% endblock content %}
 {% block sidebar %}
     <h1 class="hidden md:block mb-4 text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-orange-400">
