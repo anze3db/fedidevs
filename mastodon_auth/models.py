@@ -6,6 +6,10 @@ class Instance(models.Model):
     url = models.CharField(max_length=255)
     client_id = models.CharField(max_length=255)
     client_secret = models.CharField(max_length=255)
+    # Space-separated OAuth scopes the stored app was registered with. Empty for
+    # legacy rows, which triggers re-registration on next login (see
+    # mastodon_auth.views.login).
+    scopes = models.CharField(max_length=255, default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -31,15 +31,12 @@ from starter_packs.utils import FollowError, resolve_and_follow_account
 from stats.models import FollowClick
 
 logger = logging.getLogger(__name__)
-app_scopes = (
-    "read:accounts",
-    "read:follows",
-    "read:search",
-    "write:follows",
-    "read:lists",
-    "write:lists",
-)
-login_scopes = ("read:accounts", "read:follows", "write:follows", "read:search")
+# Coarse OAuth scopes understood by BOTH Mastodon and the Misskey family
+# (Misskey/Sharkey/Firefish only recognize coarse read/write/follow — not
+# Mastodon's granular read:accounts/read:follows/read:search/read:lists, which
+# made their grant page error out with "an error has occurred"). fedidevs only
+# reads profiles/follows/search (read) and follows accounts (follow).
+SCOPES = ("read", "follow")
 
 
 @require_POST
@@ -65,12 +62,18 @@ def login(request):
         return redirect("/")
 
     instance = Instance.objects.filter(url=api_base_url).first()
+    desired_scopes = " ".join(SCOPES)
 
-    if not instance:
+    # Register the OAuth app, or RE-register it when the stored app predates a
+    # scope change (granted scopes are fixed at app-creation time on the
+    # instance, so a stale app would still request the old scopes). Existing
+    # access tokens keep working — they authenticate via their bearer token, not
+    # the app's client_id/secret — so rotating the credentials here is safe.
+    if not instance or instance.scopes != desired_scopes:
         try:
             (client_id, client_secret) = Mastodon.create_app(
                 client_name=settings.MSTDN_CLIENT_NAME,
-                scopes=app_scopes,
+                scopes=SCOPES,
                 redirect_uris=settings.MSTDN_REDIRECT_URI,
                 website="https://fedidevs.com",
                 api_base_url=api_base_url,
@@ -94,11 +97,11 @@ def login(request):
             )
             return redirect("/")
 
-        instance = Instance(
-            url=api_base_url,
-            client_id=client_id,
-            client_secret=client_secret,
-        )
+        if instance is None:
+            instance = Instance(url=api_base_url)
+        instance.client_id = client_id
+        instance.client_secret = client_secret
+        instance.scopes = desired_scopes
         instance.save()
 
     state = str(uuid4())
@@ -109,7 +112,7 @@ def login(request):
             client_id=instance.client_id,
             state=state,
             redirect_uris=settings.MSTDN_REDIRECT_URI,
-            scopes=login_scopes,
+            scopes=SCOPES,
         )
     except MastodonError as e:
         messages.error(request, _("Unable to connect to the instance. Is it a Mastodon compatible instance?"))
@@ -170,7 +173,7 @@ def auth(request):
             client_id=instance.client_id,
             state=state,
             redirect_uris=settings.MSTDN_REDIRECT_URI,
-            scopes=login_scopes,
+            scopes=SCOPES,
             force_login=True,
         )
         return redirect(auth_request_url)
@@ -179,7 +182,7 @@ def auth(request):
         access_token = mastodon.log_in(
             code=code,
             redirect_uri=settings.MSTDN_REDIRECT_URI,
-            scopes=login_scopes,
+            scopes=SCOPES,
         )
     except MastodonNetworkError:
         messages.error(request, _("Network error, please try again."))
