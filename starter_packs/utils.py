@@ -14,6 +14,8 @@ from mastodon import (
     MastodonVersionError,
 )
 
+from accounts.misskey_api import MisskeyError, follow_user, resolve_actor_id
+
 logger = logging.getLogger(__name__)
 
 
@@ -21,6 +23,28 @@ class FollowError(Exception):
     """Exception raised when account resolution or follow operation fails."""
 
     pass
+
+
+def resolve_and_follow_misskey(instance_url: str, token: str, account) -> None:
+    """Resolve and follow an account from a Misskey-family instance (native API).
+
+    Native counterpart of resolve_and_follow_account: resolve the target's
+    ActivityPub actor URI to a local user id via /api/ap/show, then follow it
+    via /api/following/create.
+
+    Raises:
+        FollowError: if the account can't be resolved or the follow fails.
+    """
+    uri = account.activitypub_id or account.url
+    user_id = resolve_actor_id(instance_url, token, uri)
+    if not user_id:
+        logger.info("Could not resolve %s on %s", account.username_at_instance, instance_url)
+        raise FollowError(_("Account not found on instance"))
+    try:
+        follow_user(instance_url, token, user_id)
+    except MisskeyError as e:
+        logger.info("Misskey follow failed for %s: %s", account.username_at_instance, e)
+        raise FollowError(_("Failed to follow")) from e
 
 
 def resolve_and_follow_account(mastodon: Mastodon, account, instance):

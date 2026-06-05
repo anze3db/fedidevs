@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+from accounts.misskey_api import is_misskey_family
+
 
 class Instance(models.Model):
     url = models.CharField(max_length=255)
@@ -8,13 +10,21 @@ class Instance(models.Model):
     client_secret = models.CharField(max_length=255)
     # Space-separated OAuth scopes the stored app was registered with. Empty for
     # legacy rows, which triggers re-registration on next login (see
-    # mastodon_auth.views.login).
+    # mastodon_auth.views.login). Unused for Misskey-family (MiAuth) instances.
     scopes = models.CharField(max_length=255, default="")
+    # nodeinfo software.name (e.g. "sharkey", "misskey"); empty means Mastodon /
+    # Mastodon-compatible (the default OAuth path). Misskey-family instances use
+    # MiAuth + the native API instead.
+    software = models.CharField(max_length=64, default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.url
+
+    @property
+    def is_misskey(self) -> bool:
+        return is_misskey_family(self.software)
 
     class Meta:
         verbose_name = "Auth Instance"

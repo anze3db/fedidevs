@@ -1,4 +1,6 @@
+import datetime as dt
 import logging
+from urllib.parse import urljoin
 from uuid import uuid4
 
 import httpx
@@ -24,10 +26,18 @@ from mastodon import (
 )
 from mastodon.errors import MastodonAPIError
 
+from accounts.misskey import user_to_mastodon
+from accounts.misskey_api import (
+    build_miauth_url,
+    detect_software,
+    get_following_urls,
+    is_misskey_family,
+    miauth_check,
+)
 from accounts.models import Account
 from mastodon_auth.forms import MastodonLoginForm
 from mastodon_auth.models import AccountAccess, AccountFollowing, Instance
-from starter_packs.utils import FollowError, resolve_and_follow_account
+from starter_packs.utils import FollowError, resolve_and_follow_account, resolve_and_follow_misskey
 from stats.models import FollowClick
 
 logger = logging.getLogger(__name__)
@@ -62,6 +72,25 @@ def login(request):
         return redirect("/")
 
     instance = Instance.objects.filter(url=api_base_url).first()
+
+    # Misskey-family instances (Sharkey/Firefish/…) can't use Mastodon's OAuth
+    # consent page (it errors out), so route them through native MiAuth instead.
+    # Detection is cached on the instance row to avoid a nodeinfo hit each login.
+    software = (instance.software if instance else "") or detect_software(api_base_url) or ""
+    if is_misskey_family(software):
+        if instance is None:
+            instance = Instance(url=api_base_url, client_id="", client_secret="", software=software)
+            instance.save()
+        elif instance.software != software:
+            instance.software = software
+            instance.save(update_fields=["software", "updated_at"])
+
+        session = str(uuid4())
+        callback = urljoin(settings.MSTDN_REDIRECT_URI, "/miauth_callback/")
+        cache.set(f"miauth:{session}", instance.id, timeout=500)
+        cache.set(f"miauth:{session}:next", next_url, timeout=500)
+        return redirect(build_miauth_url(api_base_url, session, callback, settings.MSTDN_CLIENT_NAME))
+
     desired_scopes = " ".join(SCOPES)
 
     # Register the OAuth app, or RE-register it when the stored app predates a
@@ -102,7 +131,11 @@ def login(request):
         instance.client_id = client_id
         instance.client_secret = client_secret
         instance.scopes = desired_scopes
+        instance.software = software
         instance.save()
+    elif instance.software != software:
+        instance.software = software
+        instance.save(update_fields=["software", "updated_at"])
 
     state = str(uuid4())
 
@@ -256,12 +289,112 @@ def auth(request):
     return redirect("index")
 
 
+def _parse_dt(value):
+    """Parse an ISO timestamp (incl. trailing 'Z') into an aware datetime."""
+    if not value:
+        return None
+    parsed = dt.datetime.fromisoformat(value)
+    if parsed.tzinfo is None:
+        parsed = timezone.make_aware(parsed)
+    return parsed
+
+
+def miauth_callback(request):
+    """Complete a native MiAuth login for a Misskey-family instance.
+
+    Misskey redirects here with `?session=<uuid>` after the user approves on its
+    native consent screen. We exchange the session for an access token + user,
+    then mirror the same Account/AccountAccess bookkeeping as the Mastodon auth().
+    """
+    session = request.GET.get("session")
+    if not session:
+        messages.error(request, _("Invalid request, please try again"))
+        return redirect("index")
+
+    instance_id = cache.get(f"miauth:{session}")
+    next_url = cache.get(f"miauth:{session}:next")
+    if not instance_id:
+        messages.error(request, _("Invalid request, please try again"))
+        return redirect("index")
+
+    instance = Instance.objects.get(id=instance_id)
+    data = miauth_check(instance.url, session)
+    if not data:
+        messages.error(request, _("Unable to complete login, please try again."))
+        return redirect("index")
+
+    # Reuse the crawler's Misskey→Account mapping so the row (incl. the correct
+    # /users/{id} activitypub_id) matches what the crawler would produce.
+    mapped = user_to_mastodon(data["user"], instance.url)
+    if not mapped:
+        messages.error(request, _("Unable to fetch account information, please try again."))
+        return redirect("index")
+
+    now = timezone.now()
+    account, __ = Account.objects.update_or_create(
+        account_id=mapped["id"],
+        instance=instance.url,
+        defaults={
+            "username": mapped["username"],
+            "acct": mapped["acct"],
+            "display_name": mapped["display_name"],
+            "locked": mapped["locked"],
+            "bot": mapped["bot"],
+            "group": mapped["group"],
+            "discoverable": mapped["discoverable"],
+            "noindex": mapped["noindex"],
+            "created_at": _parse_dt(mapped["created_at"]),
+            "last_status_at": _parse_dt(mapped["last_status_at"]),
+            "last_sync_at": now,
+            "followers_count": mapped["followers_count"],
+            "following_count": mapped["following_count"],
+            "statuses_count": mapped["statuses_count"],
+            "note": mapped["note"],
+            "url": mapped["url"],
+            "activitypub_id": mapped["uri"],
+            "avatar": mapped["avatar"],
+            "avatar_static": mapped["avatar_static"],
+            "header": mapped["header"],
+            "header_static": mapped["header_static"],
+            "emojis": mapped["emojis"],
+            "roles": mapped["roles"],
+            "fields": mapped["fields"],
+            "username_at_instance": f"@{mapped['username'].lower()}@{instance.url.lower()}",
+        },
+    )
+
+    user, __ = User.objects.get_or_create(username=account.username_at_instance)
+    AccountAccess.objects.update_or_create(
+        user=user,
+        defaults={
+            "account": account,
+            "instance": instance,
+            "access_token": data["token"],
+        },
+    )
+    auth_login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])
+    transaction.on_commit(lambda: sync_following.delay(user.id))
+
+    return redirect(next_url or "index")
+
+
 @shared_task
 def sync_following(user_id: int):
     user = User.objects.get(pk=user_id)
     account_access = user.accountaccess
     instance = account_access.instance
     account = account_access.account
+
+    if instance.is_misskey:
+        urls = get_following_urls(instance.url, account_access.access_token, account.account_id)
+        AccountFollowing.objects.filter(account=account).exclude(url__in=urls).delete()
+        AccountFollowing.objects.bulk_create(
+            [AccountFollowing(account=account, url=url) for url in urls],
+            batch_size=1000,
+            ignore_conflicts=True,
+        )
+        return
+
     mastodon = Mastodon(
         api_base_url=instance.url,
         client_id=instance.client_id,
@@ -303,18 +436,21 @@ def follow(request, account_id: int):
 
     account_access = request.user.accountaccess
     instance = account_access.instance
-    mastodon = Mastodon(
-        api_base_url=instance.url,
-        client_id=instance.client_id,
-        client_secret=instance.client_secret,
-        access_token=account_access.access_token,
-        user_agent="fedidevs",
-        request_timeout=5,
-    )
     account = Account.objects.get(pk=account_id)
 
     try:
-        resolve_and_follow_account(mastodon, account, instance)
+        if instance.is_misskey:
+            resolve_and_follow_misskey(instance.url, account_access.access_token, account)
+        else:
+            mastodon = Mastodon(
+                api_base_url=instance.url,
+                client_id=instance.client_id,
+                client_secret=instance.client_secret,
+                access_token=account_access.access_token,
+                user_agent="fedidevs",
+                request_timeout=5,
+            )
+            resolve_and_follow_account(mastodon, account, instance)
     except FollowError as e:
         logger.info("%s failed to follow %s", request.user.username, account.username_at_instance, exc_info=True)
         return err_response(_(str(e)))

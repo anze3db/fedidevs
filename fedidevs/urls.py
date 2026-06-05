@@ -221,6 +221,7 @@ urlpatterns = [
     path("mastodon_login/", mastodon_views.login, name="mastodon_login"),
     path("mastodon_logout/", mastodon_views.logout, name="mastodon_logout"),
     path("mastodon_auth/", mastodon_views.auth, name="mastodon_auth"),
+    path("miauth_callback/", mastodon_views.miauth_callback, name="miauth_callback"),
     path("faq/", views.faq, name="faq"),
     path(
         "developers-on-mastodon/",

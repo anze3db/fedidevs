@@ -26,7 +26,7 @@ from accounts.models import Account, Instance
 from mastodon_auth.models import AccountAccess, AccountFollowing
 from starter_packs.models import StarterPack, StarterPackAccount
 from starter_packs.splash_images import get_splash_image_signature, render_splash_image
-from starter_packs.utils import FollowError, resolve_and_follow_account
+from starter_packs.utils import FollowError, resolve_and_follow_account, resolve_and_follow_misskey
 from stats.models import FollowAllClick
 
 logger = logging.getLogger(__name__)
@@ -652,13 +652,16 @@ def follow_bg(user_id: int, starter_pack_slug: str):
     user = User.objects.get(pk=user_id)
     account_access = user.accountaccess
     instance = account_access.instance
-    mastodon = Mastodon(
-        api_base_url=instance.url,
-        client_id=instance.client_id,
-        client_secret=instance.client_secret,
-        access_token=account_access.access_token,
-        user_agent="fedidevs",
-    )
+
+    mastodon = None
+    if not instance.is_misskey:
+        mastodon = Mastodon(
+            api_base_url=instance.url,
+            client_id=instance.client_id,
+            client_secret=instance.client_secret,
+            access_token=account_access.access_token,
+            user_agent="fedidevs",
+        )
 
     starter_pack_accounts = Account.objects.filter(
         starterpackaccount__starter_pack__slug=starter_pack_slug,
@@ -672,7 +675,10 @@ def follow_bg(user_id: int, starter_pack_slug: str):
             continue
 
         try:
-            resolve_and_follow_account(mastodon, account, instance)
+            if instance.is_misskey:
+                resolve_and_follow_misskey(instance.url, account_access.access_token, account)
+            else:
+                resolve_and_follow_account(mastodon, account, instance)
         except FollowError:
             logger.info("%s failed to follow in bg %s", user.username, account.username_at_instance, exc_info=True)
             continue

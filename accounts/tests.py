@@ -5,6 +5,7 @@ from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
 
 from accounts.misskey import emojis_to_mastodon, user_to_mastodon
+from accounts.misskey_api import build_miauth_url, is_misskey_family
 from accounts.models import Account
 from confs.models import Conference, ConferenceAccount
 
@@ -290,6 +291,28 @@ class TestMisskeyAdapter(SimpleTestCase):
         self.assertEqual(result["avatar_static"], "")
         self.assertEqual(result["header"], "")
         self.assertEqual(result["header_static"], "")
+
+
+class TestMisskeyApi(SimpleTestCase):
+    def test_is_misskey_family(self):
+        for name in ("sharkey", "Misskey", "FIREFISH", "iceshrimp", "akkoma", "catodon"):
+            self.assertTrue(is_misskey_family(name), name)
+        for name in ("mastodon", "pixelfed", "", None):
+            self.assertFalse(is_misskey_family(name), name)
+
+    def test_build_miauth_url(self):
+        url = build_miauth_url(
+            "booping.synth.download",
+            "sess-123",
+            "https://fedidevs.com/miauth_callback/",
+            "fedidevs",
+        )
+        self.assertTrue(url.startswith("https://booping.synth.download/miauth/sess-123?"))
+        self.assertIn("name=fedidevs", url)
+        # callback is URL-encoded
+        self.assertIn("callback=https%3A%2F%2Ffedidevs.com%2Fmiauth_callback%2F", url)
+        # native Misskey permission kinds (not Mastodon scopes), comma-joined
+        self.assertIn("permission=read%3Aaccount%2Cread%3Afollowing%2Cwrite%3Afollowing", url)
 
 
 class TestStaticPages(TestCase):
