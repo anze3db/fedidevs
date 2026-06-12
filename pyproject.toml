@@ -149,4 +149,4 @@ patterns = ["*.py", "*.html"]
 ignore_patterns = ["node_modules", ".coverage", ".pytest_cache", ".venv"]
 
 [tool.uv.sources]
-django = { git = "https://github.com/django/django.git", rev = "ed5486376989c08b34cc62e7c8ba4a07bd60047d" }
+django = { git = "https://github.com/django/django.git", rev = "f1440a752ec034277ccdad914995c3f164308e41" }
