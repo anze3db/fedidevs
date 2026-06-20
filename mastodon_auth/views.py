@@ -65,9 +65,11 @@ def login(request):
             logger.info("Redirected to %s", res.headers["Location"])
             api_base_url = res.headers["Location"].split("/")[2]
     except httpx.RequestError:
+        logger.exception("login host-meta request failed for %s", api_base_url)
         messages.error(request, f"Mastodon instance not found. Is the URL correct? `{api_base_url}`")
         return redirect("/")
     except httpx.InvalidURL:
+        logger.exception("login host-meta invalid url for %s", api_base_url)
         messages.error(request, _("The URL provided is invalid.") + f" `{api_base_url}`")
         return redirect("/")
 
@@ -109,9 +111,11 @@ def login(request):
                 user_agent="fedidevs",
             )
         except MastodonNetworkError:
+            logger.exception("login create_app network error for %s", api_base_url)
             messages.info(request, _("Network error, is the instance url correct?") + f" `{api_base_url}`")
             return redirect("/")
         except KeyError:
+            logger.exception("login create_app key error for %s", api_base_url)
             messages.error(
                 request,
                 _("Unable to create app on your instance. Is it a Mastodon compatible instance?")
@@ -119,6 +123,7 @@ def login(request):
             )
             return redirect("/")
         except TypeError:
+            logger.exception("login create_app type error for %s", api_base_url)
             messages.error(
                 request,
                 _("Unable to create app on your instance. Is it a Mastodon compatible instance?")
@@ -147,9 +152,9 @@ def login(request):
             redirect_uris=settings.MSTDN_REDIRECT_URI,
             scopes=SCOPES,
         )
-    except MastodonError as e:
+    except MastodonError:
+        logger.exception("login auth_request_url failed for %s", api_base_url)
         messages.error(request, _("Unable to connect to the instance. Is it a Mastodon compatible instance?"))
-        logger.info("login api error %s", e)
         return redirect("index")
 
     cache.set(f"oauth:{state}", instance.id, timeout=500)
@@ -183,12 +188,14 @@ def auth(request):
     state = request.GET.get("state")
 
     if not code or not state:
+        logger.error("auth callback missing code/state (code=%s, state=%s)", bool(code), bool(state))
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
     instance_id = cache.get(f"oauth:{state}")
     next_url = cache.get(f"oauth:{state}:next")
     if not instance_id:
+        logger.error("auth callback has no cached instance for state %s (expired?)", state)
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
@@ -219,17 +226,18 @@ def auth(request):
             scopes=SCOPES,
         )
     except MastodonNetworkError:
+        logger.exception("login log_in network error for %s", instance.url)
         messages.error(request, _("Network error, please try again."))
         return redirect("index")
-    except MastodonIllegalArgumentError as e:
+    except MastodonIllegalArgumentError:
+        logger.exception("login log_in invalid argument error for %s", instance.url)
         messages.error(request, _("Authorization flow is not supported by this instance."))
-        logger.info("login invalid argument error %s", e)
         return redirect("index")
-    except MastodonInternalServerError as e:
+    except MastodonInternalServerError:
+        logger.exception("login log_in instance server error for %s", instance.url)
         messages.error(request, _("The instance server encountered an error, please try again later."))
-        logger.info("login instance server error %s %s", instance.url, e)
         return redirect("index")
-    except MastodonAPIError as e:
+    except MastodonAPIError:
         # Pleroma (and some other Mastodon-compatible servers) report the granted
         # OAuth scopes in granular form (e.g. "read:accounts ... follow") instead
         # of echoing back the coarse "read" we requested. mastodon.py's strict
@@ -238,17 +246,18 @@ def auth(request):
         # so fall back to it rather than failing the login.
         access_token = mastodon.access_token
         if not access_token:
+            logger.exception("login log_in api error for %s", instance.url)
             messages.error(request, _("Unable to complete login, please try again."))
-            logger.info("login api error %s %s", instance.url, e)
             return redirect("index")
-        logger.info("login scope check bypassed for %s: %s", instance.url, e)
+        # Not a failure: token obtained, only the scope-subset check tripped.
+        logger.info("login scope check bypassed for %s", instance.url)
 
     now = timezone.now()
     try:
         logged_in_account = mastodon.me()
-    except MastodonAPIError as e:
+    except MastodonAPIError:
+        logger.exception("login me() api error for %s", instance.url)
         messages.error(request, _("Unable to fetch account information, please try again."))
-        logger.info("login api error %s", e)
         return redirect("index")
     account, __ = Account.objects.update_or_create(
         account_id=logged_in_account["id"],
@@ -322,18 +331,21 @@ def miauth_callback(request):
     """
     session = request.GET.get("session")
     if not session:
+        logger.error("miauth callback missing session")
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
     instance_id = cache.get(f"miauth:{session}")
     next_url = cache.get(f"miauth:{session}:next")
     if not instance_id:
+        logger.error("miauth callback has no cached instance for session %s (expired?)", session)
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
     instance = Instance.objects.get(id=instance_id)
     data = miauth_check(instance.url, session)
     if not data:
+        logger.error("miauth check failed for %s", instance.url)
         messages.error(request, _("Unable to complete login, please try again."))
         return redirect("index")
 
@@ -341,6 +353,7 @@ def miauth_callback(request):
     # /users/{id} activitypub_id) matches what the crawler would produce.
     mapped = user_to_mastodon(data["user"], instance.url)
     if not mapped:
+        logger.error("miauth user mapping failed for %s", instance.url)
         messages.error(request, _("Unable to fetch account information, please try again."))
         return redirect("index")
 
