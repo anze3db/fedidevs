@@ -199,6 +199,7 @@ def auth(request):
         client_id=instance.client_id,
         client_secret=instance.client_secret,
         user_agent="fedidevs",
+        version_check_mode="none",
     )
 
     if not code:
@@ -228,6 +229,19 @@ def auth(request):
         messages.error(request, _("The instance server encountered an error, please try again later."))
         logger.info("login instance server error %s %s", instance.url, e)
         return redirect("index")
+    except MastodonAPIError as e:
+        # Pleroma (and some other Mastodon-compatible servers) report the granted
+        # OAuth scopes in granular form (e.g. "read:accounts ... follow") instead
+        # of echoing back the coarse "read" we requested. mastodon.py's strict
+        # subset check then raises even though the token exchange itself
+        # succeeded — the access token is already set on the client at that point,
+        # so fall back to it rather than failing the login.
+        access_token = mastodon.access_token
+        if not access_token:
+            messages.error(request, _("Unable to complete login, please try again."))
+            logger.info("login api error %s %s", instance.url, e)
+            return redirect("index")
+        logger.info("login scope check bypassed for %s: %s", instance.url, e)
 
     now = timezone.now()
     try:
