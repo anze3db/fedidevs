@@ -206,22 +206,27 @@ async def process_instances(instances):
 
 async def fetch_v1(client, instance) -> tuple[dict | None, str]:
     try:
+        # follow_redirects: some instances (e.g. the Brid.gy bridge subdomains
+        # like bsky.brid.gy) 301 /api/v1/instance to a canonical host
+        # (fed.brid.gy). Without following, this looks like an error and the
+        # instance never gets indexed.
         response = await client.get(
             f"https://{instance}/api/v1/instance",
             timeout=5,
+            follow_redirects=True,
         )
     except httpx.HTTPError:
-        logger.error("Http error when indexing %s (v1 API)", instance)
+        logger.info("Http error when indexing %s (v1 API)", instance)
         return None, instance
     except Exception as e:
-        logger.error("Unknown error when indexing %s (v1 API), %s", instance, e)
+        logger.info("Unknown error when indexing %s (v1 API), %s", instance, e)
         return None, instance
 
     if response.status_code == 404:
         logger.info("Probably not a mastodon instance %s", instance)
         return None, instance
     if response.status_code != 200:
-        logger.error("Error status code for %s", instance)
+        logger.info("Error status code for %s %s (v1 API)", instance, response.status_code)
         return None, instance
 
     v1_json = response.json()
@@ -230,6 +235,9 @@ async def fetch_v1(client, instance) -> tuple[dict | None, str]:
         "description": v1_json["description"],
         "thumbnail": {"url": v1_json["thumbnail"]},
         "registrations": {"enabled": v1_json["registrations"]},
+        # Some compat servers (Brid.gy) report a null version; the model column
+        # is NOT NULL, so coerce to "".
+        "version": v1_json.get("version") or "",
     }
     return v2_json, instance
 

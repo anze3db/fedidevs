@@ -1,12 +1,16 @@
 import xml.etree.ElementTree as ET
+from unittest.mock import patch
 
+import httpx
+from asgiref.sync import async_to_sync
 from django.core import management
-from django.test import SimpleTestCase, TestCase
+from django.test import SimpleTestCase, TestCase, TransactionTestCase
 from django.utils import timezone
 
+from accounts.management.commands.instances import process_instances
 from accounts.misskey import emojis_to_mastodon, user_to_mastodon
 from accounts.misskey_api import build_miauth_url, is_misskey_family
-from accounts.models import Account
+from accounts.models import Account, Instance
 from confs.models import Conference, ConferenceAccount
 
 
@@ -389,3 +393,53 @@ class TestSitemap(TestCase):
         for url in urls:
             with self.subTest(url=url):
                 self.assertIn(url, xml_urls)
+
+
+class TestInstanceIndexingBridgy(TransactionTestCase):
+    """Brid.gy bridge subdomains (e.g. bsky.brid.gy) have no /api/v2/instance and
+    301-redirect /api/v1/instance to the canonical fed.brid.gy, which reports a
+    null `version`. Exercises the redirect-follow + null-version codepath end to
+    end, including the DB upsert against the NOT NULL `version` column."""
+
+    def _run(self, handler):
+        # Capture the real class before patching: instances.httpx is the same
+        # module object as our httpx, so patching the attribute would otherwise
+        # make make_client recurse into itself.
+        real_async_client = httpx.AsyncClient
+
+        def make_client(*args, **kwargs):
+            kwargs["transport"] = httpx.MockTransport(handler)
+            return real_async_client(*args, **kwargs)
+
+        with patch("accounts.management.commands.instances.httpx.AsyncClient", make_client):
+            async_to_sync(process_instances)(["bsky.brid.gy"])
+
+    def test_follows_redirect_and_coerces_null_version(self):
+        def handler(request):
+            host, path = request.url.host, request.url.path
+            if host == "bsky.brid.gy" and path == "/api/v2/instance":
+                return httpx.Response(404)
+            if host == "bsky.brid.gy" and path == "/api/v1/instance":
+                return httpx.Response(301, headers={"Location": "https://fed.brid.gy/api/v1/instance"})
+            if host == "fed.brid.gy" and path == "/api/v1/instance":
+                return httpx.Response(
+                    200,
+                    json={
+                        "uri": "fed.brid.gy",
+                        "title": "Bridgy Fed",
+                        "description": "Bridging the new social internet",
+                        "thumbnail": "https://fed.brid.gy/static/bridgy_logo_with_alpha.png",
+                        "registrations": True,
+                        "version": None,
+                    },
+                )
+            return httpx.Response(404)
+
+        self._run(handler)
+
+        instance = Instance.objects.get(instance="bsky.brid.gy")
+        self.assertEqual(instance.domain, "fed.brid.gy")
+        self.assertEqual(instance.title, "Bridgy Fed")
+        self.assertEqual(instance.version, "")
+        self.assertEqual(instance.registrations, {"enabled": True})
+        self.assertEqual(instance.thumbnail, {"url": "https://fed.brid.gy/static/bridgy_logo_with_alpha.png"})
