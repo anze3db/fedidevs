@@ -64,12 +64,14 @@ def login(request):
         if 300 <= res.status_code < 400:
             logger.info("Redirected to %s", res.headers["Location"])
             api_base_url = res.headers["Location"].split("/")[2]
-    except httpx.RequestError:
-        logger.exception("login host-meta request failed for %s", api_base_url)
+    except httpx.RequestError as e:
+        # Instance unreachable (DNS failure, refused, timeout). Not a bug on our
+        # side, so warn (breadcrumb) rather than error (Sentry event).
+        logger.warning("login host-meta unreachable for %s: %s", api_base_url, e)
         messages.error(request, f"Mastodon instance not found. Is the URL correct? `{api_base_url}`")
         return redirect("/")
-    except httpx.InvalidURL:
-        logger.exception("login host-meta invalid url for %s", api_base_url)
+    except httpx.InvalidURL as e:
+        logger.warning("login host-meta invalid url for %s: %s", api_base_url, e)
         messages.error(request, _("The URL provided is invalid.") + f" `{api_base_url}`")
         return redirect("/")
 
@@ -110,8 +112,9 @@ def login(request):
                 api_base_url=api_base_url,
                 user_agent="fedidevs",
             )
-        except MastodonNetworkError:
-            logger.exception("login create_app network error for %s", api_base_url)
+        except MastodonNetworkError as e:
+            # Instance unreachable during app registration — connectivity, not a bug.
+            logger.warning("login create_app unreachable for %s: %s", api_base_url, e)
             messages.info(request, _("Network error, is the instance url correct?") + f" `{api_base_url}`")
             return redirect("/")
         except KeyError:
@@ -188,14 +191,16 @@ def auth(request):
     state = request.GET.get("state")
 
     if not code or not state:
-        logger.error("auth callback missing code/state (code=%s, state=%s)", bool(code), bool(state))
+        # Malformed/abandoned callback — not actionable, so warn only.
+        logger.warning("auth callback missing code/state (code=%s, state=%s)", bool(code), bool(state))
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
     instance_id = cache.get(f"oauth:{state}")
     next_url = cache.get(f"oauth:{state}:next")
     if not instance_id:
-        logger.error("auth callback has no cached instance for state %s (expired?)", state)
+        # Cache entry expired (>500s) or evicted on restart — expected, warn only.
+        logger.warning("auth callback has no cached instance for state %s (expired?)", state)
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
@@ -225,8 +230,9 @@ def auth(request):
             redirect_uri=settings.MSTDN_REDIRECT_URI,
             scopes=SCOPES,
         )
-    except MastodonNetworkError:
-        logger.exception("login log_in network error for %s", instance.url)
+    except MastodonNetworkError as e:
+        # Instance unreachable mid-flow — connectivity, not a bug.
+        logger.warning("login log_in unreachable for %s: %s", instance.url, e)
         messages.error(request, _("Network error, please try again."))
         return redirect("index")
     except MastodonIllegalArgumentError:
@@ -331,14 +337,16 @@ def miauth_callback(request):
     """
     session = request.GET.get("session")
     if not session:
-        logger.error("miauth callback missing session")
+        # Malformed/abandoned callback — not actionable, so warn only.
+        logger.warning("miauth callback missing session")
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
     instance_id = cache.get(f"miauth:{session}")
     next_url = cache.get(f"miauth:{session}:next")
     if not instance_id:
-        logger.error("miauth callback has no cached instance for session %s (expired?)", session)
+        # Cache entry expired (>500s) or evicted on restart — expected, warn only.
+        logger.warning("miauth callback has no cached instance for session %s (expired?)", session)
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
