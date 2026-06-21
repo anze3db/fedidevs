@@ -6,6 +6,7 @@ from django.test import TestCase
 from django.utils import timezone
 from mastodon.errors import MastodonAPIError
 
+from accounts.models import Account
 from mastodon_auth.forms import MastodonLoginForm
 from mastodon_auth.models import AccountAccess, Instance
 
@@ -109,6 +110,57 @@ class MastodonAuthCallbackTests(TestCase):
         access = AccountAccess.objects.get()
         self.assertEqual(access.access_token, "the-token")
         sync_following.delay.assert_called_once()
+
+    @patch("mastodon_auth.views.sync_following")
+    @patch("mastodon_auth.views.Mastodon")
+    def test_pleroma_null_account_fields_are_coerced(self, mastodon_cls, sync_following):
+        """Pleroma's verify_credentials returns null discoverable/group and omits
+        counts/avatars. Those map to NOT NULL columns, so they must be coerced to
+        safe defaults rather than crashing the account upsert with a 500."""
+        instance = Instance.objects.create(
+            url="dima.wiso.uni-hamburg.de",
+            client_id="cid",
+            client_secret="secret",
+            scopes="read follow",
+        )
+        state = "test-state"
+        cache.set(f"oauth:{state}", instance.id)
+
+        mastodon = MagicMock()
+        mastodon.access_token = "the-token"
+        mastodon.log_in.return_value = "the-token"
+        # Minimal Pleroma-shaped response: null booleans, missing counts/media.
+        mastodon.me.return_value = {
+            "id": "1",
+            "username": "anze",
+            "acct": "anze",
+            "display_name": "anze",
+            "locked": False,
+            "bot": False,
+            "group": None,
+            "discoverable": None,
+            "noindex": None,
+            "created_at": timezone.now(),
+            "url": "https://dima.wiso.uni-hamburg.de/users/anze",
+        }
+        mastodon_cls.return_value = mastodon
+
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.get("/mastodon_auth/", {"code": "abc", "state": state})
+
+        self.assertEqual(response.status_code, 302)
+        account = Account.objects.get(account_id="1")
+        self.assertFalse(account.discoverable)
+        self.assertFalse(account.group)
+        self.assertEqual(account.followers_count, 0)
+        self.assertEqual(account.following_count, 0)
+        self.assertEqual(account.statuses_count, 0)
+        self.assertEqual(account.note, "")
+        self.assertEqual(account.avatar, "")
+        self.assertEqual(account.emojis, [])
+        self.assertEqual(account.roles, [])
+        self.assertEqual(account.fields, [])
+        self.assertEqual(AccountAccess.objects.get().access_token, "the-token")
 
     @patch("mastodon_auth.views.Mastodon")
     def test_token_exchange_failure_without_token_errors(self, mastodon_cls):

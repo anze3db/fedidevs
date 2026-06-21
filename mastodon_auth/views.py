@@ -265,34 +265,38 @@ def auth(request):
         logger.exception("login me() api error for %s", instance.url)
         messages.error(request, _("Unable to fetch account information, please try again."))
         return redirect("index")
+    # Pleroma (and some other Mastodon-compatible servers) return null/omit
+    # fields that vanilla Mastodon always sends, including the NOT NULL booleans
+    # (discoverable, group) and counts. Coerce nulls to safe defaults so the
+    # account row can be saved.
     account, __ = Account.objects.update_or_create(
         account_id=logged_in_account["id"],
         instance=instance,
         defaults={
             "username": logged_in_account.get("username"),
             "acct": logged_in_account.get("acct"),
-            "display_name": logged_in_account.get("display_name"),
-            "locked": logged_in_account.get("locked"),
-            "bot": logged_in_account.get("bot"),
-            "group": logged_in_account.get("group"),
-            "discoverable": logged_in_account.get("discoverable"),
+            "display_name": logged_in_account.get("display_name") or "",
+            "locked": logged_in_account.get("locked") or False,
+            "bot": logged_in_account.get("bot") or False,
+            "group": logged_in_account.get("group") or False,
+            "discoverable": logged_in_account.get("discoverable") or False,
             "noindex": logged_in_account.get("noindex"),
-            "created_at": logged_in_account.get("created_at"),
+            "created_at": logged_in_account.get("created_at") or now,
             "last_status_at": logged_in_account.get("last_status_at"),
             "last_sync_at": now,
-            "followers_count": logged_in_account.get("followers_count"),
-            "following_count": logged_in_account.get("following_count"),
-            "statuses_count": logged_in_account.get("statuses_count"),
-            "note": logged_in_account.get("note"),
-            "url": logged_in_account.get("url"),
+            "followers_count": logged_in_account.get("followers_count") or 0,
+            "following_count": logged_in_account.get("following_count") or 0,
+            "statuses_count": logged_in_account.get("statuses_count") or 0,
+            "note": logged_in_account.get("note") or "",
+            "url": logged_in_account.get("url") or "",
             "activitypub_id": logged_in_account.get("uri"),
-            "avatar": logged_in_account.get("avatar"),
-            "avatar_static": logged_in_account.get("avatar_static"),
-            "header": logged_in_account.get("header"),
-            "header_static": logged_in_account.get("header_static"),
-            "emojis": logged_in_account.get("emojis"),
-            "roles": logged_in_account.get("roles", []),
-            "fields": logged_in_account.get("fields"),
+            "avatar": logged_in_account.get("avatar") or "",
+            "avatar_static": logged_in_account.get("avatar_static") or "",
+            "header": logged_in_account.get("header") or "",
+            "header_static": logged_in_account.get("header_static") or "",
+            "emojis": logged_in_account.get("emojis") or [],
+            "roles": logged_in_account.get("roles") or [],
+            "fields": logged_in_account.get("fields") or [],
             "username_at_instance": f"@{logged_in_account['username'].lower()}@{instance.url.lower()}",
         },
     )
