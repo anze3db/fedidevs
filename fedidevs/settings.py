@@ -114,10 +114,6 @@ MIDDLEWARE = [
     "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
-if DEBUG:
-    INSTALLED_APPS.append("zeal")
-    MIDDLEWARE.append("zeal.middleware.zeal_middleware")
-
 ROOT_URLCONF = "fedidevs.urls"
 LOGIN_URL = "/login/"
 
@@ -272,6 +268,10 @@ LOGGING = {
             "propagate": False,
         },
         "accounts": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+        "mastodon_auth": {
             "handlers": ["console"],
             "level": "INFO",
         },

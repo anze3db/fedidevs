@@ -451,15 +451,6 @@ wheels = [
 ]
 
 [[package]]
-name = "django-zeal"
-version = "2.0.4"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/9b/51/c6997d7f4524002359f0e1a657504b9effe7d82ab90e0acea505ffda4582/django_zeal-2.0.4.tar.gz", hash = "sha256:934cd3968c1ede3f3ec5314c4da285ef4796f4b6de1f95870c5999370280e17e", size = 15479, upload-time = "2025-01-28T08:15:02.564Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b1/6c/cfce455cea55e0ce9256e57164d2a92be111ec9886b89aec5af8e0959b9a/django_zeal-2.0.4-py3-none-any.whl", hash = "sha256:c37b0a7d203572d8eb8462a601f19dedfdf82324a25c7eb7273afdc52fc519fa", size = 12476, upload-time = "2025-01-28T08:15:00.742Z" },
-]
-
-[[package]]
 name = "djlint"
 version = "1.36.4"
 source = { registry = "https://pypi.org/simple" }
@@ -522,7 +513,6 @@ dependencies = [
     { name = "django-environ" },
     { name = "django-tailwind" },
     { name = "django-watchfiles" },
-    { name = "django-zeal" },
     { name = "emoji" },
     { name = "fonttools" },
     { name = "granian" },
@@ -573,7 +563,6 @@ requires-dist = [
     { name = "django-environ" },
     { name = "django-tailwind" },
     { name = "django-watchfiles", specifier = ">=0.2.0" },
-    { name = "django-zeal", specifier = ">=1.3.0" },
     { name = "emoji" },
     { name = "fonttools" },
     { name = "granian", specifier = ">=2.5.4" },
