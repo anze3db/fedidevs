@@ -42,7 +42,6 @@ dev = [
   "django-rich",
   "django-tui",
   "djlint",
-  "flakytest",
   "mypy",
   "pre-commit>=4.0.1",
   "pytest-cov",
