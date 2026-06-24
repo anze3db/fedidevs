@@ -230,7 +230,31 @@ DEBUG_TOOLBAR_CONFIG = {"RESULTS_CACHE_SIZE": 1000}
 
 EMAIL_CONFIG = env.email("EMAIL_URL", default="consolemail://")
 
-vars().update(EMAIL_CONFIG)
+# Map the deprecated EMAIL_* config produced by env.email() onto Django 7.0's
+# MAILERS setting (the EMAIL_* settings are deprecated and removed in Django 7.0).
+_EMAIL_OPTION_MAP = {
+    "EMAIL_HOST": "host",
+    "EMAIL_PORT": "port",
+    "EMAIL_HOST_USER": "username",
+    "EMAIL_HOST_PASSWORD": "password",
+    "EMAIL_USE_TLS": "use_tls",
+    "EMAIL_USE_SSL": "use_ssl",
+    "EMAIL_TIMEOUT": "timeout",
+    "EMAIL_SSL_KEYFILE": "ssl_keyfile",
+    "EMAIL_SSL_CERTFILE": "ssl_certfile",
+    "EMAIL_FILE_PATH": "file_path",
+}
+
+MAILERS = {
+    "default": {
+        "BACKEND": EMAIL_CONFIG.get("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend"),
+        "OPTIONS": {
+            option: EMAIL_CONFIG[key]
+            for key, option in _EMAIL_OPTION_MAP.items()
+            if EMAIL_CONFIG.get(key) not in (None, "")
+        },
+    }
+}
 
 # Mastodon API settings:
 MSTDN_CLIENT_NAME = env.str("MSTDN_CLIENT_NAME", default="local.fedidevs.com")
