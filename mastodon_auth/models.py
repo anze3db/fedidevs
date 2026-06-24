@@ -35,7 +35,9 @@ class AccountAccess(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     account = models.ForeignKey("accounts.Account", on_delete=models.CASCADE)
     instance = models.ForeignKey(Instance, on_delete=models.CASCADE)
-    access_token = models.CharField(max_length=255)
+    # TextField (not CharField(255)): Pixelfed / Laravel Passport issue JWT
+    # access tokens that are ~700+ chars, well over the old 255 limit.
+    access_token = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

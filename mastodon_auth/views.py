@@ -197,12 +197,26 @@ def logout(request):
 
 def auth(request):
     code = request.GET.get("code")
-
     state = request.GET.get("state")
 
+    # The instance rejected the authorization or the user denied it. OAuth error
+    # redirects echo back ?error=...&error_description=... (and usually state), so
+    # this is a real, actionable signal — surface it rather than a generic message.
+    error = request.GET.get("error")
+    if error:
+        logger.error(
+            "auth callback OAuth error from instance: error=%s description=%s",
+            error,
+            request.GET.get("error_description"),
+        )
+        messages.error(request, _("Login was cancelled or rejected by the instance. Please try again."))
+        return redirect("index")
+
     if not code or not state:
-        # Malformed/abandoned callback — not actionable, so warn only.
-        logger.warning("auth callback missing code/state (code=%s, state=%s)", bool(code), bool(state))
+        # No OAuth params at all (and no error): a bare/stale hit on the callback
+        # URL — bookmark, link-preview crawler, or a reloaded tab — not a real
+        # login attempt. Low-value, so info (breadcrumb) only.
+        logger.info("auth callback without code/state (query keys: %s)", sorted(request.GET.keys()))
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
@@ -223,16 +237,6 @@ def auth(request):
         user_agent="fedidevs",
         version_check_mode="none",
     )
-
-    if not code:
-        auth_request_url = mastodon.auth_request_url(
-            client_id=instance.client_id,
-            state=state,
-            redirect_uris=settings.MSTDN_REDIRECT_URI,
-            scopes=SCOPES,
-            force_login=True,
-        )
-        return redirect(auth_request_url)
 
     try:
         access_token = mastodon.log_in(

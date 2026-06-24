@@ -276,3 +276,22 @@ class MastodonAuthCallbackTests(TestCase):
 
         self.assertRedirects(response, "/", fetch_redirect_response=False)
         self.assertFalse(AccountAccess.objects.exists())
+
+    def test_oauth_error_redirect_is_surfaced(self):
+        """An OAuth error redirect (?error=...) should show a clear message rather
+        than the generic 'invalid request'."""
+        response = self.client.get(
+            "/mastodon_auth/",
+            {"error": "access_denied", "error_description": "denied", "state": "x"},
+        )
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
+        messages = [str(m) for m in get_messages(response.wsgi_request)]
+        self.assertEqual(messages, ["Login was cancelled or rejected by the instance. Please try again."])
+
+    def test_bare_callback_without_params_redirects(self):
+        """A callback hit with no OAuth params at all (bookmark/crawler) is handled
+        gracefully without erroring."""
+        response = self.client.get("/mastodon_auth/")
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
+        messages = [str(m) for m in get_messages(response.wsgi_request)]
+        self.assertEqual(messages, ["Invalid request, please try again"])
