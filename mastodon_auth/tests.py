@@ -10,7 +10,7 @@ from mastodon.errors import MastodonAPIError
 from accounts.models import Account
 from mastodon_auth.forms import MastodonLoginForm
 from mastodon_auth.models import AccountAccess, Instance
-from mastodon_auth.oauth import AppRegistrationError, register_app
+from mastodon_auth.oauth import AppRegistrationError, authorize_url, is_pleroma, register_app
 
 
 class MastodonLoginFormTests(TestCase):
@@ -58,10 +58,9 @@ class MastodonLoginViewTests(TestCase):
             ["Invalid instance URL. Please enter a valid Mastodon instance domain name."],
         )
 
-    @patch("mastodon_auth.views.Mastodon")
     @patch("mastodon_auth.views.register_app", side_effect=AppRegistrationError(429, "rate limited"))
     @patch("mastodon_auth.views.httpx.get")
-    def test_create_app_rate_limited_reuses_existing_credentials(self, http_get, _register, mastodon_cls):
+    def test_create_app_rate_limited_reuses_existing_credentials(self, http_get, _register):
         """If re-registration fails (e.g. the instance returns 429) but we already
         have working credentials, reuse them and proceed with login instead of
         failing."""
@@ -73,20 +72,44 @@ class MastodonLoginViewTests(TestCase):
             scopes="read",  # != "read follow" -> triggers re-registration attempt
             software="mastodon",
         )
-        mastodon_cls.return_value.auth_request_url.return_value = "https://det.social/oauth/authorize?x=1"
 
         response = self.client.post("/mastodon_login/", {"instance": "det.social"})
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "https://det.social/oauth/authorize?x=1")
-        # Existing credentials untouched; no new app was registered.
+        # Redirect goes to the instance's authorize endpoint using the existing
+        # client_id; no new app was registered.
+        self.assertIn("https://det.social/oauth/authorize?", response["Location"])
+        self.assertIn("client_id=existing-cid", response["Location"])
         instance.refresh_from_db()
         self.assertEqual(instance.client_id, "existing-cid")
         self.assertEqual(instance.scopes, "read")
-        # auth_request_url used the existing client_id.
-        _, kwargs = mastodon_cls.return_value.auth_request_url.call_args
-        self.assertEqual(kwargs["client_id"], "existing-cid")
         self.assertFalse([str(m) for m in get_messages(response.wsgi_request)])
+
+    @patch("mastodon_auth.views.httpx.get")
+    def test_pleroma_login_forces_consent_flow(self, http_get):
+        """Pleroma's already-authorized shortcut returns no code, so we force its
+        consent flow with force_login=true. Mastodon must not get force_login."""
+        http_get.return_value = MagicMock(status_code=200)
+        Instance.objects.create(
+            url="pleroma.example",
+            client_id="cid",
+            client_secret="sec",
+            scopes="read follow",
+            software="pleroma",
+        )
+        Instance.objects.create(
+            url="mastodon.example",
+            client_id="cid2",
+            client_secret="sec2",
+            scopes="read follow",
+            software="mastodon",
+        )
+
+        pleroma = self.client.post("/mastodon_login/", {"instance": "pleroma.example"})
+        mastodon = self.client.post("/mastodon_login/", {"instance": "mastodon.example"})
+
+        self.assertIn("force_login=true", pleroma["Location"])
+        self.assertNotIn("force_login", mastodon["Location"])
 
     @patch("mastodon_auth.views.detect_software", return_value="mastodon")
     @patch("mastodon_auth.views.register_app", side_effect=AppRegistrationError(429, "rate limited"))
@@ -104,6 +127,39 @@ class MastodonLoginViewTests(TestCase):
         messages = [str(m) for m in get_messages(response.wsgi_request)]
         self.assertEqual(len(messages), 1)
         self.assertIn("temporarily unavailable", messages[0])
+
+
+class AuthorizeUrlTests(SimpleTestCase):
+    _kwargs = {
+        "api_base_url": "pleroma.example",
+        "client_id": "cid",
+        "redirect_uri": "https://fedidevs.com/mastodon_auth/",
+        "scopes": ("read", "follow"),
+        "state": "st-123",
+    }
+
+    def test_builds_code_flow_url_without_junk_params(self):
+        url = authorize_url(**self._kwargs)
+        self.assertTrue(url.startswith("https://pleroma.example/oauth/authorize?"))
+        self.assertIn("response_type=code", url)
+        self.assertIn("client_id=cid", url)
+        self.assertIn("state=st-123", url)
+        self.assertIn("scope=read+follow", url)
+        # mastodon.py's junk literals must not appear.
+        self.assertNotIn("lang=None", url)
+        self.assertNotIn("force_login=False", url)
+        self.assertNotIn("None", url)
+
+    def test_force_login_included_only_when_requested(self):
+        self.assertNotIn("force_login", authorize_url(**self._kwargs))
+        self.assertIn("force_login=true", authorize_url(**self._kwargs, force_login=True))
+
+    def test_is_pleroma(self):
+        self.assertTrue(is_pleroma("pleroma"))
+        self.assertTrue(is_pleroma("Pleroma"))
+        self.assertFalse(is_pleroma("mastodon"))
+        self.assertFalse(is_pleroma(""))
+        self.assertFalse(is_pleroma(None))
 
 
 class RegisterAppTests(SimpleTestCase):
@@ -278,20 +334,34 @@ class MastodonAuthCallbackTests(TestCase):
         self.assertFalse(AccountAccess.objects.exists())
 
     def test_oauth_error_redirect_is_surfaced(self):
-        """An OAuth error redirect (?error=...) should show a clear message rather
-        than the generic 'invalid request'."""
-        response = self.client.get(
-            "/mastodon_auth/",
-            {"error": "access_denied", "error_description": "denied", "state": "x"},
-        )
+        """An OAuth error redirect (?error=...) should show a clear message and be
+        logged at ERROR (so it reaches Sentry)."""
+        with self.assertLogs("mastodon_auth.views", level="ERROR") as logs:
+            response = self.client.get(
+                "/mastodon_auth/",
+                {"error": "access_denied", "error_description": "denied", "state": "x"},
+            )
         self.assertRedirects(response, "/", fetch_redirect_response=False)
         messages = [str(m) for m in get_messages(response.wsgi_request)]
         self.assertEqual(messages, ["Login was cancelled or rejected by the instance. Please try again."])
+        self.assertTrue(any("access_denied" in m for m in logs.output))
 
-    def test_bare_callback_without_params_redirects(self):
-        """A callback hit with no OAuth params at all (bookmark/crawler) is handled
-        gracefully without erroring."""
-        response = self.client.get("/mastodon_auth/")
+    def test_missing_code_state_is_logged_at_error(self):
+        """A callback without code/state is a user-facing login failure and must be
+        visible in the logs/Sentry (logged at ERROR with request context)."""
+        with self.assertLogs("mastodon_auth.views", level="ERROR") as logs:
+            response = self.client.get("/mastodon_auth/")
         self.assertRedirects(response, "/", fetch_redirect_response=False)
         messages = [str(m) for m in get_messages(response.wsgi_request)]
         self.assertEqual(messages, ["Invalid request, please try again"])
+        self.assertTrue(any("missing code/state" in m for m in logs.output))
+
+    def test_unknown_state_is_logged_at_error(self):
+        """A state with no cached entry (expired/evicted/cache miss) is a real
+        login failure and must be logged at ERROR."""
+        with self.assertLogs("mastodon_auth.views", level="ERROR") as logs:
+            response = self.client.get("/mastodon_auth/", {"code": "abc", "state": "never-cached"})
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
+        messages = [str(m) for m in get_messages(response.wsgi_request)]
+        self.assertEqual(messages, ["Invalid request, please try again"])
+        self.assertTrue(any("unknown/expired OAuth state" in m for m in logs.output))

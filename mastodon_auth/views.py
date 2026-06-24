@@ -37,7 +37,7 @@ from accounts.misskey_api import (
 from accounts.models import Account
 from mastodon_auth.forms import MastodonLoginForm
 from mastodon_auth.models import AccountAccess, AccountFollowing, Instance
-from mastodon_auth.oauth import AppRegistrationError, register_app
+from mastodon_auth.oauth import AppRegistrationError, authorize_url, is_pleroma, register_app
 from starter_packs.utils import FollowError, resolve_and_follow_account, resolve_and_follow_misskey
 from stats.models import FollowClick
 
@@ -157,21 +157,30 @@ def login(request):
 
     state = str(uuid4())
 
-    mastodon = Mastodon(api_base_url=api_base_url, user_agent="fedidevs", version_check_mode="none")
-    try:
-        auth_request_url = mastodon.auth_request_url(
-            client_id=instance.client_id,
-            state=state,
-            redirect_uris=settings.MSTDN_REDIRECT_URI,
-            scopes=SCOPES,
-        )
-    except MastodonError:
-        logger.exception("login auth_request_url failed for %s", api_base_url)
-        messages.error(request, _("Unable to connect to the instance. Is it a Mastodon compatible instance?"))
-        return redirect("index")
+    # Pleroma's "already authorized" shortcut redirects back without a code, so
+    # force its consent flow (which does issue a code). Harmless to omit for
+    # Mastodon, where force_login would add an unwanted re-login step.
+    auth_request_url = authorize_url(
+        api_base_url=api_base_url,
+        client_id=instance.client_id,
+        redirect_uri=settings.MSTDN_REDIRECT_URI,
+        scopes=SCOPES,
+        state=state,
+        force_login=is_pleroma(software),
+    )
 
     cache.set(f"oauth:{state}", instance.id, timeout=500)
     cache.set(f"oauth:{state}:next", next_url, timeout=500)
+
+    # Log exactly what we hand the instance, so an empty callback (no code/state)
+    # can be traced back to the redirect_uri / response_type we requested.
+    logger.info(
+        "login redirecting to OAuth authorize for %s: redirect_uri=%s state=%s url=%s",
+        api_base_url,
+        settings.MSTDN_REDIRECT_URI,
+        state,
+        auth_request_url,
+    )
 
     return redirect(auth_request_url)
 
@@ -200,8 +209,7 @@ def auth(request):
     state = request.GET.get("state")
 
     # The instance rejected the authorization or the user denied it. OAuth error
-    # redirects echo back ?error=...&error_description=... (and usually state), so
-    # this is a real, actionable signal — surface it rather than a generic message.
+    # redirects echo back ?error=...&error_description=... (and usually state).
     error = request.GET.get("error")
     if error:
         logger.error(
@@ -213,18 +221,21 @@ def auth(request):
         return redirect("index")
 
     if not code or not state:
-        # No OAuth params at all (and no error): a bare/stale hit on the callback
-        # URL — bookmark, link-preview crawler, or a reloaded tab — not a real
-        # login attempt. Low-value, so info (breadcrumb) only.
-        logger.info("auth callback without code/state (query keys: %s)", sorted(request.GET.keys()))
+        # The instance redirected back without the authorization code. This is a
+        # real, user-facing login failure (they saw "Invalid request") — log it at
+        # ERROR with full context so we can tell a genuine failure from a bare
+        # crawler/bookmark hit and see what the instance actually sent.
+        logger.error("auth callback missing code/state")
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
     instance_id = cache.get(f"oauth:{state}")
     next_url = cache.get(f"oauth:{state}:next")
     if not instance_id:
-        # Cache entry expired (>500s) or evicted on restart — expected, warn only.
-        logger.warning("auth callback has no cached instance for state %s (expired?)", state)
+        # We have a state but no cached entry for it: expired (>500s on the consent
+        # screen), evicted from the cache, or a cross-process cache miss. A
+        # user-facing failure, so log at ERROR with context.
+        logger.error("auth callback unknown/expired OAuth state %s", state)
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
@@ -355,16 +366,16 @@ def miauth_callback(request):
     """
     session = request.GET.get("session")
     if not session:
-        # Malformed/abandoned callback — not actionable, so warn only.
-        logger.warning("miauth callback missing session")
+        logger.error("miauth callback missing session")
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
     instance_id = cache.get(f"miauth:{session}")
     next_url = cache.get(f"miauth:{session}:next")
     if not instance_id:
-        # Cache entry expired (>500s) or evicted on restart — expected, warn only.
-        logger.warning("miauth callback has no cached instance for session %s (expired?)", session)
+        # We have a session but no cached entry: expired (>500s), evicted, or a
+        # cross-process cache miss. A user-facing failure, so log at ERROR.
+        logger.error("miauth callback unknown/expired session %s", session)
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
@@ -454,6 +465,7 @@ def sync_following(user_id: int):
         client_secret=instance.client_secret,
         access_token=account_access.access_token,
         user_agent="fedidevs",
+        version_check_mode="none",
     )
     try:
         accounts = mastodon.account_following(account.account_id)
@@ -502,6 +514,7 @@ def follow(request, account_id: int):
                 access_token=account_access.access_token,
                 user_agent="fedidevs",
                 request_timeout=5,
+                version_check_mode="none",
             )
             resolve_and_follow_account(mastodon, account, instance)
     except FollowError as e:
@@ -529,6 +542,7 @@ def redirect_to_local(request, query: str):
         client_secret=instance.client_secret,
         access_token=account_access.access_token,
         user_agent="fedidevs",
+        version_check_mode="none",
     )
     try:
         res = mastodon.search_v2(q=query)

@@ -9,9 +9,49 @@ throughout this app) and surface the status code via ``AppRegistrationError`` so
 failure, or show an accurate message.
 """
 
+from urllib.parse import urlencode
+
 import httpx
 
 _TIMEOUT = 10
+
+# nodeinfo software.name values that use Pleroma's OAuth server. (Akkoma is a
+# Pleroma fork but is handled via MiAuth elsewhere, so it's not here.)
+PLEROMA_SOFTWARE = {"pleroma"}
+
+
+def is_pleroma(software: str | None) -> bool:
+    return (software or "").lower() in PLEROMA_SOFTWARE
+
+
+def authorize_url(
+    *,
+    api_base_url: str,
+    client_id: str,
+    redirect_uri: str,
+    scopes: tuple[str, ...],
+    state: str,
+    force_login: bool = False,
+) -> str:
+    """Build the OAuth ``/oauth/authorize`` URL to send the user to.
+
+    We build this ourselves instead of using mastodon.py's ``auth_request_url``
+    because that method emits junk params (``force_login=False``, ``lang=None`` as
+    literal strings) that Pleroma mis-parses, and makes an extra
+    ``/.well-known/oauth-authorization-server`` request. Pass ``force_login=True``
+    for Pleroma so it always runs the consent flow (which issues a code) instead of
+    its broken "already authorized" shortcut that redirects back with no code.
+    """
+    params = {
+        "client_id": client_id,
+        "response_type": "code",
+        "redirect_uri": redirect_uri,
+        "scope": " ".join(scopes),
+        "state": state,
+    }
+    if force_login:
+        params["force_login"] = "true"
+    return f"https://{api_base_url}/oauth/authorize?{urlencode(params)}"
 
 
 class AppRegistrationError(Exception):
