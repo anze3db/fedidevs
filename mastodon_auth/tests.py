@@ -1,14 +1,16 @@
 from unittest.mock import MagicMock, patch
 
+import httpx
 from django.contrib.messages import get_messages
 from django.core.cache import cache
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
 from mastodon.errors import MastodonAPIError
 
 from accounts.models import Account
 from mastodon_auth.forms import MastodonLoginForm
 from mastodon_auth.models import AccountAccess, Instance
+from mastodon_auth.oauth import AppRegistrationError, register_app
 
 
 class MastodonLoginFormTests(TestCase):
@@ -55,6 +57,97 @@ class MastodonLoginViewTests(TestCase):
             messages,
             ["Invalid instance URL. Please enter a valid Mastodon instance domain name."],
         )
+
+    @patch("mastodon_auth.views.Mastodon")
+    @patch("mastodon_auth.views.register_app", side_effect=AppRegistrationError(429, "rate limited"))
+    @patch("mastodon_auth.views.httpx.get")
+    def test_create_app_rate_limited_reuses_existing_credentials(self, http_get, _register, mastodon_cls):
+        """If re-registration fails (e.g. the instance returns 429) but we already
+        have working credentials, reuse them and proceed with login instead of
+        failing."""
+        http_get.return_value = MagicMock(status_code=200)
+        instance = Instance.objects.create(
+            url="det.social",
+            client_id="existing-cid",
+            client_secret="existing-secret",
+            scopes="read",  # != "read follow" -> triggers re-registration attempt
+            software="mastodon",
+        )
+        mastodon_cls.return_value.auth_request_url.return_value = "https://det.social/oauth/authorize?x=1"
+
+        response = self.client.post("/mastodon_login/", {"instance": "det.social"})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "https://det.social/oauth/authorize?x=1")
+        # Existing credentials untouched; no new app was registered.
+        instance.refresh_from_db()
+        self.assertEqual(instance.client_id, "existing-cid")
+        self.assertEqual(instance.scopes, "read")
+        # auth_request_url used the existing client_id.
+        _, kwargs = mastodon_cls.return_value.auth_request_url.call_args
+        self.assertEqual(kwargs["client_id"], "existing-cid")
+        self.assertFalse([str(m) for m in get_messages(response.wsgi_request)])
+
+    @patch("mastodon_auth.views.detect_software", return_value="mastodon")
+    @patch("mastodon_auth.views.register_app", side_effect=AppRegistrationError(429, "rate limited"))
+    @patch("mastodon_auth.views.httpx.get")
+    def test_create_app_failure_without_existing_credentials_errors(self, http_get, _register, _detect):
+        """First-time registration failure with no fallback credentials shows a
+        clear 'temporarily unavailable' message instead of a 500 or a misleading
+        'not compatible' error."""
+        http_get.return_value = MagicMock(status_code=200)
+
+        response = self.client.post("/mastodon_login/", {"instance": "det.social"})
+
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
+        self.assertFalse(Instance.objects.filter(url="det.social").exists())
+        messages = [str(m) for m in get_messages(response.wsgi_request)]
+        self.assertEqual(len(messages), 1)
+        self.assertIn("temporarily unavailable", messages[0])
+
+
+class RegisterAppTests(SimpleTestCase):
+    _kwargs = {
+        "api_base_url": "det.social",
+        "client_name": "fedidevs.com",
+        "scopes": ("read", "follow"),
+        "redirect_uris": "https://fedidevs.com/mastodon_auth/",
+        "website": "https://fedidevs.com",
+    }
+
+    @patch("mastodon_auth.oauth.httpx.post")
+    def test_returns_credentials_on_200(self, post):
+        resp = MagicMock(status_code=200)
+        resp.json.return_value = {"client_id": "cid", "client_secret": "sec"}
+        post.return_value = resp
+
+        self.assertEqual(register_app(**self._kwargs), ("cid", "sec"))
+
+    @patch("mastodon_auth.oauth.httpx.post")
+    def test_raises_with_status_code_on_429(self, post):
+        post.return_value = MagicMock(status_code=429, text="Too Many Requests")
+
+        with self.assertRaises(AppRegistrationError) as ctx:
+            register_app(**self._kwargs)
+        self.assertEqual(ctx.exception.status_code, 429)
+
+    @patch("mastodon_auth.oauth.httpx.post")
+    def test_raises_with_none_status_on_network_error(self, post):
+        post.side_effect = httpx.ConnectError("boom")
+
+        with self.assertRaises(AppRegistrationError) as ctx:
+            register_app(**self._kwargs)
+        self.assertIsNone(ctx.exception.status_code)
+
+    @patch("mastodon_auth.oauth.httpx.post")
+    def test_raises_when_credentials_missing_from_body(self, post):
+        resp = MagicMock(status_code=200)
+        resp.json.return_value = {"error": "nope"}
+        post.return_value = resp
+
+        with self.assertRaises(AppRegistrationError) as ctx:
+            register_app(**self._kwargs)
+        self.assertEqual(ctx.exception.status_code, 200)
 
 
 class MastodonAuthCallbackTests(TestCase):

@@ -37,6 +37,7 @@ from accounts.misskey_api import (
 from accounts.models import Account
 from mastodon_auth.forms import MastodonLoginForm
 from mastodon_auth.models import AccountAccess, AccountFollowing, Instance
+from mastodon_auth.oauth import AppRegistrationError, register_app
 from starter_packs.utils import FollowError, resolve_and_follow_account, resolve_and_follow_misskey
 from stats.models import FollowClick
 
@@ -104,43 +105,52 @@ def login(request):
     # the app's client_id/secret — so rotating the credentials here is safe.
     if not instance or instance.scopes != desired_scopes:
         try:
-            (client_id, client_secret) = Mastodon.create_app(
+            client_id, client_secret = register_app(
+                api_base_url=api_base_url,
                 client_name=settings.MSTDN_CLIENT_NAME,
                 scopes=SCOPES,
                 redirect_uris=settings.MSTDN_REDIRECT_URI,
                 website="https://fedidevs.com",
-                api_base_url=api_base_url,
-                user_agent="fedidevs",
             )
-        except MastodonNetworkError as e:
-            # Instance unreachable during app registration — connectivity, not a bug.
-            logger.warning("login create_app unreachable for %s: %s", api_base_url, e)
-            messages.info(request, _("Network error, is the instance url correct?") + f" `{api_base_url}`")
-            return redirect("/")
-        except KeyError:
-            logger.exception("login create_app key error for %s", api_base_url)
-            messages.error(
-                request,
-                _("Unable to create app on your instance. Is it a Mastodon compatible instance?")
-                + f" `{api_base_url}`",
-            )
-            return redirect("/")
-        except TypeError:
-            logger.exception("login create_app type error for %s", api_base_url)
-            messages.error(
-                request,
-                _("Unable to create app on your instance. Is it a Mastodon compatible instance?")
-                + f" `{api_base_url}`",
-            )
-            return redirect("/")
-
-        if instance is None:
-            instance = Instance(url=api_base_url)
-        instance.client_id = client_id
-        instance.client_secret = client_secret
-        instance.scopes = desired_scopes
-        instance.software = software
-        instance.save()
+        except AppRegistrationError as e:
+            # App registration failed. The common cause is the instance
+            # rate-limiting POST /api/v1/apps (e.status_code == 429); it can also
+            # be a transient network error (e.status_code is None). If we already
+            # have working credentials for this instance, reuse them so login still
+            # works (with the previously granted scopes); otherwise tell the user
+            # it's temporarily unavailable. Not an app bug, so warn (breadcrumb)
+            # rather than error.
+            if instance and instance.client_id and instance.client_secret:
+                logger.warning(
+                    "login register_app failed for %s (status=%s); reusing existing app credentials: %s",
+                    api_base_url,
+                    e.status_code,
+                    e,
+                )
+            else:
+                logger.warning(
+                    "login register_app could not register app on %s (status=%s): %s",
+                    api_base_url,
+                    e.status_code,
+                    e,
+                )
+                messages.error(
+                    request,
+                    _(
+                        "This instance is temporarily unavailable for login (it may be rate limiting requests). "
+                        "Please try again in a few minutes."
+                    )
+                    + f" `{api_base_url}`",
+                )
+                return redirect("/")
+        else:
+            if instance is None:
+                instance = Instance(url=api_base_url)
+            instance.client_id = client_id
+            instance.client_secret = client_secret
+            instance.scopes = desired_scopes
+            instance.software = software
+            instance.save()
     elif instance.software != software:
         instance.software = software
         instance.save(update_fields=["software", "updated_at"])
