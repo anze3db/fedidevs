@@ -19,7 +19,6 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from mastodon import (
     Mastodon,
-    MastodonError,
     MastodonIllegalArgumentError,
     MastodonInternalServerError,
     MastodonNetworkError,
@@ -442,6 +441,52 @@ def miauth_callback(request):
     return redirect(next_url or "index")
 
 
+def get_mastodon_following_urls(instance_url: str, token: str, account_id: str) -> list[str] | None:
+    """Return the profile URLs of everyone the account follows (paginated).
+
+    Hits /api/v1/accounts/{id}/following directly with httpx instead of going
+    through mastodon.py. The library casts every entry into a fully typed
+    Account entity on each response (recursive reflection + dateutil date
+    parsing), which costs ~2s per 40-account page on low-power hosts even though
+    we only read each followee's `url`. A plain JSON fetch with Link-header
+    pagination is dramatically cheaper.
+
+    Returns the list of URLs, or None if the very first request fails (so the
+    caller can skip the sync instead of wiping the existing following on a
+    transient error).
+    """
+    urls: list[str] = []
+    url = f"https://{instance_url}/api/v1/accounts/{account_id}/following"
+    params: dict | None = {"limit": 80}
+    headers = {"Authorization": f"Bearer {token}", "User-Agent": "fedidevs"}
+    with httpx.Client(headers=headers, timeout=10.0) as client:
+        # Bound the loop so a server with broken pagination can't spin forever.
+        for page_num in range(200):
+            try:
+                res = client.get(url, params=params)
+                res.raise_for_status()
+            except httpx.HTTPError:
+                logger.info("Error fetching Mastodon following for %s", instance_url)
+                # First page failed: signal failure so we don't wipe existing rows.
+                return None if page_num == 0 else urls
+            page = res.json()
+            if not page:
+                break
+            for following in page:
+                if following.get("url"):
+                    urls.append(following["url"])
+            # Mastodon advertises the next page via a Link header (rel="next");
+            # its absence means we've reached the end.
+            next_link = res.links.get("next")
+            if not next_link:
+                break
+            url = next_link["url"]  # already carries max_id + limit
+            params = None
+        else:
+            logger.warning("Mastodon following pagination hit page cap for %s", instance_url)
+    return urls
+
+
 @shared_task
 def sync_following(user_id: int):
     user = User.objects.get(pk=user_id)
@@ -459,35 +504,16 @@ def sync_following(user_id: int):
         )
         return
 
-    mastodon = Mastodon(
-        api_base_url=instance.url,
-        client_id=instance.client_id,
-        client_secret=instance.client_secret,
-        access_token=account_access.access_token,
-        user_agent="fedidevs",
-        version_check_mode="none",
-    )
-    try:
-        accounts = mastodon.account_following(account.account_id)
-    except MastodonError:
-        logger.info("Error fetching following for user %s", user.username)
+    urls = get_mastodon_following_urls(instance.url, account_access.access_token, account.account_id)
+    if urls is None:
+        # Couldn't reach the instance at all; leave the existing following intact.
         return
-    to_create = []
-    while accounts:
-        for following in accounts:
-            to_create.append(
-                AccountFollowing(
-                    account=account,
-                    url=following["url"],
-                )
-            )
-        try:
-            accounts = mastodon.fetch_next(accounts)
-        except MastodonError:
-            logger.info("Error fetching following for user %s", user.username)
-            break
-    AccountFollowing.objects.filter(account=account).exclude(url__in=[x.url for x in to_create]).delete()
-    AccountFollowing.objects.bulk_create(to_create, batch_size=1000, ignore_conflicts=True)
+    AccountFollowing.objects.filter(account=account).exclude(url__in=urls).delete()
+    AccountFollowing.objects.bulk_create(
+        [AccountFollowing(account=account, url=url) for url in urls],
+        batch_size=1000,
+        ignore_conflicts=True,
+    )
 
 
 @login_required
