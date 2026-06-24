@@ -48,7 +48,10 @@ class Command(RichCommand):
             await asyncio.gather(*[self.handle_instance(instance.strip(), conference) for instance in instances])
 
             if conference.posts_after:
-                posts_after = conference.posts_after
+                # Aware datetime (start of day in the conference tz); the bare
+                # `posts_after` date would coerce to a naive datetime in the
+                # created_at__gte filter below and warn under active tz support.
+                posts_after = conference.posts_after_datetime
             else:
                 posts_after = timezone.now() - dt.timedelta(days=180)
 

@@ -1,3 +1,4 @@
+import datetime as dt
 import zoneinfo
 
 from django.db import models
@@ -125,6 +126,19 @@ class Conference(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def posts_after_datetime(self) -> dt.datetime | None:
+        """`posts_after` (a date) as a timezone-aware datetime at the start of that
+        day in the conference's timezone.
+
+        Used for `created_at__gte` filters against DateTimeField columns: passing a
+        bare `date` makes Django coerce it to a *naive* datetime and warn under
+        active time zone support.
+        """
+        if not self.posts_after:
+            return None
+        return dt.datetime.combine(self.posts_after, dt.time.min, tzinfo=zoneinfo.ZoneInfo(self.time_zone))
 
     @property
     def languages(self):

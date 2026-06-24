@@ -150,7 +150,7 @@ def get_order_display(order: Literal["-favourites_count", "-reblogs_count", "-re
 def conference(request, conference_slug: str):
     conference = get_object_or_404(Conference, slug=conference_slug)
     if conference.posts_after:
-        search_query = Q(conference=conference, created_at__gte=conference.posts_after)
+        search_query = Q(conference=conference, created_at__gte=conference.posts_after_datetime)
     else:
         search_query = Q(
             conference=conference,
