@@ -1,0 +1,66 @@
+{% extends "v2/layout.html" %}
+{% load account_extras %}
+{% load static %}
+{% block content %}
+    <main class="flex flex-col max-w-lg px-4 mx-auto pb-12">
+        <div class="mb-10 text-center">
+            <p>{% trans "Manage owners of" %}</p>
+            <h1 class="break-words text-balance text-2xl font-semibold text-gray-900 dark:text-white p-4 pb-3">
+                {% render_language_emojis starter_pack.title %}
+            </h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                {% trans "Owners can edit this starter pack, add accounts, and manage owners." %}
+            </p>
+        </div>
+        {# Current owners (top) #}
+        <section>
+            {% include "owners_list.html" %}
+        </section>
+        {# Add an owner (search) — kept outside the swapped regions so typing isn't interrupted #}
+        <section class="mt-10">
+            <h2 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">{% trans "Add an owner" %}</h2>
+            <form onsubmit="return false">
+                <label for="owner-search" class="sr-only">{% trans "Search" %}</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                             aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                        </svg>
+                    </div>
+                    <input type="search"
+                           id="owner-search"
+                           name="q"
+                           value="{{ q }}"
+                           autocomplete="off"
+                           hx-get="{% url 'manage_owners' starter_pack.slug %}"
+                           hx-target="#search-results"
+                           hx-swap="outerHTML"
+                           hx-trigger="keyup changed delay:300ms, search"
+                           class="block w-full p-4 ps-10 pe-24 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                           placeholder="{% trans "Search by name or @username@instance" %}" />
+                    <button type="button"
+                            hx-get="{% url 'manage_owners' starter_pack.slug %}"
+                            hx-target="#search-results"
+                            hx-swap="outerHTML"
+                            hx-include="[name='q']"
+                            class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        {% trans "Search" %}
+                    </button>
+                </div>
+            </form>
+            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                {% trans "You can only add people who have logged into Fedidevs." %}
+            </p>
+            {# Search results (bottom) #}
+            <div class="mt-4">{% include "owners_search_results.html" %}</div>
+        </section>
+    </main>
+{% endblock content %}
+{% block sidebar %}
+    <section class="mb-8">
+    </section>
+{% endblock sidebar %}

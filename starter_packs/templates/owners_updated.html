@@ -1,0 +1,7 @@
+{% comment %}
+Response for add/remove: re-renders the current owners list (main swap into
+#current-owners) and the search results out-of-band (so a freshly added/removed
+person leaves/returns the results without losing the search box focus).
+{% endcomment %}
+{% include "owners_list.html" %}
+{% include "owners_search_results.html" with oob=True %}

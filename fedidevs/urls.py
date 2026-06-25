@@ -254,6 +254,21 @@ urlpatterns = [
         "starter-packs/<str:starter_pack_slug>/edit/", starter_packs_views.edit_starter_pack, name="edit_starter_pack"
     ),
     path(
+        "starter-packs/<str:starter_pack_slug>/owners/",
+        starter_packs_views.manage_owners,
+        name="manage_owners",
+    ),
+    path(
+        "starter-packs/<str:starter_pack_slug>/owners/add/<int:user_id>/",
+        starter_packs_views.add_owner,
+        name="add_owner",
+    ),
+    path(
+        "starter-packs/<str:starter_pack_slug>/owners/remove/<int:user_id>/",
+        starter_packs_views.remove_owner,
+        name="remove_owner",
+    ),
+    path(
         "starter-packs/<str:starter_pack_slug>/follow/",
         starter_packs_views.follow_starter_pack,
         name="follow_starter_pack",

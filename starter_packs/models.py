@@ -1,12 +1,20 @@
 from django.db import models
 
+# Maximum number of owners (users with edit rights) a starter pack can have.
+MAX_OWNERS = 10
+
 
 class StarterPack(models.Model):
     title = models.TextField(max_length=255)
     slug = models.SlugField(max_length=255)
     description = models.TextField()
 
+    # Original author, kept for attribution/display only (the "By X" line and the
+    # JSON/ActivityPub author). NOT used for permission checks — those use `owners`.
     created_by = models.ForeignKey("auth.User", on_delete=models.CASCADE)
+    # Users allowed to edit this pack. Seeded from created_by by migration; managed
+    # via the owner UI (add/remove, capped at MAX_OWNERS, last owner can't leave).
+    owners = models.ManyToManyField("auth.User", related_name="owned_starter_packs")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

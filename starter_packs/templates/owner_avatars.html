@@ -1,0 +1,33 @@
+{% load account_extras %}
+{% load i18n %}
+{% comment %}
+Overlapping owner avatars with a hover popover listing handles.
+Expects `owners` (iterable of auth.User with .accountaccess.account).
+{% endcomment %}
+<div class="relative inline-flex group">
+    <div class="flex -space-x-2">
+        {% for owner in owners %}
+            <img class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800"
+                 src="{{ owner.accountaccess.account.avatar_static }}"
+                 alt="{{ owner.accountaccess.account.username_at_instance }}"
+                 loading="lazy" />
+        {% endfor %}
+    </div>
+    {% comment %}
+    pt-2 (padding, not margin) bridges the gap so the cursor stays inside the
+    hovered group while moving onto the popover — making the links clickable.
+    {% endcomment %}
+    <div class="absolute z-20 hidden pt-2 -translate-x-1/2 top-full left-1/2 group-hover:block min-w-max">
+        <div class="p-3 text-left bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
+            <p class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400">{% trans "Owners" %}</p>
+            <ul class="space-y-1">
+                {% for owner in owners %}
+                    <li>
+                        <a href="{{ owner.accountaccess.account.url }}"
+                           class="text-sm text-gray-700 dark:text-gray-300 hover:underline">{{ owner.accountaccess.account.username_at_instance }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

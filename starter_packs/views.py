@@ -17,6 +17,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
 from mastodon import (
     Mastodon,
 )
@@ -24,13 +25,22 @@ from mastodon import (
 from accounts.management.commands.crawlone import crawlone
 from accounts.models import Account, Instance
 from mastodon_auth.models import AccountAccess, AccountFollowing
-from starter_packs.models import StarterPack, StarterPackAccount
+from starter_packs.models import MAX_OWNERS, StarterPack, StarterPackAccount
 from starter_packs.splash_images import get_splash_image_signature, render_splash_image
 from starter_packs.utils import FollowError, resolve_and_follow_account, resolve_and_follow_misskey
 from stats.models import FollowAllClick
 
 logger = logging.getLogger(__name__)
 username_regex = re.compile(r"^@?([\w0-9._%+-]+)@([\w0-9.-]+\.[\w]{2,})$", re.IGNORECASE | re.UNICODE)
+
+
+def get_editable_pack(request, slug, **extra):
+    """Fetch a starter pack the current user is allowed to edit (an owner), or 404.
+
+    Permission is membership in `owners` — not `created_by`. Filtering the M2M by a
+    single user yields at most one row (the through table is unique per pair).
+    """
+    return get_object_or_404(StarterPack, slug=slug, owners=request.user, **extra)
 
 
 def starter_packs(request):
@@ -56,7 +66,8 @@ def starter_packs(request):
     if tab == "community":
         starter_packs = StarterPack.objects.filter(published_at__isnull=False)
     elif tab == "your" and not request.user.is_anonymous:
-        starter_packs = StarterPack.objects.filter(created_by=request.user)
+        # Packs you own (includes ones others added you to), not just ones you created.
+        starter_packs = StarterPack.objects.filter(owners=request.user)
     elif tab == "containing" and not request.user.is_anonymous:
         starter_packs = StarterPack.objects.filter(
             id__in=StarterPackAccount.objects.filter(account=request.user.accountaccess.account).values(
@@ -76,7 +87,7 @@ def starter_packs(request):
             deleted_at__isnull=True,
         )
         .order_by(*db_order_by)
-        .prefetch_related("created_by__accountaccess__account")
+        .prefetch_related("created_by__accountaccess__account", "owners__accountaccess__account")
     )
 
     if q := request.GET.get("q", "").replace("\x00", "").strip():
@@ -118,9 +129,7 @@ class StarterPackForm(forms.ModelForm):
 
 @login_required
 def add_accounts_to_starter_pack(request, starter_pack_slug):
-    starter_pack = get_object_or_404(
-        StarterPack, slug=starter_pack_slug, created_by=request.user, deleted_at__isnull=True
-    )
+    starter_pack = get_editable_pack(request, starter_pack_slug, deleted_at__isnull=True)
     try:
         access_account = request.user.accountaccess.account
     except AccountAccess.DoesNotExist:
@@ -210,9 +219,7 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
 
 @login_required
 def review_starter_pack(request, starter_pack_slug):
-    starter_pack = get_object_or_404(
-        StarterPack, slug=starter_pack_slug, created_by=request.user, deleted_at__isnull=True
-    )
+    starter_pack = get_editable_pack(request, starter_pack_slug, deleted_at__isnull=True)
     try:
         access_account = request.user.accountaccess.account
     except AccountAccess.DoesNotExist:
@@ -264,9 +271,7 @@ def review_starter_pack(request, starter_pack_slug):
 
 @login_required
 def edit_starter_pack(request, starter_pack_slug):
-    starter_pack = get_object_or_404(
-        StarterPack, slug=starter_pack_slug, created_by=request.user, deleted_at__isnull=True
-    )
+    starter_pack = get_editable_pack(request, starter_pack_slug, deleted_at__isnull=True)
     if request.method == "POST":
         form = StarterPackForm(request.POST, instance=starter_pack)
         if form.is_valid():
@@ -299,6 +304,100 @@ def edit_starter_pack(request, starter_pack_slug):
     )
 
 
+def owners_manager_context(starter_pack, q="", owners_error=None):
+    """Context for the owners management page/partial (owners_manager.html).
+
+    `owners` is the current owner list; `search_results` are logged-in fedidevs
+    users (those with an AccountAccess) matching `q`, excluding current owners.
+    """
+    owners = list(starter_pack.owners.select_related("accountaccess__account").order_by("username"))
+    owner_ids = [owner.id for owner in owners]
+
+    search_results = []
+    if q:
+        search_results = list(
+            AccountAccess.objects.select_related("account")
+            .filter(
+                Q(account__username_at_instance__icontains=q)
+                | Q(account__display_name__icontains=q)
+                | Q(account__search=SearchQuery(q, search_type="websearch"))
+            )
+            .exclude(user_id__in=owner_ids)
+            .order_by("-account__followers_count")[:20]
+        )
+
+    return {
+        "starter_pack": starter_pack,
+        "owners": owners,
+        "owner_count": len(owners),
+        "max_owners": MAX_OWNERS,
+        "can_add": len(owners) < MAX_OWNERS,
+        "search_results": search_results,
+        "q": q,
+        "owners_error": owners_error,
+    }
+
+
+@login_required
+def manage_owners(request, starter_pack_slug):
+    starter_pack = get_editable_pack(request, starter_pack_slug, deleted_at__isnull=True)
+    q = request.GET.get("q", "").replace("\x00", "").strip()
+    # On a live-search request, only the results region is swapped.
+    if "HX-Request" in request.headers:
+        return render(request, "owners_search_results.html", owners_manager_context(starter_pack, q))
+    return render(
+        request,
+        "manage_owners.html",
+        {
+            "page": "starter_packs",
+            "page_title": _("Manage owners"),
+            "page_description": _("Add or remove people who can edit this starter pack."),
+            "page_header": "FEDIDEVS",
+            "page_subheader": "",
+            **owners_manager_context(starter_pack, q),
+        },
+    )
+
+
+@require_POST
+@login_required
+def add_owner(request, starter_pack_slug, user_id):
+    starter_pack = get_editable_pack(request, starter_pack_slug, deleted_at__isnull=True)
+    q = request.POST.get("q", "").replace("\x00", "").strip()
+    error = None
+    if not AccountAccess.objects.filter(user_id=user_id).exists():
+        error = _("That person hasn't logged into Fedidevs yet, so they can't be added as an owner.")
+    elif starter_pack.owners.filter(pk=user_id).exists():
+        pass  # already an owner — no-op
+    elif starter_pack.owners.count() >= MAX_OWNERS:
+        error = _("This starter pack already has the maximum number of owners.")
+    else:
+        starter_pack.owners.add(user_id)
+
+    return render(request, "owners_updated.html", owners_manager_context(starter_pack, q, error))
+
+
+@require_POST
+@login_required
+def remove_owner(request, starter_pack_slug, user_id):
+    starter_pack = get_editable_pack(request, starter_pack_slug, deleted_at__isnull=True)
+    q = request.POST.get("q", "").replace("\x00", "").strip()
+    if starter_pack.owners.count() <= 1:
+        # The last owner can't be removed — a pack always has at least one editor.
+        error = _("A starter pack must have at least one owner.")
+        return render(request, "owners_updated.html", owners_manager_context(starter_pack, q, error))
+
+    starter_pack.owners.remove(user_id)
+
+    if user_id == request.user.id:
+        # You removed yourself: you can no longer edit this pack, so leave the page.
+        response = HttpResponse()
+        response["HX-Redirect"] = "/"
+        return response
+
+    return render(request, "owners_updated.html", owners_manager_context(starter_pack, q))
+
+
 @login_required
 def create_starter_pack(request):
     if request.method == "POST":
@@ -307,6 +406,7 @@ def create_starter_pack(request):
             starter_pack = form.save(commit=False)
             starter_pack.created_by = request.user
             starter_pack.save()
+            starter_pack.owners.add(request.user)
             starter_pack.slug = urlsafe_base64_encode(str(starter_pack.id).encode())
             starter_pack.save(update_fields=["slug"])
             if get_splash_image_signature(starter_pack) != starter_pack.splash_image_signature:
@@ -343,7 +443,7 @@ def create_starter_pack(request):
 @transaction.atomic
 @login_required
 def publish_starter_pack(request, starter_pack_slug):
-    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, created_by=request.user)
+    starter_pack = get_editable_pack(request, starter_pack_slug)
     if request.method == "POST":
         if starter_pack.published_at:
             starter_pack.published_at = None
@@ -365,12 +465,10 @@ def publish_starter_pack(request, starter_pack_slug):
 @transaction.atomic
 @login_required
 def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
-    starter_pack = get_object_or_404(
-        StarterPack.objects.select_for_update(),
-        slug=starter_pack_slug,
-        deleted_at__isnull=True,
-        created_by=request.user,
-    )
+    # Check ownership first (M2M join), then take the row lock by pk — applying
+    # SELECT ... FOR UPDATE across the owners join is not portable.
+    editable = get_editable_pack(request, starter_pack_slug, deleted_at__isnull=True)
+    starter_pack = get_object_or_404(StarterPack.objects.select_for_update(), pk=editable.pk)
     account = get_object_or_404(Account, id=account_id)
     if StarterPackAccount.objects.filter(starter_pack=starter_pack, account_id=account_id).exists():
         StarterPackAccount.objects.filter(
@@ -580,6 +678,9 @@ def share_starter_pack(request, starter_pack_slug):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
+    owners = list(starter_pack.owners.select_related("accountaccess__account").order_by("username"))
+    is_owner = request.user.is_authenticated and any(owner.id == request.user.id for owner in owners)
+
     return render(
         request,
         "starter_pack_accounts.html" if "HX-Request" in request.headers else "share_starter_pack.html",
@@ -592,6 +693,8 @@ def share_starter_pack(request, starter_pack_slug):
             "page_image": starter_pack.splash_image.url if starter_pack.splash_image else static("og-starterpack.png"),
             "page_description": starter_pack.description,
             "starter_pack": starter_pack,
+            "is_owner": is_owner,
+            "owners": owners,
             "num_accounts": starter_pack.num_accounts,
             "num_hidden_accounts": Account.objects.exclude(
                 discoverable=True, instance_model__isnull=False, instance_model__deleted_at__isnull=True
@@ -605,7 +708,7 @@ def share_starter_pack(request, starter_pack_slug):
 
 @login_required
 def delete_starter_pack(request, starter_pack_slug):
-    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, created_by=request.user)
+    starter_pack = get_editable_pack(request, starter_pack_slug)
     if request.method == "POST":
         starter_pack.deleted_at = timezone.now()
         starter_pack.save(update_fields=["deleted_at"])

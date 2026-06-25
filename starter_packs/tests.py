@@ -3,10 +3,11 @@ from unittest.mock import patch
 from ddt import data, ddt, unpack
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 from model_bakery import baker
 
 from accounts.models import Account
-from starter_packs.models import StarterPackAccount
+from starter_packs.models import MAX_OWNERS, StarterPackAccount
 
 
 class TestStarterPacks(TestCase):
@@ -31,7 +32,8 @@ class TestStarterPacks(TestCase):
         self.assertContains(response, "Starter Packs Containing You")
 
     def test_index_page_with_own_starter_packs(self):
-        baker.make("starter_packs.StarterPack", created_by=self.user, _quantity=2)
+        for pack in baker.make("starter_packs.StarterPack", created_by=self.user, _quantity=2):
+            pack.owners.add(self.user)
         self.client.force_login(self.user)
         response = self.client.get(reverse("starter_packs"))
         self.assertEqual(response.status_code, 200)
@@ -67,6 +69,8 @@ class TestCreateStarterPack(TestCase):
         )
         starter_pack = self.user.starterpack_set.first()
         self.assertEqual(starter_pack.created_by, self.user)
+        # The creator is automatically the first owner.
+        self.assertTrue(starter_pack.owners.filter(pk=self.user.pk).exists())
         self.assertRedirects(response, reverse("edit_accounts_starter_pack", args=[starter_pack.slug]))
 
     def test_form_error(self):
@@ -83,6 +87,7 @@ class TestEditStarterPack(TestCase):
         cls.user = baker.make("auth.User")
         baker.make("mastodon_auth.AccountAccess", user=cls.user)
         cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
+        cls.starter_pack.owners.add(cls.user)
 
     def test_not_logged_in(self):
         response = self.client.get(reverse("edit_starter_pack", args=[self.starter_pack.slug]))
@@ -123,6 +128,7 @@ class TestEditStarterPackAccounts(TestCase):
         cls.user = baker.make("auth.User")
         baker.make("mastodon_auth.AccountAccess", user=cls.user)
         cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
+        cls.starter_pack.owners.add(cls.user)
 
     def test_not_logged_in(self):
         response = self.client.get(reverse("edit_accounts_starter_pack", args=[self.starter_pack.slug]))
@@ -149,6 +155,7 @@ class TestAddAccountsSearch(TestCase):
         cls.user = baker.make("auth.User")
         baker.make("mastodon_auth.AccountAccess", user=cls.user)
         cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
+        cls.starter_pack.owners.add(cls.user)
         cls.instance = baker.make("accounts.Instance", instance="instance.org")
         cls.account = baker.make(
             "accounts.Account",
@@ -194,6 +201,7 @@ class TestDeleteStarterPack(TestCase):
         cls.user = baker.make("auth.User")
         baker.make("mastodon_auth.AccountAccess", user=cls.user)
         cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
+        cls.starter_pack.owners.add(cls.user)
 
     def test_not_logged_in(self):
         response = self.client.get(reverse("delete_starter_pack", args=[self.starter_pack.slug]))
@@ -228,6 +236,7 @@ class TestToggleStarterPackAccount(TestCase):
         cls.user = baker.make("auth.User")
         baker.make("mastodon_auth.AccountAccess", user=cls.user)
         cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user)
+        cls.starter_pack.owners.add(cls.user)
 
     def test_add_account(self):
         account = baker.make("accounts.Account", discoverable=True)
@@ -287,6 +296,133 @@ class TestToggleStarterPackAccount(TestCase):
         self.assertEqual(self.starter_pack.starterpackaccount_set.count(), 150)
 
 
+class TestOwnerManagement(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.owner = baker.make("auth.User")
+        baker.make("mastodon_auth.AccountAccess", user=cls.owner)
+        cls.pack = baker.make("starter_packs.StarterPack", created_by=cls.owner)
+        cls.pack.owners.add(cls.owner)
+        # A second user who has logged into fedidevs (findable via search).
+        cls.friend = baker.make("auth.User")
+        baker.make(
+            "mastodon_auth.AccountAccess",
+            user=cls.friend,
+            account__username_at_instance="@friend@instance.org",
+            account__display_name="Friendly Person",
+        )
+
+    # --- permission semantics: owners, not created_by ---
+
+    def test_added_owner_who_is_not_creator_can_edit(self):
+        self.pack.owners.add(self.friend)
+        self.client.force_login(self.friend)
+        response = self.client.get(reverse("edit_starter_pack", args=[self.pack.slug]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_creator_removed_from_owners_loses_access(self):
+        self.pack.owners.add(self.friend)
+        self.pack.owners.remove(self.owner)  # creator is no longer an owner
+        self.client.force_login(self.owner)
+        response = self.client.get(reverse("edit_starter_pack", args=[self.pack.slug]))
+        self.assertEqual(response.status_code, 404)
+
+    # --- manage owners page + search ---
+
+    def test_manage_owners_page(self):
+        self.client.force_login(self.owner)
+        response = self.client.get(reverse("manage_owners", args=[self.pack.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Manage owners")
+        self.assertContains(response, self.owner.accountaccess.account.username_at_instance)
+
+    def test_non_owner_cannot_open_manage_page(self):
+        self.client.force_login(self.friend)  # not an owner
+        response = self.client.get(reverse("manage_owners", args=[self.pack.slug]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_search_finds_logged_in_user(self):
+        self.client.force_login(self.owner)
+        response = self.client.get(reverse("manage_owners", args=[self.pack.slug]), {"q": "friend"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "@friend@instance.org")
+        # The result carries an Add button targeting this user.
+        self.assertContains(response, reverse("add_owner", args=[self.pack.slug, self.friend.id]))
+
+    def test_search_excludes_existing_owners(self):
+        self.pack.owners.add(self.friend)
+        self.client.force_login(self.owner)
+        response = self.client.get(reverse("manage_owners", args=[self.pack.slug]), {"q": "friend"})
+        # Already an owner -> no "add" action offered for them in search results.
+        self.assertNotContains(response, reverse("add_owner", args=[self.pack.slug, self.friend.id]))
+
+    # --- add_owner ---
+
+    def test_add_owner(self):
+        self.client.force_login(self.owner)
+        response = self.client.post(reverse("add_owner", args=[self.pack.slug, self.friend.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.pack.owners.filter(pk=self.friend.pk).exists())
+
+    def test_add_owner_without_account_access_is_rejected(self):
+        ghost = baker.make("auth.User")  # never logged into fedidevs
+        self.client.force_login(self.owner)
+        response = self.client.post(reverse("add_owner", args=[self.pack.slug, ghost.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.pack.owners.filter(pk=ghost.pk).exists())
+        self.assertContains(response, "logged into Fedidevs yet")
+
+    def test_add_owner_blocked_at_max(self):
+        for _ in range(MAX_OWNERS - 1):
+            filler = baker.make("auth.User")
+            baker.make("mastodon_auth.AccountAccess", user=filler)
+            self.pack.owners.add(filler)
+        self.assertEqual(self.pack.owners.count(), MAX_OWNERS)
+        self.client.force_login(self.owner)
+        response = self.client.post(reverse("add_owner", args=[self.pack.slug, self.friend.id]))
+        self.assertContains(response, "maximum number of owners")
+        self.assertFalse(self.pack.owners.filter(pk=self.friend.pk).exists())
+
+    def test_non_owner_cannot_add_owner(self):
+        self.client.force_login(self.friend)  # not an owner
+        response = self.client.post(reverse("add_owner", args=[self.pack.slug, self.friend.id]))
+        self.assertEqual(response.status_code, 404)
+
+    # --- remove_owner ---
+
+    def test_remove_owner(self):
+        self.pack.owners.add(self.friend)
+        self.client.force_login(self.owner)
+        response = self.client.post(reverse("remove_owner", args=[self.pack.slug, self.friend.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.pack.owners.filter(pk=self.friend.pk).exists())
+
+    def test_cannot_remove_last_owner(self):
+        self.client.force_login(self.owner)
+        self.assertEqual(self.pack.owners.count(), 1)
+        response = self.client.post(reverse("remove_owner", args=[self.pack.slug, self.owner.id]))
+        self.assertContains(response, "at least one owner")
+        self.assertEqual(self.pack.owners.count(), 1)
+
+    def test_owner_handles_shown_on_list_card(self):
+        self.pack.published_at = timezone.now()  # show in the community tab
+        self.pack.save()
+        response = self.client.get(reverse("starter_packs"))
+        self.assertEqual(response.status_code, 200)
+        # The owner avatar (icon) and its popover handle both render.
+        self.assertContains(response, self.owner.accountaccess.account.avatar_static)
+        self.assertContains(response, self.owner.accountaccess.account.username_at_instance)
+        # Template comments must not leak as literal text.
+        self.assertNotContains(response, "bridges the gap")
+
+    def test_removing_self_redirects_home(self):
+        self.pack.owners.add(self.friend)  # not the last owner, so removal is allowed
+        self.client.force_login(self.owner)
+        response = self.client.post(reverse("remove_owner", args=[self.pack.slug, self.owner.id]))
+        self.assertEqual(response["HX-Redirect"], "/")
+        self.assertFalse(self.pack.owners.filter(pk=self.owner.pk).exists())
+
+
 @ddt
 class TestShareStarterPack(TestCase):
     @classmethod
@@ -298,6 +434,7 @@ class TestShareStarterPack(TestCase):
             account__activitypub_id="https://instance.org/users/createdbyuser",
         )
         cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user, num_accounts=5)
+        cls.starter_pack.owners.add(cls.user)
         instance = baker.make("accounts.Instance")
         baker.make(
             "starter_packs.StarterPackAccount",

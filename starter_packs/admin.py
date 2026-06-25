@@ -34,4 +34,5 @@ class AuthorAdmin(admin.ModelAdmin):
         "title",
         "slug",
     )
+    filter_horizontal = ("owners",)
     actions = [update_splash_image]

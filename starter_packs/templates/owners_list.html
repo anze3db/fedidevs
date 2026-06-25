@@ -1,0 +1,40 @@
+{% load account_extras %}
+{% load i18n %}
+<div id="current-owners">
+    {% if owners_error %}
+        <div class="p-3 mb-4 text-sm text-red-700 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400">
+            {{ owners_error }}
+        </div>
+    {% endif %}
+    <h2 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">
+        {% blocktrans %}Owners ({{ owner_count }} of {{ max_owners }}){% endblocktrans %}
+    </h2>
+    <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+        {% for owner in owners %}
+            <li class="flex items-center gap-3 py-3">
+                <img class="w-8 h-8 rounded-full"
+                     src="{{ owner.accountaccess.account.avatar_static }}"
+                     alt=""
+                     loading="lazy" />
+                <span class="flex-1 min-w-0">
+                    <span class="flex gap-2 mb-0.5 text-sm font-semibold text-gray-900 truncate dark:text-white [&>img]:max-w-4 [&>img]:max-h-4">{% render_emojis owner.accountaccess.account.display_name owner.accountaccess.account.emojis %}</span>
+                    <span class="block text-sm text-gray-500 truncate dark:text-gray-400">{{ owner.accountaccess.account.username_at_instance }}</span>
+                </span>
+                {% if owner_count > 1 %}
+                    <button hx-post="{% url 'remove_owner' starter_pack.slug owner.id %}"
+                            hx-target="#current-owners"
+                            hx-swap="outerHTML"
+                            hx-include="[name='q']"
+                            {% if owner.id == request.user.id %}hx-confirm="{% trans "You are removing yourself as an owner. You will no longer be able to edit this starter pack. Continue?" %}"{% endif %}
+                            class="px-3 py-1.5 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 dark:text-red-400 dark:border-red-900 dark:hover:bg-gray-800">
+                        {% if owner.id == request.user.id %}
+                            {% trans "Leave" %}
+                        {% else %}
+                            {% trans "Remove" %}
+                        {% endif %}
+                    </button>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>

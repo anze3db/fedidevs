@@ -1,0 +1,35 @@
+{% load account_extras %}
+{% load i18n %}
+<div id="search-results"{% if oob %} hx-swap-oob="true"{% endif %}>
+    {% if q %}
+        {% if not can_add %}
+            <p class="py-4 text-sm text-gray-500 dark:text-gray-400">{% trans "Maximum number of owners reached." %}</p>
+        {% else %}
+            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+                {% for result in search_results %}
+                    <li class="flex items-center gap-3 py-3">
+                        <img class="w-8 h-8 rounded-full"
+                             src="{{ result.account.avatar_static }}"
+                             alt=""
+                             loading="lazy" />
+                        <span class="flex-1 min-w-0">
+                            <span class="flex gap-2 mb-0.5 text-sm font-semibold text-gray-900 truncate dark:text-white [&>img]:max-w-4 [&>img]:max-h-4">{% render_emojis result.account.display_name result.account.emojis %}</span>
+                            <span class="block text-sm text-gray-500 truncate dark:text-gray-400">{{ result.account.username_at_instance }}</span>
+                        </span>
+                        <button hx-post="{% url 'add_owner' starter_pack.slug result.user_id %}"
+                                hx-target="#current-owners"
+                                hx-swap="outerHTML"
+                                hx-include="[name='q']"
+                                class="px-3 py-1.5 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800">
+                            {% trans "Add" %}
+                        </button>
+                    </li>
+                {% empty %}
+                    <li class="py-6 text-sm text-center text-gray-500 dark:text-gray-400">
+                        {% trans "No matching people who have logged into Fedidevs." %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+</div>

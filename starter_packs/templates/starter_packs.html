@@ -145,10 +145,10 @@
                                     </h4>
                                 </a>
                                 {% if request.GET.tab != 'your' %}
-                                    <a href="{{ starter_pack.created_by.accountaccess.account.url }}"
-                                       class="block text-sm font-medium pt-4 text-gray-700 dark:text-gray-400 hover:underline">
-                                        {% trans "By" %} <span class="text-gray-900 dark:text-gray-200">{% render_emojis starter_pack.created_by.accountaccess.account.display_name starter_pack.created_by.accountaccess.account.emojis %}</span> {{ starter_pack.created_by.accountaccess.account.username_at_instance }}
-                                    </a>
+                                    <div class="flex items-center pt-4">
+                                        <span class="pe-2 text-sm font-medium text-gray-700 dark:text-gray-400">{% trans "By" %}</span>
+                                        {% include "owner_avatars.html" with owners=starter_pack.owners.all %}
+                                    </div>
                                 {% endif %}
                                 <a href="{% url 'share_starter_pack' starter_pack.slug %}" class="block">
                                     <p class="prose dark:prose-invert break-words text-pretty hyphens-auto pt-4 font-normal text-gray-700 dark:text-gray-400">

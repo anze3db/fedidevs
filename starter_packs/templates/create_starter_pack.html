@@ -52,6 +52,12 @@
                 </button>
             {% endif %}
         </form>
+        {% if starter_pack %}
+            <a href="{% url 'manage_owners' starter_pack.slug %}"
+               class="inline-block mt-4 text-sm font-medium text-primary-700 hover:underline dark:text-primary-400">
+                {% trans "Manage owners" %} →
+            </a>
+        {% endif %}
     </main>
 {% endblock content %}
 {% block sidebar %}
