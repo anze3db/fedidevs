@@ -135,38 +135,49 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
                     {% for starter_pack in starter_packs %}
                         <div>
-                            <div class="p-4 no-underline bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-900">
-                                <a href="{% url 'share_starter_pack' starter_pack.slug %}" class="block">
-                                    {% if not starter_pack.published_at %}
-                                        <span class=" bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">{% trans "Not published" %}</span>
+                            <div class="no-underline bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                                <a href="{% url 'share_starter_pack' starter_pack.slug %}"
+                                   class="block p-4 rounded-t-lg"
+                                   style="background-image: linear-gradient(110deg, #8c52ff, #ff5757)">
+                                    {% if starter_pack.header_avatars %}
+                                        <div class="flex -space-x-2 mb-3">
+                                            {% for avatar in starter_pack.header_avatars %}
+                                                {% include "member_avatar.html" with avatar_url=avatar.avatar handle=avatar.handle name=avatar.name size="w-9 h-9" %}
+                                            {% endfor %}
+                                        </div>
                                     {% endif %}
-                                    <h4 class="prose dark:prose-invert text-balance break-words pt-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                    {% if not starter_pack.published_at %}
+                                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">{% trans "Not published" %}</span>
+                                    {% endif %}
+                                    <h4 class="text-balance break-words pt-2 text-2xl font-bold tracking-tight text-white">
                                         {% render_language_emojis starter_pack.title %}
                                     </h4>
                                 </a>
-                                {% if request.GET.tab != 'your' %}
-                                    <div class="flex items-center pt-4">
-                                        <span class="pe-2 text-sm font-medium text-gray-700 dark:text-gray-400">{% trans "By" %}</span>
-                                        {% include "owner_avatars.html" with owners=starter_pack.owners.all %}
-                                    </div>
-                                {% endif %}
-                                <a href="{% url 'share_starter_pack' starter_pack.slug %}" class="block">
-                                    <p class="prose dark:prose-invert break-words text-pretty hyphens-auto pt-4 font-normal text-gray-700 dark:text-gray-400">
-                                        {% render_language_emojis starter_pack.description %}
-                                    </p>
-                                    <div class="prose dark:prose-invert grid grid-cols-2 gap-2 py-4 mt-4 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">
-                                        <div class="flex flex-col gap-0 text-center" title="Last status">
-                                            <span class="text-xs">{% trans "Created" %}</span>
-                                            <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">{{ starter_pack.created_at | naturaltime }}</span>
+                                <div class="p-4">
+                                    {% if request.GET.tab != 'your' %}
+                                        <div class="flex items-center pb-2">
+                                            <span class="pe-2 text-sm font-medium text-gray-700 dark:text-gray-400">{% trans "By" %}</span>
+                                            {% include "owner_avatars.html" with owners=starter_pack.owners.all %}
                                         </div>
-                                        <div class="flex flex-col gap-0 text-center" title="Following">
-                                            <span class="text-xs">{% trans "Accounts" %}</span>
-                                            <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
-                                                <span>{{ starter_pack.num_accounts }}</span>
-                                            </span>
+                                    {% endif %}
+                                    <a href="{% url 'share_starter_pack' starter_pack.slug %}" class="block">
+                                        <p class="prose dark:prose-invert break-words text-pretty hyphens-auto pt-2 font-normal text-gray-700 dark:text-gray-400">
+                                            {% render_language_emojis starter_pack.description %}
+                                        </p>
+                                        <div class="prose dark:prose-invert grid grid-cols-2 gap-2 py-4 mt-4 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">
+                                            <div class="flex flex-col gap-0 text-center" title="Last status">
+                                                <span class="text-xs">{% trans "Created" %}</span>
+                                                <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">{{ starter_pack.created_at | naturaltime }}</span>
+                                            </div>
+                                            <div class="flex flex-col gap-0 text-center" title="Following">
+                                                <span class="text-xs">{% trans "Accounts" %}</span>
+                                                <span class="font-semibold text-gray-700 truncate dark:text-gray-400 text-md">
+                                                    <span>{{ starter_pack.num_accounts }}</span>
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </a>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     {% endfor %}

@@ -414,6 +414,8 @@ class TestOwnerManagement(TestCase):
         self.assertContains(response, self.owner.accountaccess.account.username_at_instance)
         # Template comments must not leak as literal text.
         self.assertNotContains(response, "bridges the gap")
+        # Card carries the gradient header.
+        self.assertContains(response, "linear-gradient(110deg, #8c52ff")
 
     def test_removing_self_redirects_home(self):
         self.pack.owners.add(self.friend)  # not the last owner, so removal is allowed
@@ -477,6 +479,16 @@ class TestShareStarterPack(TestCase):
         self.assertContains(response, "Edit")
         self.assertContains(response, "Delete")
         self.assertContains(response, "Follow all 5 accounts")
+
+    def test_header_shows_gradient_and_account_avatars(self):
+        response = self.client.get(reverse("share_starter_pack", args=[self.starter_pack.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "linear-gradient(110deg, #8c52ff")
+        # The pack's account avatars decorate the gradient header.
+        account = self.starter_pack.starterpackaccount_set.first().account
+        self.assertContains(response, account.avatar_static)
+        # Template comments must not leak as literal text.
+        self.assertNotContains(response, "spill left")
 
     def test_non_discoverable_accounts(self):
         Account.objects.update(discoverable=False)

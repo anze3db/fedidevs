@@ -17,116 +17,126 @@
                     </button>
                 </div>
             {% endif %}
-            <div class="w-full p-4 text-center bg-blue-100 border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-blue-950 dark:border-blue-800">
-                <h5 class="break-words text-balance mb-4 text-3xl font-bold text-gray-900 dark:text-white">
-                    {% render_language_emojis starter_pack.title %}
-                </h5>
-                <div class="flex items-center justify-center pb-4">
-                    <span class="pe-2 text-sm font-medium text-gray-700 dark:text-gray-400">{% trans "By" %}</span>
-                    {% include "owner_avatars.html" with owners=owners %}
-                </div>
-                <p class="mb-5 break-words text-pretty hyphens-auto text-base sm:text-lg">
-                    {% render_language_emojis starter_pack.description %}
-                </p>
-                <div class="items-center justify-center space-y-4 sm:flex sm:space-y-0 sm:space-x-4 rtl:space-x-reverse">
-                    {% if not user.is_authenticated %}
-                        <button data-modal-target="authentication-modal"
-                                data-modal-toggle="authentication-modal"
-                                data-umami-event="follow-signup-modal"
-                                class="plausible-event-name=follow-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                            {% blocktrans trimmed count count=num_accounts %}
-                                Follow {{ count }} account
-                            {% plural %}
-                                Follow all {{ count }} accounts
-                            {% endblocktrans %}
-                        </button>
-                    {% else %}
-                        <form method="post"
-                              action="{% url 'follow_starter_pack' starter_pack.slug %}">
-                            {% csrf_token %}
-                            <button type="submit"
-                                    class="plausible-event-name=follow-all text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            <div class="w-full p-4 text-center rounded-lg shadow sm:p-8"
+                 style="background-image: linear-gradient(110deg, #8c52ff, #ff5757)">
+                {% if header_avatars %}
+                    <div class="flex flex-wrap justify-center -space-x-2 mb-5">
+                        {% for avatar in header_avatars %}
+                            {% include "member_avatar.html" with avatar_url=avatar.avatar handle=avatar.handle name=avatar.name size="w-12 h-12" %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div>
+                    <h5 class="mb-4 text-3xl font-bold break-words text-balance text-white">
+                        {% render_language_emojis starter_pack.title %}
+                    </h5>
+                    <div class="flex items-center justify-center pb-4">
+                        <span class="pe-2 text-sm font-medium text-white">{% trans "By" %}</span>
+                        {% include "owner_avatars.html" with owners=owners %}
+                    </div>
+                    <p class="mb-5 break-words text-pretty hyphens-auto text-base sm:text-lg text-white">
+                        {% render_language_emojis starter_pack.description %}
+                    </p>
+                    <div class="items-center justify-center space-y-4 sm:flex sm:space-y-0 sm:space-x-4 rtl:space-x-reverse">
+                        {% if not user.is_authenticated %}
+                            <button data-modal-target="authentication-modal"
+                                    data-modal-toggle="authentication-modal"
+                                    data-umami-event="follow-signup-modal"
+                                    class="plausible-event-name=follow-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                 {% blocktrans trimmed count count=num_accounts %}
                                     Follow {{ count }} account
                                 {% plural %}
                                     Follow all {{ count }} accounts
                                 {% endblocktrans %}
                             </button>
-                        </form>
-                    {% endif %}
-                    <button id="openMoreDropdown"
-                            data-dropdown-toggle="starter-pack-dropdown"
-                            type="button"
-                            class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                        ...
-                    </button>
-                    <!-- Dropdown menu -->
-                    <div id="starter-pack-dropdown"
-                         class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
-                            aria-labelledby="dropdownDefaultButton">
-                            {% comment %} <li>
+                        {% else %}
+                            <form method="post"
+                                  action="{% url 'follow_starter_pack' starter_pack.slug %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="plausible-event-name=follow-all text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    {% blocktrans trimmed count count=num_accounts %}
+                                        Follow {{ count }} account
+                                    {% plural %}
+                                        Follow all {{ count }} accounts
+                                    {% endblocktrans %}
+                                </button>
+                            </form>
+                        {% endif %}
+                        <button id="openMoreDropdown"
+                                data-dropdown-toggle="starter-pack-dropdown"
+                                type="button"
+                                class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                            ...
+                        </button>
+                        <!-- Dropdown menu -->
+                        <div id="starter-pack-dropdown"
+                             class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                aria-labelledby="dropdownDefaultButton">
+                                {% comment %} <li>
                                 <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Copy Link</a>
-                            </li> {% endcomment %}
-                            {% if is_owner %}
-                                <li>
-                                    <a href="{% url 'edit_accounts_starter_pack' starter_pack.slug %}"
-                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Add Accounts" %}</a>
-                                </li>
-                                <li>
-                                    <a href="{% url 'review_starter_pack' starter_pack.slug %}"
-                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Review Accounts" %}</a>
-                                </li>
-                                <li>
-                                    <a href="{% url 'edit_starter_pack' starter_pack.slug %}"
-                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Edit" %}</a>
-                                </li>
-                                <li>
-                                    <a href="{% url 'manage_owners' starter_pack.slug %}"
-                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Owners" %}</a>
-                                </li>
-                                <li>
-                                    <a href="{% url 'delete_starter_pack' starter_pack.slug %}"
-                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Delete" %}</a>
-                                </li>
-                                {% if not starter_pack.published_at %}
+                                </li> {% endcomment %}
+                                {% if is_owner %}
                                     <li>
-                                        <a href="#"
-                                           hx-post="{% url 'publish_starter_pack' starter_pack.slug %}"
-                                           class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                            {% trans "Publish now" %}
-                                        </a>
+                                        <a href="{% url 'edit_accounts_starter_pack' starter_pack.slug %}"
+                                           class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Add Accounts" %}</a>
                                     </li>
-                                {% endif %}
-                                {% if starter_pack.published_at %}
                                     <li>
-                                        <a href="#"
-                                           hx-post="{% url 'publish_starter_pack' starter_pack.slug %}"
-                                           class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                            {% trans "Unpublish" %}
-                                        </a>
+                                        <a href="{% url 'review_starter_pack' starter_pack.slug %}"
+                                           class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Review Accounts" %}</a>
                                     </li>
+                                    <li>
+                                        <a href="{% url 'edit_starter_pack' starter_pack.slug %}"
+                                           class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Edit" %}</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'manage_owners' starter_pack.slug %}"
+                                           class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Owners" %}</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'delete_starter_pack' starter_pack.slug %}"
+                                           class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Delete" %}</a>
+                                    </li>
+                                    {% if not starter_pack.published_at %}
+                                        <li>
+                                            <a href="#"
+                                               hx-post="{% url 'publish_starter_pack' starter_pack.slug %}"
+                                               class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                {% trans "Publish now" %}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    {% if starter_pack.published_at %}
+                                        <li>
+                                            <a href="#"
+                                               hx-post="{% url 'publish_starter_pack' starter_pack.slug %}"
+                                               class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                {% trans "Unpublish" %}
+                                            </a>
+                                        </li>
+                                    {% endif %}
                                 {% endif %}
-                            {% endif %}
-                            <li>
-                                <a href="{% url 'faq' %}#report-issue"
-                                   class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Report" %}</a>
-                            </li>
-                        </ul>
+                                <li>
+                                    <a href="{% url 'faq' %}#report-issue"
+                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{% trans "Report" %}</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-                {% if is_owner %}
-                    {% if num_hidden_accounts %}
-                        <p class="text-center text-xs pt-4 text-gray-700 dark:text-gray-400 [&>strong]:text-gray-950 [&>strong]:dark:text-gray-50">
-                            ⚠️
-                            {% blocktrans trimmed count count=num_hidden_accounts %}
-                                <strong>{{ count }}</strong> account hidden due to their privacy settings.
-                            {% plural %}
-                                <strong>{{ count }}</strong> accounts hidden due to their privacy settings.
-                            {% endblocktrans %}
-                        </p>
+                    {% if is_owner %}
+                        {% if num_hidden_accounts %}
+                            <p class="pt-4 text-xs text-center text-white [&>strong]:font-semibold">
+                                ⚠️
+                                {% blocktrans trimmed count count=num_hidden_accounts %}
+                                    <strong>{{ count }}</strong> account hidden due to their privacy settings.
+                                {% plural %}
+                                    <strong>{{ count }}</strong> accounts hidden due to their privacy settings.
+                                {% endblocktrans %}
+                            </p>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
+                </div>
             </div>
         </div>
         {% include "starter_pack_accounts.html" %}

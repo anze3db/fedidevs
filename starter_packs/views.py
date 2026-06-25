@@ -1,5 +1,6 @@
 import logging
 import re
+from collections import defaultdict
 
 from celery import shared_task
 from django import forms
@@ -41,6 +42,38 @@ def get_editable_pack(request, slug, **extra):
     single user yields at most one row (the through table is unique per pair).
     """
     return get_object_or_404(StarterPack, slug=slug, owners=request.user, **extra)
+
+
+def pack_header_avatars(pack_ids, limit):
+    """Map `starter_pack_id` -> up to `limit` `{avatar, handle, name}` dicts for the
+    gradient headers (discoverable accounts on live instances). `handle`/`name`
+    feed the per-avatar hover tooltip.
+
+    One bounded query for all packs, grouped/capped in Python — avoids per-card
+    N+1 and the ORM's lack of a clean "top N rows per group".
+    """
+    by_pack = defaultdict(list)
+    if not pack_ids:
+        return by_pack
+    rows = (
+        StarterPackAccount.objects.filter(
+            starter_pack_id__in=pack_ids,
+            account__discoverable=True,
+            account__instance_model__isnull=False,
+            account__instance_model__deleted_at__isnull=True,
+        )
+        .order_by("starter_pack_id", "created_at")
+        .values_list(
+            "starter_pack_id",
+            "account__avatar_static",
+            "account__username_at_instance",
+            "account__display_name",
+        )
+    )
+    for pack_id, avatar, handle, name in rows:
+        if avatar and len(by_pack[pack_id]) < limit:
+            by_pack[pack_id].append({"avatar": avatar, "handle": handle, "name": name})
+    return by_pack
 
 
 def starter_packs(request):
@@ -101,6 +134,11 @@ def starter_packs(request):
     paginator = Paginator(starter_packs, 30)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
+
+    # A few account avatars per card for the gradient header (one query total).
+    avatars = pack_header_avatars([pack.id for pack in page_obj], limit=6)
+    for pack in page_obj:
+        pack.header_avatars = avatars.get(pack.id, [])
 
     return render(
         request,
@@ -680,6 +718,7 @@ def share_starter_pack(request, starter_pack_slug):
 
     owners = list(starter_pack.owners.select_related("accountaccess__account").order_by("username"))
     is_owner = request.user.is_authenticated and any(owner.id == request.user.id for owner in owners)
+    header_avatars = pack_header_avatars([starter_pack.id], limit=18).get(starter_pack.id, [])
 
     return render(
         request,
@@ -695,6 +734,7 @@ def share_starter_pack(request, starter_pack_slug):
             "starter_pack": starter_pack,
             "is_owner": is_owner,
             "owners": owners,
+            "header_avatars": header_avatars,
             "num_accounts": starter_pack.num_accounts,
             "num_hidden_accounts": Account.objects.exclude(
                 discoverable=True, instance_model__isnull=False, instance_model__deleted_at__isnull=True

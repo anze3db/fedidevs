@@ -1,0 +1,20 @@
+{% comment %}
+One avatar with a styled hover popover (name + handle).
+Expects `avatar_url`, `handle`, `name`, and `size` (e.g. "w-12 h-12").
+{% endcomment %}
+<div class="relative group hover:z-50">
+    <img class="object-cover {{ size }} transition border-2 border-white rounded-full group-hover:scale-110"
+         src="{{ avatar_url }}"
+         alt="{{ handle }}"
+         loading="lazy" />
+    {% comment %}
+    Open rightward from the avatar's left edge: centering would spill left under
+    the fixed sidebar (z-40), which crops/covers the popover.
+    {% endcomment %}
+    <div class="absolute z-20 hidden pt-2 top-full left-0 group-hover:block">
+        <div class="px-3 py-2 text-left break-words bg-white border border-gray-200 rounded-lg shadow-lg w-max max-w-[15rem] dark:bg-gray-800 dark:border-gray-700">
+            {% if name %}<p class="text-sm font-semibold text-gray-900 dark:text-white">{{ name }}</p>{% endif %}
+            <p class="text-xs text-gray-500 dark:text-gray-400">{{ handle }}</p>
+        </div>
+    </div>
+</div>
