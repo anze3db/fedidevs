@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import httpx
@@ -7,11 +8,66 @@ from django.core import management
 from django.test import SimpleTestCase, TestCase, TransactionTestCase
 from django.utils import timezone
 
+from accounts.activitypub import _media_url, _profile_url, actor_to_account_defaults
 from accounts.management.commands.instances import process_instances
 from accounts.misskey import emojis_to_mastodon, user_to_mastodon
 from accounts.misskey_api import build_miauth_url, is_misskey_family
 from accounts.models import Account, Instance
 from confs.models import Conference, ConferenceAccount
+
+
+class TestActivityPubActor(SimpleTestCase):
+    def test_actor_to_account_defaults_maps_bridged_actor(self):
+        actor = {
+            "id": "https://fed.brid.gy/tantek.com",
+            "type": "Person",
+            "preferredUsername": "tantek.com",
+            "name": "Tantek Çelik",
+            "summary": "hi there",
+            "discoverable": True,
+            "manuallyApprovesFollowers": False,
+            "icon": {"type": "Image", "url": "https://tantek.com/photo.jpg"},
+            "url": ["https://fed.brid.gy/r/https://tantek.com/", "https://example.com/x"],
+        }
+        defaults = actor_to_account_defaults(
+            actor, user="tantek.com", handle_domain="tantek.com", instance_model=SimpleNamespace(domain="fed.brid.gy")
+        )
+        self.assertEqual(defaults["username"], "tantek.com")
+        self.assertEqual(defaults["username_at_instance"], "@tantek.com@tantek.com")
+        self.assertEqual(defaults["instance"], "fed.brid.gy")  # the actor's home host
+        self.assertEqual(defaults["display_name"], "Tantek Çelik")
+        self.assertTrue(defaults["discoverable"])
+        self.assertFalse(defaults["locked"])
+        self.assertFalse(defaults["bot"])
+        self.assertEqual(defaults["avatar"], "https://tantek.com/photo.jpg")
+        self.assertEqual(defaults["url"], "https://fed.brid.gy/r/https://tantek.com/")
+        self.assertEqual(defaults["followers_count"], 0)
+        self.assertEqual(defaults["activitypub_id"], "https://fed.brid.gy/tantek.com")
+        self.assertIsNotNone(defaults["created_at"])
+
+    def test_actor_to_account_defaults_bot_and_locked(self):
+        actor = {
+            "id": "https://x.example/users/bot",
+            "type": "Service",
+            "preferredUsername": "bot",
+            "manuallyApprovesFollowers": True,
+        }
+        defaults = actor_to_account_defaults(
+            actor, user="bot", handle_domain="x.example", instance_model=SimpleNamespace(domain="x.example")
+        )
+        self.assertTrue(defaults["bot"])
+        self.assertTrue(defaults["locked"])
+        self.assertFalse(defaults["discoverable"])  # absent -> defaults False
+        self.assertEqual(defaults["display_name"], "bot")  # falls back to username
+
+    def test_media_and_profile_url_variants(self):
+        self.assertEqual(_media_url({"url": "a"}), "a")
+        self.assertEqual(_media_url([{"url": "b"}]), "b")
+        self.assertEqual(_media_url("c"), "c")
+        self.assertEqual(_media_url(None), "")
+        self.assertEqual(_profile_url({"id": "i", "url": "https://u"}), "https://u")
+        self.assertEqual(_profile_url({"id": "i", "url": [{"href": "https://h"}]}), "https://h")
+        self.assertEqual(_profile_url({"id": "https://i"}), "https://i")
 
 
 # Create your tests here.

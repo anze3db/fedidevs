@@ -8,6 +8,12 @@ from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils import timezone
 from django_rich.management import RichCommand
 
+from accounts.activitypub import (
+    actor_home_domain,
+    actor_to_account_defaults,
+    fetch_actor,
+    resolve_actor_url,
+)
 from accounts.management.commands.instances import process_instances
 from accounts.models import Account, Instance
 
@@ -20,6 +26,10 @@ async def crawlone(user: str, make_visible: bool = False) -> Account | None:
         user = user[1:]
     async with httpx.AsyncClient() as client:
         user, instance = user.lower().split("@")
+        # The domain in the handle. host-meta may delegate `instance` to another
+        # host (e.g. a Brid.gy-bridged personal domain points at fed.brid.gy), but
+        # WebFinger still has to be done against the original handle domain.
+        handle_domain = instance
         try:
             async_client = httpx.AsyncClient()
             res = await async_client.get(f"https://{instance}/.well-known/host-meta")
@@ -28,22 +38,26 @@ async def crawlone(user: str, make_visible: bool = False) -> Account | None:
                 instance = res.headers["Location"].split("/")[2]
         except httpx.RequestError:
             logger.info("Error fetching host-meta for %s", instance)
-        try:
-            instance_model = await Instance.objects.aget(instance=instance)
-        except Instance.DoesNotExist:
+
+        instance_model = await Instance.objects.filter(instance=instance).afirst()
+        if not instance_model:
             await process_instances([instance])
             instance_model = await Instance.objects.filter(instance=instance).afirst()
-            if not instance_model:
-                logger.info(f"Instance {instance} not found")
-                return
-        try:
-            account = await fetch_user(client, instance, user)
-        except Exception as e:
-            logger.info(f"Error: {e}")
-            return
+
+        account = None
+        if instance_model:
+            try:
+                account = await fetch_user(client, instance, user)
+            except Exception as e:
+                logger.info(f"Error: {e}")
+                account = None
+
         if not account or not account.get("id"):
-            logger.info("account not found")
-            return
+            # No usable Mastodon account: the domain has no server, or its account
+            # API is absent/gated (e.g. Brid.gy-bridged accounts). Fall back to the
+            # account's ActivityPub actor, resolved from the original handle domain.
+            return await crawl_via_activitypub(client, handle_domain, user, make_visible)
+
         last_status_at = None
         if account.get("last_status_at"):
             dt_obj = dt.datetime.fromisoformat(account["last_status_at"])
@@ -105,6 +119,44 @@ async def crawlone(user: str, make_visible: bool = False) -> Account | None:
                     "\n\nHey! Looks like your account is not discoverable and you've opted-out of search engine indexing. That's why you aren't showing up 😔 See the FAQ for instructions on how to fix it: http://fedidevs.com/faq/\n\nI did a manual override so that you show up now, but this is a temporary fix."
                 )
         return account_obj
+
+
+async def crawl_via_activitypub(
+    client: httpx.AsyncClient, domain: str, user: str, make_visible: bool = False
+) -> Account | None:
+    """Add an account by reading its ActivityPub actor instead of the Mastodon API.
+
+    Used when the handle's domain has no Mastodon server (e.g. Brid.gy-bridged
+    accounts). The account is stored under the actor's home instance (e.g.
+    fed.brid.gy) so it has a non-deleted instance and can be added to packs.
+    """
+    actor_url = await resolve_actor_url(client, domain, user)
+    if not actor_url:
+        logger.info("No ActivityPub actor for %s@%s", user, domain)
+        return None
+    actor = await fetch_actor(client, actor_url)
+    if not actor:
+        logger.info("Could not fetch ActivityPub actor %s", actor_url)
+        return None
+
+    home = actor_home_domain(actor)
+    instance_model = await Instance.objects.filter(instance=home).afirst()
+    if not instance_model:
+        await process_instances([home])
+        instance_model = await Instance.objects.filter(instance=home).afirst()
+    if not instance_model:
+        logger.info("No instance for ActivityPub actor home %s", home)
+        return None
+
+    defaults = actor_to_account_defaults(actor, user=user, handle_domain=domain, instance_model=instance_model)
+    if make_visible:
+        defaults["discoverable"] = True
+        defaults["noindex"] = False
+    account_obj, created = await Account.objects.aupdate_or_create(
+        account_id=actor["id"], instance=instance_model.domain, defaults=defaults
+    )
+    logger.info("Crawled %s via ActivityPub (created=%s)", defaults["username_at_instance"], created)
+    return account_obj
 
 
 async def fetch_user(client: httpx.AsyncClient, instance: str, user: str, retried=False) -> dict:
