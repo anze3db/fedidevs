@@ -34,6 +34,41 @@ class TestConferencesPage(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+class TestConfPostFiltersDoNotWarnNaiveDatetime(TestCase):
+    """The fwd50/djangoconafrica/dotnetconf pages filter *Post.created_at
+    (DateTimeField) by date. Passing a bare date used to coerce to a naive
+    datetime and warn under active time zone support; the views now use the
+    __date lookup instead."""
+
+    def _assert_no_naive_warning(self, url):
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "error",
+                message=r"DateTimeField .* received a naive datetime",
+                category=RuntimeWarning,
+            )
+            response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_fwd50(self):
+        self._assert_no_naive_warning(reverse("fwd50"))
+
+    def test_fwd50_with_date(self):
+        self._assert_no_naive_warning(reverse("fwd50", args=[dt.date(2023, 11, 6)]))
+
+    def test_djangoconafrica(self):
+        self._assert_no_naive_warning(reverse("djangoconafrica"))
+
+    def test_djangoconafrica_with_date(self):
+        self._assert_no_naive_warning(reverse("djangoconafrica", args=[dt.date(2023, 11, 7)]))
+
+    def test_dotnetconf(self):
+        self._assert_no_naive_warning(reverse("dotnetconf"))
+
+    def test_dotnetconf_with_date(self):
+        self._assert_no_naive_warning(reverse("dotnetconf", args=[dt.date(2023, 11, 14)]))
+
+
 @override_settings(CACHES=settings.TEST_CACHES)
 class TestConferencePage(TestCase):
     @classmethod

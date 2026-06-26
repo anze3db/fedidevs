@@ -306,7 +306,9 @@ def auth(request):
             "discoverable": logged_in_account.get("discoverable") or False,
             "noindex": logged_in_account.get("noindex"),
             "created_at": logged_in_account.get("created_at") or now,
-            "last_status_at": logged_in_account.get("last_status_at"),
+            # Mastodon sends last_status_at as a bare "YYYY-MM-DD" date; parse it
+            # to an aware datetime so it doesn't coerce to a naive one and warn.
+            "last_status_at": _parse_dt(logged_in_account.get("last_status_at")),
             "last_sync_at": now,
             "followers_count": logged_in_account.get("followers_count") or 0,
             "following_count": logged_in_account.get("following_count") or 0,

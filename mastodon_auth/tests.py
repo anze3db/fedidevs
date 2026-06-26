@@ -1,3 +1,4 @@
+import warnings
 from unittest.mock import MagicMock, patch
 
 import httpx
@@ -310,6 +311,49 @@ class MastodonAuthCallbackTests(TestCase):
         self.assertEqual(account.roles, [])
         self.assertEqual(account.fields, [])
         self.assertEqual(AccountAccess.objects.get().access_token, "the-token")
+
+    @patch("mastodon_auth.views.sync_following")
+    @patch("mastodon_auth.views.Mastodon")
+    def test_date_only_last_status_at_is_stored_as_aware(self, mastodon_cls, sync_following):
+        """Mastodon returns last_status_at as a bare 'YYYY-MM-DD' date. Assigning it
+        straight to the DateTimeField coerced it to a naive datetime and warned under
+        active time zone support; it must be parsed to an aware datetime instead."""
+        instance = Instance.objects.create(
+            url="mastodon.example",
+            client_id="cid",
+            client_secret="secret",
+            scopes="read follow",
+        )
+        state = "test-state"
+        cache.set(f"oauth:{state}", instance.id)
+
+        mastodon = MagicMock()
+        mastodon.access_token = "the-token"
+        mastodon.log_in.return_value = "the-token"
+        mastodon.me.return_value = {
+            "id": "1",
+            "username": "anze",
+            "acct": "anze",
+            "display_name": "anze",
+            "locked": False,
+            "created_at": timezone.now(),
+            "last_status_at": "2026-06-23",
+            "url": "https://mastodon.example/users/anze",
+        }
+        mastodon_cls.return_value = mastodon
+
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "error",
+                message=r"DateTimeField .* received a naive datetime",
+                category=RuntimeWarning,
+            )
+            with self.captureOnCommitCallbacks(execute=True):
+                response = self.client.get("/mastodon_auth/", {"code": "abc", "state": state})
+
+        self.assertEqual(response.status_code, 302)
+        account = Account.objects.get(account_id="1")
+        self.assertIsNotNone(account.last_status_at.tzinfo)
 
     @patch("mastodon_auth.views.Mastodon")
     def test_token_exchange_failure_without_token_errors(self, mastodon_cls):

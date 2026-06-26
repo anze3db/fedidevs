@@ -21,11 +21,11 @@ def djangoconus(request, date: dt.date | None = None):
         order = "-favourites_count"
     if date:
         date = date.date()
-        search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
+        search_query &= Q(created_at__date__gte=date, created_at__date__lt=date + dt.timedelta(days=1))
     else:
         search_query &= Q(
-            created_at__lte=dt.date(2023, 10, 20),
-            created_at__gte=dt.date(2023, 10, 16),
+            created_at__date__lte=dt.date(2023, 10, 20),
+            created_at__date__gte=dt.date(2023, 10, 16),
         )
 
     posts = DjangoConUS23Post.objects.filter(search_query).order_by(order)
@@ -41,8 +41,8 @@ def djangoconus(request, date: dt.date | None = None):
     counts = (
         DjangoConUS23Post.objects.filter(
             visibility="public",
-            created_at__gte=min(dates),
-            created_at__lt=max(dates) + dt.timedelta(days=1),
+            created_at__date__gte=min(dates),
+            created_at__date__lt=max(dates) + dt.timedelta(days=1),
         )
         .values("created_at__date")
         .annotate(count=Count("id"))
@@ -65,8 +65,8 @@ def djangoconus(request, date: dt.date | None = None):
 
     stats = DjangoConUS23Post.objects.filter(
         visibility="public",
-        created_at__lte=dt.date(2023, 10, 20),
-        created_at__gte=dt.date(2023, 10, 16),
+        created_at__date__lte=dt.date(2023, 10, 20),
+        created_at__date__gte=dt.date(2023, 10, 16),
     ).aggregate(
         total_posts=Count("id"),
         total_favourites=Sum("favourites_count"),

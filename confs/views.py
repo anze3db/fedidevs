@@ -316,7 +316,7 @@ def fwd50(request, date: dt.date | None = None):
 
     if date:
         date = date.date()
-        search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
+        search_query &= Q(created_at__date__gte=date, created_at__date__lt=date + dt.timedelta(days=1))
     else:
         search_query &= Q()
 
@@ -340,8 +340,8 @@ def fwd50(request, date: dt.date | None = None):
     counts = (
         Fwd50Post.objects.filter(
             visibility="public",
-            created_at__gte=min(dates),
-            created_at__lt=max(dates) + dt.timedelta(days=1),
+            created_at__date__gte=min(dates),
+            created_at__date__lt=max(dates) + dt.timedelta(days=1),
         )
         .values("created_at__date")
         .annotate(count=Count("id"))
@@ -402,7 +402,7 @@ def djangoconafrica(request, date: dt.date | None = None):
 
     if date:
         date = date.date()
-        search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
+        search_query &= Q(created_at__date__gte=date, created_at__date__lt=date + dt.timedelta(days=1))
     else:
         search_query &= Q()
 
@@ -439,8 +439,8 @@ def djangoconafrica(request, date: dt.date | None = None):
     counts = (
         DjangoConAfricaPost.objects.filter(
             visibility="public",
-            created_at__gte=min(dates),
-            created_at__lt=max(dates) + dt.timedelta(days=1),
+            created_at__date__gte=min(dates),
+            created_at__date__lt=max(dates) + dt.timedelta(days=1),
         )
         .values("created_at__date")
         .annotate(count=Count("id"))
@@ -503,10 +503,10 @@ def dotnetconf(request, date: dt.date | None = None):
 
     if date:
         date = date.date()
-        search_query &= Q(created_at__gte=date, created_at__lt=date + dt.timedelta(days=1))
+        search_query &= Q(created_at__date__gte=date, created_at__date__lt=date + dt.timedelta(days=1))
     else:
         search_query &= Q(
-            created_at__gte=dt.date(2023, 11, 1),
+            created_at__date__gte=dt.date(2023, 11, 1),
         )
 
     try:
@@ -534,7 +534,7 @@ def dotnetconf(request, date: dt.date | None = None):
     ]
 
     users_with_most_posts = (
-        DotNetConfAccount.objects.filter(posts__created_at__gte=dt.date(2023, 11, 1))
+        DotNetConfAccount.objects.filter(posts__created_at__date__gte=dt.date(2023, 11, 1))
         .annotate(count=Count("posts"))
         .order_by("-count")[:10]
     )
@@ -542,8 +542,8 @@ def dotnetconf(request, date: dt.date | None = None):
     counts = (
         DotNetConfPost.objects.filter(
             visibility="public",
-            created_at__gte=min(dates),
-            created_at__lt=max(dates) + dt.timedelta(days=1),
+            created_at__date__gte=min(dates),
+            created_at__date__lt=max(dates) + dt.timedelta(days=1),
         )
         .values("created_at__date")
         .annotate(count=Count("id"))
@@ -567,7 +567,7 @@ def dotnetconf(request, date: dt.date | None = None):
     stats = DotNetConfPost.objects.filter(
         visibility="public",
         # created_at__lte=dt.date(2023, 10, 20),
-        created_at__gte=dt.date(2023, 11, 1),
+        created_at__date__gte=dt.date(2023, 11, 1),
     ).aggregate(
         total_posts=Count("id"),
         total_favourites=Sum("favourites_count"),
