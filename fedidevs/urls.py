@@ -259,14 +259,29 @@ urlpatterns = [
         name="manage_owners",
     ),
     path(
-        "starter-packs/<str:starter_pack_slug>/owners/add/<int:user_id>/",
-        starter_packs_views.add_owner,
-        name="add_owner",
+        "starter-packs/<str:starter_pack_slug>/owners/invite/<int:user_id>/",
+        starter_packs_views.invite_owner,
+        name="invite_owner",
+    ),
+    path(
+        "starter-packs/<str:starter_pack_slug>/owners/cancel/<int:user_id>/",
+        starter_packs_views.cancel_invitation,
+        name="cancel_invitation",
     ),
     path(
         "starter-packs/<str:starter_pack_slug>/owners/remove/<int:user_id>/",
         starter_packs_views.remove_owner,
         name="remove_owner",
+    ),
+    path(
+        "starter-packs/<str:starter_pack_slug>/invitations/accept/",
+        starter_packs_views.accept_invitation,
+        name="accept_invitation",
+    ),
+    path(
+        "starter-packs/<str:starter_pack_slug>/invitations/decline/",
+        starter_packs_views.decline_invitation,
+        name="decline_invitation",
     ),
     path(
         "starter-packs/<str:starter_pack_slug>/follow/",

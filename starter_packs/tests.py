@@ -7,7 +7,7 @@ from django.utils import timezone
 from model_bakery import baker
 
 from accounts.models import Account
-from starter_packs.models import MAX_OWNERS, StarterPackAccount
+from starter_packs.models import MAX_OWNERS, StarterPackAccount, StarterPackInvitation
 
 
 class TestStarterPacks(TestCase):
@@ -346,47 +346,151 @@ class TestOwnerManagement(TestCase):
         response = self.client.get(reverse("manage_owners", args=[self.pack.slug]), {"q": "friend"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "@friend@instance.org")
-        # The result carries an Add button targeting this user.
-        self.assertContains(response, reverse("add_owner", args=[self.pack.slug, self.friend.id]))
+        # The result carries an Invite button targeting this user.
+        self.assertContains(response, reverse("invite_owner", args=[self.pack.slug, self.friend.id]))
 
     def test_search_excludes_existing_owners(self):
         self.pack.owners.add(self.friend)
         self.client.force_login(self.owner)
         response = self.client.get(reverse("manage_owners", args=[self.pack.slug]), {"q": "friend"})
-        # Already an owner -> no "add" action offered for them in search results.
-        self.assertNotContains(response, reverse("add_owner", args=[self.pack.slug, self.friend.id]))
+        # Already an owner -> no "invite" action offered for them in search results.
+        self.assertNotContains(response, reverse("invite_owner", args=[self.pack.slug, self.friend.id]))
 
-    # --- add_owner ---
-
-    def test_add_owner(self):
+    def test_search_excludes_invited_users(self):
+        StarterPackInvitation.objects.create(starter_pack=self.pack, invited_user=self.friend, invited_by=self.owner)
         self.client.force_login(self.owner)
-        response = self.client.post(reverse("add_owner", args=[self.pack.slug, self.friend.id]))
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(self.pack.owners.filter(pk=self.friend.pk).exists())
+        response = self.client.get(reverse("manage_owners", args=[self.pack.slug]), {"q": "friend"})
+        # Already invited -> no "invite" action offered for them in search results.
+        self.assertNotContains(response, reverse("invite_owner", args=[self.pack.slug, self.friend.id]))
 
-    def test_add_owner_without_account_access_is_rejected(self):
+    # --- invite_owner ---
+
+    def test_invite_creates_pending_invitation_not_owner(self):
+        self.client.force_login(self.owner)
+        response = self.client.post(reverse("invite_owner", args=[self.pack.slug, self.friend.id]))
+        self.assertEqual(response.status_code, 200)
+        # Invited, but not yet an owner — they must accept first.
+        self.assertFalse(self.pack.owners.filter(pk=self.friend.pk).exists())
+        self.assertTrue(self.pack.invitations.filter(invited_user=self.friend, invited_by=self.owner).exists())
+
+    def test_invite_without_account_access_is_rejected(self):
         ghost = baker.make("auth.User")  # never logged into fedidevs
         self.client.force_login(self.owner)
-        response = self.client.post(reverse("add_owner", args=[self.pack.slug, ghost.id]))
+        response = self.client.post(reverse("invite_owner", args=[self.pack.slug, ghost.id]))
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(self.pack.owners.filter(pk=ghost.pk).exists())
+        self.assertFalse(self.pack.invitations.filter(invited_user=ghost).exists())
         self.assertContains(response, "logged into Fedidevs yet")
 
-    def test_add_owner_blocked_at_max(self):
+    def test_invite_existing_owner_is_noop(self):
+        self.pack.owners.add(self.friend)
+        self.client.force_login(self.owner)
+        response = self.client.post(reverse("invite_owner", args=[self.pack.slug, self.friend.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.pack.invitations.filter(invited_user=self.friend).exists())
+
+    def test_invite_twice_does_not_duplicate(self):
+        self.client.force_login(self.owner)
+        self.client.post(reverse("invite_owner", args=[self.pack.slug, self.friend.id]))
+        self.client.post(reverse("invite_owner", args=[self.pack.slug, self.friend.id]))
+        self.assertEqual(self.pack.invitations.filter(invited_user=self.friend).count(), 1)
+
+    def test_invite_blocked_at_max(self):
+        # Fill up to the cap with a mix of owners and pending invitations.
         for _ in range(MAX_OWNERS - 1):
             filler = baker.make("auth.User")
             baker.make("mastodon_auth.AccountAccess", user=filler)
             self.pack.owners.add(filler)
         self.assertEqual(self.pack.owners.count(), MAX_OWNERS)
         self.client.force_login(self.owner)
-        response = self.client.post(reverse("add_owner", args=[self.pack.slug, self.friend.id]))
+        response = self.client.post(reverse("invite_owner", args=[self.pack.slug, self.friend.id]))
         self.assertContains(response, "maximum number of owners")
+        self.assertFalse(self.pack.invitations.filter(invited_user=self.friend).exists())
+
+    def test_invite_blocked_when_owners_plus_invitations_at_max(self):
+        # One owner + (MAX_OWNERS - 1) pending invitations == cap.
+        for _ in range(MAX_OWNERS - 1):
+            invitee = baker.make("auth.User")
+            baker.make("mastodon_auth.AccountAccess", user=invitee)
+            StarterPackInvitation.objects.create(starter_pack=self.pack, invited_user=invitee, invited_by=self.owner)
+        self.client.force_login(self.owner)
+        response = self.client.post(reverse("invite_owner", args=[self.pack.slug, self.friend.id]))
+        self.assertContains(response, "maximum number of owners")
+        self.assertFalse(self.pack.invitations.filter(invited_user=self.friend).exists())
+
+    def test_non_owner_cannot_invite(self):
+        self.client.force_login(self.friend)  # not an owner
+        response = self.client.post(reverse("invite_owner", args=[self.pack.slug, self.friend.id]))
+        self.assertEqual(response.status_code, 404)
+
+    # --- cancel_invitation ---
+
+    def test_owner_cancels_invitation(self):
+        StarterPackInvitation.objects.create(starter_pack=self.pack, invited_user=self.friend, invited_by=self.owner)
+        self.client.force_login(self.owner)
+        response = self.client.post(reverse("cancel_invitation", args=[self.pack.slug, self.friend.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.pack.invitations.filter(invited_user=self.friend).exists())
+
+    def test_non_owner_cannot_cancel_invitation(self):
+        StarterPackInvitation.objects.create(starter_pack=self.pack, invited_user=self.friend, invited_by=self.owner)
+        self.client.force_login(self.friend)  # not an owner
+        response = self.client.post(reverse("cancel_invitation", args=[self.pack.slug, self.friend.id]))
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(self.pack.invitations.filter(invited_user=self.friend).exists())
+
+    # --- accept / decline invitation ---
+
+    def test_accept_invitation_makes_owner(self):
+        StarterPackInvitation.objects.create(starter_pack=self.pack, invited_user=self.friend, invited_by=self.owner)
+        self.client.force_login(self.friend)
+        response = self.client.post(reverse("accept_invitation", args=[self.pack.slug]))
+        self.assertRedirects(
+            response, reverse("share_starter_pack", args=[self.pack.slug]), fetch_redirect_response=False
+        )
+        self.assertTrue(self.pack.owners.filter(pk=self.friend.pk).exists())
+        self.assertFalse(self.pack.invitations.filter(invited_user=self.friend).exists())
+
+    def test_only_invited_user_can_accept(self):
+        StarterPackInvitation.objects.create(starter_pack=self.pack, invited_user=self.friend, invited_by=self.owner)
+        stranger = baker.make("auth.User")
+        baker.make("mastodon_auth.AccountAccess", user=stranger)
+        self.client.force_login(stranger)  # has no invitation for this pack
+        response = self.client.post(reverse("accept_invitation", args=[self.pack.slug]))
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(self.pack.owners.filter(pk=stranger.pk).exists())
+        # The real invitee's invitation is untouched.
+        self.assertTrue(self.pack.invitations.filter(invited_user=self.friend).exists())
+
+    def test_accept_blocked_when_pack_at_max(self):
+        StarterPackInvitation.objects.create(starter_pack=self.pack, invited_user=self.friend, invited_by=self.owner)
+        # Pack reaches the owner cap after the invite was sent.
+        for _ in range(MAX_OWNERS - 1):
+            filler = baker.make("auth.User")
+            baker.make("mastodon_auth.AccountAccess", user=filler)
+            self.pack.owners.add(filler)
+        self.assertEqual(self.pack.owners.count(), MAX_OWNERS)
+        self.client.force_login(self.friend)
+        self.client.post(reverse("accept_invitation", args=[self.pack.slug]))
+        self.assertFalse(self.pack.owners.filter(pk=self.friend.pk).exists())
+        # Invitation is kept so they can accept once a slot frees up.
+        self.assertTrue(self.pack.invitations.filter(invited_user=self.friend).exists())
+
+    def test_decline_invitation_removes_it(self):
+        StarterPackInvitation.objects.create(starter_pack=self.pack, invited_user=self.friend, invited_by=self.owner)
+        self.client.force_login(self.friend)
+        response = self.client.post(reverse("decline_invitation", args=[self.pack.slug]))
+        self.assertRedirects(response, reverse("starter_packs"), fetch_redirect_response=False)
+        self.assertFalse(self.pack.invitations.filter(invited_user=self.friend).exists())
         self.assertFalse(self.pack.owners.filter(pk=self.friend.pk).exists())
 
-    def test_non_owner_cannot_add_owner(self):
-        self.client.force_login(self.friend)  # not an owner
-        response = self.client.post(reverse("add_owner", args=[self.pack.slug, self.friend.id]))
-        self.assertEqual(response.status_code, 404)
+    def test_pending_invitation_shown_on_starter_packs_page(self):
+        StarterPackInvitation.objects.create(starter_pack=self.pack, invited_user=self.friend, invited_by=self.owner)
+        self.client.force_login(self.friend)
+        response = self.client.get(reverse("starter_packs"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Pending invitations")
+        self.assertContains(response, reverse("accept_invitation", args=[self.pack.slug]))
+        self.assertContains(response, reverse("decline_invitation", args=[self.pack.slug]))
 
     # --- remove_owner ---
 

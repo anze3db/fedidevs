@@ -26,7 +26,7 @@ from mastodon import (
 from accounts.management.commands.crawlone import crawlone
 from accounts.models import Account, Instance
 from mastodon_auth.models import AccountAccess, AccountFollowing
-from starter_packs.models import MAX_OWNERS, StarterPack, StarterPackAccount
+from starter_packs.models import MAX_OWNERS, StarterPack, StarterPackAccount, StarterPackInvitation
 from starter_packs.splash_images import get_splash_image_signature, render_splash_image
 from starter_packs.utils import FollowError, resolve_and_follow_account, resolve_and_follow_misskey
 from stats.models import FollowAllClick
@@ -140,6 +140,16 @@ def starter_packs(request):
     for pack in page_obj:
         pack.header_avatars = avatars.get(pack.id, [])
 
+    # Pending owner invitations addressed to the logged-in user, shown for in-app
+    # accept/decline (there are no notifications).
+    pending_invitations = []
+    if not request.user.is_anonymous:
+        pending_invitations = list(
+            StarterPackInvitation.objects.filter(invited_user=request.user, starter_pack__deleted_at__isnull=True)
+            .select_related("starter_pack", "invited_by__accountaccess__account")
+            .order_by("created_at")
+        )
+
     return render(
         request,
         "starter_packs.html",
@@ -154,6 +164,7 @@ def starter_packs(request):
             "page_image": static("og-starterpacks.png"),
             "page_subheader": "",
             "starter_packs": page_obj,
+            "pending_invitations": pending_invitations,
             "containing_username": request.GET.get("username", ""),
         },
     )
@@ -345,11 +356,15 @@ def edit_starter_pack(request, starter_pack_slug):
 def owners_manager_context(starter_pack, q="", owners_error=None):
     """Context for the owners management page/partial (owners_manager.html).
 
-    `owners` is the current owner list; `search_results` are logged-in fedidevs
-    users (those with an AccountAccess) matching `q`, excluding current owners.
+    `owners` is the current owner list; `invitations` are pending owner
+    invitations; `search_results` are logged-in fedidevs users (those with an
+    AccountAccess) matching `q`, excluding current owners and already-invited users.
     """
     owners = list(starter_pack.owners.select_related("accountaccess__account").order_by("username"))
-    owner_ids = [owner.id for owner in owners]
+    invitations = list(
+        starter_pack.invitations.select_related("invited_user__accountaccess__account").order_by("created_at")
+    )
+    taken_ids = [owner.id for owner in owners] + [inv.invited_user_id for inv in invitations]
 
     search_results = []
     if q:
@@ -360,7 +375,7 @@ def owners_manager_context(starter_pack, q="", owners_error=None):
                 | Q(account__display_name__icontains=q)
                 | Q(account__search=SearchQuery(q, search_type="websearch"))
             )
-            .exclude(user_id__in=owner_ids)
+            .exclude(user_id__in=taken_ids)
             .order_by("-account__followers_count")[:20]
         )
 
@@ -368,8 +383,10 @@ def owners_manager_context(starter_pack, q="", owners_error=None):
         "starter_pack": starter_pack,
         "owners": owners,
         "owner_count": len(owners),
+        "invitations": invitations,
         "max_owners": MAX_OWNERS,
-        "can_add": len(owners) < MAX_OWNERS,
+        # Pending invitations count toward the cap so a pack can't over-invite.
+        "can_add": len(owners) + len(invitations) < MAX_OWNERS,
         "search_results": search_results,
         "q": q,
         "owners_error": owners_error,
@@ -399,20 +416,33 @@ def manage_owners(request, starter_pack_slug):
 
 @require_POST
 @login_required
-def add_owner(request, starter_pack_slug, user_id):
+def invite_owner(request, starter_pack_slug, user_id):
     starter_pack = get_editable_pack(request, starter_pack_slug, deleted_at__isnull=True)
     q = request.POST.get("q", "").replace("\x00", "").strip()
     error = None
     if not AccountAccess.objects.filter(user_id=user_id).exists():
-        error = _("That person hasn't logged into Fedidevs yet, so they can't be added as an owner.")
+        error = _("That person hasn't logged into Fedidevs yet, so they can't be invited.")
     elif starter_pack.owners.filter(pk=user_id).exists():
         pass  # already an owner — no-op
-    elif starter_pack.owners.count() >= MAX_OWNERS:
-        error = _("This starter pack already has the maximum number of owners.")
+    elif starter_pack.invitations.filter(invited_user_id=user_id).exists():
+        pass  # already invited — no-op
+    elif starter_pack.owners.count() + starter_pack.invitations.count() >= MAX_OWNERS:
+        error = _("This starter pack already has the maximum number of owners and pending invitations.")
     else:
-        starter_pack.owners.add(user_id)
+        StarterPackInvitation.objects.create(
+            starter_pack=starter_pack, invited_user_id=user_id, invited_by=request.user
+        )
 
     return render(request, "owners_updated.html", owners_manager_context(starter_pack, q, error))
+
+
+@require_POST
+@login_required
+def cancel_invitation(request, starter_pack_slug, user_id):
+    starter_pack = get_editable_pack(request, starter_pack_slug, deleted_at__isnull=True)
+    q = request.POST.get("q", "").replace("\x00", "").strip()
+    starter_pack.invitations.filter(invited_user_id=user_id).delete()
+    return render(request, "owners_updated.html", owners_manager_context(starter_pack, q))
 
 
 @require_POST
@@ -434,6 +464,28 @@ def remove_owner(request, starter_pack_slug, user_id):
         return response
 
     return render(request, "owners_updated.html", owners_manager_context(starter_pack, q))
+
+
+@require_POST
+@login_required
+def accept_invitation(request, starter_pack_slug):
+    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, deleted_at__isnull=True)
+    invitation = get_object_or_404(StarterPackInvitation, starter_pack=starter_pack, invited_user=request.user)
+    if starter_pack.owners.count() >= MAX_OWNERS:
+        messages.error(request, _("This starter pack already has the maximum number of owners."))
+        return redirect("starter_packs")
+    starter_pack.owners.add(request.user)
+    invitation.delete()
+    messages.success(request, _("You are now an owner of this starter pack."))
+    return redirect("share_starter_pack", starter_pack_slug=starter_pack.slug)
+
+
+@require_POST
+@login_required
+def decline_invitation(request, starter_pack_slug):
+    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, deleted_at__isnull=True)
+    StarterPackInvitation.objects.filter(starter_pack=starter_pack, invited_user=request.user).delete()
+    return redirect("starter_packs")
 
 
 @login_required

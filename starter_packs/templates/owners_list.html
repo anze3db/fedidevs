@@ -37,4 +37,28 @@
             </li>
         {% endfor %}
     </ul>
+    {% if invitations %}
+        <h2 class="mt-6 mb-2 text-sm font-semibold text-gray-900 dark:text-white">{% trans "Pending invitations" %}</h2>
+        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+            {% for invitation in invitations %}
+                <li class="flex items-center gap-3 py-3">
+                    <img class="w-8 h-8 rounded-full"
+                         src="{{ invitation.invited_user.accountaccess.account.avatar_static }}"
+                         alt=""
+                         loading="lazy" />
+                    <span class="flex-1 min-w-0">
+                        <span class="flex gap-2 mb-0.5 text-sm font-semibold text-gray-900 truncate dark:text-white [&>img]:max-w-4 [&>img]:max-h-4">{% render_emojis invitation.invited_user.accountaccess.account.display_name invitation.invited_user.accountaccess.account.emojis %}</span>
+                        <span class="block text-sm text-gray-500 truncate dark:text-gray-400">{{ invitation.invited_user.accountaccess.account.username_at_instance }} · {% trans "invited" %}</span>
+                    </span>
+                    <button hx-post="{% url 'cancel_invitation' starter_pack.slug invitation.invited_user_id %}"
+                            hx-target="#current-owners"
+                            hx-swap="outerHTML"
+                            hx-include="[name='q']"
+                            class="px-3 py-1.5 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800">
+                        {% trans "Cancel" %}
+                    </button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 </div>

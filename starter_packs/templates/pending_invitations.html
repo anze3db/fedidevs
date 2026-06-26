@@ -1,0 +1,37 @@
+{% load i18n %}
+{% if pending_invitations %}
+    <div class="max-w-4xl mx-auto mb-8">
+        <div class="p-4 border border-blue-200 rounded-lg bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
+            <h2 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">{% trans "Pending invitations" %}</h2>
+            <ul class="divide-y divide-blue-100 dark:divide-blue-900">
+                {% for invitation in pending_invitations %}
+                    <li class="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
+                        <p class="text-sm text-gray-700 dark:text-gray-300">
+                            {% blocktrans trimmed with pack=invitation.starter_pack.title %}
+                                You've been invited to co-own <strong>{{ pack }}</strong>.
+                            {% endblocktrans %}
+                        </p>
+                        <div class="flex gap-2 shrink-0">
+                            <form method="post"
+                                  action="{% url 'accept_invitation' invitation.starter_pack.slug %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="px-3 py-1.5 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800">
+                                    {% trans "Accept" %}
+                                </button>
+                            </form>
+                            <form method="post"
+                                  action="{% url 'decline_invitation' invitation.starter_pack.slug %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="px-3 py-1.5 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-800">
+                                    {% trans "Decline" %}
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endif %}

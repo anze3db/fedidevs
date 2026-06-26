@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from starter_packs.models import StarterPack
+from starter_packs.models import StarterPack, StarterPackInvitation
 from starter_packs.splash_images import render_splash_image
 
 
@@ -36,3 +36,9 @@ class AuthorAdmin(admin.ModelAdmin):
     )
     filter_horizontal = ("owners",)
     actions = [update_splash_image]
+
+
+@admin.register(StarterPackInvitation)
+class StarterPackInvitationAdmin(admin.ModelAdmin):
+    list_display = ("id", "starter_pack", "invited_user", "invited_by", "created_at")
+    raw_id_fields = ("starter_pack", "invited_user", "invited_by")

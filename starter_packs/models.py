@@ -45,3 +45,19 @@ class StarterPackAccount(models.Model):
 
     class Meta:
         unique_together = ("starter_pack", "account")
+
+
+class StarterPackInvitation(models.Model):
+    """A pending invitation for `invited_user` to become an owner of `starter_pack`.
+
+    The row exists only while pending: accepting adds the user to `owners` and
+    deletes the row; declining or cancelling deletes it.
+    """
+
+    starter_pack = models.ForeignKey(StarterPack, on_delete=models.CASCADE, related_name="invitations")
+    invited_user = models.ForeignKey("auth.User", on_delete=models.CASCADE, related_name="starter_pack_invitations")
+    invited_by = models.ForeignKey("auth.User", on_delete=models.SET_NULL, null=True, related_name="+")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("starter_pack", "invited_user")
