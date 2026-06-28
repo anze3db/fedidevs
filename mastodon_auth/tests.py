@@ -483,12 +483,14 @@ class MastodonAuthCallbackTests(TestCase):
         self.assertEqual(messages, ["Invalid request, please try again"])
         self.assertTrue(any("missing code/state" in m for m in logs.output))
 
-    def test_unknown_state_is_logged_at_error(self):
-        """A state with no cached entry (expired/evicted/cache miss) is a real
-        login failure and must be logged at ERROR."""
-        with self.assertLogs("mastodon_auth.views", level="ERROR") as logs:
+    def test_unknown_state_is_logged_as_warning_not_error(self):
+        """A state with no cached entry (the handshake expired past OAUTH_STATE_TTL,
+        was evicted, or a cache miss) is user-recoverable — log at WARNING so it
+        doesn't page Sentry, never at ERROR."""
+        with self.assertLogs("mastodon_auth.views", level="WARNING") as logs:
             response = self.client.get("/mastodon_auth/", {"code": "abc", "state": "never-cached"})
         self.assertRedirects(response, "/", fetch_redirect_response=False)
         messages = [str(m) for m in get_messages(response.wsgi_request)]
         self.assertEqual(messages, ["Invalid request, please try again"])
-        self.assertTrue(any("unknown/expired OAuth state" in m for m in logs.output))
+        self.assertTrue(any("unknown/expired OAuth state" in r.getMessage() for r in logs.records))
+        self.assertFalse(any(r.levelname == "ERROR" for r in logs.records))

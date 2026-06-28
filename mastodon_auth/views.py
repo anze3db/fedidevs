@@ -48,6 +48,11 @@ logger = logging.getLogger(__name__)
 # reads profiles/follows/search (read) and follows accounts (follow).
 SCOPES = ("read", "follow")
 
+# How long an in-flight OAuth/MiAuth handshake stays valid between the redirect
+# to the instance and the callback. Generous enough to cover a slow mobile login
+# with 2FA on the consent screen; expiry past this just asks the user to retry.
+OAUTH_STATE_TTL = 60 * 30  # 30 minutes
+
 
 @require_POST
 def login(request):
@@ -91,8 +96,8 @@ def login(request):
 
         session = str(uuid4())
         callback = urljoin(settings.MSTDN_REDIRECT_URI, "/miauth_callback/")
-        cache.set(f"miauth:{session}", instance.id, timeout=500)
-        cache.set(f"miauth:{session}:next", next_url, timeout=500)
+        cache.set(f"miauth:{session}", instance.id, timeout=OAUTH_STATE_TTL)
+        cache.set(f"miauth:{session}:next", next_url, timeout=OAUTH_STATE_TTL)
         return redirect(build_miauth_url(api_base_url, session, callback, settings.MSTDN_CLIENT_NAME))
 
     desired_scopes = " ".join(SCOPES)
@@ -168,8 +173,8 @@ def login(request):
         force_login=is_pleroma(software),
     )
 
-    cache.set(f"oauth:{state}", instance.id, timeout=500)
-    cache.set(f"oauth:{state}:next", next_url, timeout=500)
+    cache.set(f"oauth:{state}", instance.id, timeout=OAUTH_STATE_TTL)
+    cache.set(f"oauth:{state}:next", next_url, timeout=OAUTH_STATE_TTL)
 
     # Log exactly what we hand the instance, so an empty callback (no code/state)
     # can be traced back to the redirect_uri / response_type we requested.
@@ -231,10 +236,11 @@ def auth(request):
     instance_id = cache.get(f"oauth:{state}")
     next_url = cache.get(f"oauth:{state}:next")
     if not instance_id:
-        # We have a state but no cached entry for it: expired (>500s on the consent
-        # screen), evicted from the cache, or a cross-process cache miss. A
-        # user-facing failure, so log at ERROR with context.
-        logger.error("auth callback unknown/expired OAuth state %s", state)
+        # We have a state but no cached entry for it: the handshake expired (the
+        # user lingered past OAUTH_STATE_TTL on the consent screen), was evicted,
+        # or a cross-process cache miss. User-recoverable, not a bug — log at
+        # warning so it doesn't page us.
+        logger.warning("auth callback unknown/expired OAuth state %s", state)
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
@@ -388,9 +394,10 @@ def miauth_callback(request):
     instance_id = cache.get(f"miauth:{session}")
     next_url = cache.get(f"miauth:{session}:next")
     if not instance_id:
-        # We have a session but no cached entry: expired (>500s), evicted, or a
-        # cross-process cache miss. A user-facing failure, so log at ERROR.
-        logger.error("miauth callback unknown/expired session %s", session)
+        # We have a session but no cached entry: the handshake expired (past
+        # OAUTH_STATE_TTL), was evicted, or a cross-process cache miss.
+        # User-recoverable, not a bug — log at warning so it doesn't page us.
+        logger.warning("miauth callback unknown/expired session %s", session)
         messages.error(request, _("Invalid request, please try again"))
         return redirect("index")
 
