@@ -241,7 +241,7 @@ def auth(request):
         # or a cross-process cache miss. User-recoverable, not a bug — log at
         # warning so it doesn't page us.
         logger.warning("auth callback unknown/expired OAuth state %s", state)
-        messages.error(request, _("Invalid request, please try again"))
+        messages.error(request, _("Your login session expired, please try again."))
         return redirect("index")
 
     instance = Instance.objects.get(id=instance_id)
@@ -398,7 +398,7 @@ def miauth_callback(request):
         # OAUTH_STATE_TTL), was evicted, or a cross-process cache miss.
         # User-recoverable, not a bug — log at warning so it doesn't page us.
         logger.warning("miauth callback unknown/expired session %s", session)
-        messages.error(request, _("Invalid request, please try again"))
+        messages.error(request, _("Your login session expired, please try again."))
         return redirect("index")
 
     instance = Instance.objects.get(id=instance_id)

@@ -491,6 +491,6 @@ class MastodonAuthCallbackTests(TestCase):
             response = self.client.get("/mastodon_auth/", {"code": "abc", "state": "never-cached"})
         self.assertRedirects(response, "/", fetch_redirect_response=False)
         messages = [str(m) for m in get_messages(response.wsgi_request)]
-        self.assertEqual(messages, ["Invalid request, please try again"])
+        self.assertEqual(messages, ["Your login session expired, please try again."])
         self.assertTrue(any("unknown/expired OAuth state" in r.getMessage() for r in logs.records))
         self.assertFalse(any(r.levelname == "ERROR" for r in logs.records))
