@@ -1,3 +1,4 @@
+import datetime as dt
 import warnings
 from unittest.mock import MagicMock, patch
 
@@ -12,6 +13,35 @@ from accounts.models import Account
 from mastodon_auth.forms import MastodonLoginForm
 from mastodon_auth.models import AccountAccess, Instance
 from mastodon_auth.oauth import AppRegistrationError, authorize_url, is_pleroma, register_app
+from mastodon_auth.views import _parse_dt
+
+
+class ParseDtTests(SimpleTestCase):
+    def test_none(self):
+        self.assertIsNone(_parse_dt(None))
+        self.assertIsNone(_parse_dt(""))
+
+    def test_iso_string_with_offset(self):
+        # The miauth/httpx paths pass ISO strings.
+        result = _parse_dt("2026-06-23T12:00:00+00:00")
+        self.assertEqual(result, dt.datetime(2026, 6, 23, 12, 0, tzinfo=dt.UTC))
+
+    def test_date_only_string_becomes_aware_midnight(self):
+        result = _parse_dt("2026-06-23")
+        self.assertEqual(result, dt.datetime(2026, 6, 23, 0, 0, tzinfo=dt.UTC))
+
+    def test_naive_datetime_object_is_made_aware(self):
+        # mastodon.py hands us datetime objects, not strings (was a TypeError).
+        result = _parse_dt(dt.datetime(2026, 6, 23, 0, 0))  # noqa: DTZ001 — naive on purpose
+        self.assertEqual(result, dt.datetime(2026, 6, 23, 0, 0, tzinfo=dt.UTC))
+
+    def test_aware_datetime_object_passes_through(self):
+        aware = dt.datetime(2026, 6, 23, 0, 0, tzinfo=dt.UTC)
+        self.assertEqual(_parse_dt(aware), aware)
+
+    def test_date_object_becomes_aware_midnight(self):
+        result = _parse_dt(dt.date(2026, 6, 23))
+        self.assertEqual(result, dt.datetime(2026, 6, 23, 0, 0, tzinfo=dt.UTC))
 
 
 class MastodonLoginFormTests(TestCase):
@@ -315,9 +345,9 @@ class MastodonAuthCallbackTests(TestCase):
     @patch("mastodon_auth.views.sync_following")
     @patch("mastodon_auth.views.Mastodon")
     def test_date_only_last_status_at_is_stored_as_aware(self, mastodon_cls, sync_following):
-        """Mastodon returns last_status_at as a bare 'YYYY-MM-DD' date. Assigning it
-        straight to the DateTimeField coerced it to a naive datetime and warned under
-        active time zone support; it must be parsed to an aware datetime instead."""
+        """The mastodon.py client parses last_status_at (a bare date) into a *naive
+        datetime object*. Passing it straight to the DateTimeField warned under
+        active tz support; it must be coerced to an aware datetime instead."""
         instance = Instance.objects.create(
             url="mastodon.example",
             client_id="cid",
@@ -337,7 +367,8 @@ class MastodonAuthCallbackTests(TestCase):
             "display_name": "anze",
             "locked": False,
             "created_at": timezone.now(),
-            "last_status_at": "2026-06-23",
+            # mastodon.py hands us a naive datetime here, not an ISO string.
+            "last_status_at": dt.datetime(2026, 6, 23, 0, 0),  # noqa: DTZ001 — naive on purpose
             "url": "https://mastodon.example/users/anze",
         }
         mastodon_cls.return_value = mastodon

@@ -349,13 +349,20 @@ def auth(request):
 
 
 def _parse_dt(value):
-    """Parse an ISO timestamp (incl. trailing 'Z') into an aware datetime."""
+    """Coerce an ISO timestamp string or a date/datetime into an aware datetime.
+
+    The mastodon.py client already parses date fields into (often naive) datetime
+    objects, while the raw httpx/miauth paths pass ISO strings. Handle both, plus
+    bare dates, and always return an aware datetime (or None)."""
     if not value:
         return None
-    parsed = dt.datetime.fromisoformat(value)
-    if parsed.tzinfo is None:
-        parsed = timezone.make_aware(parsed)
-    return parsed
+    if isinstance(value, str):
+        value = dt.datetime.fromisoformat(value)
+    elif not isinstance(value, dt.datetime) and isinstance(value, dt.date):
+        value = dt.datetime.combine(value, dt.time.min)
+    if value.tzinfo is None:
+        value = timezone.make_aware(value)
+    return value
 
 
 def miauth_callback(request):
