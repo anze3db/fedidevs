@@ -7,7 +7,7 @@ from django.contrib.messages import get_messages
 from django.core.cache import cache
 from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
-from mastodon.errors import MastodonAPIError
+from mastodon.errors import MastodonAPIError, MastodonIllegalArgumentError
 
 from accounts.models import Account
 from mastodon_auth.forms import MastodonLoginForm
@@ -407,6 +407,58 @@ class MastodonAuthCallbackTests(TestCase):
 
         self.assertRedirects(response, "/", fetch_redirect_response=False)
         self.assertFalse(AccountAccess.objects.exists())
+
+    @patch("mastodon_auth.views.Mastodon")
+    def test_invalid_grant_is_logged_as_warning_not_error(self, mastodon_cls):
+        """An expired/reused authorization code (invalid_grant) is user-recoverable.
+        It must not log at ERROR (which pages Sentry) and must redirect cleanly."""
+        instance = Instance.objects.create(
+            url="mastodon.uno",
+            client_id="cid",
+            client_secret="secret",
+            scopes="read follow",
+        )
+        state = "test-state"
+        cache.set(f"oauth:{state}", instance.id)
+
+        mastodon = MagicMock()
+        mastodon.log_in.side_effect = MastodonIllegalArgumentError(
+            "Invalid access token or redirect_uris: ('Mastodon API returned error', "
+            "400, 'Bad Request', 'invalid_grant')"
+        )
+        mastodon_cls.return_value = mastodon
+
+        with self.assertLogs("mastodon_auth.views", level="WARNING") as logs:
+            response = self.client.get("/mastodon_auth/", {"code": "abc", "state": state})
+
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
+        self.assertFalse(AccountAccess.objects.exists())
+        # Logged at WARNING, never ERROR.
+        self.assertTrue(any("invalid_grant" in r.getMessage() for r in logs.records))
+        self.assertFalse(any(r.levelname == "ERROR" for r in logs.records))
+
+    @patch("mastodon_auth.views.Mastodon")
+    def test_other_illegal_argument_error_still_logged_at_error(self, mastodon_cls):
+        """A genuine illegal-argument failure (not invalid_grant) is unexpected and
+        must still be logged at ERROR so it surfaces."""
+        instance = Instance.objects.create(
+            url="mastodon.example",
+            client_id="cid",
+            client_secret="secret",
+            scopes="read follow",
+        )
+        state = "test-state"
+        cache.set(f"oauth:{state}", instance.id)
+
+        mastodon = MagicMock()
+        mastodon.log_in.side_effect = MastodonIllegalArgumentError("Invalid redirect_uris")
+        mastodon_cls.return_value = mastodon
+
+        with self.assertLogs("mastodon_auth.views", level="ERROR") as logs:
+            response = self.client.get("/mastodon_auth/", {"code": "abc", "state": state})
+
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
+        self.assertTrue(any(r.levelname == "ERROR" for r in logs.records))
 
     def test_oauth_error_redirect_is_surfaced(self):
         """An OAuth error redirect (?error=...) should show a clear message and be

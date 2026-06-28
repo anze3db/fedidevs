@@ -259,7 +259,14 @@ def auth(request):
         logger.warning("login log_in unreachable for %s: %s", instance.url, e)
         messages.error(request, _("Network error, please try again."))
         return redirect("index")
-    except MastodonIllegalArgumentError:
+    except MastodonIllegalArgumentError as e:
+        if "invalid_grant" in str(e):
+            # The authorization code was expired, already used, or otherwise no
+            # longer valid (e.g. the user reloaded the callback or took too long).
+            # User-recoverable, not a bug — log at warning so it doesn't page us.
+            logger.warning("login log_in invalid_grant for %s: %s", instance.url, e)
+            messages.error(request, _("Your login session expired, please try again."))
+            return redirect("index")
         logger.exception("login log_in invalid argument error for %s", instance.url)
         messages.error(request, _("Authorization flow is not supported by this instance."))
         return redirect("index")
