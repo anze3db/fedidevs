@@ -21,9 +21,9 @@ jobs:
         ports:
           - 5432:5432
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
     - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
       with:
         enable-cache: true
         version: "latest"
@@ -47,7 +47,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
     - name: Deploy
-      uses: appleboy/ssh-action@1530429296e979861824d74fb800013190b5dee0 # master
+      uses: appleboy/ssh-action@068c0c7a4e59a5ae12fb7cb454b05735d830c82b # master
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
