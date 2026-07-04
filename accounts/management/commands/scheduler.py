@@ -39,6 +39,8 @@ class Command(RichCommand):
         management.call_command("dailyaccountstats")
         self.console.print("Archiving conferences")
         management.call_command("confarchiver")
+        self.console.print("Syncing conference announcements")
+        management.call_command("syncannouncements")
         self.console.print("Updating splash images")
         management.call_command("update_splash_images")
         self.console.print("All done! 🎉")
@@ -47,6 +49,8 @@ class Command(RichCommand):
     def hourly_job(self):
         self.console.print("Starting hourly job")
         management.call_command("stattag", "--active")
+        self.console.print("Posting due announcements")
+        management.call_command("postannouncements")
         self.console.print("All done! 🎉")
 
     def add_arguments(self, parser):

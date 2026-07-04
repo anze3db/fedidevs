@@ -124,6 +124,24 @@ class Conference(models.Model):
     accounts = models.ManyToManyField("accounts.Account", blank=True, through="ConferenceAccount")
     posts = models.ManyToManyField("posts.Post", blank=True, through="ConferencePost")
 
+    # Fediverse announcements the @fedidevs account posts for this conference. The
+    # Announcement model is generic and knows nothing about conferences; the
+    # start/end meaning lives here. See confs/conference_announcements.py.
+    start_announcement = models.OneToOneField(
+        "announcements.Announcement",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    end_announcement = models.OneToOneField(
+        "announcements.Announcement",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+
     def __str__(self):
         return self.name
 

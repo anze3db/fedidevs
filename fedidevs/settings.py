@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     "posts",
     "stats",
     "confs",
+    "announcements",
 ]
 
 MIDDLEWARE = [
@@ -259,6 +260,11 @@ MAILERS = {
 # Mastodon API settings:
 MSTDN_CLIENT_NAME = env.str("MSTDN_CLIENT_NAME", default="local.fedidevs.com")
 MSTDN_REDIRECT_URI = env.str("MSTDN_REDIRECT_URI", default="http://localhost:8000/mastodon_auth/")
+
+# @fedidevs fediverse account used by confannouncer to post conference
+# start/end announcements. Leave the token empty to disable posting.
+FEDIDEVS_BOT_ACCESS_TOKEN = env.str("FEDIDEVS_BOT_ACCESS_TOKEN", default="")
+FEDIDEVS_BOT_API_BASE_URL = env.str("FEDIDEVS_BOT_API_BASE_URL", default="https://fosstodon.org")
 
 
 # Celery settings:

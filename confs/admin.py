@@ -31,5 +31,8 @@ class ConferenceAdmin(admin.ModelAdmin):
         "tags",
         "days",
         "day_styles",
+        "start_announcement",
+        "end_announcement",
     )
+    raw_id_fields = ("start_announcement", "end_announcement")
     # inlines = [ConferenceLookupInline]
