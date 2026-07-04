@@ -3,6 +3,9 @@ from django.db import models
 # Maximum number of owners (users with edit rights) a starter pack can have.
 MAX_OWNERS = 10
 
+# Maximum number of accounts that can be pinned to the top of a starter pack.
+MAX_PINNED_ACCOUNTS = 10
+
 
 class StarterPack(models.Model):
     title = models.TextField(max_length=255)
@@ -39,6 +42,10 @@ class StarterPack(models.Model):
 class StarterPackAccount(models.Model):
     starter_pack = models.ForeignKey(StarterPack, on_delete=models.CASCADE)
     account = models.ForeignKey("accounts.Account", on_delete=models.CASCADE)
+
+    # Pinned accounts are highlighted and listed at the top of the pack for all
+    # viewers. Toggled by pack owners, capped at MAX_PINNED_ACCOUNTS per pack.
+    pinned = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey("auth.User", on_delete=models.CASCADE)

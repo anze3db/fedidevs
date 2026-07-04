@@ -38,6 +38,9 @@
                         </p>
                     {% endif %}
                 </label>
+                {% if account.in_starter_pack or account.can_add_to_starter_pack %}
+                    {% include "starter_pack_pin_button.html" %}
+                {% endif %}
                 {% if account.can_add_to_starter_pack %}
                     <input id="checkbox-{{ account.id }}"
                            type="checkbox"

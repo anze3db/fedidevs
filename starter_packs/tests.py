@@ -8,7 +8,7 @@ from django.utils import timezone
 from model_bakery import baker
 
 from accounts.models import Account
-from starter_packs.models import MAX_OWNERS, StarterPackAccount, StarterPackInvitation
+from starter_packs.models import MAX_OWNERS, MAX_PINNED_ACCOUNTS, StarterPackAccount, StarterPackInvitation
 
 
 class TestStarterPacks(TestCase):
@@ -814,3 +814,167 @@ class TestShareStarterPack(TestCase):
         }
 
         self.assertEqual(payload, expected_payload)
+
+
+class TestPinAccountInStarterPack(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.owner = baker.make("auth.User")
+        baker.make("mastodon_auth.AccountAccess", user=cls.owner)
+        cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.owner)
+        cls.starter_pack.owners.add(cls.owner)
+        cls.instance = baker.make("accounts.Instance", instance="instance.org")
+        cls.popular = cls._make_account("popular", followers_count=100)
+        cls.niche = cls._make_account("niche", followers_count=1)
+
+    @classmethod
+    def _make_account(cls, username, followers_count):
+        account = baker.make(
+            "accounts.Account",
+            username=username,
+            display_name=username.title(),
+            username_at_instance=f"{username}@instance.org",
+            note="python",
+            url=f"https://instance.org/@{username}",
+            discoverable=True,
+            followers_count=followers_count,
+            instance_model=cls.instance,
+            emojis=[],
+            roles=[],
+            fields=[],
+        )
+        baker.make(
+            "starter_packs.StarterPackAccount",
+            starter_pack=cls.starter_pack,
+            account=account,
+            created_by=cls.owner,
+        )
+        return account
+
+    def pin_url(self, account):
+        return reverse("toggle_pin_in_starter_pack", args=[self.starter_pack.slug, account.pk])
+
+    def share_url(self):
+        return reverse("share_starter_pack", args=[self.starter_pack.slug])
+
+    def test_pin_button_shown_on_review_page(self):
+        self.client.force_login(self.owner)
+        response = self.client.get(reverse("review_starter_pack", args=[self.starter_pack.slug]))
+        self.assertContains(response, f'hx-post="{self.pin_url(self.niche)}"')
+
+    def test_pin_button_shown_on_add_accounts_page(self):
+        self.client.force_login(self.owner)
+        response = self.client.get(reverse("edit_accounts_starter_pack", args=[self.starter_pack.slug]))
+        self.assertContains(response, f'hx-post="{self.pin_url(self.niche)}"')
+
+    def test_no_pin_button_on_share_page(self):
+        self.client.force_login(self.owner)
+        response = self.client.get(self.share_url())
+        self.assertNotContains(response, f'hx-post="{self.pin_url(self.niche)}"')
+
+    def test_toggle_pin_and_unpin(self):
+        self.client.force_login(self.owner)
+
+        response = self.client.post(self.pin_url(self.niche))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(StarterPackAccount.objects.get(starter_pack=self.starter_pack, account=self.niche).pinned)
+        self.assertContains(response, "Unpin this account")
+
+        response = self.client.post(self.pin_url(self.niche))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(StarterPackAccount.objects.get(starter_pack=self.starter_pack, account=self.niche).pinned)
+        self.assertContains(response, "Pin this account to the top")
+
+    def test_toggle_pin_requires_ownership(self):
+        other_user = baker.make("auth.User")
+        self.client.force_login(other_user)
+        response = self.client.post(self.pin_url(self.niche))
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(StarterPackAccount.objects.get(starter_pack=self.starter_pack, account=self.niche).pinned)
+
+    def test_pin_limit(self):
+        self.client.force_login(self.owner)
+        for i in range(MAX_PINNED_ACCOUNTS):
+            self._make_account(f"filler{i}", followers_count=5)
+        StarterPackAccount.objects.filter(starter_pack=self.starter_pack).exclude(
+            account__in=[self.popular, self.niche]
+        ).update(pinned=True)
+
+        response = self.client.post(self.pin_url(self.niche))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(StarterPackAccount.objects.get(starter_pack=self.starter_pack, account=self.niche).pinned)
+        self.assertContains(response, "You can pin at most")
+
+    def test_pinned_account_listed_first_for_everyone(self):
+        StarterPackAccount.objects.filter(starter_pack=self.starter_pack, account=self.niche).update(pinned=True)
+
+        response = self.client.get(self.share_url())
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertLess(
+            content.index(f"pack-account-card-{self.niche.pk}"),
+            content.index(f"pack-account-card-{self.popular.pk}"),
+        )
+        self.assertContains(response, "ring-amber-400")
+        self.assertContains(response, "Pinned")
+
+    def test_unpinned_pack_orders_by_followers(self):
+        response = self.client.get(self.share_url())
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertLess(
+            content.index(f"pack-account-card-{self.popular.pk}"),
+            content.index(f"pack-account-card-{self.niche.pk}"),
+        )
+        self.assertNotContains(response, "ring-amber-400")
+
+    def test_removing_account_swaps_pin_button_to_disabled(self):
+        self.client.force_login(self.owner)
+        StarterPackAccount.objects.filter(starter_pack=self.starter_pack, account=self.niche).update(pinned=True)
+
+        response = self.client.post(
+            reverse("toggle_account_to_starter_pack", args=[self.starter_pack.slug, self.niche.pk])
+        )
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertIn(f'id="pin-button-{self.niche.pk}"', content)
+        self.assertIn("hx-swap-oob", content)
+        self.assertIn("disabled", content)
+        self.assertNotIn(f'hx-post="{self.pin_url(self.niche)}"', content)
+        self.assertFalse(StarterPackAccount.objects.filter(starter_pack=self.starter_pack, account=self.niche).exists())
+
+    def test_readding_account_swaps_pin_button_to_enabled_unpinned(self):
+        self.client.force_login(self.owner)
+        StarterPackAccount.objects.filter(starter_pack=self.starter_pack, account=self.niche).update(pinned=True)
+        toggle_url = reverse("toggle_account_to_starter_pack", args=[self.starter_pack.slug, self.niche.pk])
+
+        self.client.post(toggle_url)  # remove: drops the pin along with the membership row
+        response = self.client.post(toggle_url)  # re-add
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertIn("hx-swap-oob", content)
+        self.assertIn(f'hx-post="{self.pin_url(self.niche)}"', content)
+        self.assertFalse(StarterPackAccount.objects.get(starter_pack=self.starter_pack, account=self.niche).pinned)
+
+    def test_stale_pin_toggle_returns_disabled_button(self):
+        self.client.force_login(self.owner)
+        StarterPackAccount.objects.filter(starter_pack=self.starter_pack, account=self.niche).delete()
+
+        response = self.client.post(self.pin_url(self.niche))
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertIn(f'id="pin-button-{self.niche.pk}"', content)
+        self.assertIn("disabled", content)
+        self.assertNotIn(f'hx-post="{self.pin_url(self.niche)}"', content)
+
+    def test_pinned_account_first_for_every_sort_option(self):
+        # Alphabetically "Niche" < "Popular", so pinning popular must override the sort.
+        StarterPackAccount.objects.filter(starter_pack=self.starter_pack, account=self.popular).update(pinned=True)
+
+        response = self.client.get(self.share_url() + "?order_by=alphabetical")
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertLess(
+            content.index(f"pack-account-card-{self.popular.pk}"),
+            content.index(f"pack-account-card-{self.niche.pk}"),
+        )

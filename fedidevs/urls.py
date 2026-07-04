@@ -251,6 +251,11 @@ urlpatterns = [
         name="toggle_account_to_starter_pack",
     ),
     path(
+        "starter-packs/<str:starter_pack_slug>/pin/<int:account_id>/",
+        starter_packs_views.toggle_pin_in_starter_pack,
+        name="toggle_pin_in_starter_pack",
+    ),
+    path(
         "starter-packs/<str:starter_pack_slug>/edit/", starter_packs_views.edit_starter_pack, name="edit_starter_pack"
     ),
     path(

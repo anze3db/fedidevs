@@ -32,3 +32,6 @@
         {% endif %}
     </div>
 </div>
+{% if pin_button_account %}
+    {% include "starter_pack_pin_button.html" with account=pin_button_account oob=True %}
+{% endif %}

@@ -27,7 +27,13 @@ from mastodon import (
 from accounts.management.commands.crawlone import crawlone
 from accounts.models import Account, Instance
 from mastodon_auth.models import AccountAccess, AccountFollowing
-from starter_packs.models import MAX_OWNERS, StarterPack, StarterPackAccount, StarterPackInvitation
+from starter_packs.models import (
+    MAX_OWNERS,
+    MAX_PINNED_ACCOUNTS,
+    StarterPack,
+    StarterPackAccount,
+    StarterPackInvitation,
+)
 from starter_packs.splash_images import get_splash_image_signature, render_splash_image
 from starter_packs.utils import FollowError, resolve_and_follow_account, resolve_and_follow_misskey
 from stats.models import FollowAllClick
@@ -194,6 +200,9 @@ def add_accounts_to_starter_pack(request, starter_pack_slug):
                     account_id=OuterRef("pk"),
                 )
             ),
+            is_pinned=Exists(
+                StarterPackAccount.objects.filter(starter_pack=starter_pack, account=OuterRef("pk"), pinned=True),
+            ),
             is_followed=Exists(
                 AccountFollowing.objects.filter(account=access_account, url=OuterRef("url")),
             ),
@@ -282,6 +291,9 @@ def review_starter_pack(request, starter_pack_slug):
                     starter_pack=starter_pack,
                     account_id=OuterRef("pk"),
                 )
+            ),
+            is_pinned=Exists(
+                StarterPackAccount.objects.filter(starter_pack=starter_pack, account=OuterRef("pk"), pinned=True),
             ),
             is_followed=Exists(
                 AccountFollowing.objects.filter(account=access_account, url=OuterRef("url")),
@@ -562,10 +574,12 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
     starter_pack = get_object_or_404(StarterPack.objects.select_for_update(), pk=editable.pk)
     account = get_object_or_404(Account, id=account_id)
     if StarterPackAccount.objects.filter(starter_pack=starter_pack, account_id=account_id).exists():
+        # Deleting the row also drops its `pinned` flag; re-adding starts unpinned.
         StarterPackAccount.objects.filter(
             starter_pack=starter_pack,
             account_id=account_id,
         ).delete()
+        account.in_starter_pack = False
     else:
         if StarterPackAccount.objects.filter(starter_pack=starter_pack).count() >= 150:
             return render(
@@ -592,6 +606,7 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
             account_id=account_id,
             created_by=request.user,
         )
+        account.in_starter_pack = True
     starter_pack.num_accounts = StarterPackAccount.objects.filter(
         starter_pack=starter_pack, account__discoverable=True
     ).count()
@@ -604,6 +619,7 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
         starter_pack.save(update_fields=["splash_image_needs_update"])
         transaction.on_commit(lambda: update_starter_pack_splash_images.delay(starter_pack_slug=starter_pack.slug))
 
+    account.is_pinned = False
     return render(
         request,
         "starter_pack_stats.html",
@@ -611,6 +627,8 @@ def toggle_account_to_starter_pack(request, starter_pack_slug, account_id):
             "starter_pack": starter_pack,
             "review": request.POST.get("review"),
             "num_accounts": StarterPackAccount.objects.filter(starter_pack=starter_pack).count(),
+            # Swapped out-of-band so the row's pin button matches the new membership state.
+            "pin_button_account": account,
         },
     )
 
@@ -675,7 +693,13 @@ def share_starter_pack(request, starter_pack_slug):
             discoverable=True,
         )
         .select_related("accountlookup", "instance_model")
-        .order_by(*ACCOUNT_ORDER_BY[order_by])
+        .annotate(
+            is_pinned=Exists(
+                StarterPackAccount.objects.filter(starter_pack=starter_pack, account=OuterRef("pk"), pinned=True),
+            )
+        )
+        # Pinned accounts always come first, for every viewer and every sort option:
+        .order_by("-is_pinned", *ACCOUNT_ORDER_BY[order_by])
     )
 
     if get_preferred_format(request) == "json":
@@ -813,6 +837,53 @@ def share_starter_pack(request, starter_pack_slug):
             .filter(starterpackaccount__starter_pack=starter_pack)
             .count(),
             "accounts": page_obj,
+        },
+    )
+
+
+@login_required
+@require_POST
+def toggle_pin_in_starter_pack(request, starter_pack_slug, account_id):
+    starter_pack = get_editable_pack(request, starter_pack_slug, deleted_at__isnull=True)
+    starter_pack_account = (
+        StarterPackAccount.objects.select_related("account")
+        .filter(starter_pack=starter_pack, account_id=account_id)
+        .first()
+    )
+    if starter_pack_account is None:
+        # The account was removed from the pack (e.g. in another tab) after the
+        # button was rendered — swap in the disabled state instead of 404ing.
+        account = get_object_or_404(Account, pk=account_id)
+        account.is_pinned = False
+        account.in_starter_pack = False
+        return render(
+            request,
+            "starter_pack_pin_button.html",
+            {"account": account, "starter_pack": starter_pack},
+        )
+
+    pin_limit_reached = False
+    if starter_pack_account.pinned:
+        starter_pack_account.pinned = False
+        starter_pack_account.save(update_fields=["pinned"])
+    elif StarterPackAccount.objects.filter(starter_pack=starter_pack, pinned=True).count() >= MAX_PINNED_ACCOUNTS:
+        pin_limit_reached = True
+    else:
+        starter_pack_account.pinned = True
+        starter_pack_account.save(update_fields=["pinned"])
+
+    account = starter_pack_account.account
+    account.is_pinned = starter_pack_account.pinned
+    account.in_starter_pack = True
+
+    return render(
+        request,
+        "starter_pack_pin_button.html",
+        {
+            "account": account,
+            "starter_pack": starter_pack,
+            "pin_limit_reached": pin_limit_reached,
+            "max_pinned_accounts": MAX_PINNED_ACCOUNTS,
         },
     )
 

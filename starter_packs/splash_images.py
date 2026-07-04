@@ -127,13 +127,14 @@ def get_splash_background(width, height, attribution, font, cache_path=None):
         (width - 0.6 * font_size, height - 0.3 * font_size), attribution, fill=(255, 255, 255), font=font, anchor="rb"
     )
 
-    try:
-        if cache_path is not None:
+    if cache_path is not None:
+        try:
+            cache_path.parent.mkdir(parents=True, exist_ok=True)
             background.save(cache_path)
-        return background
-    except OSError:
-        logger.exception("Unable to save splash image: %s", cache_path)
-        return None
+        except OSError:
+            # Only caching failed — the freshly rendered background is still usable.
+            logger.exception("Unable to cache splash image background: %s", cache_path)
+    return background
 
 
 def fetch_avatar(url, crop_mask):
@@ -553,8 +554,13 @@ def render_splash_image(starter_pack, host_attribution):
 
     image = render_splash_image_to_image_obj(starter_pack, host_attribution, media_dir)
 
+    if image is None:
+        logger.error("Splash image for %s could not be rendered", starter_pack.slug)
+        return
+
     image_path = splash_dir / (starter_pack.slug + ".png")
     try:
+        splash_dir.mkdir(parents=True, exist_ok=True)
         image.save(image_path)
         starter_pack.splash_image = f"splash/{starter_pack.slug}.png"
         starter_pack.splash_image_signature = get_splash_image_signature(starter_pack)
