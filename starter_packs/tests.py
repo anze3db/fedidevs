@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import patch
 
 from ddt import data, ddt, unpack
@@ -610,6 +611,83 @@ class TestShareStarterPack(TestCase):
         self.assertNotContains(response, "Edit")
         self.assertNotContains(response, "Delete")
         self.assertNotContains(response, "Follow all 5 accounts")
+
+    def _set_up_orderable_accounts(self):
+        """Give each account distinct, mutually contradicting sort keys.
+
+        By id order: followers ascending, display name descending, account age
+        descending (older accounts first), last activity ascending, and pack
+        membership added in id order — so every sort option produces a
+        different ordering.
+        """
+        now = timezone.now()
+        accounts = list(Account.objects.filter(starterpackaccount__starter_pack=self.starter_pack).order_by("id"))
+        for i, account in enumerate(accounts):
+            account.followers_count = i
+            account.display_name = f"Name {len(accounts) - i}"
+            account.created_at = now - datetime.timedelta(days=i)
+            account.last_status_at = now - datetime.timedelta(days=len(accounts) - i)
+        Account.objects.bulk_update(accounts, ["followers_count", "display_name", "created_at", "last_status_at"])
+        # created_at is auto_now_add, so it has to be set with update().
+        for i, spa in enumerate(StarterPackAccount.objects.order_by("id")):
+            StarterPackAccount.objects.filter(pk=spa.pk).update(created_at=now - datetime.timedelta(hours=i))
+        return accounts
+
+    @data(
+        ("followers", [4, 3, 2, 1, 0]),
+        ("recently_added", [0, 1, 2, 3, 4]),
+        ("last_active", [4, 3, 2, 1, 0]),
+        ("newest_account", [0, 1, 2, 3, 4]),
+        ("alphabetical", [4, 3, 2, 1, 0]),
+        ("not-a-valid-option", [4, 3, 2, 1, 0]),  # falls back to followers
+    )
+    @unpack
+    def test_order_by(self, order_by, expected_indexes):
+        accounts = self._set_up_orderable_accounts()
+        response = self.client.get(reverse("share_starter_pack", args=[self.starter_pack.slug]), {"order_by": order_by})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            [account.pk for account in response.context["accounts"]],
+            [accounts[i].pk for i in expected_indexes],
+        )
+
+    def test_order_by_recently_added_ignores_other_packs(self):
+        # Membership in another pack must not duplicate accounts or leak that
+        # pack's added-at dates into the ordering.
+        accounts = self._set_up_orderable_accounts()
+        other_pack = baker.make("starter_packs.StarterPack")
+        baker.make("starter_packs.StarterPackAccount", starter_pack=other_pack, account=accounts[0])
+        response = self.client.get(
+            reverse("share_starter_pack", args=[self.starter_pack.slug]), {"order_by": "recently_added"}
+        )
+        self.assertEqual(
+            [account.pk for account in response.context["accounts"]],
+            [account.pk for account in accounts],
+        )
+
+    def test_order_by_htmx_swaps_account_list(self):
+        # Changing the select fires an htmx request that swaps just the list.
+        accounts = self._set_up_orderable_accounts()
+        response = self.client.get(
+            reverse("share_starter_pack", args=[self.starter_pack.slug]),
+            {"order_by": "recently_added"},
+            headers={"HX-Request": "true"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "starter_pack_accounts.html")
+        self.assertTemplateNotUsed(response, "share_starter_pack.html")
+        self.assertEqual(
+            [account.pk for account in response.context["accounts"]],
+            [account.pk for account in accounts],
+        )
+
+    def test_sort_select_avoids_inline_js(self):
+        # The CSP nonce policy blocks inline handlers, so the select must be
+        # wired up with htmx targeting the account list wrapper.
+        response = self.client.get(reverse("share_starter_pack", args=[self.starter_pack.slug]))
+        self.assertContains(response, 'hx-target="#starter-pack-accounts"')
+        self.assertContains(response, 'id="starter-pack-accounts"')
+        self.assertNotContains(response, "onchange")
 
     @data(
         # ActivityPub:

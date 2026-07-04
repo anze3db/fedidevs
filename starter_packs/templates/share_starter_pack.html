@@ -139,7 +139,36 @@
                 </div>
             </div>
         </div>
-        {% include "starter_pack_accounts.html" %}
+        {% if accounts %}
+            <form method="get" class="flex justify-end max-w-4xl mb-4">
+                <label for="order_by" class="sr-only">{% trans "Sort accounts" %}</label>
+                <select name="order_by"
+                        id="order_by"
+                        hx-get="{% url 'share_starter_pack' starter_pack.slug %}"
+                        hx-trigger="change"
+                        hx-target="#starter-pack-accounts"
+                        hx-swap="innerHTML"
+                        hx-push-url="true"
+                        class="block w-48 p-3 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option value="followers" {% if order_by == 'followers' %}selected{% endif %}>{% trans "Most followers" %}</option>
+                    <option value="recently_added"
+                            {% if order_by == 'recently_added' %}selected{% endif %}>
+                        {% trans "Recently added" %}
+                    </option>
+                    <option value="last_active"
+                            {% if order_by == 'last_active' %}selected{% endif %}>
+                        {% trans "Recently active" %}
+                    </option>
+                    <option value="newest_account"
+                            {% if order_by == 'newest_account' %}selected{% endif %}>
+                        {% trans "Newest account" %}
+                    </option>
+                    <option value="alphabetical"
+                            {% if order_by == 'alphabetical' %}selected{% endif %}>{% trans "Alphabetical" %}</option>
+                </select>
+            </form>
+        {% endif %}
+        <div id="starter-pack-accounts">{% include "starter_pack_accounts.html" %}</div>
     </main>
 {% endblock content %}
 {% block sidebar %}

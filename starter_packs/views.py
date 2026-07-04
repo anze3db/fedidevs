@@ -10,7 +10,8 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
-from django.db.models import Exists, OuterRef, Q
+from django.db.models import Exists, F, OuterRef, Q, Value
+from django.db.models.functions import Coalesce, Lower, NullIf
 from django.http import HttpResponse, HttpResponseServerError, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.templatetags.static import static
@@ -647,8 +648,25 @@ def get_preferred_format(request):
     return result
 
 
+# Sort options for the accounts on a starter pack page (?order_by=). The
+# `starterpackaccount` path reuses the join filtered to this pack, so
+# `recently_added` orders by when the account was added to *this* pack.
+# `created_at` on the through row is only tracked since 2024-11 (see #123), so
+# packs older than that sort their early members in near-insertion order.
+ACCOUNT_ORDER_BY = {
+    "followers": ("-followers_count", "-id"),
+    "recently_added": ("-starterpackaccount__created_at", "-id"),
+    "last_active": (F("last_status_at").desc(nulls_last=True), "-id"),
+    "newest_account": ("-created_at", "-id"),
+    "alphabetical": (Lower(Coalesce(NullIf("display_name", Value("")), "username")), "id"),
+}
+
+
 def share_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, deleted_at__isnull=True)
+    order_by = request.GET.get("order_by", "followers")
+    if order_by not in ACCOUNT_ORDER_BY:
+        order_by = "followers"
     accounts = (
         Account.objects.filter(
             starterpackaccount__starter_pack=starter_pack,
@@ -657,7 +675,7 @@ def share_starter_pack(request, starter_pack_slug):
             discoverable=True,
         )
         .select_related("accountlookup", "instance_model")
-        .order_by("-followers_count")
+        .order_by(*ACCOUNT_ORDER_BY[order_by])
     )
 
     if get_preferred_format(request) == "json":
@@ -784,6 +802,7 @@ def share_starter_pack(request, starter_pack_slug):
             "page_image": starter_pack.splash_image.url if starter_pack.splash_image else static("og-starterpack.png"),
             "page_description": starter_pack.description,
             "starter_pack": starter_pack,
+            "order_by": order_by,
             "is_owner": is_owner,
             "owners": owners,
             "header_avatars": header_avatars,
