@@ -29,7 +29,7 @@ class TestPostAnnouncements(TestCase):
             posted_at=None,
         )
 
-    def _run_at(self, moment: dt.datetime, status_post=None):
+    def _run_at(self, moment: dt.datetime, status_post=None, dry_run=False):
         with (
             mock.patch("announcements.management.commands.postannouncements.timezone.now", return_value=moment),
             mock.patch("announcements.management.commands.postannouncements.Mastodon") as mastodon_cls,
@@ -38,8 +38,16 @@ class TestPostAnnouncements(TestCase):
             client.status_post.return_value = {"url": "https://fosstodon.org/@fedidevs/1"}
             if status_post is not None:
                 client.status_post = status_post
-            call_command("postannouncements")
+            # Dry run is the default; posting tests opt in with --no-dry-run.
+            call_command("postannouncements", *([] if dry_run else ["--no-dry-run"]))
         return client.status_post
+
+    def test_dry_run_is_the_default(self):
+        status_post = self._run_at(dt.datetime(2026, 6, 1, 9, 0, tzinfo=dt.UTC), dry_run=True)
+
+        status_post.assert_not_called()
+        self.due.refresh_from_db()
+        self.assertIsNone(self.due.posted_at)
 
     def test_posts_only_due_announcements(self):
         status_post = self._run_at(dt.datetime(2026, 6, 1, 9, 0, tzinfo=dt.UTC))

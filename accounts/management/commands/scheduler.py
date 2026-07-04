@@ -50,7 +50,7 @@ class Command(RichCommand):
         self.console.print("Starting hourly job")
         management.call_command("stattag", "--active")
         self.console.print("Posting due announcements")
-        management.call_command("postannouncements")
+        management.call_command("postannouncements", "--no-dry-run")
         self.console.print("All done! 🎉")
 
     def add_arguments(self, parser):

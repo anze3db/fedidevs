@@ -1,3 +1,4 @@
+import argparse
 import logging
 
 from django.conf import settings
@@ -16,26 +17,32 @@ class Command(RichCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             "--dry-run",
-            action="store_true",
-            help="Print the announcements that would be posted without posting them or marking them as sent",
+            action=argparse.BooleanOptionalAction,
+            default=True,
+            help="Preview the announcements without posting them (default). Pass --no-dry-run to actually post.",
         )
 
-    def handle(self, *args, dry_run=False, **options):
-        if not settings.FEDIDEVS_BOT_ACCESS_TOKEN and not dry_run:
-            self.console.print("[yellow]FEDIDEVS_BOT_ACCESS_TOKEN not set, skipping announcements[/yellow]")
-            return
-
-        due = Announcement.objects.filter(posted_at__isnull=True, post_at__lte=timezone.now())
+    def handle(self, *args, dry_run=True, **options):
+        due = list(Announcement.objects.filter(posted_at__isnull=True, post_at__lte=timezone.now()))
         if not due:
             self.console.print("Nothing to announce 🎉")
             return
 
+        if dry_run:
+            for announcement in due:
+                self.console.print(f"[cyan]{announcement}:[/cyan]\n{announcement.content}\n")
+            self.console.print(
+                f"[yellow]Dry run: {len(due)} announcement(s) not posted. "
+                "Run with `./manage.py postannouncements --no-dry-run` to actually post.[/yellow]"
+            )
+            return
+
+        if not settings.FEDIDEVS_BOT_ACCESS_TOKEN:
+            self.console.print("[yellow]FEDIDEVS_BOT_ACCESS_TOKEN not set, skipping announcements[/yellow]")
+            return
+
         mastodon = None
         for announcement in due:
-            if dry_run:
-                self.console.print(f"[cyan]{announcement}:[/cyan]\n{announcement.content}\n")
-                continue
-
             if mastodon is None:
                 mastodon = Mastodon(
                     access_token=settings.FEDIDEVS_BOT_ACCESS_TOKEN,
