@@ -9,6 +9,7 @@ from django.test import SimpleTestCase, TestCase, TransactionTestCase
 from django.utils import timezone
 
 from accounts.activitypub import _media_url, _profile_url, actor_to_account_defaults
+from accounts.management.commands.crawler import Command as CrawlerCommand
 from accounts.management.commands.instances import process_instances
 from accounts.misskey import emojis_to_mastodon, user_to_mastodon
 from accounts.misskey_api import build_miauth_url, is_misskey_family
@@ -373,6 +374,132 @@ class TestMisskeyApi(SimpleTestCase):
         self.assertIn("callback=https%3A%2F%2Ffedidevs.com%2Fmiauth_callback%2F", url)
         # native Misskey permission kinds (not Mastodon scopes), comma-joined
         self.assertIn("permission=read%3Aaccount%2Cread%3Afollowing%2Cwrite%3Afollowing", url)
+
+
+class TestCrawlerGotosocial(SimpleTestCase):
+    """GoToSocial serves /api/v1/directory only when the admin sets
+    instance-directory-mode: "open"; the default ("webonly") returns 401. Its
+    account entity is Mastodon-shaped but omits `uri` (verified against GTS
+    0.22 and its swagger spec)."""
+
+    instance = "gts.example"
+
+    def _gts_directory_account(self):
+        # Field set as returned by a real GoToSocial 0.22 open directory
+        # (plantsand.coffee), minus GTS extras irrelevant to the crawler.
+        return {
+            "id": "0174DPK1HYWN64T08G8YK4ZHJC",
+            "username": "alice",
+            "acct": "alice",
+            "display_name": "Alice",
+            "locked": False,
+            "discoverable": True,
+            "indexable": True,
+            "noindex": False,
+            "group": False,
+            "bot": False,
+            "created_at": "2022-05-01T12:10:40.000Z",
+            "last_status_at": "2026-06-27",
+            "followers_count": 1,
+            "following_count": 1,
+            "statuses_count": 5,
+            "note": "hello",
+            "url": f"https://{self.instance}/@alice",
+            "avatar": f"https://{self.instance}/a.webp",
+            "avatar_static": f"https://{self.instance}/a.webp",
+            "header": f"https://{self.instance}/h.webp",
+            "header_static": f"https://{self.instance}/h.webp",
+            "emojis": [],
+            "roles": [],
+            "fields": [],
+        }
+
+    def _fetch(self, cmd, handler, offset=0):
+        async def run():
+            async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+                return await cmd.fetch(client, offset, self.instance, 0)
+
+        return async_to_sync(run)()
+
+    def test_auth_gated_directory_caches_unknown_and_skips_misskey_probe(self):
+        calls = []
+
+        def handler(request):
+            calls.append(request.url.path)
+            if request.url.path == "/api/v1/directory":
+                return httpx.Response(401, json={"error": "Unauthorized: token not supplied"})
+            if request.url.path == "/.well-known/nodeinfo":
+                return httpx.Response(200, json={"links": [{"href": f"https://{self.instance}/nodeinfo/2.0"}]})
+            if request.url.path == "/nodeinfo/2.0":
+                return httpx.Response(200, json={"software": {"name": "gotosocial", "version": "0.22.0"}})
+            return httpx.Response(404)
+
+        cmd = CrawlerCommand()
+        _, results = self._fetch(cmd, handler)
+        self.assertEqual(results, [])
+        self.assertEqual(cmd._adapters[self.instance], "unknown")
+        # 401 is a config statement, not "endpoint missing": don't probe Misskey.
+        self.assertNotIn("/api/users", calls)
+
+        # Later pages short-circuit on the cached adapter without any requests.
+        calls.clear()
+        _, results = self._fetch(cmd, handler, offset=1)
+        self.assertEqual(results, [])
+        self.assertEqual(calls, [])
+
+    def test_open_directory_resolves_missing_actor_uri_via_webfinger(self):
+        def handler(request):
+            if request.url.path == "/api/v1/directory":
+                return httpx.Response(200, json=[self._gts_directory_account()])
+            if request.url.path == "/.well-known/nodeinfo":
+                return httpx.Response(200, json={"links": [{"href": f"https://{self.instance}/nodeinfo/2.0"}]})
+            if request.url.path == "/nodeinfo/2.0":
+                return httpx.Response(200, json={"software": {"name": "gotosocial", "version": "0.22.0"}})
+            if request.url.path == "/.well-known/webfinger":
+                return httpx.Response(
+                    200,
+                    json={
+                        "subject": f"acct:alice@{self.instance}",
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "application/activity+json",
+                                "href": f"https://{self.instance}/users/alice",
+                            }
+                        ],
+                    },
+                )
+            return httpx.Response(404)
+
+        cmd = CrawlerCommand()
+        _, results = self._fetch(cmd, handler)
+        self.assertEqual(cmd._adapters[self.instance], "mastodon")
+        self.assertEqual(len(results), 1)
+        # GTS omits `uri`; the crawler resolves the actor id so activitypub_id
+        # (used in starter-pack ActivityPub payloads) isn't NULL.
+        self.assertEqual(results[0]["uri"], f"https://{self.instance}/users/alice")
+
+    def test_open_directory_on_non_gotosocial_leaves_uri_missing(self):
+        webfinger_calls = []
+
+        def handler(request):
+            if request.url.path == "/api/v1/directory":
+                return httpx.Response(200, json=[self._gts_directory_account()])
+            if request.url.path == "/.well-known/nodeinfo":
+                return httpx.Response(200, json={"links": [{"href": f"https://{self.instance}/nodeinfo/2.0"}]})
+            if request.url.path == "/nodeinfo/2.0":
+                return httpx.Response(200, json={"software": {"name": "mastodon", "version": "4.1.0"}})
+            if request.url.path == "/.well-known/webfinger":
+                webfinger_calls.append(request.url.params["resource"])
+                return httpx.Response(404)
+            return httpx.Response(404)
+
+        cmd = CrawlerCommand()
+        _, results = self._fetch(cmd, handler)
+        self.assertEqual(len(results), 1)
+        self.assertNotIn("uri", results[0])
+        # Old Mastodon also omits `uri`; we don't WebFinger whole directories there.
+        self.assertEqual(webfinger_calls, [])
 
 
 class TestStaticPages(TestCase):

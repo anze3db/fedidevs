@@ -33,6 +33,9 @@
                 Any Mastodon account or an account from a Mastodon-compatible instance can be added to a starter pack as long as it has expressed consent to be listed by being set as be discoverable and not opt-out of search engine indexing.
             </p>
             <p>
+                Accounts on GoToSocial and Misskey-family instances (Sharkey, Firefish, Iceshrimp, Catodon, Akkoma) can be added as well — see <a href="#other-software">Other Fediverse software</a> for the settings that control it there.
+            </p>
+            <p>
                 To make sure your account is discoverable and opt-in to search engine indexing, go to <kbd>Preferences</kbd> - <kbd>Privacy and reach</kbd> tab (<code>{your_instance}/settings/privacy</code>) and check the following checkboxes:
             </p>
             <ol>
@@ -197,6 +200,21 @@
             <h3>How to get your instance removed from FediDevs.com?</h3>
             <p>
                 If you are an admin of an instance that is listed above, but don't want me indexing it anymore, please send <a href="mailto:hello@fedidevs.com">an email</a>. Once I confirm your identity I will remove all accounts from your instance and never index your instance again.
+            </p>
+            <h2 id="other-software">Other Fediverse software</h2>
+            <h3>I'm on GoToSocial. How do I let people add me to starter packs?</h3>
+            <p>
+                Starter packs work with GoToSocial: you can log in with your GoToSocial account, create starter packs, and be added to them.
+            </p>
+            <p>
+                To let people add you, check <b>Mark Your Account as Discoverable by Search Engines and Include it in the Instance Directory</b> under <kbd>Visibility and Privacy</kbd> in your instance's settings panel. Without it your account is treated as not having consented to being listed and will show up as hidden in starter packs.
+            </p>
+            <h3>I'm on Misskey, Sharkey, Firefish, Iceshrimp, Catodon, or Akkoma. How do I let people add me to starter packs?</h3>
+            <p>
+                Starter packs work with these servers too: logging in, creating starter packs, and being added to them are all supported.
+            </p>
+            <p>
+                Unlike Mastodon, there is no "feature profile in discovery algorithms" checkbox to turn on, so people can add you to starter packs as long as you haven't enabled the privacy option that asks search engines and crawlers not to index your profile. If you have that opt-out enabled, your account will show up as hidden in starter packs; disable it and the change is picked up on the next sync (about a day). To be hidden or removed immediately, <a href="mailto:hello@fedidevs.com">email me</a>.
             </p>
         </article>
     </main>

@@ -10,6 +10,7 @@ from django.db import ProgrammingError
 from django.utils import timezone
 from django_rich.management import RichCommand
 
+from accounts.activitypub import resolve_actor_url
 from accounts.management.commands.instances import process_instances
 from accounts.misskey import MISSKEY_USERS_BODY
 from accounts.misskey import user_to_mastodon as misskey_user_to_mastodon
@@ -35,7 +36,11 @@ class Command(RichCommand):
         # Per-instance API flavor cache: "mastodon", "misskey", or "unknown".
         # Misskey-family forks (Catodon, Firefish, Sharkey, ...) don't implement
         # /api/v1/directory, so we fall back to their native /api/users.
+        # Auth-gated directories (GoToSocial unless instance-directory-mode is
+        # "open") are cached as "unknown" so we don't re-probe every page.
         self._adapters: dict[str, str] = {}
+        # Per-instance nodeinfo software.name cache (None = detection failed).
+        self._software: dict[str, str | None] = {}
 
     def add_arguments(self, parser):
         parser.add_argument("--offset", type=int, nargs="?", default=0)
@@ -203,6 +208,7 @@ class Command(RichCommand):
         results, status_code = await self._fetch_mastodon_directory(client, offset, instance)
         if status_code == 200:
             self._adapters[instance] = "mastodon"
+            await self._fill_missing_actor_uris(client, instance, results)
             return self._apply_inactive_filter(instance, results, skip_inactive_for)
 
         if status_code == 404 and adapter is None:
@@ -212,7 +218,50 @@ class Command(RichCommand):
                 return self._apply_inactive_filter(instance, misskey_results, skip_inactive_for)
             self._adapters[instance] = "unknown"
 
+        if status_code in (401, 403) and adapter is None:
+            # Deterministic per instance config, so don't re-probe on later pages.
+            software = await self._get_software(client, instance)
+            hint = (
+                ' (directory needs instance-directory-mode: "open" to be crawlable)' if software == "gotosocial" else ""
+            )
+            self.console.print(
+                f"[yellow]Directory requires auth[/yellow] for {instance} ({software or 'unknown software'}){hint}"
+            )
+            self._adapters[instance] = "unknown"
+
         return instance, []
+
+    async def _get_software(self, client, instance) -> str | None:
+        """Cached nodeinfo `software.name` lookup, or None if undetectable."""
+        if instance not in self._software:
+            try:
+                disco = await client.get(f"https://{instance}/.well-known/nodeinfo", timeout=15, follow_redirects=True)
+                href = disco.json()["links"][-1]["href"]
+                node = await client.get(href, timeout=15, follow_redirects=True)
+                self._software[instance] = (node.json().get("software") or {}).get("name")
+            except httpx.HTTPError, KeyError, IndexError, ValueError, TypeError:
+                logger.info("Could not detect software for %s", instance)
+                self._software[instance] = None
+        return self._software[instance]
+
+    async def _fill_missing_actor_uris(self, client, instance, results):
+        """GoToSocial's account entity omits `uri` (the ActivityPub actor id we
+        store as activitypub_id and embed in starter-pack ActivityPub payloads),
+        so resolve it via WebFinger. Gated on nodeinfo saying "gotosocial":
+        Mastodon < 4.2 also omits `uri`, and per-account WebFinger against a big
+        directory would be needlessly chatty there.
+        """
+        missing = [a for a in results or [] if a.get("id") and a.get("username") and a.get("url") and not a.get("uri")]
+        if not missing:
+            return
+        if await self._get_software(client, instance) != "gotosocial":
+            return
+        resolved = await asyncio.gather(
+            *[resolve_actor_url(client, account["url"].split("/")[2], account["username"]) for account in missing]
+        )
+        for account, uri in zip(missing, resolved, strict=True):
+            if uri:
+                account["uri"] = uri
 
     async def _fetch_mastodon_directory(self, client, offset, instance):
         try:
@@ -240,7 +289,9 @@ class Command(RichCommand):
                 logger.info("Error decoding JSON", extra={"response": response.text})
                 return None, 0
 
-        if response.status_code != 404:
+        if response.status_code not in (401, 403, 404):
+            # 404 dispatches to the Misskey probe and 401/403 to the auth-gated
+            # message in fetch(); anything else is an unexpected failure.
             self.console.print(
                 f"[bold red]Error status code[/bold red] for {instance} at offset {offset}. {response.status_code}"
             )

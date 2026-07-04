@@ -34,7 +34,10 @@ instance:
 
 1. `GET /api/v1/directory` → if 200, cache as `"mastodon"` and use the result.
 2. On 404, `POST /api/users` with `{sort: "+follower", state: "alive", origin: "local", offset, limit}` → if 200, cache as `"misskey"` and convert via `accounts.misskey.user_to_mastodon`.
-3. Otherwise cache as `"unknown"` so subsequent pages return `[]` immediately.
+3. On 401/403 (auth-gated directories, e.g. GoToSocial's default
+   `instance-directory-mode: "webonly"` — see `GOTOSOCIAL.md`), cache as
+   `"unknown"` without probing Misskey.
+4. Otherwise cache as `"unknown"` so subsequent pages return `[]` immediately.
 
 Subsequent pages skip the probe and use the cached adapter directly.
 
