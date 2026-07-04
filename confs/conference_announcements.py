@@ -9,6 +9,7 @@ hands over.
 """
 
 import datetime as dt
+import zlib
 import zoneinfo
 
 from django.urls import reverse
@@ -34,21 +35,35 @@ def hashtags_for(conference) -> str:
     return " ".join(tag if tag.startswith("#") else f"#{tag}" for tag in tags if tag)
 
 
+# A few phrasings each so repeated announcements don't read as copy-paste. Each
+# ``{name}`` template ends with a lead-in to the conference page URL. One is
+# picked per conference (see ``content_for``).
+START_TEMPLATES = [
+    "{name} kicks off today! 🎉\n\nFollow the fediverse conversation about the conference on FediDevs:",
+    "Day one of {name} is here! 🎊\n\nFollow along with the fediverse conversation on FediDevs:",
+    "{name} begins today! 👋\n\nSee what the fediverse is saying about the conference on FediDevs:",
+    "It's {name} time! 🚀\n\nJoin the fediverse conversation about the conference on FediDevs:",
+]
+
+END_TEMPLATES = [
+    "That's a wrap on {name}! 👋\n\nThanks to everyone who joined the conversation on the fediverse. "
+    "You can still browse all the discussion on FediDevs:",
+    "{name} comes to a close today. 🎬\n\nThanks to everyone who took part in the fediverse conversation — "
+    "you can still revisit all of it on FediDevs:",
+    "The final day of {name} is here. ✨\n\nMissed anything? Catch up on the whole conversation on FediDevs:",
+    "{name} wraps up today! 🙌\n\nRelive the highlights from the fediverse conversation on FediDevs:",
+]
+
+
 def content_for(conference, kind: str) -> str:
     url = SITE_URL + reverse("conference", kwargs={"conference_slug": conference.slug})
     hashtags = hashtags_for(conference)
 
-    if kind == START:
-        body = (
-            f"{conference.name} kicks off today! 🎉\n\n"
-            f"Follow the fediverse conversation about the conference on FediDevs:\n{url}"
-        )
-    else:
-        body = (
-            f"That's a wrap on {conference.name}! 👋\n\n"
-            "Thanks to everyone who joined the conversation on the fediverse. "
-            f"You can still browse all the discussion on FediDevs:\n{url}"
-        )
+    # Deterministic per (conference, kind) so a not-yet-posted announcement's text
+    # stays stable across re-syncs, while different conferences get different phrasings.
+    templates = START_TEMPLATES if kind == START else END_TEMPLATES
+    index = zlib.crc32(f"{conference.slug}:{kind}".encode()) % len(templates)
+    body = templates[index].format(name=conference.name) + f"\n{url}"
 
     return f"{body}\n\n{hashtags}" if hashtags else body
 

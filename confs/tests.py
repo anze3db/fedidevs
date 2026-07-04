@@ -15,6 +15,7 @@ from django.utils import timezone
 from model_bakery import baker
 
 from announcements.models import Announcement
+from confs.conference_announcements import END_TEMPLATES, START_TEMPLATES
 from confs.models import Conference, ConferencePost
 from posts.models import Post
 
@@ -195,14 +196,35 @@ class TestSyncAnnouncements(TestCase):
         self.assertEqual(start.post_at, dt.datetime(2026, 6, 1, 8, 0, tzinfo=dt.UTC))
         self.assertEqual(end.post_at, dt.datetime(2026, 6, 3, 18, 0, tzinfo=dt.UTC))
 
-        self.assertIn("PyCon Somewhere kicks off today", start.content)
-        self.assertIn("That's a wrap on PyCon Somewhere", end.content)
         for announcement in (start, end):
+            self.assertIn("PyCon Somewhere", announcement.content)
             self.assertIn("https://fedidevs.com/pycon-somewhere/", announcement.content)
             # tags are normalised to hashtags regardless of the stored form.
             self.assertIn("#pycon #python", announcement.content)
             self.assertEqual(announcement.visibility, "public")
             self.assertIsNone(announcement.posted_at)
+
+    def test_uses_one_of_the_message_variations(self):
+        conference = self._conference()
+
+        self._sync()
+
+        conference.refresh_from_db()
+        start_leads = [t.format(name=conference.name) for t in START_TEMPLATES]
+        end_leads = [t.format(name=conference.name) for t in END_TEMPLATES]
+        self.assertTrue(any(lead in conference.start_announcement.content for lead in start_leads))
+        self.assertTrue(any(lead in conference.end_announcement.content for lead in end_leads))
+
+    def test_variation_is_stable_across_resyncs(self):
+        conference = self._conference()
+        self._sync()
+        conference.refresh_from_db()
+        first = conference.start_announcement.content
+
+        self._sync()
+        conference.refresh_from_db()
+
+        self.assertEqual(conference.start_announcement.content, first)
 
     def test_post_at_uses_conference_timezone(self):
         conference = self._conference(time_zone="America/Los_Angeles")
