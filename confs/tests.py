@@ -308,7 +308,9 @@ class TestCreateConference(TestCase):
         self.assertIn("/login/", response.url)
 
     def test_form_renders_for_authenticated_user(self):
-        ConferenceTag.objects.create(name="Python", slug="python", icon="languages/python.png")
+        # The "python" tag is seeded by migration 0031; get_or_create keeps this
+        # test working whether or not the row already exists.
+        ConferenceTag.objects.get_or_create(slug="python", defaults={"name": "Python", "icon": "languages/python.png"})
         self.client.force_login(self.user)
         response = self.client.get(reverse("create_conference"))
         self.assertEqual(response.status_code, 200)
@@ -400,7 +402,9 @@ class TestCreateConference(TestCase):
         self.assertFalse(Conference.objects.filter(name="PyCon Test").exists())
 
     def test_selected_icons_are_saved(self):
-        tag = ConferenceTag.objects.create(name="Python", slug="python", icon="languages/python.png")
+        tag, _ = ConferenceTag.objects.get_or_create(
+            slug="python", defaults={"name": "Python", "icon": "languages/python.png"}
+        )
         self.client.force_login(self.user)
         data = {**self.form_data, "conference_tags": [tag.id]}
         with (
@@ -555,7 +559,9 @@ class TestConferenceApprovalVisibility(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_conference_tag_icon_rendered_in_list(self):
-        tag = ConferenceTag.objects.create(name="Python", slug="python", icon="languages/python.png")
+        tag, _ = ConferenceTag.objects.get_or_create(
+            slug="python", defaults={"name": "Python", "icon": "languages/python.png"}
+        )
         self.approved.conference_tags.add(tag)
         response = self.client.get(reverse("conferences"))
         self.assertContains(response, 'alt="Python"')

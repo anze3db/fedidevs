@@ -654,6 +654,21 @@ class ConferenceForm(forms.ModelForm):
         help_text="e.g. @djangocon@fosstodon.org or https://fosstodon.org/@djangocon (optional).",
     )
 
+    # The site is served in English (<html lang="en">), which makes browsers
+    # render native date pickers in US format (mm/dd/yyyy). Force day-first via
+    # lang="en-GB" on the inputs only, so the page stays English while the date
+    # fields read as European (dd/mm/yyyy). The value/submission is always ISO
+    # regardless of the displayed format, so we pin format/input_formats to ISO.
+    _DATE_ATTRS = {"type": "date", "lang": "en-GB"}
+    start_date = forms.DateField(
+        widget=forms.DateInput(attrs=_DATE_ATTRS, format="%Y-%m-%d"),
+        input_formats=["%Y-%m-%d"],
+    )
+    end_date = forms.DateField(
+        widget=forms.DateInput(attrs=_DATE_ATTRS, format="%Y-%m-%d"),
+        input_formats=["%Y-%m-%d"],
+    )
+
     class Meta:
         model = Conference
         fields = [
@@ -673,8 +688,6 @@ class ConferenceForm(forms.ModelForm):
             "day_styles",
         ]
         widgets = {
-            "start_date": forms.DateInput(attrs={"type": "date"}),
-            "end_date": forms.DateInput(attrs={"type": "date"}),
             "description": forms.Textarea(attrs={"rows": 6}),
             "tags": forms.TextInput(),
             "days": forms.HiddenInput(),
