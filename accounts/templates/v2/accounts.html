@@ -45,7 +45,9 @@
                          alt="{{ account.login }}"
                          width="80"
                          height="80" />
-                    {% if not account.moved %}<c-follow-button :account="account" :user="user" />{% endif %}
+                    {% if not account.moved %}
+                        <c-follow-button :account="account" :user="user" />
+                    {% endif %}
                 </div>
                 <div class="p-4 pt-16">
                     <div class="relative">
