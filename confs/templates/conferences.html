@@ -37,13 +37,26 @@
             {% endif %}
             <footer class="prose dark:prose-invert m-6">
                 <p>
-                    Missing a conference? <a href="https://docs.google.com/spreadsheets/d/1sSfBE01FyJX5h8J9RMm0PaujjcaP4fFqRrmfcRo_dBc">Add it to the spreadsheet</a> and I'll add it asap.
+                    {% trans "Missing a conference?" %} <a href="{% url 'create_conference' %}">{% trans "Add it here" %}</a> {% trans "and we'll review it shortly." %}
                 </p>
             </footer>
         </article>
     </main>
 {% endblock content %}
 {% block sidebar %}
+    <section class="mb-16">
+        {% if not user.is_authenticated %}
+            <button data-modal-target="authentication-modal"
+                    data-modal-toggle="authentication-modal"
+                    data-umami-event="conference-signup-modal"
+                    class="plausible-event-name=conference-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                {% trans "Add a conference" %}
+            </button>
+        {% else %}
+            <a href="{% url 'create_conference' %}"
+               class="plausible-event-name=conference-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{% trans "Add a conference" %}</a>
+        {% endif %}
+    </section>
     <section class="mb-8">
         <h2 class="flex items-center gap-2 pb-2 mb-4 text-sm font-semibold align-middle border-b">
             Programming Language

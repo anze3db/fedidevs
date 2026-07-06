@@ -109,10 +109,12 @@ class ConferencesSitemap(Sitemap):
 
 class ConferenceSitemap(Sitemap):
     def items(self):
+        # Only approved (publicly listed) conferences belong in the sitemap.
+        approved = Conference.objects.filter(approved_at__isnull=False)
         return (
             [
                 (conf.slug, account, conf.start_date + dt.timedelta(days=i))
-                for conf in Conference.objects.all()
+                for conf in approved
                 for account in ConferenceAccount.objects.filter(conference=conf)
                 .values_list("account_id", flat=True)
                 .filter(count__gt=0)
@@ -122,11 +124,11 @@ class ConferenceSitemap(Sitemap):
             ]
             + [
                 (conf.slug, None, conf.start_date + dt.timedelta(days=i))
-                for conf in Conference.objects.all()
+                for conf in approved
                 for i in range((conf.end_date - conf.start_date).days + 1)
                 if conf.start_date + dt.timedelta(i) < timezone.now().date()
             ]
-            + [(conf.slug, None, None) for conf in Conference.objects.all()]
+            + [(conf.slug, None, None) for conf in approved]
         )
 
     def location(self, item):
@@ -229,6 +231,22 @@ urlpatterns = [
         name="developers-on-mastodon",
     ),
     path("conferences/", confs_views.conferences, name="conferences"),
+    path("conferences/create/", confs_views.create_conference, name="create_conference"),
+    path(
+        "conferences/<slug:conference_slug>/edit/",
+        confs_views.edit_conference,
+        name="edit_conference",
+    ),
+    path(
+        "conferences/<slug:conference_slug>/approve/",
+        confs_views.approve_conference,
+        name="approve_conference",
+    ),
+    path(
+        "conferences/<slug:conference_slug>/unapprove/",
+        confs_views.unapprove_conference,
+        name="unapprove_conference",
+    ),
     path("conferences/<conflangslug:lang>/", confs_views.conferences, name="conferences"),
     path("posts/subscribe", post_views.subscribe, name="posts_subscribe"),
     path(

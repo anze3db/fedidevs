@@ -6,6 +6,7 @@ from pathlib import Path
 
 import requests
 from django.core import management
+from django.utils import timezone
 from django.utils.text import slugify
 from django_rich.management import RichCommand
 
@@ -78,6 +79,9 @@ class Command(RichCommand):
                 tags=slug
                 if tag in ("", "?")
                 else ", ".join([f"#{t.strip('#')}" for t in re.findall(r"#\w+|[\w-]+", tag)]),
+                # Bulk imports are trusted (admin-run), so they're approved and
+                # public immediately, unlike user submissions from the form.
+                approved_at=timezone.now(),
             )
             confs.append(conf)
         if not confs:

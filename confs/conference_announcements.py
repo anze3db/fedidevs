@@ -95,8 +95,10 @@ def sync_conference(conference, announcement_model) -> None:
 
 def sync_upcoming(conference_model, announcement_model, today: dt.date) -> None:
     """Ensure every not-yet-finished conference has up-to-date announcements."""
-    upcoming = conference_model.objects.filter(archived_date__isnull=True, end_date__gte=today).select_related(
-        "start_announcement", "end_announcement"
-    )
+    # Only approved conferences get announced to @fedidevs; pending submissions
+    # must not be posted publicly before a staff member reviews them.
+    upcoming = conference_model.objects.filter(
+        archived_date__isnull=True, end_date__gte=today, approved_at__isnull=False
+    ).select_related("start_announcement", "end_announcement")
     for conference in upcoming:
         sync_conference(conference, announcement_model)

@@ -2,6 +2,7 @@ import datetime as dt
 import zoneinfo
 
 from django.db import models
+from django.templatetags.static import static
 
 from accounts.models import Framework, Language
 
@@ -99,6 +100,24 @@ class Conference(models.Model):
 
     archived_date = models.DateField(null=True, blank=True)
 
+    # Moderation gate. A conference is only "posted" to the public site (listing,
+    # sitemap, @fedidevs announcements) once a staff member approves it. Until
+    # then it is still reachable by slug so the submitter can preview it, and
+    # account gathering runs against it like any other non-archived conference.
+    approved_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Set when a staff member approves the conference. Null means pending review.",
+    )
+    created_by = models.ForeignKey(
+        "auth.User",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="submitted_conferences",
+        help_text="The user who submitted this conference. Null for spreadsheet-imported rows.",
+    )
+
     website = models.URLField(default="")
     mastodon = models.URLField(default="", blank=True)
 
@@ -124,6 +143,15 @@ class Conference(models.Model):
     accounts = models.ManyToManyField("accounts.Account", blank=True, through="ConferenceAccount")
     posts = models.ManyToManyField("posts.Post", blank=True, through="ConferencePost")
 
+    # Icons shown for this conference in the conference list. When empty the list
+    # falls back to the auto-detected languages (see the `languages` property).
+    conference_tags = models.ManyToManyField(
+        "ConferenceTag",
+        blank=True,
+        related_name="conferences",
+        help_text="Icons shown for this conference in the conference list.",
+    )
+
     # Fediverse announcements the @fedidevs account posts for this conference. The
     # Announcement model is generic and knows nothing about conferences; the
     # start/end meaning lives here. See confs/conference_announcements.py.
@@ -144,6 +172,10 @@ class Conference(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def is_approved(self) -> bool:
+        return self.approved_at is not None
 
     @property
     def posts_after_datetime(self) -> dt.datetime | None:
@@ -212,7 +244,18 @@ class ConferencePost(models.Model):
 class ConferenceTag(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
-    icon = models.CharField(max_length=255)
+    icon = models.CharField(max_length=255, help_text="Static path (e.g. languages/python.png) or a full image URL.")
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def icon_url(self) -> str:
+        """The icon as a usable <img src>: a full URL as-is, otherwise resolved
+        against the static files storage like the language/framework images."""
+        if "://" in self.icon:
+            return self.icon
+        return static(self.icon)
 
 
 class MinId(models.Model):

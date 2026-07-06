@@ -257,6 +257,11 @@ MAILERS = {
     }
 }
 
+DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="hello@fedidevs.com")
+
+# Where new user-submitted conferences send their "please review" notification.
+CONFERENCE_APPROVAL_EMAIL = env.str("CONFERENCE_APPROVAL_EMAIL", default="apecar@fencer.dev")
+
 # Mastodon API settings:
 MSTDN_CLIENT_NAME = env.str("MSTDN_CLIENT_NAME", default="local.fedidevs.com")
 MSTDN_REDIRECT_URI = env.str("MSTDN_REDIRECT_URI", default="http://localhost:8000/mastodon_auth/")

@@ -1,16 +1,26 @@
 import datetime as dt
+import logging
 import zoneinfo
 from typing import Literal
 
+from django import forms
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Count, F, Q, Sum
 from django.db.models.functions import Trunc
-from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect, render
 from django.templatetags.static import static
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_date
+from django.utils.text import slugify
+from django.utils.translation import gettext as _
 from django.views.decorators.cache import cache_page
+from django.views.decorators.http import require_POST
 
 from accounts.views import build_canonical_url
 from confs.models import (
@@ -20,6 +30,7 @@ from confs.models import (
     ConferenceAccount,
     ConferenceLookup,
     ConferencePost,
+    ConferenceTag,
     DjangoConAfricaAccount,
     DjangoConAfricaPost,
     DotNetConfAccount,
@@ -73,10 +84,18 @@ def conferences(request, lang: str | None = None):
     if selected_framework:
         search_query &= Q(conferencelookup__language=selected_framework.code)
 
+    # Only approved conferences are public. A logged-in submitter also sees their
+    # own still-pending submissions (flagged in the template) so they can find the
+    # page again while it waits for review.
+    approved_query = Q(approved_at__isnull=False)
+    if request.user.is_authenticated:
+        approved_query |= Q(created_by=request.user)
+    search_query &= approved_query
+
     today = timezone.now().date()
     upcoming_conferences = (
         Conference.objects.filter(start_date__gt=today)
-        .prefetch_related("conferencelookup_set")
+        .prefetch_related("conferencelookup_set", "conference_tags")
         .annotate(posts_count=Count("conferencepost", filter=Q(conferencepost__created_at__gt=F("posts_after"))))
         .filter(search_query)
         .order_by("start_date")
@@ -84,13 +103,13 @@ def conferences(request, lang: str | None = None):
     live_conferences = (
         Conference.objects.filter(start_date__lte=today, end_date__gte=today)
         .filter(search_query)
-        .prefetch_related("conferencelookup_set")
+        .prefetch_related("conferencelookup_set", "conference_tags")
         .annotate(posts_count=Count("conferencepost", filter=Q(conferencepost__created_at__gt=F("posts_after"))))
         .order_by("start_date")
     )
     past_conferences = (
         Conference.objects.filter(end_date__lt=today)
-        .prefetch_related("conferencelookup_set")
+        .prefetch_related("conferencelookup_set", "conference_tags")
         .annotate(posts_count=Count("conferencepost", filter=Q(conferencepost__created_at__gt=F("posts_after"))))
         .filter(search_query)
         .order_by("-start_date")
@@ -146,8 +165,17 @@ def get_order_display(order: Literal["-favourites_count", "-reblogs_count", "-re
             return "Created Date"
 
 
-@cache_page(30, cache="memory")
 def conference(request, conference_slug: str):
+    # Authenticated users must never be served a stale cached page: staff need to
+    # see the approve button, and a submitter previewing their pending conference
+    # needs the up-to-date "pending review" state. Only anonymous traffic (the hot
+    # path for approved, public conferences) is cached.
+    if request.user.is_authenticated:
+        return _conference_detail(request, conference_slug)
+    return _conference_detail_cached(request, conference_slug)
+
+
+def _conference_detail(request, conference_slug: str):
     conference = get_object_or_404(Conference, slug=conference_slug)
     if conference.posts_after:
         search_query = Q(conference=conference, created_at__gte=conference.posts_after_datetime)
@@ -301,8 +329,16 @@ def conference(request, conference_slug: str):
             "current_date": current_date,
             "order": order,
             "is_superuser": request.user.is_superuser,
+            "is_pending": not conference.is_approved,
+            "can_approve": request.user.is_staff and not conference.is_approved,
+            "can_unapprove": request.user.is_staff and conference.is_approved,
+            "can_edit": can_edit_conference(request.user, conference),
         },
     )
+
+
+# Anonymous traffic is served from a short-lived cache; see `conference` above.
+_conference_detail_cached = cache_page(30, cache="memory")(_conference_detail)
 
 
 # Create your views here.
@@ -594,3 +630,253 @@ def dotnetconf(request, date: dt.date | None = None):
             "selected_tag": selected_tag,
         },
     )
+
+
+logger = logging.getLogger(__name__)
+
+
+INPUT_CLASS = (
+    "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 "
+    "focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 "
+    "dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+)
+
+# How many ConferenceTag icons a conference may show in the list.
+MAX_CONFERENCE_TAGS = 3
+
+
+class ConferenceForm(forms.ModelForm):
+    # A fediverse profile is a handle (@name@instance.social), not a URL, so this
+    # is a plain CharField (not the model's URLField) and we normalise it to a
+    # profile URL in clean_mastodon.
+    mastodon = forms.CharField(
+        required=False,
+        help_text="e.g. @djangocon@fosstodon.org or https://fosstodon.org/@djangocon (optional).",
+    )
+
+    class Meta:
+        model = Conference
+        fields = [
+            "name",
+            "location",
+            "start_date",
+            "end_date",
+            "time_zone",
+            "website",
+            "mastodon",
+            "description",
+            "tags",
+            # Icons to render in the conference list; picked from ConferenceTag.
+            "conference_tags",
+            # Populated by the day builder in the "Advanced" section of the form.
+            "days",
+            "day_styles",
+        ]
+        widgets = {
+            "start_date": forms.DateInput(attrs={"type": "date"}),
+            "end_date": forms.DateInput(attrs={"type": "date"}),
+            "description": forms.Textarea(attrs={"rows": 6}),
+            "tags": forms.TextInput(),
+            "days": forms.HiddenInput(),
+            "day_styles": forms.HiddenInput(),
+        }
+        help_texts = {
+            "tags": "Comma separated hashtags used to gather posts, e.g. #djangocon, #pycon",
+            "website": "e.g. https://djangocon.eu",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            if isinstance(field.widget, forms.HiddenInput):
+                continue
+            field.widget.attrs.setdefault("class", INPUT_CLASS)
+
+    def clean_conference_tags(self):
+        tags = self.cleaned_data.get("conference_tags")
+        if tags and len(tags) > MAX_CONFERENCE_TAGS:
+            raise forms.ValidationError(_("You can pick at most %(count)d icons.") % {"count": MAX_CONFERENCE_TAGS})
+        return tags
+
+    def clean_mastodon(self):
+        value = (self.cleaned_data.get("mastodon") or "").strip()
+        if not value:
+            return ""
+        if value.startswith(("http://", "https://")):
+            return value
+        # Fediverse handle: @name@instance.social (leading @ optional).
+        handle = value.lstrip("@")
+        user, _sep, instance = handle.partition("@")
+        if user and instance and "@" not in instance:
+            return f"https://{instance}/@{user}"
+        raise forms.ValidationError(_("Enter a fediverse handle like @name@instance.social or a full profile URL."))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+        if start_date and end_date and end_date < start_date:
+            self.add_error("end_date", _("The end date can't be before the start date."))
+        return cleaned_data
+
+
+def conference_tag_context(form: ConferenceForm) -> dict:
+    """Context for the icon picker: all available tags and the ids currently
+    selected (from the instance, or the submitted data on a failed POST)."""
+    selected_tag_ids = set()
+    for pk in form["conference_tags"].value() or []:
+        try:
+            selected_tag_ids.add(int(pk))
+        except TypeError, ValueError:
+            continue
+    return {
+        "all_conference_tags": ConferenceTag.objects.all(),
+        "selected_tag_ids": selected_tag_ids,
+        "max_conference_tags": MAX_CONFERENCE_TAGS,
+    }
+
+
+def unique_conference_slug(name: str) -> str:
+    """A slugified, collision-free slug for a new conference."""
+    base = slugify(name) or "conference"
+    slug = base
+    suffix = 2
+    while Conference.objects.filter(slug=slug).exists():
+        slug = f"{base}-{suffix}"
+        suffix += 1
+    return slug
+
+
+@login_required
+def create_conference(request):
+    if request.method == "POST":
+        form = ConferenceForm(request.POST)
+        if form.is_valid():
+            conference = form.save(commit=False)
+            conference.slug = unique_conference_slug(conference.name)
+            conference.created_by = request.user
+            # Start collecting posts from the conference start date by default.
+            conference.posts_after = conference.start_date
+            # No tag given? Fall back to the slug so the detail page (which needs a
+            # primary tag) and post gathering still work, mirroring the old import.
+            if not conference.tags.strip():
+                conference.tags = conference.slug
+            # approved_at stays NULL: pending review until a staff member approves.
+            conference.save()
+            form.save_m2m()  # persist the selected conference_tags (icons)
+
+            # Account gathering starts automatically: saving a new Conference fires
+            # the post_save signal in confs/apps.py, which enqueues findinstances +
+            # stattag for this slug. Here we only need to notify the reviewer.
+            transaction.on_commit(lambda: send_approval_notification(request, conference))
+
+            return redirect("conference", conference_slug=conference.slug)
+    else:
+        form = ConferenceForm()
+
+    return render(
+        request,
+        "conference_form.html",
+        {
+            "page": "create_conference",
+            "page_title": _("Add a conference"),
+            "page_description": _("Add a conference to FediDevs to follow the fediverse conversation about it."),
+            "page_header": "FEDIDEVS",
+            "page_subheader": "",
+            "form": form,
+            "form_title": _("Add a conference"),
+            "submit_label": _("Submit conference"),
+            "is_edit": False,
+            **conference_tag_context(form),
+        },
+    )
+
+
+def can_edit_conference(user, conference: Conference) -> bool:
+    """Staff can edit any conference; a submitter can edit their own."""
+    if not user.is_authenticated:
+        return False
+    return user.is_staff or (conference.created_by_id is not None and conference.created_by_id == user.id)
+
+
+@login_required
+def edit_conference(request, conference_slug: str):
+    conference = get_object_or_404(Conference, slug=conference_slug)
+    if not can_edit_conference(request.user, conference):
+        return HttpResponseForbidden()
+
+    if request.method == "POST":
+        form = ConferenceForm(request.POST, instance=conference)
+        if form.is_valid():
+            form.save()
+            return redirect("conference", conference_slug=conference.slug)
+    else:
+        form = ConferenceForm(instance=conference)
+
+    return render(
+        request,
+        "conference_form.html",
+        {
+            "page": "conferences",
+            "page_title": _("Edit conference"),
+            "page_description": "",
+            "page_header": "FEDIDEVS",
+            "page_subheader": "",
+            "form": form,
+            "form_title": _("Edit conference"),
+            "submit_label": _("Save changes"),
+            "is_edit": True,
+            "conference": conference,
+            **conference_tag_context(form),
+        },
+    )
+
+
+@login_required
+@require_POST
+def approve_conference(request, conference_slug: str):
+    if not request.user.is_staff:
+        return HttpResponseForbidden()
+    conference = get_object_or_404(Conference, slug=conference_slug)
+    if not conference.is_approved:
+        conference.approved_at = timezone.now()
+        conference.save(update_fields=["approved_at"])
+    return redirect("conference", conference_slug=conference.slug)
+
+
+@login_required
+@require_POST
+def unapprove_conference(request, conference_slug: str):
+    if not request.user.is_staff:
+        return HttpResponseForbidden()
+    conference = get_object_or_404(Conference, slug=conference_slug)
+    if conference.is_approved:
+        conference.approved_at = None
+        conference.save(update_fields=["approved_at"])
+    return redirect("conference", conference_slug=conference.slug)
+
+
+def send_approval_notification(request, conference: Conference) -> None:
+    """Email the reviewer that a new conference is waiting for approval."""
+    conference_url = request.build_absolute_uri(reverse("conference", kwargs={"conference_slug": conference.slug}))
+    submitter = conference.created_by.get_username() if conference.created_by else "an anonymous user"
+    subject = f"New conference pending review: {conference.name}"
+    body = (
+        f"{submitter} submitted a new conference to FediDevs.\n\n"
+        f"Name: {conference.name}\n"
+        f"Location: {conference.location}\n"
+        f"Dates: {conference.start_date} - {conference.end_date}\n"
+        f"Website: {conference.website}\n"
+        f"Tags: {conference.tags}\n\n"
+        f"Review and approve it here (Approve button visible to staff):\n{conference_url}\n"
+    )
+    try:
+        send_mail(
+            subject,
+            body,
+            settings.DEFAULT_FROM_EMAIL,
+            [settings.CONFERENCE_APPROVAL_EMAIL],
+        )
+    except Exception:
+        # A mail hiccup shouldn't lose the submission; it's already saved.
+        logger.exception("Failed to send conference approval notification for %s", conference.slug)

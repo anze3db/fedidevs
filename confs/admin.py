@@ -1,6 +1,13 @@
 from django.contrib import admin
+from django.utils import timezone
 
-from confs.models import Conference, ConferenceLookup
+from confs.models import Conference, ConferenceLookup, ConferenceTag
+
+
+@admin.register(ConferenceTag)
+class ConferenceTagAdmin(admin.ModelAdmin):
+    list_display = ("name", "slug", "icon")
+    prepopulated_fields = {"slug": ("name",)}
 
 
 class ConferenceLookupInline(admin.StackedInline):
@@ -14,7 +21,9 @@ class ConferenceLookupInline(admin.StackedInline):
 # Register your models here.
 @admin.register(Conference)
 class ConferenceAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug", "start_date", "end_date", "archived_date", "posts_after")
+    list_display = ("name", "slug", "start_date", "end_date", "approved_at", "created_by", "archived_date")
+    list_filter = ("approved_at",)
+    actions = ["approve_conferences"]
     prepopulated_fields = {"slug": ("name",)}
     fields = (
         "name",
@@ -23,16 +32,25 @@ class ConferenceAdmin(admin.ModelAdmin):
         "time_zone",
         "start_date",
         "end_date",
+        "approved_at",
+        "created_by",
         "archived_date",
         "website",
         "mastodon",
         "description",
         "instances",
         "tags",
+        "conference_tags",
         "days",
         "day_styles",
         "start_announcement",
         "end_announcement",
     )
-    raw_id_fields = ("start_announcement", "end_announcement")
+    filter_horizontal = ("conference_tags",)
+    raw_id_fields = ("start_announcement", "end_announcement", "created_by")
     # inlines = [ConferenceLookupInline]
+
+    @admin.action(description="Approve selected conferences")
+    def approve_conferences(self, request, queryset):
+        updated = queryset.filter(approved_at__isnull=True).update(approved_at=timezone.now())
+        self.message_user(request, f"Approved {updated} conference(s).")

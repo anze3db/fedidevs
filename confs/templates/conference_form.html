@@ -1,0 +1,261 @@
+{% extends "v2/layout.html" %}
+{% load account_extras %}
+{% load static %}
+{% block content %}
+    <main class="py-8 px-4 mx-auto max-w-2xl lg:py-16 p-3 mb-12 ">
+        <h2 class="mb-4 text-xl text-center font-bold text-gray-900 dark:text-white">{{ form_title }}</h2>
+        <p class="mb-8 text-l text-center">
+            {% if is_edit %}
+                {% trans "Update the conference details below." %}
+            {% else %}
+                {% trans "Add a conference to follow the fediverse conversation about it. We'll review your submission before it appears in the directory." %}
+            {% endif %}
+        </p>
+        <form action=""
+              method="post"
+              class="bg-white shadow-md rounded-2xl dark:bg-gray-800 break-inside-avoid-column p-8">
+            {% csrf_token %}
+            <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+                <div class="sm:col-span-2">
+                    <label for="{{ form.name.id_for_label }}"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        {% trans "Conference name" %}
+                    </label>
+                    {{ form.name }}
+                    <div class="text-sm text-red-500">{{ form.name.errors }}</div>
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="{{ form.location.id_for_label }}"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        {% trans "Location" %}
+                    </label>
+                    {{ form.location }}
+                    <div class="text-sm text-red-500">{{ form.location.errors }}</div>
+                </div>
+                <div>
+                    <label for="{{ form.start_date.id_for_label }}"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        {% trans "Start date" %}
+                    </label>
+                    {{ form.start_date }}
+                    <div class="text-sm text-red-500">{{ form.start_date.errors }}</div>
+                </div>
+                <div>
+                    <label for="{{ form.end_date.id_for_label }}"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        {% trans "End date" %}
+                    </label>
+                    {{ form.end_date }}
+                    <div class="text-sm text-red-500">{{ form.end_date.errors }}</div>
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="{{ form.time_zone.id_for_label }}"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        {% trans "Time zone" %}
+                    </label>
+                    {{ form.time_zone }}
+                    <div class="text-sm text-red-500">{{ form.time_zone.errors }}</div>
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="{{ form.website.id_for_label }}"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        {% trans "Website" %}
+                    </label>
+                    {{ form.website }}
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ form.website.help_text }}</p>
+                    <div class="text-sm text-red-500">{{ form.website.errors }}</div>
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="{{ form.mastodon.id_for_label }}"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        {% trans "Fediverse profile (optional)" %}
+                    </label>
+                    {{ form.mastodon }}
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ form.mastodon.help_text }}</p>
+                    <div class="text-sm text-red-500">{{ form.mastodon.errors }}</div>
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="{{ form.tags.id_for_label }}"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        {% trans "Hashtags" %}
+                    </label>
+                    {{ form.tags }}
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ form.tags.help_text }}</p>
+                    <div class="text-sm text-red-500">{{ form.tags.errors }}</div>
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="{{ form.description.id_for_label }}"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        {% trans "Description" %}
+                    </label>
+                    {{ form.description }}
+                    <div class="text-sm text-red-500">{{ form.description.errors }}</div>
+                </div>
+                <div class="text-sm text-red-500 sm:col-span-2">{{ form.non_field_errors }}</div>
+                <div class="sm:col-span-2"
+                     id="icon-picker"
+                     data-max-tags="{{ max_conference_tags }}">
+                    <span class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{% trans "Icons" %}</span>
+                    <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
+                        {% blocktrans %}Pick up to {{ max_conference_tags }} icons shown next to this conference in the list. Leave empty to use the auto-detected language icons.{% endblocktrans %}
+                    </p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {% for tag in all_conference_tags %}
+                            <label class="flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 p-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <input type="checkbox"
+                                       name="conference_tags"
+                                       value="{{ tag.id }}"
+                                       {% if tag.id in selected_tag_ids %}checked{% endif %}
+                                       class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+                                <img src="{{ tag.icon_url }}"
+                                     alt="{{ tag.name }}"
+                                     loading="lazy"
+                                     class="w-6 h-6" />
+                                <span class="text-sm text-gray-900 dark:text-white truncate">{{ tag.name }}</span>
+                            </label>
+                        {% empty %}
+                            <p class="text-xs text-gray-500 dark:text-gray-400 sm:col-span-3">
+                                {% trans "No icons available yet. A site admin can add them under ConferenceTags in the Django admin." %}
+                            </p>
+                        {% endfor %}
+                    </div>
+                    <div class="text-sm text-red-500">{{ form.conference_tags.errors }}</div>
+                </div>
+                {# Advanced: name and colour each conference day. The rows are built #}
+                {# from the date range in JS and serialised into the hidden fields. #}
+                <details class="sm:col-span-2 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                    <summary class="cursor-pointer text-sm font-medium text-gray-900 dark:text-white">
+                        {% trans "Advanced: name & colour conference days" %}
+                    </summary>
+                    <p class="mt-2 mb-4 text-xs text-gray-500 dark:text-gray-400">
+                        {% trans "One row is generated per day between the start and end dates. Give each day a name and pick a colour for its badge." %}
+                    </p>
+                    <div id="day-rows" class="space-y-3"></div>
+                    <p id="day-rows-empty" class="text-xs text-gray-500 dark:text-gray-400">
+                        {% trans "Pick a start and end date to configure the days." %}
+                    </p>
+                    {{ form.days }}
+                    {{ form.day_styles }}
+                    <div class="text-sm text-red-500">{{ form.days.errors }}{{ form.day_styles.errors }}</div>
+                </details>
+            </div>
+            <button type="submit"
+                    class="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                {{ submit_label }}
+            </button>
+        </form>
+    </main>
+    <template id="day-row-template">
+        <div class="day-row flex items-center gap-3">
+            <span class="day-label w-16 shrink-0 text-sm font-medium text-gray-900 dark:text-white"></span>
+            <input type="text"
+                   data-day-name
+                   placeholder="{% trans "Day name (e.g. Tutorials)" %}"
+                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+            <select data-day-style
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-40 shrink-0 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                <option value="">{% trans "Purple (default)" %}</option>
+                <option value="blue">{% trans "Blue" %}</option>
+                <option value="red">{% trans "Red" %}</option>
+                <option value="green">{% trans "Green" %}</option>
+            </select>
+        </div>
+    </template>
+    <script nonce="{{ request.csp_nonce }}">
+        (function () {
+            const startInput = document.getElementById("id_start_date");
+            const endInput = document.getElementById("id_end_date");
+            const daysField = document.getElementById("id_days");
+            const stylesField = document.getElementById("id_day_styles");
+            const rowsContainer = document.getElementById("day-rows");
+            const emptyHint = document.getElementById("day-rows-empty");
+            const template = document.getElementById("day-row-template");
+            if (!startInput || !endInput || !daysField || !stylesField || !rowsContainer) {
+                return;
+            }
+
+            // Default the timezone to the visitor's browser timezone on new forms.
+            {% if not is_edit %}
+            try {
+                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                const tzSelect = document.getElementById("id_time_zone");
+                if (tz && tzSelect && [...tzSelect.options].some(o => o.value === tz)) {
+                    tzSelect.value = tz;
+                }
+            } catch (e) { /* browser without Intl support */ }
+            {% endif %}
+
+            const MAX_DAYS = 60;
+            const parseCsv = (v) => (v ? v.split(",").map(s => s.trim()) : []);
+
+            function dayCount() {
+                const start = new Date(startInput.value);
+                const end = new Date(endInput.value);
+                if (isNaN(start.getTime()) || isNaN(end.getTime())) return 0;
+                const diff = Math.round((end - start) / 86400000) + 1;
+                if (diff <= 0) return 0;
+                return Math.min(diff, MAX_DAYS);
+            }
+
+            function syncHiddenFields() {
+                const names = [...rowsContainer.querySelectorAll("[data-day-name]")].map(i => i.value.trim());
+                const styles = [...rowsContainer.querySelectorAll("[data-day-style]")].map(i => i.value.trim());
+                daysField.value = names.join(", ");
+                stylesField.value = styles.join(", ");
+            }
+
+            function render() {
+                const count = dayCount();
+                // Preserve whatever is currently typed; fall back to the saved values.
+                const domNames = [...rowsContainer.querySelectorAll("[data-day-name]")].map(i => i.value);
+                const domStyles = [...rowsContainer.querySelectorAll("[data-day-style]")].map(i => i.value);
+                const savedNames = parseCsv(daysField.value);
+                const savedStyles = parseCsv(stylesField.value);
+
+                rowsContainer.innerHTML = "";
+                for (let i = 0; i < count; i++) {
+                    const node = template.content.cloneNode(true);
+                    node.querySelector(".day-label").textContent = "Day " + (i + 1);
+                    const nameInput = node.querySelector("[data-day-name]");
+                    const styleSelect = node.querySelector("[data-day-style]");
+                    nameInput.value = domNames[i] !== undefined ? domNames[i] : (savedNames[i] || "");
+                    styleSelect.value = domStyles[i] !== undefined ? domStyles[i] : (savedStyles[i] || "");
+                    nameInput.addEventListener("input", syncHiddenFields);
+                    styleSelect.addEventListener("change", syncHiddenFields);
+                    rowsContainer.appendChild(node);
+                }
+                emptyHint.style.display = count ? "none" : "";
+                syncHiddenFields();
+            }
+
+            startInput.addEventListener("change", render);
+            endInput.addEventListener("change", render);
+            render();
+        })();
+
+        // Limit the icon picker to at most `data-max-tags` selected checkboxes.
+        (function () {
+            const picker = document.getElementById("icon-picker");
+            if (!picker) return;
+            const max = parseInt(picker.dataset.maxTags, 10);
+            if (!max) return;
+            const boxes = [...picker.querySelectorAll("input[name='conference_tags']")];
+
+            function refresh() {
+                const checked = boxes.filter(b => b.checked).length;
+                const atLimit = checked >= max;
+                boxes.forEach(b => {
+                    b.disabled = atLimit && !b.checked;
+                    b.closest("label").classList.toggle("opacity-50", b.disabled);
+                });
+            }
+
+            boxes.forEach(b => b.addEventListener("change", refresh));
+            refresh();
+        })();
+    </script>
+{% endblock content %}
+{% block sidebar %}
+    <section class="mb-8">
+    </section>
+{% endblock sidebar %}

@@ -2,9 +2,29 @@
 {% load account_extras %}
 {% load static %}
 {% block head %}
-    {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
+    {% if posts.has_previous or is_pending %}<meta name="robots" content="none">{% endif %}
 {% endblock head %}
 {% block content %}
+    {% if is_pending %}
+        <div class="mx-auto mb-6 max-w-3xl rounded-lg border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-200">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <p>
+                    {% trans "This conference is pending review and isn't public yet. We're already gathering posts, and it'll appear in the directory once it's approved." %}
+                </p>
+                {% if can_approve %}
+                    <form method="post"
+                          action="{% url 'approve_conference' conference.slug %}"
+                          class="shrink-0">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300">
+                            {% trans "Approve conference" %}
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
     <main class="flex justify-center">
         <article>
             <section class="mb-8 mr-2 flex flex-wrap gap-4 justify-end">
@@ -126,8 +146,42 @@
             Follow the <a href="{{ conference.mastodon }}" class="underline">official {{ conference.name }} Mastodon account</a> to be up to date.
         {% endif %}
     </p>
-    {% if is_superuser %}
-        <a href="{% url 'admin:confs_conference_change' conference.id %}">Edit</a>
+    {% if can_edit or can_approve or can_unapprove %}
+        <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">{% trans "Manage" %}</h2>
+        <p class="mb-3 text-sm">
+            {% if is_pending %}
+                <span class="inline-block rounded bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">{% trans "Pending review" %}</span>
+            {% else %}
+                <span class="inline-block rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200">{% trans "Approved" %}</span>
+            {% endif %}
+        </p>
+        <div class="flex flex-wrap items-center gap-2 mb-8">
+            {% if can_edit %}
+                <a href="{% url 'edit_conference' conference.slug %}"
+                   class="inline-flex items-center rounded-lg bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900">
+                    {% trans "Edit conference" %}
+                </a>
+            {% endif %}
+            {% if can_approve %}
+                <form method="post" action="{% url 'approve_conference' conference.slug %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300">
+                        {% trans "Approve conference" %}
+                    </button>
+                </form>
+            {% endif %}
+            {% if can_unapprove %}
+                <form method="post"
+                      action="{% url 'unapprove_conference' conference.slug %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700">
+                        {% trans "Unapprove" %}
+                    </button>
+                </form>
+            {% endif %}
+        </div>
     {% endif %}
     {% if account_counts %}
         <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">Filter by most active accounts</h2>

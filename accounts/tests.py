@@ -522,6 +522,7 @@ class TestSitemap(TestCase):
             start_date=timezone.datetime(2021, 1, 1).date(),
             end_date=timezone.datetime(2021, 1, 1).date(),
             tags="",
+            approved_at=timezone.now(),
         )
         cls.account = Account.objects.create(
             account_id="1",

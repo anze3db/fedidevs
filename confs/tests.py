@@ -7,6 +7,7 @@ import warnings
 from unittest import mock
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.cache import caches
 from django.core.management import call_command
 from django.test import TestCase, override_settings
@@ -16,7 +17,7 @@ from model_bakery import baker
 
 from announcements.models import Announcement
 from confs.conference_announcements import END_TEMPLATES, START_TEMPLATES
-from confs.models import Conference, ConferencePost
+from confs.models import Conference, ConferencePost, ConferenceTag
 from posts.models import Post
 
 
@@ -173,6 +174,8 @@ class TestSyncAnnouncements(TestCase):
             "end_date": dt.date(2026, 6, 3),
             "time_zone": "UTC",
             "tags": "#pycon, python",
+            # Only approved conferences are announced; approve by default here.
+            "approved_at": self.NOW,
         }
         defaults.update(kwargs)
         return baker.make(Conference, **defaults)
@@ -243,6 +246,14 @@ class TestSyncAnnouncements(TestCase):
 
         self.assertEqual(Announcement.objects.count(), 0)
 
+    def test_skips_pending_conferences(self):
+        # A submitted-but-not-yet-approved conference must not be announced.
+        self._conference(slug="pending", approved_at=None)
+
+        self._sync()
+
+        self.assertEqual(Announcement.objects.count(), 0)
+
     def test_is_idempotent_and_refreshes_unposted_content(self):
         conference = self._conference()
         self._sync()
@@ -274,3 +285,327 @@ class TestSyncAnnouncements(TestCase):
 
         start.refresh_from_db()
         self.assertEqual(start.content, "already posted, do not touch")
+
+
+class TestCreateConference(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user("alice", password="pw")
+        self.form_data = {
+            "name": "PyCon Test",
+            "location": "Berlin, Germany",
+            "start_date": "2027-06-01",
+            "end_date": "2027-06-03",
+            "time_zone": "UTC",
+            "website": "https://pycon.test",
+            "mastodon": "",
+            "description": "A test conference",
+            "tags": "#pycon",
+        }
+
+    def test_requires_login(self):
+        response = self.client.get(reverse("create_conference"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login/", response.url)
+
+    def test_form_renders_for_authenticated_user(self):
+        ConferenceTag.objects.create(name="Python", slug="python", icon="languages/python.png")
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("create_conference"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Add a conference")
+        # Icon picker renders the available tags.
+        self.assertContains(response, 'alt="Python"')
+
+    def test_submit_creates_pending_conference(self):
+        self.client.force_login(self.user)
+        with (
+            mock.patch("confs.views.send_mail") as send_mail_mock,
+            self.captureOnCommitCallbacks(execute=True),
+        ):
+            response = self.client.post(reverse("create_conference"), self.form_data)
+
+        conference = Conference.objects.get(name="PyCon Test")
+        self.assertIsNone(conference.approved_at)
+        self.assertEqual(conference.created_by, self.user)
+        self.assertEqual(conference.posts_after, dt.date(2027, 6, 1))
+        self.assertEqual(conference.slug, "pycon-test")
+        self.assertRedirects(
+            response,
+            reverse("conference", kwargs={"conference_slug": conference.slug}),
+            fetch_redirect_response=False,
+        )
+        # The reviewer is emailed to approve the pending submission. (Account
+        # gathering is triggered by the post_save signal in confs/apps.py, which
+        # is disconnected while tests run.)
+        send_mail_mock.assert_called_once()
+
+    def test_rejects_end_date_before_start(self):
+        self.client.force_login(self.user)
+        data = {**self.form_data, "start_date": "2027-06-03", "end_date": "2027-06-01"}
+        response = self.client.post(reverse("create_conference"), data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Conference.objects.filter(name="PyCon Test").exists())
+
+    def test_slug_collision_is_resolved(self):
+        baker.make(Conference, slug="pycon-test")
+        self.client.force_login(self.user)
+        with (
+            mock.patch("confs.views.send_mail"),
+            self.captureOnCommitCallbacks(execute=True),
+        ):
+            self.client.post(reverse("create_conference"), self.form_data)
+        self.assertTrue(Conference.objects.filter(slug="pycon-test-2").exists())
+
+    def test_mastodon_handle_is_converted_to_url(self):
+        self.client.force_login(self.user)
+        data = {**self.form_data, "mastodon": "@djangocon@fosstodon.org"}
+        with (
+            mock.patch("confs.views.send_mail"),
+            self.captureOnCommitCallbacks(execute=True),
+        ):
+            self.client.post(reverse("create_conference"), data)
+        conference = Conference.objects.get(name="PyCon Test")
+        self.assertEqual(conference.mastodon, "https://fosstodon.org/@djangocon")
+
+    def test_mastodon_url_is_kept(self):
+        self.client.force_login(self.user)
+        data = {**self.form_data, "mastodon": "https://fosstodon.org/@djangocon"}
+        with (
+            mock.patch("confs.views.send_mail"),
+            self.captureOnCommitCallbacks(execute=True),
+        ):
+            self.client.post(reverse("create_conference"), data)
+        conference = Conference.objects.get(name="PyCon Test")
+        self.assertEqual(conference.mastodon, "https://fosstodon.org/@djangocon")
+
+    def test_advanced_days_are_saved(self):
+        self.client.force_login(self.user)
+        data = {**self.form_data, "days": "Tutorials, Talks", "day_styles": "blue, red"}
+        with (
+            mock.patch("confs.views.send_mail"),
+            self.captureOnCommitCallbacks(execute=True),
+        ):
+            self.client.post(reverse("create_conference"), data)
+        conference = Conference.objects.get(name="PyCon Test")
+        self.assertEqual(conference.days, "Tutorials, Talks")
+        self.assertEqual(conference.day_styles, "blue, red")
+
+    def test_rejects_more_than_three_icons(self):
+        tags = [ConferenceTag.objects.create(name=f"Tag {i}", slug=f"tag-{i}", icon="star.png") for i in range(4)]
+        self.client.force_login(self.user)
+        data = {**self.form_data, "conference_tags": [t.id for t in tags]}
+        with mock.patch("confs.views.send_mail"), self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(reverse("create_conference"), data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Conference.objects.filter(name="PyCon Test").exists())
+
+    def test_selected_icons_are_saved(self):
+        tag = ConferenceTag.objects.create(name="Python", slug="python", icon="languages/python.png")
+        self.client.force_login(self.user)
+        data = {**self.form_data, "conference_tags": [tag.id]}
+        with (
+            mock.patch("confs.views.send_mail"),
+            self.captureOnCommitCallbacks(execute=True),
+        ):
+            self.client.post(reverse("create_conference"), data)
+        conference = Conference.objects.get(name="PyCon Test")
+        self.assertEqual(list(conference.conference_tags.all()), [tag])
+
+
+@override_settings(CACHES=settings.TEST_CACHES)
+class TestEditConference(TestCase):
+    def setUp(self):
+        self.owner = User.objects.create_user("owner", password="pw")
+        self.other = User.objects.create_user("other", password="pw")
+        self.staff = User.objects.create_user("staff", password="pw", is_staff=True)
+        self.conference = baker.make(
+            Conference,
+            name="Original Name",
+            created_by=self.owner,
+            approved_at=None,
+            tags="tag1",
+            start_date=dt.date(2099, 1, 1),
+            end_date=dt.date(2099, 1, 2),
+        )
+        self.url = reverse("edit_conference", kwargs={"conference_slug": self.conference.slug})
+
+    def _post_data(self, **overrides):
+        data = {
+            "name": "Updated Name",
+            "location": "Berlin, Germany",
+            "start_date": "2099-01-01",
+            "end_date": "2099-01-02",
+            "time_zone": "UTC",
+            "website": "https://example.test",
+            "mastodon": "",
+            "description": "Updated description",
+            "tags": "tag1",
+            "days": "",
+            "day_styles": "",
+        }
+        data.update(overrides)
+        return data
+
+    def test_requires_login(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login/", response.url)
+
+    def test_owner_can_view_edit_form(self):
+        self.client.force_login(self.owner)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Edit conference")
+
+    def test_owner_can_edit(self):
+        self.client.force_login(self.owner)
+        response = self.client.post(self.url, self._post_data())
+        self.conference.refresh_from_db()
+        self.assertEqual(self.conference.name, "Updated Name")
+        self.assertRedirects(
+            response,
+            reverse("conference", kwargs={"conference_slug": self.conference.slug}),
+            fetch_redirect_response=False,
+        )
+
+    def test_staff_can_edit(self):
+        self.client.force_login(self.staff)
+        self.client.post(self.url, self._post_data(name="Staff Edit"))
+        self.conference.refresh_from_db()
+        self.assertEqual(self.conference.name, "Staff Edit")
+
+    def test_other_user_forbidden(self):
+        self.client.force_login(self.other)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_edit_does_not_change_slug(self):
+        original_slug = self.conference.slug
+        self.client.force_login(self.owner)
+        self.client.post(self.url, self._post_data(name="A Totally Different Name"))
+        self.conference.refresh_from_db()
+        self.assertEqual(self.conference.slug, original_slug)
+
+
+@override_settings(CACHES=settings.TEST_CACHES)
+class TestUnapproveConference(TestCase):
+    def setUp(self):
+        self.conference = baker.make(Conference, approved_at=timezone.now(), tags="tag1")
+        self.staff = User.objects.create_user("staff", password="pw", is_staff=True)
+        self.normal = User.objects.create_user("bob", password="pw")
+        self.url = reverse("unapprove_conference", kwargs={"conference_slug": self.conference.slug})
+
+    def test_staff_unapproves(self):
+        self.client.force_login(self.staff)
+        self.client.post(self.url)
+        self.conference.refresh_from_db()
+        self.assertIsNone(self.conference.approved_at)
+
+    def test_non_staff_forbidden(self):
+        self.client.force_login(self.normal)
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, 403)
+        self.conference.refresh_from_db()
+        self.assertIsNotNone(self.conference.approved_at)
+
+
+@override_settings(CACHES=settings.TEST_CACHES)
+class TestConferenceApprovalVisibility(TestCase):
+    def setUp(self):
+        self.owner = User.objects.create_user("owner", password="pw")
+        self.other = User.objects.create_user("other", password="pw")
+        self.approved = baker.make(
+            Conference,
+            name="Approved Conf",
+            approved_at=timezone.now(),
+            tags="tag1",
+            start_date=dt.date(2099, 1, 1),
+            end_date=dt.date(2099, 1, 3),
+        )
+        self.pending = baker.make(
+            Conference,
+            name="Pending Conf",
+            approved_at=None,
+            created_by=self.owner,
+            tags="tag1",
+            start_date=dt.date(2099, 1, 1),
+            end_date=dt.date(2099, 1, 3),
+        )
+
+    def test_anonymous_sees_only_approved(self):
+        response = self.client.get(reverse("conferences"))
+        self.assertContains(response, "Approved Conf")
+        self.assertNotContains(response, "Pending Conf")
+
+    def test_owner_sees_own_pending(self):
+        self.client.force_login(self.owner)
+        response = self.client.get(reverse("conferences"))
+        self.assertContains(response, "Approved Conf")
+        self.assertContains(response, "Pending Conf")
+
+    def test_other_user_does_not_see_pending(self):
+        self.client.force_login(self.other)
+        response = self.client.get(reverse("conferences"))
+        self.assertNotContains(response, "Pending Conf")
+
+    def test_pending_detail_page_is_viewable(self):
+        # The submitter can preview the full page before approval.
+        url = reverse("conference", kwargs={"conference_slug": self.pending.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_conference_tag_icon_rendered_in_list(self):
+        tag = ConferenceTag.objects.create(name="Python", slug="python", icon="languages/python.png")
+        self.approved.conference_tags.add(tag)
+        response = self.client.get(reverse("conferences"))
+        self.assertContains(response, 'alt="Python"')
+
+
+@override_settings(CACHES=settings.TEST_CACHES)
+class TestApproveConference(TestCase):
+    def setUp(self):
+        self.conference = baker.make(Conference, approved_at=None, tags="tag1")
+        self.staff = User.objects.create_user("staff", password="pw", is_staff=True)
+        self.normal = User.objects.create_user("bob", password="pw")
+        self.url = reverse("approve_conference", kwargs={"conference_slug": self.conference.slug})
+
+    def test_non_staff_forbidden(self):
+        self.client.force_login(self.normal)
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, 403)
+        self.conference.refresh_from_db()
+        self.assertIsNone(self.conference.approved_at)
+
+    def test_anonymous_redirected_to_login(self):
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.conference.refresh_from_db()
+        self.assertIsNone(self.conference.approved_at)
+
+    def test_staff_approves(self):
+        self.client.force_login(self.staff)
+        response = self.client.post(self.url)
+        self.conference.refresh_from_db()
+        self.assertIsNotNone(self.conference.approved_at)
+        self.assertRedirects(
+            response,
+            reverse("conference", kwargs={"conference_slug": self.conference.slug}),
+            fetch_redirect_response=False,
+        )
+
+    def test_get_not_allowed(self):
+        self.client.force_login(self.staff)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 405)
+
+    def test_staff_sees_approve_button_on_detail(self):
+        self.client.force_login(self.staff)
+        url = reverse("conference", kwargs={"conference_slug": self.conference.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Approve conference")
+
+    def test_anonymous_sees_pending_banner_without_button(self):
+        url = reverse("conference", kwargs={"conference_slug": self.conference.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "pending review")
+        self.assertNotContains(response, "Approve conference")
