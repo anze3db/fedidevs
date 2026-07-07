@@ -10,8 +10,18 @@ logger = logging.getLogger(__name__)
 
 
 def post_save_action(sender, instance, created, **kwargs):  # noqa: ARG001
+    # Imported lazily: this module (and its transitive model imports) must not
+    # load while the app registry is still being populated in AppConfig.ready().
+    from confs.og_images import get_conference_og_image_signature, update_conference_og_image  # noqa: PLC0415
+
     if created:
         bg_taks.delay(instance.slug)
+
+    # (Re-)render the Open Graph card whenever the content shown on it changes.
+    # The render task saves with update_fields, which fires this signal again,
+    # but the signature will then match and no further work is enqueued.
+    if get_conference_og_image_signature(instance) != instance.og_image_signature:
+        update_conference_og_image.delay(instance.slug)
 
 
 @shared_task

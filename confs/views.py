@@ -298,6 +298,7 @@ def _conference_detail(request, conference_slug: str):
         page_title = f"Mastodon posts from {current_date['pre_display']} of {conference.name} {conference.start_date.strftime('%Y')}"
     else:
         page_title = f"{conference.name} {conference.start_date.strftime('%Y')} Mastodon posts and highlights"
+
     return render(
         request,
         "conference.html" if "HX-Request" not in request.headers else "conference.html#posts-partial",
@@ -313,7 +314,7 @@ def _conference_detail(request, conference_slug: str):
             "canonical_url": build_canonical_url(
                 reverse("conference", kwargs={"conference_slug": conference.slug}), request.GET, ["account", "date"]
             ),
-            "page_image": static("og-conferences.png"),
+            "page_image": conference.og_image.url if conference.og_image else static("og-conferences.png"),
             "page_url": reverse("conference", kwargs={"conference_slug": conference.slug}),
             "conference": conference,
             "conf_posts": page_obj,

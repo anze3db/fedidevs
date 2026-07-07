@@ -3,7 +3,9 @@
 # Create your tests hereo
 
 import datetime as dt
+import tempfile
 import warnings
+from pathlib import Path
 from unittest import mock
 
 from django.conf import settings
@@ -18,6 +20,7 @@ from model_bakery import baker
 from announcements.models import Announcement
 from confs.conference_announcements import END_TEMPLATES, START_TEMPLATES
 from confs.models import Conference, ConferencePost, ConferenceTag
+from confs.og_images import get_conference_og_image_signature, render_conference_og_image
 from posts.models import Post
 
 
@@ -615,3 +618,60 @@ class TestApproveConference(TestCase):
         response = self.client.get(url)
         self.assertContains(response, "pending review")
         self.assertNotContains(response, "Approve conference")
+
+
+class TestConferenceOgImage(TestCase):
+    def _conference(self, **kwargs):
+        defaults = {
+            "name": "PyCon Somewhere",
+            "slug": "pycon-somewhere",
+            "location": "Somewhere, Nowhere",
+            "start_date": dt.date(2026, 6, 1),
+            "end_date": dt.date(2026, 6, 3),
+            "tags": "#pycon, python",
+        }
+        defaults.update(kwargs)
+        return baker.make(Conference, **defaults)
+
+    def test_signature_changes_with_visible_content(self):
+        conference = self._conference()
+        original = get_conference_og_image_signature(conference)
+
+        # A field that does not appear on the card leaves the signature unchanged.
+        conference.description = "totally different description"
+        self.assertEqual(get_conference_og_image_signature(conference), original)
+
+        # A field that does appear on the card changes it.
+        conference.name = "PyCon Elsewhere"
+        self.assertNotEqual(get_conference_og_image_signature(conference), original)
+
+    def test_render_writes_file_and_updates_fields(self):
+        conference = self._conference(og_image_needs_update=True)
+        with tempfile.TemporaryDirectory() as media_root:
+            with override_settings(MEDIA_ROOT=Path(media_root)):
+                render_conference_og_image(conference)
+                conference.refresh_from_db()
+
+                self.assertEqual(conference.og_image.name, "conference_og/pycon-somewhere.png")
+                self.assertTrue((Path(media_root) / "conference_og" / "pycon-somewhere.png").is_file())
+            self.assertEqual(conference.og_image_signature, get_conference_og_image_signature(conference))
+            self.assertFalse(conference.og_image_needs_update)
+            self.assertIsNotNone(conference.og_image_updated_at)
+
+    def test_management_command_renders_missing_and_skips_current(self):
+        stale = self._conference(slug="stale-conf")
+        with tempfile.TemporaryDirectory() as media_root:
+            with override_settings(MEDIA_ROOT=Path(media_root)):
+                # A conference that is already up to date should be left alone.
+                current = self._conference(slug="current-conf")
+                render_conference_og_image(current)
+                current.refresh_from_db()
+                rendered_at = current.og_image_updated_at
+
+                call_command("update_conference_og_images")
+
+                stale.refresh_from_db()
+                current.refresh_from_db()
+                self.assertTrue(stale.og_image)
+                # Untouched — same timestamp as before the command ran.
+                self.assertEqual(current.og_image_updated_at, rendered_at)

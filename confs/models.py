@@ -170,6 +170,14 @@ class Conference(models.Model):
         related_name="+",
     )
 
+    # Prerendered Open Graph social card. Rendered to disk by
+    # confs.og_images.render_conference_og_image; the signature tracks the
+    # content that appears on the card so it is only re-rendered when needed.
+    og_image = models.ImageField(upload_to="conference_og", blank=True, default="")
+    og_image_signature = models.CharField(blank=True, default="", max_length=32)
+    og_image_updated_at = models.DateTimeField(null=True, blank=True)
+    og_image_needs_update = models.BooleanField(default=False)
+
     def __str__(self):
         return self.name
 

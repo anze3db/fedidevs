@@ -43,6 +43,8 @@ class Command(RichCommand):
         management.call_command("syncannouncements")
         self.console.print("Updating splash images")
         management.call_command("update_splash_images")
+        self.console.print("Updating conference OG images")
+        management.call_command("update_conference_og_images")
         self.console.print("All done! 🎉")
 
     @newrelic.agent.background_task()
