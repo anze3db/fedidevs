@@ -35,6 +35,16 @@ window.addEventListener("DOMContentLoaded", () => {
 	customElements.define("theme-toggle", ThemeToggle);
 });
 
+// Make elements with a data-href attribute (e.g. table rows) clickable,
+// while leaving real links/buttons and text selection alone.
+document.addEventListener("click", (event) => {
+	const row = event.target.closest("[data-href]");
+	if (!row) return;
+	if (event.target.closest("a, button")) return;
+	if (window.getSelection().toString()) return;
+	window.location = row.dataset.href;
+});
+
 window.addEventListener("scroll", () => {
 	if (window.scrollY > 0) {
 		document.getElementById('top-bar').classList.add('shadow-lg');
