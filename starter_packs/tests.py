@@ -54,6 +54,16 @@ class TestStarterPacks(TestCase):
         self.assertContains(response, french_pack.title)
         self.assertNotContains(response, german_pack.title)
 
+    def test_language_filter_only_lists_used_languages(self):
+        baker.make("starter_packs.StarterPack", languages=["fr"], published_at=timezone.now())
+        response = self.client.get(reverse("starter_packs"))
+        self.assertEqual(response.status_code, 200)
+        # French is used by a published pack and appears as a filter option; German
+        # is not used, so it has no option. (The site locale switcher also has
+        # value="de" buttons, so we match the <option> specifically.)
+        self.assertContains(response, '<option value="fr"')
+        self.assertNotContains(response, '<option value="de"')
+
     def test_index_page_unknown_language_ignored(self):
         pack = baker.make(
             "starter_packs.StarterPack", title="Francophones", languages=["fr"], published_at=timezone.now()
@@ -82,6 +92,10 @@ class TestCreateStarterPack(TestCase):
         # the expanded list.
         self.assertContains(response, 'id="language-filter"')
         self.assertContains(response, "🇰🇪 Swahili")
+        # Uncommon languages are collapsed behind "Show more" by default (rendered
+        # as hidden extras, so no expanded extra chip is present).
+        self.assertContains(response, "Show more languages")
+        self.assertNotContains(response, "language-extra inline-flex")
 
     def test_create_starter_pack(self):
         self.client.force_login(self.user)
@@ -197,6 +211,15 @@ class TestEditStarterPack(TestCase):
         self.assertEqual(self.starter_pack.title, "New title")
         self.assertEqual(self.starter_pack.description, "New description")
         self.assertRedirects(response, reverse("edit_accounts_starter_pack", args=[self.starter_pack.slug]))
+
+    def test_edit_shows_selected_uncommon_language_expanded(self):
+        # Japanese is not a common language, but a pack tagged with it must show it
+        # by default (as a visible extra, not hidden behind "Show more").
+        self.starter_pack.languages = ["ja"]
+        self.starter_pack.save(update_fields=["languages"])
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("edit_starter_pack", args=[self.starter_pack.slug]))
+        self.assertContains(response, "language-extra inline-flex")
 
     def test_edit_starter_pack_languages(self):
         self.client.force_login(self.user)

@@ -28,6 +28,7 @@ from accounts.management.commands.crawlone import crawlone
 from accounts.models import Account, Instance
 from mastodon_auth.models import AccountAccess, AccountFollowing
 from starter_packs.models import (
+    COMMON_LANGUAGE_CODES,
     LANGUAGE_CHOICES,
     MAX_LANGUAGES,
     MAX_OWNERS,
@@ -148,6 +149,15 @@ def starter_packs(request):
     else:
         language = ""
 
+    # Only offer languages in the filter that at least one published pack actually
+    # uses (plus the current selection, so an active filter stays visible).
+    used_language_codes = {language} if language else set()
+    for pack_languages in StarterPack.objects.filter(published_at__isnull=False, deleted_at__isnull=True).values_list(
+        "languages", flat=True
+    ):
+        used_language_codes.update(pack_languages)
+    filter_languages = [lang for lang in PACK_LANGUAGES if lang.code in used_language_codes]
+
     paginator = Paginator(starter_packs, 30)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -183,7 +193,7 @@ def starter_packs(request):
             "starter_packs": page_obj,
             "pending_invitations": pending_invitations,
             "containing_username": request.GET.get("username", ""),
-            "pack_languages": PACK_LANGUAGES,
+            "pack_languages": filter_languages,
             "selected_language": language,
         },
     )
@@ -384,6 +394,7 @@ def edit_starter_pack(request, starter_pack_slug):
             "page_subheader": "",
             "form": form,
             "pack_languages": PACK_LANGUAGES,
+            "common_languages": COMMON_LANGUAGE_CODES,
             "selected_languages": form["languages"].value() or [],
             "max_languages": MAX_LANGUAGES,
             "starter_pack": starter_pack,
@@ -565,6 +576,7 @@ def create_starter_pack(request):
             "page_subheader": "",
             "form": form,
             "pack_languages": PACK_LANGUAGES,
+            "common_languages": COMMON_LANGUAGE_CODES,
             "selected_languages": form["languages"].value() or [],
             "max_languages": MAX_LANGUAGES,
         },

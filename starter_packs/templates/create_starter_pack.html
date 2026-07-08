@@ -51,7 +51,8 @@
                          class="flex flex-wrap gap-2 max-h-56 overflow-y-auto p-1">
                         {% for lang in pack_languages %}
                             <label data-lang-name="{{ lang.name|lower }}"
-                                   class="language-option inline-flex items-center gap-1.5 cursor-pointer rounded-lg border border-gray-300 bg-gray-50 px-3 py-1.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                   data-common="{% if lang.code in common_languages %}1{% else %}0{% endif %}"
+                                   class="language-option {% if lang.code not in common_languages %}language-extra{% if lang.code not in selected_languages %} hidden{% endif %}{% endif %} inline-flex items-center gap-1.5 cursor-pointer rounded-lg border border-gray-300 bg-gray-50 px-3 py-1.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                                 <input type="checkbox"
                                        name="languages"
                                        value="{{ lang.code }}"
@@ -61,6 +62,11 @@
                             </label>
                         {% endfor %}
                     </div>
+                    <button type="button"
+                            id="language-show-more"
+                            class="mt-2 text-sm font-medium text-primary-700 hover:underline dark:text-primary-400">
+                        {% trans "Show more languages" %}
+                    </button>
                     <p id="language-no-results"
                        class="hidden mt-2 text-sm text-gray-500 dark:text-gray-400">
                         {% trans "No languages match your filter." %}
@@ -95,18 +101,41 @@
             const input = document.getElementById("language-filter");
             const container = document.getElementById("language-options");
             const noResults = document.getElementById("language-no-results");
+            const showMore = document.getElementById("language-show-more");
             if (!input || !container) return;
             const options = Array.from(container.querySelectorAll(".language-option"));
-            input.addEventListener("input", function () {
-                const query = this.value.trim().toLowerCase();
+            // Extras stay hidden until the user clicks "Show more" or searches; a
+            // non-empty query always searches the full list.
+            let expanded = false;
+
+            function apply() {
+                const query = input.value.trim().toLowerCase();
                 let visible = 0;
                 options.forEach(function (option) {
-                    const match = query === "" || option.dataset.langName.includes(query);
-                    option.classList.toggle("hidden", !match);
-                    if (match) visible++;
+                    const isExtra = option.dataset.common !== "1";
+                    const checked = option.querySelector("input[type=checkbox]").checked;
+                    let show;
+                    if (query !== "") {
+                        show = option.dataset.langName.includes(query);
+                    } else {
+                        show = !isExtra || expanded || checked;
+                    }
+                    option.classList.toggle("hidden", !show);
+                    if (show) visible++;
                 });
                 if (noResults) noResults.classList.toggle("hidden", visible !== 0);
-            });
+                // The toggle only makes sense in the collapsed, unfiltered state.
+                if (showMore) showMore.classList.toggle("hidden", expanded || query !== "");
+            }
+
+            input.addEventListener("input", apply);
+            if (showMore) {
+                showMore.addEventListener("click", function () {
+                    expanded = true;
+                    apply();
+                });
+            }
+            apply();
         })();
     </script>
 {% endblock content %}
