@@ -28,8 +28,11 @@ from accounts.management.commands.crawlone import crawlone
 from accounts.models import Account, Instance
 from mastodon_auth.models import AccountAccess, AccountFollowing
 from starter_packs.models import (
+    LANGUAGE_CHOICES,
+    MAX_LANGUAGES,
     MAX_OWNERS,
     MAX_PINNED_ACCOUNTS,
+    PACK_LANGUAGES,
     StarterPack,
     StarterPackAccount,
     StarterPackInvitation,
@@ -138,6 +141,13 @@ def starter_packs(request):
             | Q(created_by__accountaccess__account__display_name__icontains=q)
         )
 
+    # Keep only packs tagged with the requested language, when a known code is given.
+    language = request.GET.get("language", "")
+    if language in {code for code, _name in LANGUAGE_CHOICES}:
+        starter_packs = starter_packs.filter(languages__contains=[language])
+    else:
+        language = ""
+
     paginator = Paginator(starter_packs, 30)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -173,14 +183,26 @@ def starter_packs(request):
             "starter_packs": page_obj,
             "pending_invitations": pending_invitations,
             "containing_username": request.GET.get("username", ""),
+            "pack_languages": PACK_LANGUAGES,
+            "selected_language": language,
         },
     )
 
 
 class StarterPackForm(forms.ModelForm):
+    languages = forms.MultipleChoiceField(choices=LANGUAGE_CHOICES, required=False)
+
     class Meta:
         model = StarterPack
-        fields = ["title", "description"]
+        fields = ["title", "description", "languages"]
+
+    def clean_languages(self):
+        # MultipleChoiceField already validates each code against the choices; we
+        # only need to enforce the count cap here.
+        languages = self.cleaned_data["languages"]
+        if len(languages) > MAX_LANGUAGES:
+            raise forms.ValidationError(_("You can select up to %(max)d languages.") % {"max": MAX_LANGUAGES})
+        return languages
 
 
 @login_required
@@ -361,6 +383,9 @@ def edit_starter_pack(request, starter_pack_slug):
             "page_header": "FEDIDEVS",
             "page_subheader": "",
             "form": form,
+            "pack_languages": PACK_LANGUAGES,
+            "selected_languages": form["languages"].value() or [],
+            "max_languages": MAX_LANGUAGES,
             "starter_pack": starter_pack,
         },
     )
@@ -539,6 +564,9 @@ def create_starter_pack(request):
             "page_header": "FEDIDEVS",
             "page_subheader": "",
             "form": form,
+            "pack_languages": PACK_LANGUAGES,
+            "selected_languages": form["languages"].value() or [],
+            "max_languages": MAX_LANGUAGES,
         },
     )
 
