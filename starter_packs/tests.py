@@ -78,6 +78,10 @@ class TestCreateStarterPack(TestCase):
         response = self.client.get(reverse("create_starter_pack"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Mastodon starter packs")
+        # The language picker and its filter box render, including languages from
+        # the expanded list.
+        self.assertContains(response, 'id="language-filter"')
+        self.assertContains(response, "🇰🇪 Swahili")
 
     def test_create_starter_pack(self):
         self.client.force_login(self.user)

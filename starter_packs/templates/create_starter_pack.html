@@ -37,13 +37,21 @@
                     <div class="text-sm text-red-500">{{ form.description.errors }}</div>
                 </div>
                 <div class="sm:col-span-2">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    <label for="language-filter"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         {% trans "Languages" %}
                         <span class="font-normal text-gray-500 dark:text-gray-400">{% blocktrans %}(optional, up to {{ max_languages }}){% endblocktrans %}</span>
                     </label>
-                    <div class="flex flex-wrap gap-2">
+                    <input type="text"
+                           id="language-filter"
+                           autocomplete="off"
+                           placeholder="{% trans "Filter languages…" %}"
+                           class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                    <div id="language-options"
+                         class="flex flex-wrap gap-2 max-h-56 overflow-y-auto p-1">
                         {% for lang in pack_languages %}
-                            <label class="inline-flex items-center gap-1.5 cursor-pointer rounded-lg border border-gray-300 bg-gray-50 px-3 py-1.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                            <label data-lang-name="{{ lang.name|lower }}"
+                                   class="language-option inline-flex items-center gap-1.5 cursor-pointer rounded-lg border border-gray-300 bg-gray-50 px-3 py-1.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                                 <input type="checkbox"
                                        name="languages"
                                        value="{{ lang.code }}"
@@ -53,6 +61,10 @@
                             </label>
                         {% endfor %}
                     </div>
+                    <p id="language-no-results"
+                       class="hidden mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        {% trans "No languages match your filter." %}
+                    </p>
                     <div class="text-sm text-red-500">{{ form.languages.errors }}</div>
                 </div>
                 <div class="text-sm text-red-500">{{ form.non_field_errors }}</div>
@@ -78,6 +90,25 @@
             </a>
         {% endif %}
     </main>
+    <script nonce="{{ request.csp_nonce }}">
+        (function () {
+            const input = document.getElementById("language-filter");
+            const container = document.getElementById("language-options");
+            const noResults = document.getElementById("language-no-results");
+            if (!input || !container) return;
+            const options = Array.from(container.querySelectorAll(".language-option"));
+            input.addEventListener("input", function () {
+                const query = this.value.trim().toLowerCase();
+                let visible = 0;
+                options.forEach(function (option) {
+                    const match = query === "" || option.dataset.langName.includes(query);
+                    option.classList.toggle("hidden", !match);
+                    if (match) visible++;
+                });
+                if (noResults) noResults.classList.toggle("hidden", visible !== 0);
+            });
+        })();
+    </script>
 {% endblock content %}
 {% block sidebar %}
     <section class="mb-8">

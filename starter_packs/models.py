@@ -22,41 +22,83 @@ class PackLanguage:
 
 # The human languages a starter pack can be tagged with, each with a flag emoji for
 # display. Curated (rather than Django's full ISO list) so every option carries a
-# meaningful emoji. Kept alphabetical by name for the pickers.
+# meaningful emoji — the flag is a representative country for the language. Kept
+# alphabetical by name for the pickers.
 PACK_LANGUAGES = [
+    PackLanguage("af", "Afrikaans", "🇿🇦"),
+    PackLanguage("sq", "Albanian", "🇦🇱"),
+    PackLanguage("am", "Amharic", "🇪🇹"),
     PackLanguage("ar", "Arabic", "🇸🇦"),
+    PackLanguage("hy", "Armenian", "🇦🇲"),
+    PackLanguage("az", "Azerbaijani", "🇦🇿"),
+    PackLanguage("be", "Belarusian", "🇧🇾"),
     PackLanguage("bn", "Bengali", "🇧🇩"),
+    PackLanguage("bs", "Bosnian", "🇧🇦"),
+    PackLanguage("bg", "Bulgarian", "🇧🇬"),
+    PackLanguage("my", "Burmese", "🇲🇲"),
     PackLanguage("zh-hans", "Chinese (Simplified)", "🇨🇳"),
     PackLanguage("zh-hant", "Chinese (Traditional)", "🇹🇼"),
+    PackLanguage("hr", "Croatian", "🇭🇷"),
     PackLanguage("cs", "Czech", "🇨🇿"),
     PackLanguage("da", "Danish", "🇩🇰"),
     PackLanguage("nl", "Dutch", "🇳🇱"),
     PackLanguage("en", "English", "🇬🇧"),
+    PackLanguage("et", "Estonian", "🇪🇪"),
+    PackLanguage("fil", "Filipino", "🇵🇭"),
     PackLanguage("fi", "Finnish", "🇫🇮"),
     PackLanguage("fr", "French", "🇫🇷"),
+    PackLanguage("ka", "Georgian", "🇬🇪"),
     PackLanguage("de", "German", "🇩🇪"),
     PackLanguage("el", "Greek", "🇬🇷"),
+    PackLanguage("gu", "Gujarati", "🇮🇳"),
     PackLanguage("he", "Hebrew", "🇮🇱"),
     PackLanguage("hi", "Hindi", "🇮🇳"),
     PackLanguage("hu", "Hungarian", "🇭🇺"),
+    PackLanguage("is", "Icelandic", "🇮🇸"),
     PackLanguage("id", "Indonesian", "🇮🇩"),
+    PackLanguage("ga", "Irish", "🇮🇪"),
     PackLanguage("it", "Italian", "🇮🇹"),
     PackLanguage("ja", "Japanese", "🇯🇵"),
+    PackLanguage("kn", "Kannada", "🇮🇳"),
+    PackLanguage("kk", "Kazakh", "🇰🇿"),
+    PackLanguage("km", "Khmer", "🇰🇭"),
     PackLanguage("ko", "Korean", "🇰🇷"),
+    PackLanguage("ky", "Kyrgyz", "🇰🇬"),
+    PackLanguage("lo", "Lao", "🇱🇦"),
+    PackLanguage("lv", "Latvian", "🇱🇻"),
+    PackLanguage("lt", "Lithuanian", "🇱🇹"),
+    PackLanguage("lb", "Luxembourgish", "🇱🇺"),
+    PackLanguage("mk", "Macedonian", "🇲🇰"),
+    PackLanguage("ms", "Malay", "🇲🇾"),
+    PackLanguage("ml", "Malayalam", "🇮🇳"),
+    PackLanguage("mt", "Maltese", "🇲🇹"),
+    PackLanguage("mr", "Marathi", "🇮🇳"),
+    PackLanguage("mn", "Mongolian", "🇲🇳"),
+    PackLanguage("ne", "Nepali", "🇳🇵"),
     PackLanguage("nb", "Norwegian", "🇳🇴"),
     PackLanguage("fa", "Persian", "🇮🇷"),
     PackLanguage("pl", "Polish", "🇵🇱"),
     PackLanguage("pt", "Portuguese", "🇵🇹"),
     PackLanguage("pt-br", "Portuguese (Brazil)", "🇧🇷"),
+    PackLanguage("pa", "Punjabi", "🇮🇳"),
     PackLanguage("ro", "Romanian", "🇷🇴"),
     PackLanguage("ru", "Russian", "🇷🇺"),
+    PackLanguage("sr", "Serbian", "🇷🇸"),
+    PackLanguage("si", "Sinhala", "🇱🇰"),
+    PackLanguage("sk", "Slovak", "🇸🇰"),
     PackLanguage("sl", "Slovenian", "🇸🇮"),
     PackLanguage("es", "Spanish", "🇪🇸"),
+    PackLanguage("sw", "Swahili", "🇰🇪"),
     PackLanguage("sv", "Swedish", "🇸🇪"),
+    PackLanguage("ta", "Tamil", "🇮🇳"),
+    PackLanguage("te", "Telugu", "🇮🇳"),
     PackLanguage("th", "Thai", "🇹🇭"),
     PackLanguage("tr", "Turkish", "🇹🇷"),
     PackLanguage("uk", "Ukrainian", "🇺🇦"),
+    PackLanguage("ur", "Urdu", "🇵🇰"),
+    PackLanguage("uz", "Uzbek", "🇺🇿"),
     PackLanguage("vi", "Vietnamese", "🇻🇳"),
+    PackLanguage("zu", "Zulu", "🇿🇦"),
 ]
 
 LANGUAGE_CHOICES = [(lang.code, lang.name) for lang in PACK_LANGUAGES]
@@ -70,8 +112,10 @@ class StarterPack(models.Model):
 
     # Human languages this pack is tagged with (empty = unspecified), capped at
     # MAX_LANGUAGES by the form. Powers the language filter on the directory.
+    # Codes are validated against PACK_LANGUAGES by the form/view rather than by
+    # model `choices`, so growing the language list needs no migration.
     languages = ArrayField(
-        models.CharField(max_length=32, choices=LANGUAGE_CHOICES),
+        models.CharField(max_length=32),
         blank=True,
         default=list,
     )
