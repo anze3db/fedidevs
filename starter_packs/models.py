@@ -104,6 +104,10 @@ PACK_LANGUAGES = [
 LANGUAGE_CHOICES = [(lang.code, lang.name) for lang in PACK_LANGUAGES]
 LANGUAGES_BY_CODE = {lang.code: lang for lang in PACK_LANGUAGES}
 
+# The most common languages, shown by default in the pack editor's picker; the rest
+# stay behind a "Show more" toggle (or a search) to keep the list short.
+COMMON_LANGUAGE_CODES = ["en", "es", "pt", "de", "fr"]
+
 
 class StarterPack(models.Model):
     title = models.TextField(max_length=255)
