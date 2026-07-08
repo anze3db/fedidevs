@@ -42,6 +42,26 @@ class TestStarterPacks(TestCase):
         self.assertContains(response, "Your Starter Packs")
         self.assertContains(response, "Starter Packs Containing You")
 
+    def test_index_page_language_filter(self):
+        french_pack = baker.make(
+            "starter_packs.StarterPack", title="Francophones", languages=["fr", "en"], published_at=timezone.now()
+        )
+        german_pack = baker.make(
+            "starter_packs.StarterPack", title="Deutschsprachige", languages=["de"], published_at=timezone.now()
+        )
+        response = self.client.get(reverse("starter_packs"), {"language": "fr"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, french_pack.title)
+        self.assertNotContains(response, german_pack.title)
+
+    def test_index_page_unknown_language_ignored(self):
+        pack = baker.make(
+            "starter_packs.StarterPack", title="Francophones", languages=["fr"], published_at=timezone.now()
+        )
+        response = self.client.get(reverse("starter_packs"), {"language": "not-a-language"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, pack.title)
+
 
 class TestCreateStarterPack(TestCase):
     @classmethod
@@ -79,6 +99,58 @@ class TestCreateStarterPack(TestCase):
         response = self.client.post(reverse("create_starter_pack"), {})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "This field is required.")
+        self.assertEqual(self.user.starterpack_set.count(), 0)
+
+    def test_create_starter_pack_with_languages(self):
+        self.client.force_login(self.user)
+        self.client.post(
+            reverse("create_starter_pack"),
+            {
+                "title": "Multilingual Pack",
+                "description": "People to follow",
+                "languages": ["fr", "de"],
+            },
+        )
+        starter_pack = self.user.starterpack_set.first()
+        self.assertCountEqual(starter_pack.languages, ["fr", "de"])
+
+    def test_create_starter_pack_defaults_to_no_languages(self):
+        self.client.force_login(self.user)
+        self.client.post(
+            reverse("create_starter_pack"),
+            {
+                "title": "Test Starter Pack",
+                "description": "This is a test starter pack",
+            },
+        )
+        starter_pack = self.user.starterpack_set.first()
+        self.assertEqual(starter_pack.languages, [])
+
+    def test_create_starter_pack_rejects_unknown_language(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("create_starter_pack"),
+            {
+                "title": "Test Starter Pack",
+                "description": "This is a test starter pack",
+                "languages": ["not-a-language"],
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.user.starterpack_set.count(), 0)
+
+    def test_create_starter_pack_rejects_too_many_languages(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("create_starter_pack"),
+            {
+                "title": "Test Starter Pack",
+                "description": "This is a test starter pack",
+                "languages": ["en", "fr", "de", "es", "it", "pt"],
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "up to 5 languages")
         self.assertEqual(self.user.starterpack_set.count(), 0)
 
 
@@ -121,6 +193,19 @@ class TestEditStarterPack(TestCase):
         self.assertEqual(self.starter_pack.title, "New title")
         self.assertEqual(self.starter_pack.description, "New description")
         self.assertRedirects(response, reverse("edit_accounts_starter_pack", args=[self.starter_pack.slug]))
+
+    def test_edit_starter_pack_languages(self):
+        self.client.force_login(self.user)
+        self.client.post(
+            reverse("edit_starter_pack", args=[self.starter_pack.slug]),
+            {
+                "title": "New title",
+                "description": "New description",
+                "languages": ["de", "fr"],
+            },
+        )
+        self.starter_pack.refresh_from_db()
+        self.assertCountEqual(self.starter_pack.languages, ["de", "fr"])
 
 
 class TestEditStarterPackAccounts(TestCase):
@@ -540,7 +625,7 @@ class TestShareStarterPack(TestCase):
             user=cls.user,
             account__activitypub_id="https://instance.org/users/createdbyuser",
         )
-        cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user, num_accounts=5)
+        cls.starter_pack = baker.make("starter_packs.StarterPack", created_by=cls.user, num_accounts=5, languages=[])
         cls.starter_pack.owners.add(cls.user)
         instance = baker.make("accounts.Instance")
         baker.make(
@@ -569,6 +654,20 @@ class TestShareStarterPack(TestCase):
         self.assertNotContains(response, "Edit")
         self.assertNotContains(response, "Delete")
         self.assertContains(response, "Follow all 5 accounts")
+
+    def test_languages_shown_when_set(self):
+        self.starter_pack.languages = ["fr", "de"]
+        self.starter_pack.save(update_fields=["languages"])
+        response = self.client.get(reverse("share_starter_pack", args=[self.starter_pack.slug]))
+        self.assertContains(response, "🇫🇷 French")
+        self.assertContains(response, "🇩🇪 German")
+
+    def test_languages_hidden_when_unset(self):
+        # The site's locale switcher renders bare flags (e.g. "🇫🇷 Français"), so we
+        # assert the pack badge form ("🇫🇷 French", English name) is absent instead.
+        self.assertEqual(self.starter_pack.languages, [])
+        response = self.client.get(reverse("share_starter_pack", args=[self.starter_pack.slug]))
+        self.assertNotContains(response, "🇫🇷 French")
 
     def test_logged_in(self):
         self.client.force_login(self.user)

@@ -26,10 +26,10 @@
                 </li>
             </ul>
         </div>
-        <form class="max-w-md mt-4 mx-auto p-4" action="{% url "starter_packs" %}">
+        <form class="max-w-3xl mt-4 mx-auto p-4" action="{% url "starter_packs" %}">
             {% if request.GET.tab == 'containing' %}
-                <div class="flex gap-2 items-start">
-                    <div class="relative flex-grow basis-4/5">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-stretch">
+                    <div class="relative flex-1 sm:flex-[2] min-w-0">
                         <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
                             <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
                                  aria-hidden="true"
@@ -47,7 +47,7 @@
                                placeholder="username@instance.org"
                                value="{{ containing_username }}">
                     </div>
-                    <div class="w-48">
+                    <div class="flex-1 min-w-0">
                         <select name="order_by"
                                 class="block w-full h-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <option value="popular_day"
@@ -73,13 +73,13 @@
                         </select>
                     </div>
                     <button type="submit"
-                            class="text-white p-3 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            class="shrink-0 text-white p-3 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         {% trans "Go" %}
                     </button>
                 </div>
             {% else %}
-                <div class="flex gap-2 items-start">
-                    <div class="relative flex-grow basis-4/5">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-stretch">
+                    <div class="relative flex-1 sm:flex-[2] min-w-0">
                         <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
                             <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
                                  aria-hidden="true"
@@ -96,7 +96,19 @@
                                placeholder="{% trans "Search..." %}"
                                value="{{ request.GET.q }}">
                     </div>
-                    <div class="w-48">
+                    <div class="flex-1 min-w-0">
+                        <select name="language"
+                                class="block w-full h-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="" {% if not selected_language %}selected{% endif %}>{% trans "Any language" %}</option>
+                            {% for lang in pack_languages %}
+                                <option value="{{ lang.code }}"
+                                        {% if selected_language == lang.code %}selected{% endif %}>
+                                    {{ lang.emoji }} {{ lang.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="flex-1 min-w-0">
                         <select name="order_by"
                                 class="block w-full h-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <option value="popular_day"
@@ -122,7 +134,7 @@
                         </select>
                     </div>
                     <button type="submit"
-                            class="text-white p-3 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            class="shrink-0 text-white p-3 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         {% trans "Go" %}
                     </button>
                 </div>
@@ -165,6 +177,15 @@
                                         <p class="prose dark:prose-invert break-words text-pretty hyphens-auto pt-2 font-normal text-gray-700 dark:text-gray-400">
                                             {% render_language_emojis starter_pack.description %}
                                         </p>
+                                        {% if starter_pack.language_tags %}
+                                            <div class="flex flex-wrap gap-1.5 pt-3">
+                                                {% for lang in starter_pack.language_tags %}
+                                                    <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                                                        {{ lang.emoji }} {{ lang.name }}
+                                                    </span>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
                                         <div class="prose dark:prose-invert grid grid-cols-2 gap-2 py-4 mt-4 text-sm text-gray-500 border-t divide-x dark:text-gray-500 border-color-gray-700 dark:border-gray-700 divide-color-gray-700 dark:divide-gray-700">
                                             <div class="flex flex-col gap-0 text-center" title="Last status">
                                                 <span class="text-xs">{% trans "Created" %}</span>

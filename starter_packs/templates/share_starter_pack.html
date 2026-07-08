@@ -37,6 +37,15 @@
                     <p class="mb-5 break-words text-pretty hyphens-auto text-base sm:text-lg text-white">
                         {% render_language_emojis starter_pack.description %}
                     </p>
+                    {% if starter_pack.language_tags %}
+                        <div class="flex flex-wrap items-center justify-center gap-2 mb-5">
+                            {% for lang in starter_pack.language_tags %}
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-sm font-medium text-white">
+                                    {{ lang.emoji }} {{ lang.name }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     <div class="items-center justify-center space-y-4 sm:flex sm:space-y-0 sm:space-x-4 rtl:space-x-reverse">
                         {% if not user.is_authenticated %}
                             <button data-modal-target="authentication-modal"

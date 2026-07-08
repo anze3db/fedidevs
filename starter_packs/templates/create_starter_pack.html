@@ -36,6 +36,25 @@
                               placeholder="{% trans "My favorite people on Mastodon - join me!" %}">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
                     <div class="text-sm text-red-500">{{ form.description.errors }}</div>
                 </div>
+                <div class="sm:col-span-2">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        {% trans "Languages" %}
+                        <span class="font-normal text-gray-500 dark:text-gray-400">{% blocktrans %}(optional, up to {{ max_languages }}){% endblocktrans %}</span>
+                    </label>
+                    <div class="flex flex-wrap gap-2">
+                        {% for lang in pack_languages %}
+                            <label class="inline-flex items-center gap-1.5 cursor-pointer rounded-lg border border-gray-300 bg-gray-50 px-3 py-1.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                <input type="checkbox"
+                                       name="languages"
+                                       value="{{ lang.code }}"
+                                       {% if lang.code in selected_languages %}checked{% endif %}
+                                       class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:bg-gray-600 dark:border-gray-500">
+                                <span>{{ lang.emoji }} {{ lang.name }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    <div class="text-sm text-red-500">{{ form.languages.errors }}</div>
+                </div>
                 <div class="text-sm text-red-500">{{ form.non_field_errors }}</div>
             </div>
             {% if not request.user.is_authenticated %}
