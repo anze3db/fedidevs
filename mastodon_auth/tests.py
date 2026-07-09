@@ -461,9 +461,24 @@ class MastodonAuthCallbackTests(TestCase):
         self.assertTrue(any(r.levelname == "ERROR" for r in logs.records))
 
     def test_oauth_error_redirect_is_surfaced(self):
-        """An OAuth error redirect (?error=...) should show a clear message and be
-        logged at ERROR (so it reaches Sentry)."""
+        """A non-access_denied OAuth error redirect (?error=...) can point at an app
+        misconfiguration, so it shows a clear message and is logged at ERROR (so it
+        reaches Sentry)."""
         with self.assertLogs("mastodon_auth.views", level="ERROR") as logs:
+            response = self.client.get(
+                "/mastodon_auth/",
+                {"error": "server_error", "error_description": "boom", "state": "x"},
+            )
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
+        messages = [str(m) for m in get_messages(response.wsgi_request)]
+        self.assertEqual(messages, ["Login was cancelled or rejected by the instance. Please try again."])
+        self.assertTrue(any("server_error" in m for m in logs.output))
+
+    def test_oauth_access_denied_is_logged_as_warning_not_error(self):
+        """The user clicking Cancel/Deny on the consent screen (?error=access_denied)
+        is expected, user-recoverable behavior — log at WARNING so it doesn't page
+        Sentry, never at ERROR."""
+        with self.assertLogs("mastodon_auth.views", level="WARNING") as logs:
             response = self.client.get(
                 "/mastodon_auth/",
                 {"error": "access_denied", "error_description": "denied", "state": "x"},
@@ -471,7 +486,8 @@ class MastodonAuthCallbackTests(TestCase):
         self.assertRedirects(response, "/", fetch_redirect_response=False)
         messages = [str(m) for m in get_messages(response.wsgi_request)]
         self.assertEqual(messages, ["Login was cancelled or rejected by the instance. Please try again."])
-        self.assertTrue(any("access_denied" in m for m in logs.output))
+        self.assertTrue(any("access_denied" in r.getMessage() for r in logs.records))
+        self.assertFalse(any(r.levelname == "ERROR" for r in logs.records))
 
     def test_missing_code_state_is_logged_at_error(self):
         """A callback without code/state is a user-facing login failure and must be
