@@ -216,11 +216,23 @@ def auth(request):
     # redirects echo back ?error=...&error_description=... (and usually state).
     error = request.GET.get("error")
     if error:
-        logger.error(
-            "auth callback OAuth error from instance: error=%s description=%s",
-            error,
-            request.GET.get("error_description"),
-        )
+        if error == "access_denied":
+            # The user clicked "Cancel"/"Deny" on their instance's consent screen
+            # (or the instance rejected the app). Expected, user-recoverable — log
+            # at warning so it doesn't page us.
+            logger.warning(
+                "auth callback OAuth denied: error=%s description=%s",
+                error,
+                request.GET.get("error_description"),
+            )
+        else:
+            # Other OAuth errors (invalid_scope, unauthorized_client, server_error,
+            # ...) can point at a real app misconfiguration — keep them at error.
+            logger.error(
+                "auth callback OAuth error from instance: error=%s description=%s",
+                error,
+                request.GET.get("error_description"),
+            )
         messages.error(request, _("Login was cancelled or rejected by the instance. Please try again."))
         return redirect("index")
 
