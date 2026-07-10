@@ -312,6 +312,11 @@ urlpatterns = [
         name="follow_starter_pack",
     ),
     path(
+        "starter-packs/<str:starter_pack_slug>/remote-follow/",
+        starter_packs_views.remote_follow_starter_pack,
+        name="remote_follow_starter_pack",
+    ),
+    path(
         "starter-packs/<str:starter_pack_slug>/delete/",
         starter_packs_views.delete_starter_pack,
         name="delete_starter_pack",

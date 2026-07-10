@@ -50,6 +50,38 @@
                     </button>
                 </div>
             </form>
+            {% if remote_follow_url %}
+                <div class="flex items-center my-4">
+                    <hr class="flex-grow border-gray-300 dark:border-gray-500">
+                    <span class="px-3 text-sm text-gray-500 dark:text-gray-300">{% trans "or" %}</span>
+                    <hr class="flex-grow border-gray-300 dark:border-gray-500">
+                </div>
+                <form method="post"
+                      action="{{ remote_follow_url }}"
+                      class="plausible-event-name=remote-follow space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label for="handle" class="block mb-2 text-sm font-medium">{% trans "Follow with your fediverse handle" %}</label>
+                        <input type="text"
+                               name="handle"
+                               id="handle"
+                               class="bg-gray-50 mb-4 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                               placeholder="@you@example.social"
+                               required />
+                        <p class="mb-4 text-sm font-medium text-gray-500 dark:text-gray-300">
+                            {% blocktrans trimmed %}
+                                For platforms without Mastodon-compatible sign-in (WordPress ActivityPub, Friendica, …).
+                                You'll be sent to your own server to confirm the follow there.
+                            {% endblocktrans %}
+                        </p>
+                        <button type="submit"
+                                data-umami-event="remote-follow"
+                                class="w-full text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-gray-600 dark:text-white dark:border-gray-500 dark:hover:bg-gray-500 dark:focus:ring-gray-700">
+                            {% trans "Continue on your server" %}
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
         </div>
     </div>
 </div>

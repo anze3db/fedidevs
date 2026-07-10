@@ -38,6 +38,7 @@ from starter_packs.models import (
     StarterPackAccount,
     StarterPackInvitation,
 )
+from starter_packs.remote_follow import get_subscribe_url, parse_handle
 from starter_packs.splash_images import get_splash_image_signature, render_splash_image
 from starter_packs.utils import FollowError, resolve_and_follow_account, resolve_and_follow_misskey
 from stats.models import FollowAllClick
@@ -867,6 +868,9 @@ def share_starter_pack(request, starter_pack_slug):
             "page_description": starter_pack.description,
             "starter_pack": starter_pack,
             "order_by": order_by,
+            # Adds the handle-based remote-follow option to the auth modal
+            # (login_form.html) for visitors whose server has no OAuth/MiAuth.
+            "remote_follow_url": reverse("remote_follow_starter_pack", kwargs={"starter_pack_slug": starter_pack.slug}),
             "is_owner": is_owner,
             "owners": owners,
             "header_avatars": header_avatars,
@@ -964,6 +968,44 @@ def follow_starter_pack(request, starter_pack_slug):
     messages.success(request, _("Following all accounts in the starter pack. 🎉"))
 
     return redirect("share_starter_pack", starter_pack_slug=starter_pack.slug)
+
+
+@require_POST
+def remote_follow_starter_pack(request, starter_pack_slug):
+    """Follow a starter pack from servers our OAuth/MiAuth login can't reach.
+
+    The visitor gives their fediverse handle; we resolve their server's OStatus
+    subscribe template via WebFinger and redirect them to it with this pack's
+    URL (which doubles as its ActivityPub Collection id) as the ``uri`` param.
+    Whether a whole Collection can be imported is up to their server — the
+    WordPress ActivityPub plugin supports it, Mastodon does not (Mastodon users
+    get the OAuth login instead).
+    """
+    starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, deleted_at__isnull=True)
+    pack_url = reverse("share_starter_pack", kwargs={"starter_pack_slug": starter_pack.slug})
+
+    parsed = parse_handle(request.POST.get("handle", ""))
+    if not parsed:
+        messages.error(request, _("Please enter a fediverse handle like @you@example.social."))
+        return redirect(pack_url)
+
+    user, domain = parsed
+    # The pack URL must match the Collection id served by share_starter_pack
+    # (same build_absolute_uri) so servers that verify the fetched object's id
+    # against the requested uri accept it.
+    subscribe_url = get_subscribe_url(user, domain, request.build_absolute_uri(pack_url))
+    if not subscribe_url:
+        messages.error(
+            request,
+            _(
+                "Couldn't find a remote follow endpoint for %(handle)s. "
+                "Check the handle, or sign in with your instance instead."
+            )
+            % {"handle": f"@{user}@{domain}"},
+        )
+        return redirect(pack_url)
+
+    return redirect(subscribe_url)
 
 
 @shared_task

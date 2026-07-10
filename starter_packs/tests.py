@@ -1,6 +1,7 @@
 import datetime
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
+import httpx
 from ddt import data, ddt, unpack
 from django.test import TestCase
 from django.urls import reverse
@@ -9,6 +10,7 @@ from model_bakery import baker
 
 from accounts.models import Account
 from starter_packs.models import MAX_OWNERS, MAX_PINNED_ACCOUNTS, StarterPackAccount, StarterPackInvitation
+from starter_packs.remote_follow import get_subscribe_url, parse_handle
 
 
 class TestStarterPacks(TestCase):
@@ -1104,3 +1106,142 @@ class TestPinAccountInStarterPack(TestCase):
             content.index(f"pack-account-card-{self.popular.pk}"),
             content.index(f"pack-account-card-{self.niche.pk}"),
         )
+
+
+class TestParseHandle(TestCase):
+    def test_valid_handles(self):
+        for raw, expected in [
+            ("pfefferle@notiz.blog", ("pfefferle", "notiz.blog")),
+            ("@pfefferle@notiz.blog", ("pfefferle", "notiz.blog")),
+            ("  @user@example.social  ", ("user", "example.social")),
+            ("user@sub.example.co.uk", ("user", "sub.example.co.uk")),
+            ("user@ünicode.example", ("user", "xn--nicode-2ya.example")),
+        ]:
+            with self.subTest(raw=raw):
+                self.assertEqual(parse_handle(raw), expected)
+
+    def test_invalid_handles(self):
+        for raw in ["", "plainstring", "@user", "user@", "@user@nodot", "us er@example.com", "user@@example.com"]:
+            with self.subTest(raw=raw):
+                self.assertIsNone(parse_handle(raw))
+
+
+class TestGetSubscribeUrl(TestCase):
+    target = "http://testserver/s/abc/"
+
+    def _webfinger_response(self, payload, status_code=200):
+        response = Mock()
+        response.status_code = status_code
+        response.json.return_value = payload
+        return response
+
+    @patch("starter_packs.remote_follow.httpx.get")
+    def test_returns_filled_template(self, mock_get):
+        mock_get.return_value = self._webfinger_response(
+            {
+                "links": [
+                    {"rel": "self", "type": "application/activity+json", "href": "https://notiz.blog/author/matthias"},
+                    {
+                        "rel": "http://ostatus.org/schema/1.0/subscribe",
+                        "template": "https://notiz.blog/wp-json/activitypub/1.0/interactions?uri={uri}",
+                    },
+                ]
+            }
+        )
+        self.assertEqual(
+            get_subscribe_url("pfefferle", "notiz.blog", self.target),
+            "https://notiz.blog/wp-json/activitypub/1.0/interactions?uri=http%3A%2F%2Ftestserver%2Fs%2Fabc%2F",
+        )
+        self.assertEqual(mock_get.call_args.args, ("https://notiz.blog/.well-known/webfinger",))
+        self.assertEqual(mock_get.call_args.kwargs["params"], {"resource": "acct:pfefferle@notiz.blog"})
+
+    @patch("starter_packs.remote_follow.httpx.get")
+    def test_no_subscribe_link(self, mock_get):
+        mock_get.return_value = self._webfinger_response({"links": [{"rel": "self", "href": "https://a.b/c"}]})
+        self.assertIsNone(get_subscribe_url("user", "example.com", self.target))
+
+    @patch("starter_packs.remote_follow.httpx.get")
+    def test_rejects_non_https_template(self, mock_get):
+        mock_get.return_value = self._webfinger_response(
+            {"links": [{"rel": "http://ostatus.org/schema/1.0/subscribe", "template": "javascript:alert(1)?{uri}"}]}
+        )
+        self.assertIsNone(get_subscribe_url("user", "example.com", self.target))
+
+    @patch("starter_packs.remote_follow.httpx.get")
+    def test_rejects_template_without_uri_placeholder(self, mock_get):
+        mock_get.return_value = self._webfinger_response(
+            {"links": [{"rel": "http://ostatus.org/schema/1.0/subscribe", "template": "https://a.b/follow"}]}
+        )
+        self.assertIsNone(get_subscribe_url("user", "example.com", self.target))
+
+    @patch("starter_packs.remote_follow.httpx.get")
+    def test_webfinger_404(self, mock_get):
+        mock_get.return_value = self._webfinger_response({}, status_code=404)
+        self.assertIsNone(get_subscribe_url("user", "example.com", self.target))
+
+    @patch("starter_packs.remote_follow.httpx.get", side_effect=httpx.ConnectError("boom"))
+    def test_webfinger_network_error(self, mock_get):
+        self.assertIsNone(get_subscribe_url("user", "example.com", self.target))
+
+    @patch("starter_packs.remote_follow.httpx.get")
+    def test_webfinger_invalid_json(self, mock_get):
+        response = Mock()
+        response.status_code = 200
+        response.json.side_effect = ValueError("not json")
+        mock_get.return_value = response
+        self.assertIsNone(get_subscribe_url("user", "example.com", self.target))
+
+
+class TestRemoteFollowStarterPack(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.starter_pack = baker.make("starter_packs.StarterPack", published_at=timezone.now())
+        cls.url = reverse("remote_follow_starter_pack", kwargs={"starter_pack_slug": cls.starter_pack.slug})
+        cls.pack_url = reverse("share_starter_pack", kwargs={"starter_pack_slug": cls.starter_pack.slug})
+
+    def test_share_page_shows_remote_follow_form_when_logged_out(self):
+        response = self.client.get(self.pack_url)
+        self.assertContains(response, self.url)
+        self.assertContains(response, "Follow with your fediverse handle")
+
+    def test_share_page_hides_remote_follow_form_when_logged_in(self):
+        user = baker.make("auth.User")
+        baker.make("mastodon_auth.AccountAccess", user=user)
+        self.client.force_login(user)
+        response = self.client.get(self.pack_url)
+        self.assertNotContains(response, "Follow with your fediverse handle")
+
+    @patch("starter_packs.views.get_subscribe_url")
+    def test_redirects_to_subscribe_url(self, mock_get_subscribe_url):
+        mock_get_subscribe_url.return_value = (
+            "https://notiz.blog/wp-json/activitypub/1.0/interactions?uri=http%3A%2F%2Ftestserver%2Fs%2Fabc%2F"
+        )
+        response = self.client.post(self.url, {"handle": "@pfefferle@notiz.blog"})
+        self.assertRedirects(response, mock_get_subscribe_url.return_value, fetch_redirect_response=False)
+        mock_get_subscribe_url.assert_called_once_with("pfefferle", "notiz.blog", f"http://testserver{self.pack_url}")
+
+    @patch("starter_packs.views.get_subscribe_url", return_value=None)
+    def test_error_when_no_subscribe_endpoint(self, mock_get_subscribe_url):
+        response = self.client.post(self.url, {"handle": "user@example.com"}, follow=True)
+        self.assertRedirects(response, self.pack_url)
+        self.assertContains(response, "remote follow endpoint")
+
+    def test_error_on_invalid_handle(self):
+        response = self.client.post(self.url, {"handle": "not-a-handle"}, follow=True)
+        self.assertRedirects(response, self.pack_url)
+        self.assertContains(response, "Please enter a fediverse handle")
+
+    def test_missing_handle(self):
+        response = self.client.post(self.url, {}, follow=True)
+        self.assertRedirects(response, self.pack_url)
+        self.assertContains(response, "Please enter a fediverse handle")
+
+    def test_deleted_pack_404(self):
+        pack = baker.make("starter_packs.StarterPack", deleted_at=timezone.now())
+        url = reverse("remote_follow_starter_pack", kwargs={"starter_pack_slug": pack.slug})
+        response = self.client.post(url, {"handle": "user@example.com"})
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_not_allowed(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 405)
