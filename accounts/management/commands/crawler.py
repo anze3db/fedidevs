@@ -12,6 +12,7 @@ from django_rich.management import RichCommand
 
 from accounts.activitypub import resolve_actor_url
 from accounts.management.commands.instances import process_instances
+from accounts.mastodon_api import parse_discoverable
 from accounts.misskey import MISSKEY_USERS_BODY
 from accounts.misskey import user_to_mastodon as misskey_user_to_mastodon
 from accounts.models import Account, Instance
@@ -118,7 +119,7 @@ class Command(RichCommand):
                                 display_name=account["display_name"],
                                 locked=account["locked"],
                                 bot=account["bot"],
-                                discoverable=account.get("discoverable", False),
+                                discoverable=parse_discoverable(account),
                                 group=account.get("group", False),
                                 noindex=account.get("noindex", None),
                                 created_at=(dt.datetime.fromisoformat(account["created_at"])),

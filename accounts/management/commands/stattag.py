@@ -10,6 +10,7 @@ from django.utils import timezone
 from django_rich.management import RichCommand
 
 from accounts.management.commands.instances import process_instances
+from accounts.mastodon_api import parse_discoverable
 from accounts.models import Account, Instance
 from confs.models import Conference, ConferenceAccount, ConferencePost, MinId
 from posts.models import Post
@@ -173,7 +174,7 @@ class Command(RichCommand):
                         "display_name": account["display_name"],
                         "locked": account["locked"],
                         "bot": account["bot"],
-                        "discoverable": account.get("discoverable", False) or False,
+                        "discoverable": parse_discoverable(account),
                         "group": account.get("group", False),
                         "noindex": account.get("noindex", None),
                         "created_at": (dt.datetime.fromisoformat(account["created_at"])),

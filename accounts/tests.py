@@ -11,6 +11,7 @@ from django.utils import timezone
 from accounts.activitypub import _media_url, _profile_url, actor_to_account_defaults
 from accounts.management.commands.crawler import Command as CrawlerCommand
 from accounts.management.commands.instances import process_instances
+from accounts.mastodon_api import parse_discoverable
 from accounts.misskey import emojis_to_mastodon, user_to_mastodon
 from accounts.misskey_api import build_miauth_url, is_misskey_family
 from accounts.models import Account, Instance
@@ -69,6 +70,25 @@ class TestActivityPubActor(SimpleTestCase):
         self.assertEqual(_profile_url({"id": "i", "url": "https://u"}), "https://u")
         self.assertEqual(_profile_url({"id": "i", "url": [{"href": "https://h"}]}), "https://h")
         self.assertEqual(_profile_url({"id": "https://i"}), "https://i")
+
+
+class TestParseDiscoverable(SimpleTestCase):
+    def test_mastodon_top_level(self):
+        self.assertTrue(parse_discoverable({"discoverable": True}))
+        self.assertFalse(parse_discoverable({"discoverable": False}))
+
+    def test_mastodon_null_or_absent(self):
+        self.assertFalse(parse_discoverable({"discoverable": None}))
+        self.assertFalse(parse_discoverable({}))
+
+    def test_pleroma_nested_in_source(self):
+        # Pleroma (observed on 2.9.1) omits the top-level field entirely.
+        self.assertTrue(parse_discoverable({"source": {"pleroma": {"discoverable": True}}}))
+        self.assertFalse(parse_discoverable({"source": {"pleroma": {"discoverable": False}}}))
+        self.assertFalse(parse_discoverable({"source": {"pleroma": {}}}))
+
+    def test_top_level_false_wins_over_nested(self):
+        self.assertFalse(parse_discoverable({"discoverable": False, "source": {"pleroma": {"discoverable": True}}}))
 
 
 # Create your tests here.

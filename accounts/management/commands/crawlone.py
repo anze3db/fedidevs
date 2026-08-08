@@ -15,6 +15,7 @@ from accounts.activitypub import (
     resolve_actor_url,
 )
 from accounts.management.commands.instances import process_instances
+from accounts.mastodon_api import parse_discoverable
 from accounts.models import Account, Instance
 
 logger = logging.getLogger(__name__)
@@ -75,7 +76,7 @@ async def crawlone(user: str, make_visible: bool = False) -> Account | None:
             "display_name": account["display_name"],
             "locked": account["locked"],
             "bot": account["bot"],
-            "discoverable": (account.get("discoverable", False) is True) if not make_visible else True,
+            "discoverable": parse_discoverable(account) if not make_visible else True,
             "group": account.get("group", False),
             "noindex": account.get("noindex", None) if not make_visible else False,
             "created_at": (dt.datetime.fromisoformat(account["created_at"])),
@@ -106,15 +107,17 @@ async def crawlone(user: str, make_visible: bool = False) -> Account | None:
         )
         if make_visible:
             logger.info("User is now visible")
-            if account["noindex"] and account["discoverable"]:
+            noindex = account.get("noindex", False)
+            discoverable = parse_discoverable(account)
+            if noindex and discoverable:
                 logger.info(
                     "\n\nHey! Looks like you've opted-out of search engine indexing and that's why you aren't showing up 😔 See the FAQ for instructions on how to fix it: http://fedidevs.com/faq/\n\nI did a manual override so that you show up now, but this is a temporary fix."
                 )
-            if not account["noindex"] and not account["discoverable"]:
+            if not noindex and not discoverable:
                 logger.info(
                     "\n\nHey! Looks like your account is not discoverable and that's why you aren't showing up 😔 See the FAQ for instructions on how to fix it: http://fedidevs.com/faq/\n\nI did a manual override so that you show up now, but this is a temporary fix."
                 )
-            if account["noindex"] and not account["discoverable"]:
+            if noindex and not discoverable:
                 logger.info(
                     "\n\nHey! Looks like your account is not discoverable and you've opted-out of search engine indexing. That's why you aren't showing up 😔 See the FAQ for instructions on how to fix it: http://fedidevs.com/faq/\n\nI did a manual override so that you show up now, but this is a temporary fix."
                 )
