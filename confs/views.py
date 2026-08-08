@@ -769,8 +769,9 @@ def create_conference(request):
             conference = form.save(commit=False)
             conference.slug = unique_conference_slug(conference.name)
             conference.created_by = request.user
-            # Start collecting posts from the conference start date by default.
-            conference.posts_after = conference.start_date
+            # Show posts from up to 180 days before the conference starts, so
+            # pre-conference buzz is visible while the page waits for the event.
+            conference.posts_after = conference.start_date - dt.timedelta(days=180)
             # No tag given? Fall back to the slug so the detail page (which needs a
             # primary tag) and post gathering still work, mirroring the old import.
             if not conference.tags.strip():

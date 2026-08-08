@@ -332,7 +332,8 @@ class TestCreateConference(TestCase):
         conference = Conference.objects.get(name="PyCon Test")
         self.assertIsNone(conference.approved_at)
         self.assertEqual(conference.created_by, self.user)
-        self.assertEqual(conference.posts_after, dt.date(2027, 6, 1))
+        # Posts from up to 180 days before the start date are shown.
+        self.assertEqual(conference.posts_after, dt.date(2027, 6, 1) - dt.timedelta(days=180))
         self.assertEqual(conference.slug, "pycon-test")
         self.assertRedirects(
             response,
