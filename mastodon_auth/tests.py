@@ -13,7 +13,45 @@ from accounts.models import Account
 from mastodon_auth.forms import MastodonLoginForm
 from mastodon_auth.models import AccountAccess, Instance
 from mastodon_auth.oauth import AppRegistrationError, authorize_url, is_pleroma, register_app
-from mastodon_auth.views import _parse_dt
+from mastodon_auth.views import _is_valid_redirect_query, _parse_dt
+
+
+class IsValidRedirectQueryTests(SimpleTestCase):
+    def test_accepts_http_and_https_urls_with_host(self):
+        cases = [
+            "https://mastodon.social/@user/123",
+            "http://example.com/users/alice/statuses/1",
+        ]
+        for query in cases:
+            with self.subTest(query=query):
+                self.assertTrue(_is_valid_redirect_query(query))
+
+    def test_rejects_malformed_or_incomplete_urls(self):
+        cases = [
+            "https:",
+            "http:",
+            "mastodon.social/@user/123",
+            "5879444224296035340",
+            "",
+            "/redirect/foo",
+        ]
+        for query in cases:
+            with self.subTest(query=query):
+                self.assertFalse(_is_valid_redirect_query(query))
+
+
+class RedirectToLocalViewTests(TestCase):
+    def test_invalid_query_redirects_to_home(self):
+        for path in ("/redirect/https:", "/redirect/5879444224296035340"):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertRedirects(response, "/", fetch_redirect_response=False)
+
+    def test_valid_query_redirects_unauthenticated_users_to_target(self):
+        target = "https://mastodon.social/@user/123"
+        response = self.client.get(f"/redirect/{target}")
+
+        self.assertRedirects(response, target, fetch_redirect_response=False)
 
 
 class ParseDtTests(SimpleTestCase):

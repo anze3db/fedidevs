@@ -1,6 +1,6 @@
 import datetime as dt
 import logging
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from uuid import uuid4
 
 import httpx
@@ -591,7 +591,15 @@ def follow(request, account_id: int):
     )
 
 
+def _is_valid_redirect_query(query: str) -> bool:
+    parsed = urlparse(query)
+    return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
+
+
 def redirect_to_local(request, query: str):
+    if not _is_valid_redirect_query(query):
+        return redirect("index")
+
     if not request.user.is_authenticated:
         return redirect(query)
 
