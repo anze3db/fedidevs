@@ -88,6 +88,9 @@ def _bool(value, default=False):
     return bool(value)
 
 
+IN_CHUNK_SIZE = 500
+
+
 def _int(value, default=0):
     if value is None or value == "":
         return default
@@ -95,6 +98,12 @@ def _int(value, default=0):
         return int(value)
     except TypeError, ValueError:
         return default
+
+
+def _chunks(values, size=IN_CHUNK_SIZE):
+    values = list(values)
+    for index in range(0, len(values), size):
+        yield values[index : index + size]
 
 
 def _json_list(value):
@@ -111,6 +120,11 @@ def _text(value):
 
 def account_kwargs_from_json(account_json, fallback_instance=""):
     """Build Account field kwargs from a Mastodon account object (DjangoCon US 2023)."""
+    if isinstance(account_json, str):
+        try:
+            account_json = json.loads(account_json)
+        except TypeError, ValueError, json.JSONDecodeError:
+            return None
     if not isinstance(account_json, dict):
         return None
     url = (account_json.get("url") or "").strip()
@@ -173,37 +187,53 @@ def legacy_post_to_dict(post, account):
     return data
 
 
+def _index_accounts(by_url, by_pair, accounts):
+    for account in accounts:
+        by_url[account.url] = account
+        by_pair[(account.account_id, account.instance)] = account
+
+
 def _resolve_accounts(account_model, account_dicts):
     by_url = {}
     by_pair = {}
     urls = [d["url"] for d in account_dicts if d.get("url")]
-    if urls:
-        for account in account_model.objects.filter(url__in=urls):
-            by_url[account.url] = account
-            by_pair[(account.account_id, account.instance)] = account
+    for chunk in _chunks(urls):
+        _index_accounts(by_url, by_pair, account_model.objects.filter(url__in=chunk))
 
     remaining = [d for d in account_dicts if d.get("url") not in by_url]
     if remaining:
-        account_ids = {d["account_id"] for d in remaining}
-        instances = {d["instance"] for d in remaining}
-        for account in account_model.objects.filter(account_id__in=account_ids, instance__in=instances):
-            by_pair[(account.account_id, account.instance)] = account
-            by_url.setdefault(account.url, account)
+        for chunk in _chunks(remaining):
+            account_ids = {d["account_id"] for d in chunk}
+            instances = {d["instance"] for d in chunk}
+            for account in account_model.objects.filter(account_id__in=account_ids, instance__in=instances):
+                by_pair.setdefault((account.account_id, account.instance), account)
+                by_url.setdefault(account.url, account)
 
     to_create = []
     seen_pairs = set()
+    seen_urls = set()
     for data in remaining:
         pair = (data["account_id"], data["instance"])
-        if data.get("url") in by_url or pair in by_pair or pair in seen_pairs:
+        url = data.get("url")
+        if url in by_url or pair in by_pair or pair in seen_pairs or url in seen_urls:
             continue
         seen_pairs.add(pair)
+        if url:
+            seen_urls.add(url)
         to_create.append(account_model(**data))
     if to_create:
-        account_model.objects.bulk_create(to_create, ignore_conflicts=True, batch_size=500)
-        created_urls = [account.url for account in to_create]
-        for account in account_model.objects.filter(url__in=created_urls):
-            by_url[account.url] = account
-            by_pair[(account.account_id, account.instance)] = account
+        account_model.objects.bulk_create(to_create, ignore_conflicts=True, batch_size=IN_CHUNK_SIZE)
+        created_urls = [account.url for account in to_create if account.url]
+        for chunk in _chunks(created_urls):
+            _index_accounts(by_url, by_pair, account_model.objects.filter(url__in=chunk))
+        # Conflicts on (account_id, instance) with a different URL wouldn't be
+        # found by the URL refetch; pick them up by the unique pair instead.
+        for chunk in _chunks(to_create):
+            account_ids = {account.account_id for account in chunk}
+            instances = {account.instance for account in chunk}
+            for account in account_model.objects.filter(account_id__in=account_ids, instance__in=instances):
+                by_pair.setdefault((account.account_id, account.instance), account)
+                by_url.setdefault(account.url, account)
 
     def resolve(data):
         return by_url.get(data.get("url")) or by_pair.get((data["account_id"], data["instance"]))
@@ -211,37 +241,53 @@ def _resolve_accounts(account_model, account_dicts):
     return resolve
 
 
+def _index_posts(by_url, by_pair, posts):
+    for post in posts:
+        by_url[post.url] = post
+        by_pair[(post.post_id, post.account_id)] = post
+
+
 def _resolve_posts(post_model, post_dicts):
     by_url = {}
     by_pair = {}
     urls = [d["url"] for d in post_dicts if d.get("url")]
-    if urls:
-        for post in post_model.objects.filter(url__in=urls).select_related("account"):
-            by_url[post.url] = post
-            by_pair[(post.post_id, post.account_id)] = post
+    for chunk in _chunks(urls):
+        _index_posts(by_url, by_pair, post_model.objects.filter(url__in=chunk).select_related("account"))
 
     remaining = [d for d in post_dicts if d.get("url") not in by_url]
     if remaining:
-        post_ids = {d["post_id"] for d in remaining}
-        account_ids = {d["account"].pk for d in remaining}
-        for post in post_model.objects.filter(post_id__in=post_ids, account_id__in=account_ids):
-            by_pair[(post.post_id, post.account_id)] = post
-            by_url.setdefault(post.url, post)
+        for chunk in _chunks(remaining):
+            post_ids = {d["post_id"] for d in chunk}
+            account_ids = {d["account"].pk for d in chunk}
+            for post in post_model.objects.filter(post_id__in=post_ids, account_id__in=account_ids):
+                by_pair.setdefault((post.post_id, post.account_id), post)
+                by_url.setdefault(post.url, post)
 
     to_create = []
     seen_pairs = set()
+    seen_urls = set()
     for data in remaining:
         pair = (data["post_id"], data["account"].pk)
-        if data.get("url") in by_url or pair in by_pair or pair in seen_pairs:
+        url = data.get("url")
+        if url in by_url or pair in by_pair or pair in seen_pairs or url in seen_urls:
             continue
         seen_pairs.add(pair)
+        if url:
+            seen_urls.add(url)
         to_create.append(post_model(**data))
     if to_create:
-        post_model.objects.bulk_create(to_create, ignore_conflicts=True, batch_size=500)
-        created_urls = [post.url for post in to_create]
-        for post in post_model.objects.filter(url__in=created_urls).select_related("account"):
-            by_url[post.url] = post
-            by_pair[(post.post_id, post.account_id)] = post
+        post_model.objects.bulk_create(to_create, ignore_conflicts=True, batch_size=IN_CHUNK_SIZE)
+        created_urls = [post.url for post in to_create if post.url]
+        for chunk in _chunks(created_urls):
+            _index_posts(by_url, by_pair, post_model.objects.filter(url__in=chunk).select_related("account"))
+        for chunk in _chunks(to_create):
+            post_ids = {post.post_id for post in chunk}
+            account_ids = {post.account_id for post in chunk}
+            for post in post_model.objects.filter(post_id__in=post_ids, account_id__in=account_ids).select_related(
+                "account"
+            ):
+                by_pair.setdefault((post.post_id, post.account_id), post)
+                by_url.setdefault(post.url, post)
 
     def resolve(data):
         return by_url.get(data.get("url")) or by_pair.get((data["post_id"], data["account"].pk))
