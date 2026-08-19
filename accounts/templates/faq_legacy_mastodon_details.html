@@ -1,0 +1,29 @@
+{% load static %}
+<details class="group not-prose my-4 rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+    <summary class="flex cursor-pointer list-none items-center justify-between gap-2 p-4 text-sm font-medium text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-700 [&::-webkit-details-marker]:hidden">
+        <span>Older versions of Mastodon have a different preferences page layout. See here.</span>
+        <span class="transition group-open:rotate-180 [&>svg]:h-5 [&>svg]:w-5">{% heroicon_outline 'chevron-down' %}</span>
+    </summary>
+    <div class="prose dark:prose-invert max-w-none border-t border-gray-200 p-4 dark:border-gray-700">
+        <p>
+            Go to <kbd>Preferences</kbd> - <kbd>Public</kbd> - <kbd>Appearance</kbd> (<code>{your_instance}/settings/profile</code>) and check the Suggest account to others checkbox:
+        </p>
+        <p>
+            <a href="{% static 'faq-discoverable.png' %}">
+                <img class="mx-auto w-4/5 rounded-lg"
+                     alt="Screenshot of the Mastodon Edit profile page showing the Suggest account to others checkbox"
+                     src="{% static 'faq-discoverable.png' %}" />
+            </a>
+        </p>
+        <p>
+            Then go to <kbd>Preferences</kbd> - <kbd>Other</kbd> (<code>{your_instance}//preferences/other</code>) and <b>UNCHECK</b> the Opt-out of search engine indexing checkbox:
+        </p>
+        <p>
+            <a href="{% static 'faq-opt-out.png' %}">
+                <img class="mx-auto w-4/5 rounded-lg"
+                     alt="Screenshot of the Mastodon Preferences page showing the Opt-out of search engine indexing checkbox"
+                     src="{% static 'faq-opt-out.png' %}" />
+            </a>
+        </p>
+    </div>
+</details>

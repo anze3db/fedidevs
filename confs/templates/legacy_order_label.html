@@ -1,0 +1,9 @@
+{% if order == "-favourites_count" %}
+    Favorites
+{% elif order == "-reblogs_count" %}
+    Boosts
+{% elif order == "-replies_count" %}
+    Replies
+{% else %}
+    Created Date
+{% endif %}

@@ -1,15 +1,21 @@
-{% extends "layout.html" %}
+{% extends "v2/layout.html" %}
 {% load account_extras %}
 {% load static %}
 {% block content %}
-    <main class="container">
-        <article>
-            <h1>You have been subscribed 🎉, but...</h1>
-            <p>
-                ... I have to admit that I have not implemented this feature yet. I'll implement it once I get at least <b>10</b> subscribers, so if you know anyone else who might be interested, please ask them to subscribe as well.
-            </p>
-            <p>Once the feature is ready, you won't have to re-subscribe. You'll automatically start receiving daily posts.</p>
-            <p>Thank you! 🙏</p>
-        </article>
+    <main class="py-8 px-4 mx-auto max-w-2xl lg:py-16 p-3 mb-12">
+        <div class="bg-white shadow-md rounded-2xl dark:bg-gray-800 p-8">
+            <h1 class="mb-4 text-2xl font-bold text-gray-900 dark:text-white">You have been subscribed 🎉, but...</h1>
+            <div class="prose dark:prose-invert">
+                <p>
+                    ... I have to admit that I have not implemented this feature yet. I'll implement it once I get at least <b>10</b> subscribers, so if you know anyone else who might be interested, please ask them to subscribe as well.
+                </p>
+                <p>Once the feature is ready, you won't have to re-subscribe. You'll automatically start receiving daily posts.</p>
+                <p>Thank you! 🙏</p>
+            </div>
+        </div>
     </main>
 {% endblock content %}
+{% block sidebar %}
+    <h1 class="hidden md:block mb-4 text-3xl font-extrabold">Subscribed</h1>
+    <p class="prose dark:prose-invert">Thanks for signing up. We'll email you when daily posts are ready.</p>
+{% endblock sidebar %}

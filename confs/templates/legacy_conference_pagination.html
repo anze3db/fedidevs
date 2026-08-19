@@ -1,0 +1,16 @@
+{% if posts %}
+    <div class="mt-8 mb-4 flex items-center justify-center gap-4 text-sm">
+        {% if posts.has_previous %}
+            <a href="{% querystring page=posts.previous_page_number %}"
+               class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">previous</a>
+        {% endif %}
+        <span class="text-gray-600 dark:text-gray-300">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>
+        {% if posts.has_next %}
+            <a href="{% querystring page=posts.next_page_number %}"
+               class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">next</a>
+        {% endif %}
+    </div>
+{% endif %}
+<p class="prose dark:prose-invert mt-4 text-sm">
+    Check out the <a href="{% url "faq" %}">FAQ</a> to learn how to add yourself to the list.
+</p>

@@ -1,151 +1,121 @@
-{% extends "layout.html" %}
+{% extends "v2/layout.html" %}
 {% load account_extras %}
 {% load static %}
 {% block head %}
     {% if posts.has_previous %}<meta name="robots" content="none">{% endif %}
 {% endblock head %}
-{% block header %}
-    <h1 class="logo">{{ page_header }}</h1>
-    {% if page_subheader %}<h2>{{ page_subheader | safe }}</h2>{% endif %}
-{% endblock header %}
 {% block content %}
-    <main class="container">
+    <main class="flex justify-center">
         <article>
-            <header>
-                <p>
-                    <a href="https://2023.djangocon.africa">DjangoCon Africa</a> took place on November 6 - 11, 2023 in Zanzibra, Tanzania. See the <a href="https://2023.djangocon.africa/schedules/">Schedule</a>.
-                </p>
-                <p>
-                    There have been <mark>{{ stats.total_posts }} posts</mark>, <mark>{{ stats.total_favourites }} favourites</mark>, and <mark>{{ stats.total_reblogs }} boosts</mark> with the hashtag <a href="https://mastodon.social/tags/djangoconafrica">#djangoconafrica</a> on <a href="https://joinmastodon.org">Mastodon</a>.
-                </p>
-                <nav>
-                    <ul style="flex-wrap: wrap; justify-content: center;">
-                        <li>
-                            <a href="{% url 'djangoconafrica' %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
-                               {% if posts_date is not None %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
-                               role="button">All ({{ stats.total_posts }})</a>
-                        </li>
-                        {% for date in dates %}
-                            <li>
-                                <a href="{% url 'djangoconafrica' date.value %}?order={{ order }}&account={{ account_id }}&tag={{ selected_tag }}"
-                                   {% if posts_date != date.value %}class="outline" style="border-color: rgb(231, 75, 26); color: rgb(231, 75, 26)" {% else %} style="border-color: rgb(231, 75, 26); color: white; background-color: rgb(231, 75, 26)" {% endif %}
-                                   role="button">{{ date.pre_display }} ({{ date.count }})</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                    <ul>
-                        <li>
-                            <script nonce="{{request.csp_nonce}}">
-                                function change_sort(element) {
-                                    let url = '/djangoconafrica/';
-
-                                    const date = {% if posts_date %}"{{ posts_date|date:"Y-m-d" }}"{% else %}null{% endif %};
-                                    if (date) {
-                                        url += date + "/?order=" + element.value ;
-                                    } else {
-                                        url += "?order=" + element.value ;
-                                    }
-
-                                    const account_id = {% if account_id %}"{{ account_id }}"{% else %}null{% endif %};
-                                    if (account_id) {
-                                        url += "&account=" + account_id;
-                                    }
-
-                                    const selected_tag = {% if selected_tag %}"{{ selected_tag }}"{% else %}null{% endif %};
-                                    if (selected_tag) {
-                                        url += "&tag=" + selected_tag;
-                                    }
-
-                                    window.location.href = url;
-                                }
-                            </script>
-                            <select onchange="change_sort(this)">
-                                <option value="" disabled>Sort By</option>
-                                <option value="-favourites_count"
-                                        {% if order == "-favourites_count" %}selected{% endif %}>
-                                    Sort by Number of Favourites
-                                </option>
-                                <option value="-reblogs_count"
-                                        {% if order == "-reblogs_count" %}selected{% endif %}>
-                                    Sort by Number of Boosts
-                                </option>
-                                <option value="-replies_count"
-                                        {% if order == "-replies_count" %}selected{% endif %}>
-                                    Sort by Number of Replies
-                                </option>
-                                <option value="-created_at"
-                                        {% if order == "-created_at" %}selected{% endif %}>
-                                    Sort by Created Date
-                                </option>
-                            </select>
-                        </li>
-                    </ul>
-                </nav>
-                <p>
-                    <ul style="padding:0;">
-                        <li style="display: inline-block;">
-                            <a href="{% if posts_date %}{% url 'djangoconafrica' posts_date %}{% else %}{% url 'djangoconafrica' %}{% endif %}?tag={{ selected_tag }}"
-                               role="button"
-                               class="{% if account_id is not None %}outline{% endif %} no-wrap"
-                               style="padding: 5px">All Accounts</a>
-                        </li>
-                        {% for account in users_with_most_posts %}
-                            <li style="display: inline-block;">
-                                <a href="{% if posts_date %}{% url 'djangoconafrica' posts_date %}?account={{ account.id }}&tag={{ selected_tag }}{% else %}{% url 'djangoconafrica' %}?account={{ account.id }}&tag={{ selected_tag }}{% endif %}"
-                                   role="button"
-                                   class="{% if account.id != account_id %}outline{% endif %} no-wrap"
-                                   style="padding: 5px">
-                                    <img class="small-avatar"
-                                         src="{{ account.avatar }}"
-                                         alt="{{ account.login }}"
-                                         width="50"
-                                         height="50" />
-                                {% render_emojis account.name account.emojis %} ({{ account.count }})</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </p>
-                <p>
-                    <ul style="padding:0;">
-                        <li style="display: inline-block;">
-                            <a href="{% if posts_date %}{% url 'djangoconafrica' posts_date %}{% else %}{% url 'djangoconafrica' %}{% endif %}?account={{ account_id }}"
-                               role="button"
-                               class="{% if selected_tag is not None %}outline{% endif %} no-wrap"
-                               style="padding: 5px">All Tags</a>
-                        </li>
-                        {% for tag in tags %}
-                            <li style="display: inline-block;">
-                                <a href="{% if posts_date %}{% url 'djangoconafrica' posts_date %}?account={{ account_id }}&tag={{ tag }}{% else %}{% url 'djangoconafrica' %}?account={{ account_id }}&tag={{ tag }}{% endif %}"
-                                   role="button"
-                                   class="{% if selected_tag != tag %}outline{% endif %} no-wrap"
-                                   style="padding: 5px">#{{ tag }}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </p>
-            </header>
-            <section data-nosnippet>
+            <section class="mb-8 mr-2 flex flex-wrap gap-4 justify-end">
+                {% for date in dates %}
+                    {% if posts_date == date.value %}
+                        <a href="{% url 'djangoconafrica' %}{% querystring %}"
+                           class="relative inline-flex items-center justify-center overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 text-xs"
+                           role="button">
+                            <span class="relative p-2.5 transition-all ease-in duration-75 rounded-md">{{ date.pre_display }} ({{ date.count }})</span>
+                            <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+                {% for account in users_with_most_posts %}
+                    {% if account.id == account_id %}
+                        <a href="{% if posts_date %}{% url 'djangoconafrica' posts_date %}{% else %}{% url 'djangoconafrica' %}{% endif %}{% querystring account=None page=None %}"
+                           role="button"
+                           class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 bg-white shadow-sm dark:bg-gray-800 justify-between items-center">
+                            <img src="{{ account.avatar }}"
+                                 alt="{{ account.username }}"
+                                 width="50"
+                                 loading="lazy"
+                                 height="50"
+                                 class="h-6 w-6 rounded-full mr-1" />
+                            <span class="flex gap-1 [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1">{% render_emojis account.display_name account.emojis %} ({{ account.count }})</span>
+                            <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+                {% if selected_tag %}
+                    <a href="{% if posts_date %}{% url 'djangoconafrica' posts_date %}{% else %}{% url 'djangoconafrica' %}{% endif %}{% querystring tag=None page=None %}"
+                       class="relative inline-flex items-center justify-center overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 text-xs"
+                       role="button">
+                        <span class="relative p-2.5 transition-all ease-in duration-75 rounded-md">#{{ selected_tag }}</span>
+                        <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                    </a>
+                {% endif %}
+                {% include "legacy_order_dropdown.html" %}
+            </section>
+            <section data-nosnippet class="max-w-3xl">
                 {% for post in posts %}
                     {% include "post.html" %}
+                {% empty %}
+                    <p class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 text-center">
+                        No results, please check back later!
+                    </p>
                 {% endfor %}
-                {% if not posts %}<p style="text-align:center;">No results, please check back later!</p>{% endif %}
+                {% include "legacy_conference_pagination.html" %}
             </section>
-            <footer>
-                <div class="pagination">
-                    <span class="step-links">
-                        {% if posts.has_previous %}
-                            <a href="?page={{ posts.previous_page_number }}&q={{ query }}&order={{ order }}">previous</a>
-                        {% endif %}
-                        {% if posts %}<span class="current">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>{% endif %}
-                        {% if posts.has_next %}
-                            <a href="?page={{ posts.next_page_number }}&q={{ query }}&order={{ order }}">next</a>
-                        {% endif %}
-                    </span>
-                </div>
-                <p>
-                    Check out the <a href="{% url "faq" %}">FAQ</a> to learn how to add yourlsef to the list.
-                </p>
-            </footer>
         </article>
     </main>
 {% endblock content %}
+{% block sidebar %}
+    <h1 class="hidden md:block mb-4 text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-orange-400">
+        {{ page_header }}
+    </h1>
+    <p class="prose dark:prose-invert">
+        <a href="https://2023.djangocon.africa">DjangoCon Africa</a> took place on November 6 - 11, 2023 in Zanzibar, Tanzania. See the <a href="https://2023.djangocon.africa/schedules/">Schedule</a>.
+    </p>
+    <p class="mt-4 mb-4 prose dark:prose-invert">
+        There have been <strong>{{ stats.total_posts }} posts</strong>, <strong>{{ stats.total_favourites|default:0 }} favourites</strong>, and <strong>{{ stats.total_reblogs|default:0 }} boosts</strong> with the hashtag <a href="https://mastodon.social/tags/djangoconafrica">#djangoconafrica</a> on Mastodon.
+    </p>
+    {% if users_with_most_posts %}
+        <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">Filter by most active accounts</h2>
+        <ul class="px-4 -mx-4 mb-8">
+            {% for account in users_with_most_posts %}
+                <li class="m-1 inline-block">
+                    <a href="{% if account_id == account.id %}{% if posts_date %}{% url 'djangoconafrica' posts_date %}{% else %}{% url 'djangoconafrica' %}{% endif %}{% querystring account=None page=None %}{% elif posts_date %}{% url 'djangoconafrica' posts_date %}{% querystring account=account.id page=None %}{% else %}{% url 'djangoconafrica' %}{% querystring account=account.id page=None %}{% endif %}"
+                       role="button"
+                       class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 {% if account_id == account.id %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center">
+                        <img src="{{ account.avatar }}"
+                             alt="{{ account.username }}"
+                             width="50"
+                             loading="lazy"
+                             height="50"
+                             class="h-6 w-6 rounded-full mr-1" />
+                        <span class="flex gap-1 [&>img]:max-w-4 [&>img]:max-h-4 [&>img]:mt-1">{% render_emojis account.display_name account.emojis %} ({{ account.count }})</span>
+                        {% if account_id == account.id %}
+                            <span class="[&>svg]:h-4">{% heroicon_outline 'x-mark' %}</span>
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if dates %}
+        <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">Filter by conference day</h2>
+        <ul class="px-4 -mx-4 mb-8">
+            {% for date in dates %}
+                <li class="m-1 inline-block">
+                    <a href="{% if posts_date == date.value %}{% url 'djangoconafrica' %}{% else %}{% url 'djangoconafrica' date.value %}{% endif %}{% querystring page=None %}"
+                       class="relative inline-flex items-center justify-center p-0.5 mb-1 me-1 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 text-xs">
+                        <span class="relative p-2.5 transition-all ease-in duration-75 {% if date.value != posts_date %}bg-white dark:bg-gray-900{% endif %} rounded-md group-hover:bg-opacity-0">
+                            {{ date.pre_display }} ({{ date.count }})
+                        </span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if tags %}
+        <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">Filter by tag</h2>
+        <ul class="px-4 -mx-4 mb-8">
+            {% for tag in tags %}
+                <li class="m-1 inline-block">
+                    <a href="{% if selected_tag == tag %}{% if posts_date %}{% url 'djangoconafrica' posts_date %}{% else %}{% url 'djangoconafrica' %}{% endif %}{% querystring tag=None page=None %}{% elif posts_date %}{% url 'djangoconafrica' posts_date %}{% querystring tag=tag page=None %}{% else %}{% url 'djangoconafrica' %}{% querystring tag=tag page=None %}{% endif %}"
+                       class="relative inline-flex items-center justify-center p-0.5 mb-1 me-1 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 text-xs">
+                        <span class="relative p-2.5 transition-all ease-in duration-75 {% if selected_tag != tag %}bg-white dark:bg-gray-900{% endif %} rounded-md group-hover:bg-opacity-0">#{{ tag }}</span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock sidebar %}

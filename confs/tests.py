@@ -58,21 +58,28 @@ class TestConfPostFiltersDoNotWarnNaiveDatetime(TestCase):
             )
             response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        return response
 
     def test_fwd50(self):
-        self._assert_no_naive_warning(reverse("fwd50"))
+        response = self._assert_no_naive_warning(reverse("fwd50"))
+        self.assertNotContains(response, "pico.min.css")
+        self.assertContains(response, "min-h-screen")
 
     def test_fwd50_with_date(self):
         self._assert_no_naive_warning(reverse("fwd50", args=[dt.date(2023, 11, 6)]))
 
     def test_djangoconafrica(self):
-        self._assert_no_naive_warning(reverse("djangoconafrica"))
+        response = self._assert_no_naive_warning(reverse("djangoconafrica"))
+        self.assertNotContains(response, "pico.min.css")
+        self.assertContains(response, "min-h-screen")
 
     def test_djangoconafrica_with_date(self):
         self._assert_no_naive_warning(reverse("djangoconafrica", args=[dt.date(2023, 11, 7)]))
 
     def test_dotnetconf(self):
-        self._assert_no_naive_warning(reverse("dotnetconf"))
+        response = self._assert_no_naive_warning(reverse("dotnetconf"))
+        self.assertNotContains(response, "pico.min.css")
+        self.assertContains(response, "min-h-screen")
 
     def test_dotnetconf_with_date(self):
         self._assert_no_naive_warning(reverse("dotnetconf", args=[dt.date(2023, 11, 14)]))

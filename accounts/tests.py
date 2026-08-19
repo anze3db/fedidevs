@@ -523,13 +523,20 @@ class TestCrawlerGotosocial(SimpleTestCase):
 
 
 class TestStaticPages(TestCase):
+    def _assert_tailwind_layout(self, response, *contains):
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "pico.min.css")
+        self.assertContains(response, "min-h-screen")
+        for text in contains:
+            self.assertContains(response, text)
+
     def test_developers_on_mastodon(self):
         response = self.client.get("/developers-on-mastodon/")
-        self.assertEqual(response.status_code, 200)
+        self._assert_tailwind_layout(response, "Mastodon Instances with Software Developers")
 
     def test_faq(self):
         response = self.client.get("/faq/")
-        self.assertEqual(response.status_code, 200)
+        self._assert_tailwind_layout(response, "How to report an issue?")
 
 
 class TestSitemap(TestCase):
