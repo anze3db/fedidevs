@@ -266,6 +266,17 @@ CONFERENCE_APPROVAL_EMAIL = env.str("CONFERENCE_APPROVAL_EMAIL", default="apecar
 MSTDN_CLIENT_NAME = env.str("MSTDN_CLIENT_NAME", default="local.fedidevs.com")
 MSTDN_REDIRECT_URI = env.str("MSTDN_REDIRECT_URI", default="http://localhost:8000/mastodon_auth/")
 
+# When the app is reached through a forwarded/ephemeral port whose number the
+# server can't know in advance (local dev, Cloud Agents, ngrok, Codespaces, …),
+# the fixed :8000 in MSTDN_REDIRECT_URI won't match the URL the browser used, so
+# the OAuth callback lands on the wrong port. When enabled, the OAuth callback is
+# instead derived from the incoming request's host. Defaults on in local dev and
+# stays off during tests and in production, where MSTDN_REDIRECT_URI is a stable
+# public URL.
+MSTDN_REDIRECT_URI_FROM_REQUEST = env.bool(
+    "MSTDN_REDIRECT_URI_FROM_REQUEST", default=DEBUG and "pytest" not in sys.modules
+)
+
 # @fedidevs fediverse account used by confannouncer to post conference
 # start/end announcements. Leave the token empty to disable posting.
 FEDIDEVS_BOT_ACCESS_TOKEN = env.str("FEDIDEVS_BOT_ACCESS_TOKEN", default="")

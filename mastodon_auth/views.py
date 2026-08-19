@@ -54,6 +54,30 @@ SCOPES = ("read", "follow")
 OAUTH_STATE_TTL = 60 * 30  # 30 minutes
 
 
+def _oauth_redirect_uri(request) -> str:
+    """OAuth callback URI (``/mastodon_auth/``) to register/authorize/exchange with.
+
+    Production uses the fixed ``MSTDN_REDIRECT_URI`` (a stable public URL). Local
+    dev reaches the app through a forwarded port the server can't predict (e.g. a
+    Cloud Agent maps container ``:8000`` to a random localhost port), so build the
+    callback from the request's own host when ``MSTDN_REDIRECT_URI_FROM_REQUEST``
+    is on. The authorize redirect and the later token exchange run against the same
+    browser host, so both derive an identical URI.
+    """
+    if settings.MSTDN_REDIRECT_URI_FROM_REQUEST:
+        return request.build_absolute_uri("/mastodon_auth/")
+    return settings.MSTDN_REDIRECT_URI
+
+
+def _miauth_redirect_uri(request) -> str:
+    """MiAuth callback URI (``/miauth_callback/``) for Misskey-family instances.
+
+    Same host-derivation rationale as :func:`_oauth_redirect_uri`."""
+    if settings.MSTDN_REDIRECT_URI_FROM_REQUEST:
+        return request.build_absolute_uri("/miauth_callback/")
+    return urljoin(settings.MSTDN_REDIRECT_URI, "/miauth_callback/")
+
+
 @require_POST
 def login(request):
     form = MastodonLoginForm(request.POST)
@@ -95,25 +119,30 @@ def login(request):
             instance.save(update_fields=["software", "updated_at"])
 
         session = str(uuid4())
-        callback = urljoin(settings.MSTDN_REDIRECT_URI, "/miauth_callback/")
+        callback = _miauth_redirect_uri(request)
         cache.set(f"miauth:{session}", instance.id, timeout=OAUTH_STATE_TTL)
         cache.set(f"miauth:{session}:next", next_url, timeout=OAUTH_STATE_TTL)
         return redirect(build_miauth_url(api_base_url, session, callback, settings.MSTDN_CLIENT_NAME))
 
     desired_scopes = " ".join(SCOPES)
+    redirect_uri = _oauth_redirect_uri(request)
 
     # Register the OAuth app, or RE-register it when the stored app predates a
     # scope change (granted scopes are fixed at app-creation time on the
     # instance, so a stale app would still request the old scopes). Existing
     # access tokens keep working — they authenticate via their bearer token, not
     # the app's client_id/secret — so rotating the credentials here is safe.
-    if not instance or instance.scopes != desired_scopes:
+    #
+    # When the callback is derived from the request (local dev behind a forwarded
+    # port), also re-register every login: the registered redirect_uri must match
+    # the port the browser is currently using, which can differ between sessions.
+    if not instance or instance.scopes != desired_scopes or settings.MSTDN_REDIRECT_URI_FROM_REQUEST:
         try:
             client_id, client_secret = register_app(
                 api_base_url=api_base_url,
                 client_name=settings.MSTDN_CLIENT_NAME,
                 scopes=SCOPES,
-                redirect_uris=settings.MSTDN_REDIRECT_URI,
+                redirect_uris=redirect_uri,
                 website="https://fedidevs.com",
             )
         except AppRegistrationError as e:
@@ -167,7 +196,7 @@ def login(request):
     auth_request_url = authorize_url(
         api_base_url=api_base_url,
         client_id=instance.client_id,
-        redirect_uri=settings.MSTDN_REDIRECT_URI,
+        redirect_uri=redirect_uri,
         scopes=SCOPES,
         state=state,
         force_login=is_pleroma(software),
@@ -181,7 +210,7 @@ def login(request):
     logger.info(
         "login redirecting to OAuth authorize for %s: redirect_uri=%s state=%s url=%s",
         api_base_url,
-        settings.MSTDN_REDIRECT_URI,
+        redirect_uri,
         state,
         auth_request_url,
     )
@@ -269,7 +298,7 @@ def auth(request):
     try:
         access_token = mastodon.log_in(
             code=code,
-            redirect_uri=settings.MSTDN_REDIRECT_URI,
+            redirect_uri=_oauth_redirect_uri(request),
             scopes=SCOPES,
         )
     except MastodonNetworkError as e:
