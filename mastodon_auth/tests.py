@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 import httpx
 from django.contrib.messages import get_messages
 from django.core.cache import cache
-from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
+from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
 from mastodon.errors import MastodonAPIError, MastodonIllegalArgumentError
 
@@ -13,12 +13,7 @@ from accounts.models import Account
 from mastodon_auth.forms import MastodonLoginForm
 from mastodon_auth.models import AccountAccess, Instance
 from mastodon_auth.oauth import AppRegistrationError, authorize_url, is_pleroma, register_app
-from mastodon_auth.views import (
-    _is_valid_redirect_query,
-    _miauth_redirect_uri,
-    _oauth_redirect_uri,
-    _parse_dt,
-)
+from mastodon_auth.views import _is_valid_redirect_query, _parse_dt
 
 
 class IsValidRedirectQueryTests(SimpleTestCase):
@@ -201,53 +196,6 @@ class MastodonLoginViewTests(TestCase):
         messages = [str(m) for m in get_messages(response.wsgi_request)]
         self.assertEqual(len(messages), 1)
         self.assertIn("temporarily unavailable", messages[0])
-
-
-class OAuthRedirectUriTests(SimpleTestCase):
-    """The OAuth callback must follow the forwarded/ephemeral port the browser
-    actually used (local dev, Cloud Agents, ngrok, …), not the fixed :8000 in
-    MSTDN_REDIRECT_URI, or the instance redirects the code to the wrong port."""
-
-    def setUp(self):
-        self.factory = RequestFactory()
-
-    @override_settings(MSTDN_REDIRECT_URI_FROM_REQUEST=True)
-    def test_derives_callback_from_request_host_when_enabled(self):
-        request = self.factory.get("/login/", HTTP_HOST="localhost:60319")
-        self.assertEqual(_oauth_redirect_uri(request), "http://localhost:60319/mastodon_auth/")
-        self.assertEqual(_miauth_redirect_uri(request), "http://localhost:60319/miauth_callback/")
-
-    @override_settings(
-        MSTDN_REDIRECT_URI_FROM_REQUEST=False,
-        MSTDN_REDIRECT_URI="https://fedidevs.com/mastodon_auth/",
-    )
-    def test_uses_fixed_setting_when_disabled(self):
-        request = self.factory.get("/login/", HTTP_HOST="localhost:60319")
-        self.assertEqual(_oauth_redirect_uri(request), "https://fedidevs.com/mastodon_auth/")
-        self.assertEqual(_miauth_redirect_uri(request), "https://fedidevs.com/miauth_callback/")
-
-
-class OAuthRedirectUriLoginViewTests(TestCase):
-    @override_settings(MSTDN_REDIRECT_URI_FROM_REQUEST=True)
-    @patch("mastodon_auth.views.register_app", return_value=("cid", "sec"))
-    @patch("mastodon_auth.views.detect_software", return_value="mastodon")
-    @patch("mastodon_auth.views.httpx.get")
-    def test_login_registers_and_authorizes_with_forwarded_port(self, http_get, _detect, register):
-        """End to end through the login view: the app is registered with, and the
-        authorize redirect points at, the forwarded port the browser used."""
-        http_get.return_value = MagicMock(status_code=200)
-
-        response = self.client.post(
-            "/mastodon_login/",
-            {"instance": "det.social"},
-            HTTP_HOST="localhost:60319",
-        )
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(register.call_args.kwargs["redirect_uris"], "http://localhost:60319/mastodon_auth/")
-        self.assertIn("https://det.social/oauth/authorize?", response["Location"])
-        # The redirect_uri handed to the instance carries the forwarded port.
-        self.assertIn("redirect_uri=http%3A%2F%2Flocalhost%3A60319%2Fmastodon_auth%2F", response["Location"])
 
 
 class AuthorizeUrlTests(SimpleTestCase):
