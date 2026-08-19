@@ -1,14 +1,32 @@
-{% extends "layout.html" %}
+{% extends "v2/layout.html" %}
 {% load account_extras %}
 {% load static %}
 {% block content %}
-    <main class="container">
-        <article>
-            <form action="{% url 'posts_subscribe' %}" method="post">
-                {% csrf_token %}
-                {{ form }}
-                <input type="submit" value="Submit">
-            </form>
-        </article>
+    <main class="py-8 px-4 mx-auto max-w-2xl lg:py-16 p-3 mb-12">
+        <h2 class="mb-4 text-xl text-center font-bold text-gray-900 dark:text-white">Subscribe to daily posts</h2>
+        <p class="mb-8 text-center text-gray-600 dark:text-gray-300">Get a daily digest of popular posts from developers on Mastodon.</p>
+        <form action="{% url 'posts_subscribe' %}"
+              method="post"
+              class="bg-white shadow-md rounded-2xl dark:bg-gray-800 break-inside-avoid-column p-8">
+            {% csrf_token %}
+            {{ form.framework_or_lang }}
+            <div class="mb-6">
+                <label for="{{ form.email.id_for_label }}"
+                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                {{ form.email }}
+                <div class="text-sm text-red-500">{{ form.email.errors }}</div>
+            </div>
+            <div class="text-sm text-red-500">{{ form.non_field_errors }}</div>
+            <button type="submit"
+                    class="w-full text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                Subscribe
+            </button>
+        </form>
     </main>
 {% endblock content %}
+{% block sidebar %}
+    <h1 class="hidden md:block mb-4 text-3xl font-extrabold">Subscribe</h1>
+    <p class="prose dark:prose-invert">
+        Enter your email to subscribe to a daily roundup of the most favourited developer posts on Mastodon.
+    </p>
+{% endblock sidebar %}

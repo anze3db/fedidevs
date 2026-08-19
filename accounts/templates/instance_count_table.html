@@ -1,0 +1,21 @@
+<div class="not-prose my-6 max-w-md overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+    <table class="w-full text-sm text-gray-700 dark:text-gray-200">
+        <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+            <tr>
+                <th class="px-4 py-3 text-right">Count</th>
+                <th class="px-4 py-3 text-left">Instance</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            {% for instance in instances %}
+                <tr>
+                    <td class="px-4 py-2 text-right font-medium tabular-nums">{{ instance.count }}</td>
+                    <td class="px-4 py-2">
+                        <a class="text-primary-700 hover:underline dark:text-primary-300"
+                           href="https://{{ instance.instance }}">{{ instance.instance }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

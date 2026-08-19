@@ -76,8 +76,10 @@ def djangoconus(request, date: dt.date | None = None):
         "djangoconus.html",
         {
             "page_title": "FediDevs POSTS on DjangoCon US | Most Favourited Mastodon Posts about DjangoCon US",
-            "page_header": "FEDIDEVS",
-            "page_subheader": "DjangoCon US 2023 🐂",
+            "page": "conferences",
+            "page_header": "DjangoCon US 2023",
+            "page_header_color": "red",
+            "page_subheader": "Oct. 16-20, 2023 | Durham, NC",
             "page_description": "Most Favourited Mastodon Posts about DjangoCon US. Updated daily.",
             "page_image": static("og-djangoconus23.png"),
             "posts": page_obj,
@@ -90,12 +92,27 @@ def djangoconus(request, date: dt.date | None = None):
     )
 
 
+SUBSCRIBE_INPUT_CLASS = (
+    "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 "
+    "focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 "
+    "dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+)
+
+
 class SubscribeForm(forms.ModelForm):
     framework_or_lang = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = PostSubscription
         fields = ["email", "framework_or_lang"]
+        widgets = {
+            "email": forms.EmailInput(
+                attrs={
+                    "class": SUBSCRIBE_INPUT_CLASS,
+                    "placeholder": "you@example.com",
+                }
+            ),
+        }
 
 
 def subscribe(request):

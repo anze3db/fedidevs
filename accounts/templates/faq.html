@@ -1,13 +1,13 @@
-{% extends "layout.html" %}
+{% extends "v2/layout.html" %}
 {% load static %}
 {% block content %}
-    <main class="container">
-        <article>
+    <main class="flex justify-center">
+        <article class="prose dark:prose-invert max-w-3xl">
             <h2 id="report-issue">How to report an issue?</h2>
             <p>
                 Please reach out through <a href="mailto:hello@fedidevs.com">email</a>, open a <a href="https://github.com/anze3db/fedidevs/issues/new">GitHub issue</a>, or contact me on <a href="https://fosstodon.org/@Fedidevs">Mastodon</a>.
             </p>
-            <h2>Starter Packs</h2>
+            <h2 id="starter-packs">Starter Packs</h2>
             <h3>What is a starter pack?</h3>
             <p>
                 A starter pack is a collection of accounts that you can share with others. It can be used to help new users find accounts to follow, or to promote specific communities or topics.
@@ -42,42 +42,13 @@
                 <li>Feature profile and posts in discovery algorithms</li>
                 <li>Include profile page in search engines</li>
             </ol>
-            <p style="text-align:center; margin: 20px;">
+            <p>
                 <img src="{% static 'faq-checkboxes.png' %}"
-                     width="80%"
-                     height="80%"
+                     class="mx-auto w-4/5 rounded-lg"
                      alt="Screenshot of the Mastodon Profile page, Privacy and reach tab, showing which checkboxes are required to get listed" />
             </p>
-            <details>
-                <summary role="button" class="outline">
-                    Older versions of Mastodon have a different preferences page layout. See here.
-                </summary>
-                <p>
-                    Go to <kbd>Preferences</kbd> - <kbd>Public</kbd> - <kbd>Appearance</kbd> (<code>{your_instance}/settings/profile</code>) and check the Suggest account to others checkbox:
-                </p>
-                <p style="text-align:center; margin: 20px;">
-                    <a href="{% static 'faq-discoverable.png' %}">
-                        <img width="80%"
-                             height="80%"
-                             alt="Screenshot of the Mastodon Edit profile page showing the Suggest account to others checkbox"
-                             src="{% static 'faq-discoverable.png' %}"
-                             style="" />
-                    </a>
-                </p>
-                <p>
-                    Then go to <kbd>Preferences</kbd> - <kbd>Other</kbd> (<code>{your_instance}//preferences/other</code>) and <b>UNCHECK</b> the Opt-out of search engine indexing checkbox:
-                </p>
-                <p style="text-align:center; margin: 20px;">
-                    <a href="{% static 'faq-opt-out.png' %}">
-                        <img width="80%"
-                             height="80%"
-                             alt="Screenshot of the Mastodon Preferences page showing the Opt-out of search engine indexing checkbox"
-                             src="{% static 'faq-opt-out.png' %}"
-                             style="" />
-                    </a>
-                </p>
-            </details>
-            <h2>Developer listings</h2>
+            {% include "faq_legacy_mastodon_details.html" %}
+            <h2 id="developer-listings">Developer listings</h2>
             <h3>How to get listed as a developer?</h3>
             <p>There are a few prerequisites for your account to be listed on FediDevs.com</p>
             <h4>1. Your account must be discoverable and not opt-out of search engine indexing</h4>
@@ -88,97 +59,78 @@
                 <li>Feature profile and posts in discovery algorithms</li>
                 <li>Include profile page in search engines</li>
             </ol>
-            <p style="text-align:center; margin: 20px;">
+            <p>
                 <img src="{% static 'faq-checkboxes.png' %}"
-                     width="80%"
-                     height="80%"
+                     class="mx-auto w-4/5 rounded-lg"
                      alt="Screenshot of the Mastodon Profile page, Privacy and reach tab, showing which checkboxes are required to get listed" />
             </p>
-            <details>
-                <summary role="button" class="outline">
-                    Older versions of Mastodon have a different preferences page layout. See here.
-                </summary>
-                <p>
-                    Go to <kbd>Preferences</kbd> - <kbd>Public</kbd> - <kbd>Appearance</kbd> (<code>{your_instance}/settings/profile</code>) and check the Suggest account to others checkbox:
-                </p>
-                <p style="text-align:center; margin: 20px;">
-                    <a href="{% static 'faq-discoverable.png' %}">
-                        <img width="80%"
-                             height="80%"
-                             alt="Screenshot of the Mastodon Edit profile page showing the Suggest account to others checkbox"
-                             src="{% static 'faq-discoverable.png' %}"
-                             style="" />
-                    </a>
-                </p>
-                <p>
-                    Then go to <kbd>Preferences</kbd> - <kbd>Other</kbd> (<code>{your_instance}//preferences/other</code>) and <b>UNCHECK</b> the Opt-out of search engine indexing checkbox:
-                </p>
-                <p style="text-align:center; margin: 20px;">
-                    <a href="{% static 'faq-opt-out.png' %}">
-                        <img width="80%"
-                             height="80%"
-                             alt="Screenshot of the Mastodon Preferences page showing the Opt-out of search engine indexing checkbox"
-                             src="{% static 'faq-opt-out.png' %}"
-                             style="" />
-                    </a>
-                </p>
-            </details>
+            {% include "faq_legacy_mastodon_details.html" %}
             <h4>2. Your display name, bio, or profile metadata has to have at least one of the filter keywords</h4>
             <p>
                 The keywords are case-insensitive and can be anywhere in your display name, bio, or profile metadata. You can also use custom emojis like <code>:python:</code>. The table below shows more information about all the filters:
-                <table>
-                    <tr>
-                        <th>Filter</th>
-                        <th>Recommended keyword</th>
-                        <th>Regex used by the filter</th>
-                    </tr>
-                    {% for language in languages %}
-                        <tr>
-                            <td>
-                                <img src="{% static language.image %}"
-                                     alt="{{ language.code }}"
-                                     class="emojione"
-                                     height="16"
-                                     width="16" />
-                                {{ language.name }}
-                            </td>
-                            <td>
-                                <code>{{ language.code }}</code>
-                            </td>
-                            <td>
-                                <code>{{ language.regex }}</code>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    {% for framework in frameworks %}
-                        <tr>
-                            <td>
-                                <img src="{% static framework.image %}"
-                                     alt="{{ framework.code }}"
-                                     class="emojione"
-                                     height="16"
-                                     width="16" />
-                                {{ framework.name }}
-                            </td>
-                            <td>
-                                <code>{{ framework.code }}</code>
-                            </td>
-                            <td>
-                                <code>{{ framework.regex }}</code>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
             </p>
+            <div class="not-prose my-6 overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                <table class="w-full text-left text-sm text-gray-700 dark:text-gray-200">
+                    <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                        <tr>
+                            <th class="px-4 py-3">Filter</th>
+                            <th class="px-4 py-3">Recommended keyword</th>
+                            <th class="px-4 py-3">Regex used by the filter</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                        {% for language in languages %}
+                            <tr>
+                                <td class="px-4 py-2">
+                                    <img src="{% static language.image %}"
+                                         alt="{{ language.code }}"
+                                         class="emojione"
+                                         height="16"
+                                         width="16" />
+                                    {{ language.name }}
+                                </td>
+                                <td class="px-4 py-2">
+                                    <code class="rounded bg-gray-100 px-1 py-0.5 text-xs dark:bg-gray-900">{{ language.code }}</code>
+                                </td>
+                                <td class="px-4 py-2">
+                                    <code class="rounded bg-gray-100 px-1 py-0.5 text-xs dark:bg-gray-900">{{ language.regex }}</code>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        {% for framework in frameworks %}
+                            <tr>
+                                <td class="px-4 py-2">
+                                    <img src="{% static framework.image %}"
+                                         alt="{{ framework.code }}"
+                                         class="emojione"
+                                         height="16"
+                                         width="16" />
+                                    {{ framework.name }}
+                                </td>
+                                <td class="px-4 py-2">
+                                    <code class="rounded bg-gray-100 px-1 py-0.5 text-xs dark:bg-gray-900">{{ framework.code }}</code>
+                                </td>
+                                <td class="px-4 py-2">
+                                    <code class="rounded bg-gray-100 px-1 py-0.5 text-xs dark:bg-gray-900">{{ framework.regex }}</code>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             <h4>3. Have at least one post/toot in the last 230 days</h4>
             <p>Accounts with no recent posts are not indexed.</p>
             <h4>4. Your instance must be indexed</h4>
-            <details>
-                <summary role="button" class="outline">List of instance currently indexed byu FediDevs</summary>
-                <ul>
+            <details class="group not-prose my-4 rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-2 p-4 text-sm font-medium text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-700 [&::-webkit-details-marker]:hidden">
+                    <span>List of instances currently indexed by FediDevs</span>
+                    <span class="transition group-open:rotate-180 [&>svg]:h-5 [&>svg]:w-5">{% heroicon_outline 'chevron-down' %}</span>
+                </summary>
+                <ul class="max-h-80 columns-1 gap-4 overflow-y-auto border-t border-gray-200 p-4 text-sm sm:columns-2 dark:border-gray-700">
                     {% for instance in instances %}
-                        <li>
-                            <a href="https://{{ instance.instance }}/">{{ instance.instance }}</a>
+                        <li class="break-inside-avoid py-0.5">
+                            <a class="text-primary-700 hover:underline dark:text-primary-300"
+                               href="https://{{ instance.instance }}/">{{ instance.instance }}</a>
                         </li>
                     {% endfor %}
                 </ul>
@@ -219,3 +171,24 @@
         </article>
     </main>
 {% endblock content %}
+{% block sidebar %}
+    <h1 class="hidden md:block mb-4 text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-orange-400">
+        FAQ
+    </h1>
+    <p class="mb-6 prose dark:prose-invert">Frequently asked questions about starter packs and developer listings.</p>
+    <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">On this page</h2>
+    <ul class="mb-8 space-y-2 text-sm">
+        <li>
+            <a href="#report-issue" class="hover:underline">How to report an issue</a>
+        </li>
+        <li>
+            <a href="#starter-packs" class="hover:underline">Starter Packs</a>
+        </li>
+        <li>
+            <a href="#developer-listings" class="hover:underline">Developer listings</a>
+        </li>
+        <li>
+            <a href="#other-software" class="hover:underline">Other Fediverse software</a>
+        </li>
+    </ul>
+{% endblock sidebar %}
