@@ -15,8 +15,14 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # --- PostgreSQL (required: app uses full-text search / to_tsvector) --------
 if ! command -v pg_ctlcluster >/dev/null 2>&1; then
-  sudo apt-get update -qq
-  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql postgresql-contrib
+  sudo apt-get update
+  # No-Cache avoids stale caching proxies returning 400 for old .deb URLs;
+  # Retries smooths over transient fetch errors in the build network.
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    --no-install-recommends --fix-missing \
+    -o Acquire::Retries=5 \
+    -o Acquire::http::No-Cache=true \
+    postgresql postgresql-contrib
 fi
 
 PG_VER="$(ls /etc/postgresql | sort -n | tail -1)"
