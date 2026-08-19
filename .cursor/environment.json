@@ -5,16 +5,13 @@
   "terminals": [
     {
       "name": "web",
-      "command": "export PATH=\"$HOME/.local/bin:$PATH\"; uv run python manage.py runserver 0.0.0.0:8000",
-      "description": "Django development server on http://localhost:8000"
+      "command": "export PATH=\"$HOME/.local/bin:$PATH\"; uv run python manage.py runserver 0.0.0.0:$(cat .dev_port 2>/dev/null || echo 8000)",
+      "description": "Django dev server on the per-environment random port recorded in .dev_port (forward localhost:<port> -> container:<port>)"
     },
     {
       "name": "tailwind",
       "command": "export PATH=\"$HOME/.local/bin:$PATH\"; uv run python manage.py tailwind start",
       "description": "Tailwind CSS watcher that rebuilds theme styles on change"
     }
-  ],
-  "ports": [
-    { "name": "web", "port": 8000 }
   ]
 }

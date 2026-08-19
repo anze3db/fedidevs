@@ -1,4 +1,5 @@
 .env
+.dev_port
 .venv
 db.*
 django.mo
