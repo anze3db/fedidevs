@@ -148,9 +148,10 @@ class DateConverter:
     regex = r"\d{4}-\d{1,2}-\d{1,2}"
 
     def to_python(self, value: str):
-        if dt := dateparse.parse_datetime(value):
-            return timezone.make_aware(dt)
-        return None
+        parsed = dateparse.parse_date(value)
+        if parsed is None:
+            raise ValueError(value)
+        return parsed
 
     def to_url(self, value):
         return value.strftime("%Y-%m-%d")
@@ -256,11 +257,17 @@ urlpatterns = [
     ),
     path("stats/", stats_views.stats, name="stats"),
     path(
-        "posts/<date:date>/djangoconus23/",
-        post_views.djangoconus,
+        "posts/djangoconus23/",
+        confs_views.legacy_conference_redirect,
+        {"conference_slug": "djangoconus23"},
         name="djangoconus",
     ),
-    path("posts/djangoconus23/", post_views.djangoconus, name="djangoconus"),
+    path(
+        "posts/<date:date>/djangoconus23/",
+        confs_views.legacy_conference_redirect,
+        {"conference_slug": "djangoconus23"},
+        name="djangoconus",
+    ),
     path("s/<str:starter_pack_slug>/", starter_packs_views.share_starter_pack, name="share_starter_pack"),
     path("starter-packs/create/", starter_packs_views.create_starter_pack, name="create_starter_pack"),
     path(
@@ -337,22 +344,30 @@ urlpatterns = [
         name="publish_starter_pack",
     ),
     path("starter-packs/", starter_packs_views.starter_packs, name="starter_packs"),
-    path("fwd50/", confs_views.fwd50, name="fwd50"),
+    path("fwd50/", confs_views.conference, {"conference_slug": "fwd50"}, name="fwd50"),
     path(
         "fwd50/<date:date>/",
-        confs_views.fwd50,
+        confs_views.legacy_conference_redirect,
+        {"conference_slug": "fwd50"},
         name="fwd50",
     ),
-    path("djangoconafrica/", confs_views.djangoconafrica, name="djangoconafrica"),
     path(
-        "djangoconafrica/<date:date>/",
-        confs_views.djangoconafrica,
+        "djangoconafrica/",
+        confs_views.conference,
+        {"conference_slug": "djangoconafrica"},
         name="djangoconafrica",
     ),
-    path("dotnetconf/", confs_views.dotnetconf, name="dotnetconf"),
+    path(
+        "djangoconafrica/<date:date>/",
+        confs_views.legacy_conference_redirect,
+        {"conference_slug": "djangoconafrica"},
+        name="djangoconafrica",
+    ),
+    path("dotnetconf/", confs_views.conference, {"conference_slug": "dotnetconf"}, name="dotnetconf"),
     path(
         "dotnetconf/<date:date>/",
-        confs_views.dotnetconf,
+        confs_views.legacy_conference_redirect,
+        {"conference_slug": "dotnetconf"},
         name="dotnetconf",
     ),
     path("<slug:conference_slug>/", confs_views.conference, name="conference"),
