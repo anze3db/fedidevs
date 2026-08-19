@@ -2,7 +2,7 @@ import datetime as dt
 import json
 
 from django.db import migrations
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
 
@@ -187,25 +187,50 @@ def legacy_post_to_dict(post, account):
     return data
 
 
+ACCOUNT_LOOKUP_FIELDS = ("id", "url", "account_id", "instance")
+
+
 def _index_accounts(by_url, by_pair, accounts):
     for account in accounts:
         by_url[account.url] = account
         by_pair[(account.account_id, account.instance)] = account
 
 
+def _filter_by_pairs(queryset, field_a, field_b, pairs):
+    """Match composite unique keys without two independent IN lists (cartesian extra rows)."""
+    pairs = list(pairs)
+    if not pairs:
+        return queryset.none()
+    query = Q()
+    for left, right in pairs:
+        query |= Q(**{field_a: left, field_b: right})
+    return queryset.filter(query)
+
+
+def _pk_batches(model, batch_size=IN_CHUNK_SIZE):
+    """Load rows in pk windows so writes don't run under a server-side cursor."""
+    last_pk = 0
+    while True:
+        rows = list(model.objects.filter(pk__gt=last_pk).order_by("pk")[:batch_size])
+        if not rows:
+            break
+        yield rows
+        last_pk = rows[-1].pk
+
+
 def _resolve_accounts(account_model, account_dicts):
     by_url = {}
     by_pair = {}
-    urls = [d["url"] for d in account_dicts if d.get("url")]
+    lookup = account_model.objects.only(*ACCOUNT_LOOKUP_FIELDS)
+    urls = list(dict.fromkeys(d["url"] for d in account_dicts if d.get("url")))
     for chunk in _chunks(urls):
-        _index_accounts(by_url, by_pair, account_model.objects.filter(url__in=chunk))
+        _index_accounts(by_url, by_pair, lookup.filter(url__in=chunk))
 
     remaining = [d for d in account_dicts if d.get("url") not in by_url]
     if remaining:
-        for chunk in _chunks(remaining):
-            account_ids = {d["account_id"] for d in chunk}
-            instances = {d["instance"] for d in chunk}
-            for account in account_model.objects.filter(account_id__in=account_ids, instance__in=instances):
+        pairs = list(dict.fromkeys((d["account_id"], d["instance"]) for d in remaining))
+        for chunk in _chunks(pairs):
+            for account in _filter_by_pairs(lookup, "account_id", "instance", chunk):
                 by_pair.setdefault((account.account_id, account.instance), account)
                 by_url.setdefault(account.url, account)
 
@@ -223,15 +248,12 @@ def _resolve_accounts(account_model, account_dicts):
         to_create.append(account_model(**data))
     if to_create:
         account_model.objects.bulk_create(to_create, ignore_conflicts=True, batch_size=IN_CHUNK_SIZE)
-        created_urls = [account.url for account in to_create if account.url]
+        created_urls = list(dict.fromkeys(account.url for account in to_create if account.url))
         for chunk in _chunks(created_urls):
-            _index_accounts(by_url, by_pair, account_model.objects.filter(url__in=chunk))
-        # Conflicts on (account_id, instance) with a different URL wouldn't be
-        # found by the URL refetch; pick them up by the unique pair instead.
-        for chunk in _chunks(to_create):
-            account_ids = {account.account_id for account in chunk}
-            instances = {account.instance for account in chunk}
-            for account in account_model.objects.filter(account_id__in=account_ids, instance__in=instances):
+            _index_accounts(by_url, by_pair, lookup.filter(url__in=chunk))
+        created_pairs = [(account.account_id, account.instance) for account in to_create]
+        for chunk in _chunks(created_pairs):
+            for account in _filter_by_pairs(lookup, "account_id", "instance", chunk):
                 by_pair.setdefault((account.account_id, account.instance), account)
                 by_url.setdefault(account.url, account)
 
@@ -241,56 +263,38 @@ def _resolve_accounts(account_model, account_dicts):
     return resolve
 
 
-def _index_posts(by_url, by_pair, posts):
-    for post in posts:
-        by_url[post.url] = post
-        by_pair[(post.post_id, post.account_id)] = post
-
-
 def _resolve_posts(post_model, post_dicts):
-    by_url = {}
-    by_pair = {}
-    urls = [d["url"] for d in post_dicts if d.get("url")]
-    for chunk in _chunks(urls):
-        _index_posts(by_url, by_pair, post_model.objects.filter(url__in=chunk).select_related("account"))
-
-    remaining = [d for d in post_dicts if d.get("url") not in by_url]
-    if remaining:
-        for chunk in _chunks(remaining):
-            post_ids = {d["post_id"] for d in chunk}
-            account_ids = {d["account"].pk for d in chunk}
-            for post in post_model.objects.filter(post_id__in=post_ids, account_id__in=account_ids):
-                by_pair.setdefault((post.post_id, post.account_id), post)
-                by_url.setdefault(post.url, post)
-
+    # Match on the unique (post_id, account) index only. posts_post.url is not
+    # indexed, so url__in + select_related(account) seq-scans the whole posts
+    # table and joins accounts for every batch.
     to_create = []
     seen_pairs = set()
-    seen_urls = set()
-    for data in remaining:
+    for data in post_dicts:
         pair = (data["post_id"], data["account"].pk)
-        url = data.get("url")
-        if url in by_url or pair in by_pair or pair in seen_pairs or url in seen_urls:
+        if pair in seen_pairs:
             continue
         seen_pairs.add(pair)
-        if url:
-            seen_urls.add(url)
         to_create.append(post_model(**data))
     if to_create:
         post_model.objects.bulk_create(to_create, ignore_conflicts=True, batch_size=IN_CHUNK_SIZE)
-        created_urls = [post.url for post in to_create if post.url]
-        for chunk in _chunks(created_urls):
-            _index_posts(by_url, by_pair, post_model.objects.filter(url__in=chunk).select_related("account"))
-        for chunk in _chunks(to_create):
-            post_ids = {post.post_id for post in chunk}
-            account_ids = {post.account_id for post in chunk}
-            for post in post_model.objects.filter(post_id__in=post_ids, account_id__in=account_ids).select_related(
-                "account"
-            ):
-                by_pair.setdefault((post.post_id, post.account_id), post)
-                by_url.setdefault(post.url, post)
+
+    by_pair = {}
+    for chunk in _chunks(list(seen_pairs)):
+        for post in _filter_by_pairs(post_model.objects, "post_id", "account_id", chunk).defer(
+            "content",
+            "media_attachments",
+            "mentions",
+            "tags",
+            "emojis",
+            "card",
+            "poll",
+            "application",
+            "reblog",
+        ):
+            by_pair[(post.post_id, post.account_id)] = post
 
     def resolve(data):
-        return by_url.get(data.get("url")) or by_pair.get((data["post_id"], data["account"].pk))
+        return by_pair.get((data["post_id"], data["account"].pk))
 
     return resolve
 
@@ -302,39 +306,50 @@ def _link_conference_posts(conference, posts, conference_post_model):
         [
             conference_post_model(
                 conference=conference,
-                post=post,
+                post_id=post.pk,
                 created_at=post.created_at,
                 favourites_count=post.favourites_count,
                 reblogs_count=post.reblogs_count,
                 replies_count=post.replies_count,
                 visibility=post.visibility,
-                account=post.account,
+                account_id=post.account_id,
             )
             for post in posts
         ],
         ignore_conflicts=True,
-        batch_size=500,
+        batch_size=IN_CHUNK_SIZE,
     )
 
 
 def _refresh_account_counts(conference, conference_post_model, conference_account_model):
-    counts = (
+    counts = list(
         conference_post_model.objects.filter(conference=conference, account_id__isnull=False)
         .values("account_id")
         .annotate(c=Count("id"))
     )
-    conference_account_model.objects.bulk_create(
-        [
-            conference_account_model(conference=conference, account_id=row["account_id"], count=row["c"])
-            for row in counts
-        ],
-        ignore_conflicts=True,
-        batch_size=500,
-    )
-    for row in counts:
-        conference_account_model.objects.filter(conference=conference, account_id=row["account_id"]).update(
-            count=row["c"]
+    if not counts:
+        return
+    existing = {
+        row.account_id: row
+        for row in conference_account_model.objects.filter(
+            conference=conference, account_id__in=[row["account_id"] for row in counts]
         )
+    }
+    to_create = []
+    to_update = []
+    for row in counts:
+        current = existing.get(row["account_id"])
+        if current is None:
+            to_create.append(
+                conference_account_model(conference=conference, account_id=row["account_id"], count=row["c"])
+            )
+        elif current.count != row["c"]:
+            current.count = row["c"]
+            to_update.append(current)
+    if to_create:
+        conference_account_model.objects.bulk_create(to_create, batch_size=IN_CHUNK_SIZE)
+    if to_update:
+        conference_account_model.objects.bulk_update(to_update, ["count"], batch_size=IN_CHUNK_SIZE)
 
 
 def _attach_lookups_and_tags(apps, conference, languages, tag_slugs):
@@ -389,18 +404,15 @@ def migrate_legacy_pair(apps, conference, account_model, post_model):
         if account is not None:
             old_pk_to_account[old.pk] = account
 
-    post_dicts = []
-    for old_post in post_model.objects.iterator(chunk_size=1000):
-        account = old_pk_to_account.get(old_post.account_id)
-        if account is None:
+    for batch in _pk_batches(post_model):
+        post_dicts = []
+        for old_post in batch:
+            account = old_pk_to_account.get(old_post.account_id)
+            if account is None:
+                continue
+            post_dicts.append(legacy_post_to_dict(old_post, account))
+        if not post_dicts:
             continue
-        post_dicts.append(legacy_post_to_dict(old_post, account))
-        if len(post_dicts) >= 500:
-            resolve_post = _resolve_posts(post_model_cls, post_dicts)
-            posts = [post for data in post_dicts if (post := resolve_post(data)) is not None]
-            _link_conference_posts(conference, posts, conference_post_model)
-            post_dicts = []
-    if post_dicts:
         resolve_post = _resolve_posts(post_model_cls, post_dicts)
         posts = [post for data in post_dicts if (post := resolve_post(data)) is not None]
         _link_conference_posts(conference, posts, conference_post_model)
@@ -414,25 +426,20 @@ def migrate_djangoconus_posts(apps, conference):
     conference_account_model = apps.get_model("confs", "ConferenceAccount")
     djangoconus_post_model = apps.get_model("posts", "DjangoConUS23Post")
 
-    batch_accounts = []
-    batch_posts = []
-    for old_post in djangoconus_post_model.objects.iterator(chunk_size=1000):
-        account_data = account_kwargs_from_json(old_post.account, old_post.instance)
-        if account_data is None:
-            continue
-        post_data = legacy_post_to_dict(old_post, account=None)
-        batch_accounts.append(account_data)
-        batch_posts.append((post_data, account_data))
-        if len(batch_posts) >= 500:
+    for batch in _pk_batches(djangoconus_post_model):
+        batch_accounts = []
+        batch_posts = []
+        for old_post in batch:
+            account_data = account_kwargs_from_json(old_post.account, old_post.instance)
+            if account_data is None:
+                continue
+            post_data = legacy_post_to_dict(old_post, account=None)
+            batch_accounts.append(account_data)
+            batch_posts.append((post_data, account_data))
+        if batch_posts:
             _flush_djangoconus_batch(
                 account_model_cls, post_model_cls, conference_post_model, conference, batch_accounts, batch_posts
             )
-            batch_accounts = []
-            batch_posts = []
-    if batch_posts:
-        _flush_djangoconus_batch(
-            account_model_cls, post_model_cls, conference_post_model, conference, batch_accounts, batch_posts
-        )
     _refresh_account_counts(conference, conference_post_model, conference_account_model)
 
 
