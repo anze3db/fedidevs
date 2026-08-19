@@ -65,7 +65,7 @@
         <a href="https://2023.djangocon.africa">DjangoCon Africa</a> took place on November 6 - 11, 2023 in Zanzibar, Tanzania. See the <a href="https://2023.djangocon.africa/schedules/">Schedule</a>.
     </p>
     <p class="mt-4 mb-4 prose dark:prose-invert">
-        There have been <strong>{{ stats.total_posts }} posts</strong>, <strong>{{ stats.total_favourites }} favourites</strong>, and <strong>{{ stats.total_reblogs }} boosts</strong> with the hashtag <a href="https://mastodon.social/tags/djangoconafrica">#djangoconafrica</a> on Mastodon.
+        There have been <strong>{{ stats.total_posts }} posts</strong>, <strong>{{ stats.total_favourites|default:0 }} favourites</strong>, and <strong>{{ stats.total_reblogs|default:0 }} boosts</strong> with the hashtag <a href="https://mastodon.social/tags/djangoconafrica">#djangoconafrica</a> on Mastodon.
     </p>
     {% if users_with_most_posts %}
         <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">Filter by most active accounts</h2>

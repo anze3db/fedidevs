@@ -41,7 +41,7 @@
         <a href="https://2023.djangocon.us">2023 DjangoCon US 🐂</a> took place on October 16-20, 2023 in Durham Convention Center in Durham, NC. See the <a href="https://2023.djangocon.us/schedule/">Schedule</a>.
     </p>
     <p class="mt-4 mb-4 prose dark:prose-invert">
-        There have been <strong>{{ total_posts }} posts</strong> and <strong>{{ total_favourites }} favourites</strong> with the hashtags <a href="https://fosstodon.org/tags/DjangoCon">#djangocon</a> or <a href="https://fosstodon.org/tags/DjangoConUS">#djangoconus</a> on Mastodon during the conference.
+        There have been <strong>{{ total_posts }} posts</strong> and <strong>{{ total_favourites|default:0 }} favourites</strong> with the hashtags <a href="https://fosstodon.org/tags/DjangoCon">#djangocon</a> or <a href="https://fosstodon.org/tags/DjangoConUS">#djangoconus</a> on Mastodon during the conference.
     </p>
     {% if dates %}
         <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">Filter by conference day</h2>

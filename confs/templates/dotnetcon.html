@@ -54,7 +54,7 @@
         {{ page_header }}
     </h1>
     <p class="prose dark:prose-invert">
-        There have been <strong>{{ stats.total_posts }} posts</strong>, <strong>{{ stats.total_favourites }} favourites</strong>, and <strong>{{ stats.total_reblogs }} boosts</strong> with the hashtag <a href="https://mastodon.social/tags/dotnetconf">#dotnetconf</a> on Mastodon.
+        There have been <strong>{{ stats.total_posts }} posts</strong>, <strong>{{ stats.total_favourites|default:0 }} favourites</strong>, and <strong>{{ stats.total_reblogs|default:0 }} boosts</strong> with the hashtag <a href="https://mastodon.social/tags/dotnetconf">#dotnetconf</a> on Mastodon.
     </p>
     {% if users_with_most_posts %}
         <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">Filter by most active accounts</h2>

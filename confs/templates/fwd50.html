@@ -57,7 +57,7 @@
         <a href="https://www.fwd50.com">FWD50</a> took place on November 6-8, 2023 in Ottawa's Lansdowne Park. See the <a href="https://www.fwd50.com/agenda?t=false">Agenda</a>.
     </p>
     <p class="mt-4 mb-4 prose dark:prose-invert">
-        There have been <strong>{{ total_posts }} posts</strong> and <strong>{{ total_favourites }} favourites</strong> with the hashtag <a href="https://mastodon.social/tags/fwd50">#fwd50</a> on Mastodon.
+        There have been <strong>{{ total_posts }} posts</strong> and <strong>{{ total_favourites|default:0 }} favourites</strong> with the hashtag <a href="https://mastodon.social/tags/fwd50">#fwd50</a> on Mastodon.
     </p>
     {% if users_with_most_posts %}
         <h2 class="flex items-center gap-2 pb-2 mb-4 font-semibold align-middle border-b">Filter by most active accounts</h2>
