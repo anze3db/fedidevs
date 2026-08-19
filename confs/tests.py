@@ -3,6 +3,7 @@
 # Create your tests hereo
 
 import datetime as dt
+import importlib
 import tempfile
 import warnings
 from pathlib import Path
@@ -12,6 +13,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import caches
 from django.core.management import call_command
+from django.db import connection
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -43,13 +45,29 @@ class TestConferencesPage(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestConfPostFiltersDoNotWarnNaiveDatetime(TestCase):
-    """The fwd50/djangoconafrica/dotnetconf pages filter *Post.created_at
-    (DateTimeField) by date. Passing a bare date used to coerce to a naive
-    datetime and warn under active time zone support; the views now use the
-    __date lookup instead."""
+@override_settings(CACHES=settings.TEST_CACHES)
+class TestMigratedLegacyConferences(TestCase):
+    """Old hardcoded conference pages now live as Conference rows."""
 
-    def _assert_no_naive_warning(self, url):
+    def test_legacy_conferences_were_seeded(self):
+        slugs = ["fwd50", "djangoconafrica", "dotnetconf", "djangoconus23"]
+        conferences = {c.slug: c for c in Conference.objects.filter(slug__in=slugs)}
+        self.assertEqual(set(conferences), set(slugs))
+        self.assertTrue(conferences["fwd50"].is_approved)
+        self.assertEqual(conferences["djangoconus23"].days, "Talks, Talks, Talks, Sprints, Sprints")
+        self.assertIn("#djangocon", conferences["djangoconus23"].tags)
+
+    def test_legacy_tables_were_dropped(self):
+        tables = set(connection.introspection.table_names())
+        self.assertNotIn("confs_fwd50account", tables)
+        self.assertNotIn("confs_fwd50post", tables)
+        self.assertNotIn("confs_djangoconafricaaccount", tables)
+        self.assertNotIn("confs_djangoconafricapost", tables)
+        self.assertNotIn("confs_dotnetconfaccount", tables)
+        self.assertNotIn("confs_dotnetconfpost", tables)
+        self.assertNotIn("posts_djangoconus23post", tables)
+
+    def _assert_no_naive_warning(self, url, expected_status=200):
         with warnings.catch_warnings():
             warnings.filterwarnings(
                 "error",
@@ -57,32 +75,96 @@ class TestConfPostFiltersDoNotWarnNaiveDatetime(TestCase):
                 category=RuntimeWarning,
             )
             response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, expected_status)
         return response
 
-    def test_fwd50(self):
+    def test_fwd50_page(self):
         response = self._assert_no_naive_warning(reverse("fwd50"))
         self.assertNotContains(response, "pico.min.css")
         self.assertContains(response, "min-h-screen")
+        self.assertContains(response, "FWD50")
 
-    def test_fwd50_with_date(self):
-        self._assert_no_naive_warning(reverse("fwd50", args=[dt.date(2023, 11, 6)]))
+    def test_fwd50_date_redirects(self):
+        response = self._assert_no_naive_warning(reverse("fwd50", args=[dt.date(2023, 11, 6)]), expected_status=301)
+        self.assertRedirects(
+            response,
+            reverse("conference", kwargs={"conference_slug": "fwd50"}) + "?date=2023-11-06",
+            status_code=301,
+            fetch_redirect_response=False,
+        )
 
-    def test_djangoconafrica(self):
+    def test_djangoconafrica_page(self):
         response = self._assert_no_naive_warning(reverse("djangoconafrica"))
-        self.assertNotContains(response, "pico.min.css")
-        self.assertContains(response, "min-h-screen")
+        self.assertContains(response, "DjangoCon Africa")
 
-    def test_djangoconafrica_with_date(self):
-        self._assert_no_naive_warning(reverse("djangoconafrica", args=[dt.date(2023, 11, 7)]))
+    def test_djangoconafrica_date_redirects(self):
+        response = self.client.get(reverse("djangoconafrica", args=[dt.date(2023, 11, 7)]))
+        self.assertEqual(response.status_code, 301)
 
-    def test_dotnetconf(self):
+    def test_dotnetconf_page(self):
         response = self._assert_no_naive_warning(reverse("dotnetconf"))
-        self.assertNotContains(response, "pico.min.css")
-        self.assertContains(response, "min-h-screen")
+        self.assertContains(response, ".NET Conf 2023")
 
-    def test_dotnetconf_with_date(self):
-        self._assert_no_naive_warning(reverse("dotnetconf", args=[dt.date(2023, 11, 14)]))
+    def test_djangoconus_old_url_redirects(self):
+        response = self.client.get(reverse("djangoconus"))
+        self.assertRedirects(
+            response,
+            reverse("conference", kwargs={"conference_slug": "djangoconus23"}),
+            status_code=301,
+            fetch_redirect_response=False,
+        )
+
+    def test_djangoconus_date_redirects(self):
+        response = self.client.get(reverse("djangoconus", args=[dt.date(2023, 10, 16)]))
+        self.assertRedirects(
+            response,
+            reverse("conference", kwargs={"conference_slug": "djangoconus23"}) + "?date=2023-10-16",
+            status_code=301,
+            fetch_redirect_response=False,
+        )
+
+    def test_migrated_conference_shows_linked_posts(self):
+        conference = Conference.objects.get(slug="fwd50")
+        post_content = "Hello from a migrated FWD50 post"
+        post = baker.make(Post, content=post_content, visibility="public")
+        ConferencePost.objects.create(
+            conference=conference,
+            post=post,
+            created_at="2023-11-06T12:00:00Z",
+            visibility="public",
+            account=post.account,
+        )
+        response = self.client.get(reverse("fwd50"))
+        self.assertContains(response, post_content)
+
+    def test_account_kwargs_from_json(self):
+        migration = importlib.import_module("confs.migrations.0033_remove_legacy_conference_tables")
+        kwargs = migration.account_kwargs_from_json(
+            {
+                "id": "42",
+                "username": "djangocon",
+                "acct": "djangocon@fosstodon.org",
+                "display_name": "DjangoCon",
+                "url": "https://fosstodon.org/@djangocon",
+                "locked": False,
+                "bot": False,
+                "discoverable": True,
+                "created_at": "2023-01-01T00:00:00Z",
+                "followers_count": 10,
+                "following_count": 2,
+                "statuses_count": 5,
+                "note": "hello",
+                "avatar": "https://example.com/a.png",
+                "header": "https://example.com/h.png",
+                "emojis": [],
+                "fields": [],
+            }
+        )
+        self.assertIsNotNone(kwargs)
+        self.assertEqual(kwargs["account_id"], "42")
+        self.assertEqual(kwargs["instance"], "fosstodon.org")
+        self.assertEqual(kwargs["username_at_instance"], "@djangocon@fosstodon.org")
+        self.assertIsNone(migration.account_kwargs_from_json("not-a-dict"))
 
 
 @override_settings(CACHES=settings.TEST_CACHES)
