@@ -392,9 +392,15 @@ class TestResolveLegacyAccountsAndPosts(TestCase):
 
 
 class TestLegacyConferenceDataMigration(TransactionTestCase):
-    """Re-run 0033 against mixed legacy + existing Account/Post/Conference rows."""
+    """Re-run 0033 against mixed legacy + existing Account/Post/Conference rows.
 
-    serialized_rollback = True
+    TransactionTestCase is required because the migration executor runs DDL.
+    Do not set serialized_rollback: restoring the session snapshot after another
+    transactional test has already flushed (and post_migrate has recreated
+    content types) raises a unique-constraint error on django_content_type.
+    pytest-django runs all TestCase tests first, so tests that need the four
+    seeded conferences are not affected by this flush.
+    """
 
     def _leaf_targets(self):
         executor = MigrationExecutor(connection)
