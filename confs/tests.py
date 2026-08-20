@@ -442,6 +442,43 @@ class TestLegacyConferenceDataMigration(TransactionTestCase):
         finally:
             self._migrate(latest)
 
+    def test_drops_legacy_tables_when_uniques_are_mysql_style_indexes(self):
+        """Production unique_together values are unique indexes (idx_NNNN_...), not constraints."""
+        latest = self._leaf_targets()
+        from_targets = self._targets_with({"confs": LEGACY_FROM_CONFS, "posts": LEGACY_FROM_POSTS})
+        try:
+            self._migrate(from_targets)
+            self._replace_unique_constraints_with_mysql_style_indexes()
+            self._migrate(latest)
+            tables = set(connection.introspection.table_names())
+            self.assertNotIn("confs_djangoconafricaaccount", tables)
+            self.assertNotIn("confs_fwd50account", tables)
+            self.assertNotIn("confs_dotnetconfaccount", tables)
+        finally:
+            self._migrate(latest)
+
+    def _replace_unique_constraints_with_mysql_style_indexes(self):
+        quote = connection.ops.quote_name
+        tables = (
+            "confs_djangoconafricaaccount",
+            "confs_djangoconafricapost",
+            "confs_dotnetconfaccount",
+            "confs_dotnetconfpost",
+            "confs_fwd50account",
+            "confs_fwd50post",
+        )
+        with connection.cursor() as cursor:
+            for table in tables:
+                constraints = connection.introspection.get_constraints(cursor, table)
+                for name, info in constraints.items():
+                    if not info["unique"] or info["primary_key"]:
+                        continue
+                    cursor.execute(f"ALTER TABLE {quote(table)} DROP CONSTRAINT IF EXISTS {quote(name)}")
+                    cursor.execute(f"DROP INDEX IF EXISTS {quote(name)}")
+                    index_name = f"idx_52778_{name}"[:63]
+                    columns = ", ".join(quote(column) for column in info["columns"])
+                    cursor.execute(f"CREATE UNIQUE INDEX {quote(index_name)} ON {quote(table)} ({columns})")
+
     def _seed_overlapping_legacy_data(self):
         state_apps = (
             MigrationExecutor(connection)
