@@ -10,6 +10,9 @@ def robots_txt(_request):
     return HttpResponse(
         dedent(
             """\
+            User-agent: Googlebot
+            Allow: /
+
             User-agent: *
             Disallow: /*?
             Disallow: /csrf

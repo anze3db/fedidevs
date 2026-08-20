@@ -18,9 +18,6 @@
         {% elif request.GET %}
             <link rel="canonical" href="https://fedidevs.com{{ request.path }}" />
         {% endif %}
-        {% block robots %}
-            {% if request.GET %}<meta name="robots" content="noindex">{% endif %}
-        {% endblock robots %}
         <!-- PWA -->
         <meta name="apple-mobile-web-app-status-bar-style"
               content="black-translucent" />

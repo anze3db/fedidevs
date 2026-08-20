@@ -9,12 +9,15 @@ def _vary_tokens(response) -> set[str]:
 
 
 class TestRobotsTxt(SimpleTestCase):
-    def test_disallows_query_strings(self):
+    def test_disallows_query_strings_except_googlebot(self):
         response = self.client.get("/robots.txt")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "text/plain")
-        self.assertIn("Disallow: /*?", response.content.decode())
-        self.assertIn("Sitemap: https://fedidevs.com/sitemap.xml", response.content.decode())
+        body = response.content.decode()
+        self.assertIn("User-agent: Googlebot", body)
+        self.assertIn("Allow: /", body)
+        self.assertIn("Disallow: /*?", body)
+        self.assertIn("Sitemap: https://fedidevs.com/sitemap.xml", body)
 
 
 class TestAccountIndexQueryParams(SimpleTestCase):
@@ -97,11 +100,10 @@ class TestAnonymousCacheAndCsrf(TestCase):
         )
         self.assertNotEqual(subscribe.status_code, 403)
 
-    def test_faceted_pages_are_noindex_with_canonical(self):
+    def test_query_string_pages_are_not_noindexed(self):
         response = self.client.get("/login/?q=")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'name="robots"')
-        self.assertContains(response, "noindex")
+        self.assertNotContains(response, 'name="robots"')
         self.assertContains(response, 'rel="canonical" href="https://fedidevs.com/login/"')
 
     def test_plain_pages_are_indexable(self):
