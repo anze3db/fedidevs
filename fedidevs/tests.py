@@ -123,9 +123,5 @@ class TestAnonymousCacheAndCsrf(TestCase):
 
 class TestConnMaxAge(SimpleTestCase):
     def test_postgres_reuses_connections(self):
-        engine = settings.DATABASES["default"]["ENGINE"]
-        if "sqlite" in engine:
-            self.assertEqual(settings.DATABASES["default"]["CONN_MAX_AGE"], 0)
-            return
-        self.assertGreater(settings.DATABASES["default"]["CONN_MAX_AGE"], 0)
+        self.assertEqual(settings.DATABASES["default"]["CONN_MAX_AGE"], 300)
         self.assertTrue(settings.DATABASES["default"]["CONN_HEALTH_CHECKS"])

@@ -183,13 +183,8 @@ WSGI_APPLICATION = "fedidevs.wsgi.application"
 DATABASES = {"default": env.db_url(default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")}
 # Persistent connections: gunicorn workers are long-lived, so reusing a
 # Postgres connection for a few minutes avoids connect/teardown churn.
-# SQLite stays at 0 (the django-environ default) because it is file-locked.
-_db_engine = DATABASES["default"].get("ENGINE", "")
-DATABASES["default"]["CONN_MAX_AGE"] = env.int(
-    "CONN_MAX_AGE",
-    default=0 if "sqlite" in _db_engine else 300,
-)
-DATABASES["default"]["CONN_HEALTH_CHECKS"] = DATABASES["default"]["CONN_MAX_AGE"] > 0
+DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=300)
+DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
 
 
 # Password validation
