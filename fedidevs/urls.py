@@ -15,14 +15,12 @@ Including another URLconf
 """
 
 import datetime as dt
-from textwrap import dedent
 
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.sitemaps import Sitemap
 from django.contrib.sitemaps.views import sitemap
-from django.http import HttpResponse
 from django.urls import include, path, register_converter, reverse
 from django.utils import dateparse, timezone
 
@@ -32,20 +30,11 @@ from confs import views as confs_views
 from confs.models import FRAMEWORKS as CONF_FRAMEWORKS
 from confs.models import LANGUAGES as CONF_LANGUAGES
 from confs.models import Conference, ConferenceAccount
+from fedidevs import views as fedidevs_views
 from mastodon_auth import views as mastodon_views
 from posts import views as post_views
 from starter_packs import views as starter_packs_views
 from stats import views as stats_views
-
-
-def robots_txt(_):
-    return HttpResponse(
-        dedent("""\
-        User-agent: *
-        Disallow:
-        """),
-        content_type="text/plain",
-    )
 
 
 class StaticViewSitemap(Sitemap):
@@ -209,7 +198,8 @@ urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),
     path("__debug__/", include("debug_toolbar.urls")),
     path("__reload__/", include("django_browser_reload.urls")),
-    path("robots.txt", robots_txt),
+    path("robots.txt", fedidevs_views.robots_txt),
+    path("csrf/", fedidevs_views.csrf_token, name="csrf_token"),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
     path("", views.index, name="index"),
     path("login/", views.login, name="login"),

@@ -4,7 +4,7 @@ import datetime as dt
 from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import EmptyPage, PageNotAnInteger
 from django.db.models import Count, Exists, OuterRef, Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import redirect, render
 from django.templatetags.static import static
 from django.urls import reverse
@@ -218,6 +218,27 @@ def build_canonical_url(base, get_params, canonical_params):
     return canonical_url
 
 
+ACCOUNT_INDEX_QUERY_PARAMS = frozenset({"o", "p", "t", "f", "post", "page", "q", "selected_instance"})
+
+
+def _redirect_unknown_account_params(request):
+    """301 junk query keys off the accounts index (the ?amp=1 crawler trap)."""
+    if request.method not in {"GET", "HEAD"}:
+        return None
+    unknown = [key for key in request.GET if key not in ACCOUNT_INDEX_QUERY_PARAMS]
+    if not unknown:
+        return None
+    filtered = request.GET.copy()
+    for key in unknown:
+        del filtered[key]
+    target = request.path
+    if encoded := filtered.urlencode():
+        target = f"{request.path}?{encoded}"
+    response = HttpResponsePermanentRedirect(target)
+    response["Cache-Control"] = "public, s-maxage=300"
+    return response
+
+
 def login(request):
     if request.user.is_authenticated:
         return redirect("index")
@@ -225,6 +246,8 @@ def login(request):
 
 
 def index(request, lang: str | None = None):
+    if redirect_unknown := _redirect_unknown_account_params(request):
+        return redirect_unknown
     if not request.GET and not lang:
         return redirect("starter_packs")
     if "selected_instance" in request.GET:

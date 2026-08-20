@@ -101,6 +101,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # Outermost so anonymous cache headers/cookies are applied after CSRF/session run.
+    "fedidevs.middleware.AnonymousCacheMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
