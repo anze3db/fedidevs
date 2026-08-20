@@ -13,7 +13,14 @@
         <title>{{ page_title }}</title>
         <meta name="description"
               content="{% if page_description %}{{ page_description }}{% else %}{% trans "Discover amazing people on Mastodon." %}{% endif %}">
-        {% if canonical_url %}<link rel="canonical" href="https://fedidevs.com{{ canonical_url | safe }}" />{% endif %}
+        {% if canonical_url %}
+            <link rel="canonical" href="https://fedidevs.com{{ canonical_url | safe }}" />
+        {% elif request.GET %}
+            <link rel="canonical" href="https://fedidevs.com{{ request.path }}" />
+        {% endif %}
+        {% block robots %}
+            {% if request.GET %}<meta name="robots" content="noindex">{% endif %}
+        {% endblock robots %}
         <!-- PWA -->
         <meta name="apple-mobile-web-app-status-bar-style"
               content="black-translucent" />
@@ -61,7 +68,7 @@
         <script src="{% static "src/components.js" %}"></script>
     </head>
     <body class="min-h-screen bg-gray-100 dark:bg-gray-950 text-black dark:text-white"
-          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+          {% if request.user.is_authenticated %}hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'{% else %}data-csrf-url="{% url 'csrf_token' %}"{% endif %}>
         <div class="fixed top-20 right-4 z-50">
             {% for message in messages %}
                 <div class="flex items-center p-4 mb-4 text-sm rounded-lg {{ message.tags }}"

@@ -1,9 +1,13 @@
 {% extends "v2/layout.html" %}
 {% load account_extras %}
 {% load static %}
-{% block head %}
-    {% if posts.has_previous or is_pending %}<meta name="robots" content="none">{% endif %}
-{% endblock head %}
+{% block robots %}
+    {% if posts.has_previous or is_pending %}
+        <meta name="robots" content="none">
+    {% elif request.GET %}
+        <meta name="robots" content="noindex">
+    {% endif %}
+{% endblock robots %}
 {% block content %}
     {% if is_pending %}
         <div class="mx-auto mb-6 max-w-3xl rounded-lg border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-200">

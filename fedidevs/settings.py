@@ -101,6 +101,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # Outermost so unknown query keys 301 before any view work, and so
+    # anonymous cache headers/cookies are applied after CSRF/session run.
+    "fedidevs.middleware.CanonicalQueryParamsMiddleware",
+    "fedidevs.middleware.AnonymousCacheMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -177,6 +181,15 @@ WSGI_APPLICATION = "fedidevs.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 DATABASES = {"default": env.db_url(default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")}
+# Persistent connections: gunicorn workers are long-lived, so reusing a
+# Postgres connection for a few minutes avoids connect/teardown churn.
+# SQLite stays at 0 (the django-environ default) because it is file-locked.
+_db_engine = DATABASES["default"].get("ENGINE", "")
+DATABASES["default"]["CONN_MAX_AGE"] = env.int(
+    "CONN_MAX_AGE",
+    default=0 if "sqlite" in _db_engine else 300,
+)
+DATABASES["default"]["CONN_HEALTH_CHECKS"] = DATABASES["default"]["CONN_MAX_AGE"] > 0
 
 
 # Password validation

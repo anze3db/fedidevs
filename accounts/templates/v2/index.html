@@ -2,9 +2,13 @@
 {% load account_extras %}
 {% load static %}
 {% load humanize %}
-{% block head %}
-    {% if accounts.has_previous %}<meta name="robots" content="none">{% endif %}
-{% endblock head %}
+{% block robots %}
+    {% if accounts.has_previous %}
+        <meta name="robots" content="none">
+    {% elif request.GET %}
+        <meta name="robots" content="noindex">
+    {% endif %}
+{% endblock robots %}
 {% block content %}
     <main class="flex justify-center">
         <article>
