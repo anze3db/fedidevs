@@ -1,52 +1,18 @@
-"""Request/response middleware that cuts crawler and anonymous-page load.
-
-CanonicalQueryParamsMiddleware 301s unknown query keys so crawlers cannot
-explode the accounts index with junk like ``?amp=1``.
+"""Anonymous HTML cache headers so Cloudflare can absorb most GET traffic.
 
 AnonymousCacheMiddleware makes anonymous HTML cacheable at Cloudflare: no
 Set-Cookie, no ``Vary: Cookie``, and ``Cache-Control: public, s-maxage=300``.
 Authenticated requests, language-cookie requests, and anything that modified
 the session stay private so forms and per-user pages keep working.
+
+Junk query params on the accounts index are stripped in ``accounts.views.index``,
+not here — that is the only view where unknown keys (``?amp=1``) skip the
+starter-packs redirect and run the expensive listing.
 """
 
 from django.conf import settings
-from django.http import HttpResponsePermanentRedirect
 from django.utils.cache import patch_vary_headers
 from django.utils.deprecation import MiddlewareMixin
-
-# Accounts index facets, plus every other GET key the public site actually reads.
-# Admin/debug/static are skipped entirely so Django admin's own params are safe.
-ALLOWED_QUERY_PARAMS = frozenset(
-    {
-        # accounts index
-        "o",
-        "p",
-        "t",
-        "f",
-        "post",
-        "page",
-        "q",
-        "selected_instance",
-        # conferences
-        "date",
-        "account",
-        "order",
-        # starter packs
-        "tab",
-        "username",
-        "order_by",
-        "language",
-        "format",
-        # OAuth / MiAuth callbacks
-        "code",
-        "state",
-        "error",
-        "error_description",
-        "session",
-        # login redirect
-        "next",
-    }
-)
 
 _SKIP_PATH_PREFIXES = (
     "/admin/",
@@ -64,33 +30,6 @@ def _is_skipped_path(path: str) -> bool:
     if path in {"/csrf", "/csrf/", "/admin"}:
         return True
     return path.startswith(_SKIP_PATH_PREFIXES)
-
-
-class CanonicalQueryParamsMiddleware(MiddlewareMixin):
-    """301 to the same path with only known query keys, killing crawler junk."""
-
-    def process_request(self, request):
-        if request.method not in {"GET", "HEAD"}:
-            return None
-        if _is_skipped_path(request.path):
-            return None
-        if not request.GET:
-            return None
-
-        unknown = [key for key in request.GET if key not in ALLOWED_QUERY_PARAMS]
-        if not unknown:
-            return None
-
-        filtered = request.GET.copy()
-        for key in unknown:
-            del filtered[key]
-        target = request.path
-        encoded = filtered.urlencode()
-        if encoded:
-            target = f"{request.path}?{encoded}"
-        response = HttpResponsePermanentRedirect(target)
-        response["Cache-Control"] = f"public, s-maxage={ANONYMOUS_CACHE_TTL}"
-        return response
 
 
 class AnonymousCacheMiddleware(MiddlewareMixin):

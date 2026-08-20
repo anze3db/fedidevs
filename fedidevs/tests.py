@@ -17,7 +17,7 @@ class TestRobotsTxt(SimpleTestCase):
         self.assertIn("Sitemap: https://fedidevs.com/sitemap.xml", response.content.decode())
 
 
-class TestCanonicalQueryParams(SimpleTestCase):
+class TestAccountIndexQueryParams(SimpleTestCase):
     def test_unknown_root_param_is_301ed(self):
         response = self.client.get("/?amp=1")
         self.assertRedirects(response, "/", status_code=301, fetch_redirect_response=False)
@@ -30,29 +30,17 @@ class TestCanonicalQueryParams(SimpleTestCase):
         response = self.client.get("/?q=&amp=1")
         self.assertRedirects(response, "/?q=", status_code=301, fetch_redirect_response=False)
 
-    def test_starter_pack_and_oauth_params_are_kept(self):
-        response = self.client.get("/starter-packs/?tab=your&amp=1")
-        self.assertRedirects(
-            response,
-            "/starter-packs/?tab=your",
-            status_code=301,
-            fetch_redirect_response=False,
-        )
-        response = self.client.get("/mastodon_auth/?code=abc&state=xyz&amp=1")
-        self.assertRedirects(
-            response,
-            "/mastodon_auth/?code=abc&state=xyz",
-            status_code=301,
-            fetch_redirect_response=False,
-        )
+    def test_language_index_strips_unknown_params(self):
+        response = self.client.get("/python/?amp=1")
+        self.assertRedirects(response, "/python/", status_code=301, fetch_redirect_response=False)
 
 
 class TestAnonymousCacheAndCsrf(TestCase):
-    def test_known_params_are_not_redirected(self):
-        response = self.client.get("/login/?q=python")
+    def test_other_pages_keep_unknown_query_params(self):
+        response = self.client.get("/login/?amp=1")
         self.assertEqual(response.status_code, 200)
-
-    def test_admin_query_params_are_left_alone(self):
+        response = self.client.get("/starter-packs/?amp=1")
+        self.assertNotEqual(response.status_code, 301)
         response = self.client.get("/admin/?foo=bar")
         self.assertNotEqual(response.status_code, 301)
 

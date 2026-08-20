@@ -101,9 +101,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # Outermost so unknown query keys 301 before any view work, and so
-    # anonymous cache headers/cookies are applied after CSRF/session run.
-    "fedidevs.middleware.CanonicalQueryParamsMiddleware",
+    # Outermost so anonymous cache headers/cookies are applied after CSRF/session run.
     "fedidevs.middleware.AnonymousCacheMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.middleware.security.SecurityMiddleware",
