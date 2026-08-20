@@ -17,6 +17,7 @@ from django.core.management import call_command
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.test import TestCase, TransactionTestCase, override_settings
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 from model_bakery import baker
@@ -347,16 +348,9 @@ class TestResolveLegacyAccountsAndPosts(TestCase):
         self.assertEqual(first.pk, by_pair.pk)
         self.assertEqual(Account.objects.filter(username="shared").count(), 1)
 
-    def test_match_existing_post_by_url_then_by_pair(self):
+    def test_match_existing_post_by_post_id_and_account(self):
         account = baker.make(Account, username="carol")
-        by_url = baker.make(
-            Post,
-            account=account,
-            post_id="url-post",
-            url="https://mastodon.social/@carol/111",
-            visibility="public",
-        )
-        by_pair = baker.make(
+        existing = baker.make(
             Post,
             account=account,
             post_id="pair-post",
@@ -368,27 +362,39 @@ class TestResolveLegacyAccountsAndPosts(TestCase):
             [
                 _legacy_post_fields(
                     account,
-                    post_id="other-id",
-                    url="https://mastodon.social/@carol/111",
-                    content="url-match",
-                ),
-                _legacy_post_fields(
-                    account,
                     post_id="pair-post",
                     url="https://mastodon.social/@carol/222",
                     content="pair-match",
-                ),
+                )
             ],
         )
-        self.assertEqual(
-            resolve(_legacy_post_fields(account, post_id="other-id", url="https://mastodon.social/@carol/111")).pk,
-            by_url.pk,
+        matched = resolve(_legacy_post_fields(account, post_id="pair-post", url="https://mastodon.social/@carol/222"))
+        self.assertEqual(matched.pk, existing.pk)
+        self.assertEqual(Post.objects.filter(account=account).count(), 1)
+
+    def test_resolve_posts_does_not_scan_or_join_accounts_by_url(self):
+        account = baker.make(Account, username="carol")
+        baker.make(
+            Post,
+            account=account,
+            post_id="pair-post",
+            url="https://mastodon.social/@carol/222",
+            visibility="public",
         )
-        self.assertEqual(
-            resolve(_legacy_post_fields(account, post_id="pair-post", url="https://mastodon.social/@carol/222")).pk,
-            by_pair.pk,
-        )
-        self.assertEqual(Post.objects.filter(account=account).count(), 2)
+        with CaptureQueriesContext(connection) as ctx:
+            _legacy_migration()._resolve_posts(
+                Post,
+                [
+                    _legacy_post_fields(
+                        account,
+                        post_id="pair-post",
+                        url="https://mastodon.social/@carol/222",
+                    )
+                ],
+            )
+        sql = " ".join(query["sql"] for query in ctx.captured_queries)
+        self.assertNotIn("accounts_account", sql)
+        self.assertNotIn('"posts_post"."url" IN', sql)
 
 
 class TestLegacyConferenceDataMigration(TransactionTestCase):
@@ -541,7 +547,7 @@ class TestLegacyConferenceDataMigration(TransactionTestCase):
         fwd_post_model.objects.create(
             **_legacy_post_fields(
                 crawled_url_match,
-                post_id="crawled-url-post",
+                post_id="canonical-url-post",
                 url="https://mastodon.social/@urlmatch/111",
                 content="fwd50-url-match-post",
             )
