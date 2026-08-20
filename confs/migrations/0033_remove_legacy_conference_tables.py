@@ -564,13 +564,4 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(migrate_legacy_conferences, unmigrate_legacy_conferences),
-        # DROP TABLE CASCADE. Do not AlterUniqueTogether / RemoveConstraint first:
-        # production uniques were imported as indexes named idx_NNNN_... (MySQL),
-        # and DROP CONSTRAINT on those names raises UndefinedObject.
-        migrations.DeleteModel(name="DjangoConAfricaPost"),
-        migrations.DeleteModel(name="DotNetConfPost"),
-        migrations.DeleteModel(name="Fwd50Post"),
-        migrations.DeleteModel(name="DjangoConAfricaAccount"),
-        migrations.DeleteModel(name="DotNetConfAccount"),
-        migrations.DeleteModel(name="Fwd50Account"),
     ]
