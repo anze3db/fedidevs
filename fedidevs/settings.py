@@ -179,10 +179,6 @@ WSGI_APPLICATION = "fedidevs.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 DATABASES = {"default": env.db_url(default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")}
-# Persistent connections: gunicorn workers are long-lived, so reusing a
-# Postgres connection for a few minutes avoids connect/teardown churn.
-DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=300)
-DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
 
 
 # Password validation

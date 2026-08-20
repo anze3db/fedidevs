@@ -109,9 +109,3 @@ class TestAnonymousCacheAndCsrf(TestCase):
     def test_plain_pages_are_indexable(self):
         response = self.client.get("/login/")
         self.assertNotContains(response, 'name="robots"')
-
-
-class TestConnMaxAge(SimpleTestCase):
-    def test_postgres_reuses_connections(self):
-        self.assertEqual(settings.DATABASES["default"]["CONN_MAX_AGE"], 300)
-        self.assertTrue(settings.DATABASES["default"]["CONN_HEALTH_CHECKS"])
