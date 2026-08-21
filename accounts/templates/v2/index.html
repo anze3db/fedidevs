@@ -3,7 +3,11 @@
 {% load static %}
 {% load humanize %}
 {% block head %}
-    {% if accounts.has_previous %}<meta name="robots" content="none">{% endif %}
+    {# noindex,nofollow on faceted slices: keeps near-duplicate pages out of the
+       index and stops crawlers walking the facet cross-product from here. The only
+       internal links on these pages are more facet links -- account cards point at
+       external Mastodon profiles -- so nofollow costs no discovery. #}
+    {% if robots_noindex %}<meta name="robots" content="noindex,nofollow">{% endif %}
 {% endblock head %}
 {% block content %}
     <main class="flex justify-center">

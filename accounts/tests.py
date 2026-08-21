@@ -539,6 +539,68 @@ class TestStaticPages(TestCase):
         self._assert_tailwind_layout(response, "How to report an issue?")
 
 
+class TestAccountIndexRobots(TestCase):
+    """The account index must not invite crawlers into the facet cross-product."""
+
+    ROBOTS_META = '<meta name="robots" content="noindex,nofollow">'
+
+    def assert_noindex(self, url):
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.ROBOTS_META)
+
+    def assert_indexable(self, url):
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'name="robots"')
+
+    def test_canonical_page_is_indexable(self):
+        self.assert_indexable("/python/")
+
+    def test_single_facet_is_indexable(self):
+        # These are the finite, genuinely distinct landing pages worth keeping.
+        for url in (
+            "/python/?f=best",
+            "/python/?t=human",
+            "/python/?post=recently",
+            "/python/?o=following",
+            "/python/?p=weekly",
+        ):
+            with self.subTest(url=url):
+                self.assert_indexable(url)
+
+    def test_empty_facet_values_are_not_facets(self):
+        # The filter templates emit ?f= to clear a facet; that is still canonical.
+        self.assert_indexable("/python/?f=&t=")
+
+    def test_two_facets_are_noindex(self):
+        self.assert_noindex("/python/?f=best&t=human")
+
+    def test_full_facet_product_is_noindex(self):
+        self.assert_noindex("/python/?f=best&t=human&o=followers&p=all&post=recently")
+
+    def test_search_is_noindex_even_alone(self):
+        # Free-text search is an unbounded URL space.
+        self.assert_noindex("/python/?q=django")
+
+    def test_selected_instance_is_noindex(self):
+        self.assert_noindex("/python/?selected_instance=mastodon.social")
+
+    def test_pagination_is_noindex(self):
+        self.assert_noindex("/python/?page=2")
+
+    def test_deep_pagination_is_noindex(self):
+        # Crawlers were reaching page=1500+; the paginator is countless so this is a 200.
+        self.assert_noindex("/python/?page=800")
+
+    def test_paginated_single_facet_is_noindex(self):
+        self.assert_noindex("/python/?f=best&page=3")
+
+    def test_unfaceted_root_index_is_indexable(self):
+        # / with no params redirects to starter packs, so exercise an explicit facet-free lang.
+        self.assert_indexable("/rust/")
+
+
 class TestSitemap(TestCase):
     @classmethod
     def setUpTestData(cls):

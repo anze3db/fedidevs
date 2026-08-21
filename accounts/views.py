@@ -239,6 +239,41 @@ def _redirect_unknown_account_params(request):
     return response
 
 
+# Facet params that slice the account list. Deliberately separate from
+# ACCOUNT_INDEX_QUERY_PARAMS, which decides what is *allowed*; this set decides what
+# makes a URL a near-duplicate of its canonical page.
+ACCOUNT_INDEX_FACET_PARAMS = ("o", "p", "t", "f", "post")
+
+# One facet still makes a distinct, useful landing page (?f=best, ?t=human). Two or
+# more are near-duplicate slices of the same accounts and the canonical link already
+# points them at the base page.
+MAX_INDEXABLE_FACETS = 1
+
+
+def _is_noindex(request, page_obj) -> bool:
+    """Whether this account-list URL should be kept out of search indexes.
+
+    Crawlers enumerate the facet cross-product: o x p x t x f x post x page over the
+    44 language/framework slugs is >100k URLs of near-duplicate content, and every
+    one of them misses both the CDN and the per-process page cache.
+
+    Reads the raw query string rather than the parsed values on purpose -- ``o`` and
+    ``p`` are defaulted in ``index``, so a bare /python/ would otherwise look like it
+    already carries two facets. An empty value (``?f=``, which the filter templates
+    emit to clear a facet) is not an active facet.
+    """
+    if request.GET.get("q"):
+        # Free-text search: unbounded URL space, never worth indexing.
+        return True
+    if request.GET.get("selected_instance"):
+        # Per-visitor personalisation rather than a public page.
+        return True
+    if page_obj.has_previous():
+        return True
+    active_facets = sum(1 for param in ACCOUNT_INDEX_FACET_PARAMS if request.GET.get(param))
+    return active_facets > MAX_INDEXABLE_FACETS
+
+
 def login(request):
     if request.user.is_authenticated:
         return redirect("index")
@@ -399,6 +434,7 @@ def index(request, lang: str | None = None):
                 reverse("index", kwargs={"lang": lang}), request.GET, ["t", "f", "post"]
             ),
             "page_description": page_description,
+            "robots_noindex": _is_noindex(request, page_obj),
             "page_image": static("og.png"),
             "accounts": page_obj,
             "selected_lang": selected_lang,
