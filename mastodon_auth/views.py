@@ -306,6 +306,19 @@ def auth(request):
             return redirect("index")
         # Not a failure: token obtained, only the scope-subset check tripped.
         logger.info("login scope check bypassed for %s", instance.url)
+    except KeyError:
+        # Servers built on PHP's league/oauth2-server (Pixelfed and friends) omit
+        # "scope" from the token response entirely. mastodon.py reads
+        # response["scope"] outside its own try block, so we get a bare KeyError
+        # instead of a MastodonError — even though the token exchange succeeded
+        # and the access token is already set on the client.
+        access_token = mastodon.access_token
+        if not access_token:
+            logger.exception("login log_in unexpected token response for %s", instance.url)
+            messages.error(request, _("Unable to complete login, please try again."))
+            return redirect("index")
+        # Not a failure: token obtained, the response just had no "scope" field.
+        logger.info("login token response had no scope for %s", instance.url)
 
     now = timezone.now()
     try:

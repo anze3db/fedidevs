@@ -331,6 +331,82 @@ class MastodonAuthCallbackTests(TestCase):
 
     @patch("mastodon_auth.views.sync_following")
     @patch("mastodon_auth.views.Mastodon")
+    def test_token_response_without_scope_still_logs_in(self, mastodon_cls, sync_following):
+        """Servers on PHP's league/oauth2-server (Pixelfed and friends) omit "scope"
+        from the token response. mastodon.py reads response["scope"] outside its own
+        try block, so log_in() raises a bare KeyError after the token exchange
+        succeeded. Fall back to the already-set access token rather than 500."""
+        instance = Instance.objects.create(
+            url="pixelfed.example",
+            client_id="cid",
+            client_secret="secret",
+            scopes="read follow",
+        )
+        state = "test-state"
+        cache.set(f"oauth:{state}", instance.id)
+
+        mastodon = MagicMock()
+        mastodon.access_token = "the-token"
+        mastodon.log_in.side_effect = KeyError("scope")
+        # Pixelfed-shaped verify_credentials: no group/roles/header/uri.
+        mastodon.me.return_value = {
+            "id": "42",
+            "username": "alice",
+            "acct": "alice",
+            "display_name": "Alice",
+            "locked": False,
+            "bot": False,
+            "discoverable": True,
+            "created_at": timezone.now(),
+            "followers_count": 0,
+            "following_count": 0,
+            "statuses_count": 0,
+            "note": "",
+            "url": "https://pixelfed.example/alice",
+            "avatar": "https://pixelfed.example/avatar.png",
+            "avatar_static": "https://pixelfed.example/avatar.png",
+            "emojis": [],
+            "fields": [],
+        }
+        mastodon_cls.return_value = mastodon
+
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.get("/mastodon_auth/", {"code": "abc", "state": state})
+
+        self.assertEqual(response.status_code, 302)
+        access = AccountAccess.objects.get()
+        self.assertEqual(access.access_token, "the-token")
+        account = Account.objects.get(account_id="42")
+        self.assertFalse(account.group)
+        self.assertEqual(account.roles, [])
+        self.assertEqual(account.header, "")
+        sync_following.delay.assert_called_once()
+
+    @patch("mastodon_auth.views.Mastodon")
+    def test_keyerror_without_token_errors(self, mastodon_cls):
+        """A KeyError with no access token on the client is a genuine failure and
+        must not log the user in."""
+        instance = Instance.objects.create(
+            url="pixelfed.example",
+            client_id="cid",
+            client_secret="secret",
+            scopes="read follow",
+        )
+        state = "test-state"
+        cache.set(f"oauth:{state}", instance.id)
+
+        mastodon = MagicMock()
+        mastodon.access_token = None
+        mastodon.log_in.side_effect = KeyError("scope")
+        mastodon_cls.return_value = mastodon
+
+        response = self.client.get("/mastodon_auth/", {"code": "abc", "state": state})
+
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
+        self.assertFalse(AccountAccess.objects.exists())
+
+    @patch("mastodon_auth.views.sync_following")
+    @patch("mastodon_auth.views.Mastodon")
     def test_pleroma_null_account_fields_are_coerced(self, mastodon_cls, sync_following):
         """Pleroma's verify_credentials returns null discoverable/group and omits
         counts/avatars. Those map to NOT NULL columns, so they must be coerced to
