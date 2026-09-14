@@ -1236,6 +1236,50 @@ class TestEditConference(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 403)
 
+    def test_owner_can_edit_after_approval(self):
+        # Approval is a moderation gate for visibility, not a lock: the submitter
+        # keeps editing their conference after it goes public.
+        approved_at = timezone.now()
+        self.conference.approved_at = approved_at
+        self.conference.save(update_fields=["approved_at"])
+
+        self.client.force_login(self.owner)
+        response = self.client.post(self.url, self._post_data(name="Edited After Approval"))
+
+        self.conference.refresh_from_db()
+        self.assertEqual(self.conference.name, "Edited After Approval")
+        # Editing must not silently drop the conference back into the review queue.
+        self.assertEqual(self.conference.approved_at, approved_at)
+        self.assertRedirects(
+            response,
+            reverse("conference", kwargs={"conference_slug": self.conference.slug}),
+            fetch_redirect_response=False,
+        )
+
+    def test_owner_sees_edit_button_on_approved_detail(self):
+        self.conference.approved_at = timezone.now()
+        self.conference.save(update_fields=["approved_at"])
+
+        self.client.force_login(self.owner)
+        response = self.client.get(reverse("conference", kwargs={"conference_slug": self.conference.slug}))
+
+        self.assertContains(response, "Edit conference")
+        self.assertContains(response, self.url)
+        # It has to render in the main column: the sidebar is a hamburger drawer
+        # below md and a separate scroll container above it, so a button placed
+        # there is effectively invisible. The main column markup follows the
+        # <aside> in the layout, so the link must come after the column's marker.
+        html = response.content.decode()
+        self.assertGreater(html.index(self.url), html.index("md:ml-[25rem]"))
+
+    def test_other_user_forbidden_on_approved_conference(self):
+        self.conference.approved_at = timezone.now()
+        self.conference.save(update_fields=["approved_at"])
+
+        self.client.force_login(self.other)
+        self.assertEqual(self.client.get(self.url).status_code, 403)
+        self.assertEqual(self.client.post(self.url, self._post_data()).status_code, 403)
+
     def test_edit_does_not_change_slug(self):
         original_slug = self.conference.slug
         self.client.force_login(self.owner)
