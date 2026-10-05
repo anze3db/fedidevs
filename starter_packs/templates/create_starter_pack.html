@@ -2,7 +2,7 @@
 {% load account_extras %}
 {% load static %}
 {% block content %}
-    <main class="py-8 px-4 mx-auto max-w-2xl lg:py-16 p-3 mb-12 ">
+    <main class="py-8 px-4 mx-auto max-w-2xl lg:py-16 p-3 mb-12">
         <h2 class="mb-4 text-xl text-center font-bold text-gray-900 dark:text-white">{% trans "Mastodon starter packs" %}</h2>
         <p class="mb-8 text-l text-center">{% trans "Invite your friends to follow your favorite people on Mastodon" %}</p>
         <form action=""
@@ -50,9 +50,7 @@
                     <div id="language-options"
                          class="flex flex-wrap gap-2 max-h-56 overflow-y-auto p-1">
                         {% for lang in pack_languages %}
-                            <label data-lang-name="{{ lang.name|lower }}"
-                                   data-common="{% if lang.code in common_languages %}1{% else %}0{% endif %}"
-                                   class="language-option {% if lang.code not in common_languages %}language-extra{% if lang.code not in selected_languages %} hidden{% endif %}{% endif %} inline-flex items-center gap-1.5 cursor-pointer rounded-lg border border-gray-300 bg-gray-50 px-3 py-1.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                            <label data-lang-name="{{ lang.name|lower }}" data-common="{% if lang.code in common_languages %}1{% else %}0{% endif %}" class="language-option {% if lang.code not in common_languages %}language-extra{% if lang.code not in selected_languages %} hidden{% endif %}{% endif %} inline-flex items-center gap-1.5 cursor-pointer rounded-lg border border-gray-300 bg-gray-50 px-3 py-1.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                                 <input type="checkbox"
                                        name="languages"
                                        value="{{ lang.code }}"
