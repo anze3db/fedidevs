@@ -10,7 +10,7 @@ Misskey family we talk to the native API instead:
   `/api/users/following`) and resolve remote accounts to a local user id via
   `/api/ap/show` (the native equivalent of Mastodon's `account_search?resolve`).
 
-Everything here is synchronous httpx to match the auth views and Celery tasks.
+Everything here is synchronous httpx to match the auth views and background tasks.
 The functions are deliberately small and side-effect free where possible so the
 URL/scope logic can be unit-tested without a live instance.
 """

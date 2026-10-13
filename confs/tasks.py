@@ -1,4 +1,4 @@
-"""Celery autodiscovery only imports each app's `tasks.py`, so tasks defined in
+"""Potatoq workers only import each app's `tasks.py`, so tasks defined in
 other modules must be re-exported here for the worker to register them."""
 
 from confs.og_images import update_conference_og_image

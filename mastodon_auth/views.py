@@ -4,7 +4,6 @@ from urllib.parse import urljoin, urlparse
 from uuid import uuid4
 
 import httpx
-from celery import shared_task
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
@@ -24,6 +23,7 @@ from mastodon import (
     MastodonNetworkError,
 )
 from mastodon.errors import MastodonAPIError
+from potatoq import shared_task
 
 from accounts.misskey import user_to_mastodon
 from accounts.misskey_api import (

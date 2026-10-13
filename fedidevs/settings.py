@@ -84,7 +84,7 @@ INSTALLED_APPS = [
     "heroicons",
     "django_browser_reload",
     "debug_toolbar",
-    "django_celery_results",
+    "potatoq.contrib.django",
     "django_tui",
     "django_cotton.apps.SimpleAppConfig",
     # "django_watchfiles",
@@ -274,19 +274,12 @@ FEDIDEVS_BOT_ACCESS_TOKEN = env.str("FEDIDEVS_BOT_ACCESS_TOKEN", default="")
 FEDIDEVS_BOT_API_BASE_URL = env.str("FEDIDEVS_BOT_API_BASE_URL", default="https://fosstodon.org")
 
 
-# Celery settings:
-CELERY_BROKER_URL = "redis://localhost:6379/1"
-CELERY_RESULT_BACKEND = "django-db"
-CELERY_CACHE_BACKEND = "default"
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = TIME_ZONE
+# Potatoq (task queue) settings:
+POTATOQ_BROKER_URL = "redis://localhost:6379/1"
 
 TESTS_RUNNING = "pytest" in sys.modules
 if TESTS_RUNNING or DEBUG:
-    CELERY_TASK_ALWAYS_EAGER = True
-    CELERY_TASK_EAGER_PROPAGATES = True
+    POTATOQ_TASK_ALWAYS_EAGER = True
 
 
 LOGGING = {

@@ -10,10 +10,10 @@ import glob
 import hashlib
 import logging
 
-from celery import shared_task
 from django.conf import settings
 from django.utils import timezone
 from PIL import Image, ImageDraw, ImageFont
+from potatoq import shared_task
 
 from confs.models import Conference
 from starter_packs.splash_images import draw_text_with_emoji, split_text_emoji_segments

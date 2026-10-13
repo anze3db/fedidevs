@@ -1,10 +1,10 @@
 import logging
 
-from celery import shared_task
 from django.apps import AppConfig
 from django.conf import settings
 from django.core import management
 from django.db.models import signals
+from potatoq import shared_task
 
 logger = logging.getLogger(__name__)
 

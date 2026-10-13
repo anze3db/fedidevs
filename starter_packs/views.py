@@ -2,7 +2,6 @@ import logging
 import re
 from collections import defaultdict
 
-from celery import shared_task
 from django import forms
 from django.contrib import messages
 from django.contrib.auth import logout as auth_logout
@@ -26,6 +25,7 @@ from mastodon import (
     MastodonError,
     MastodonUnauthorizedError,
 )
+from potatoq import shared_task
 
 from accounts.management.commands.crawlone import crawlone
 from accounts.misskey_api import detect_software
