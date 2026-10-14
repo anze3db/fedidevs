@@ -5,6 +5,7 @@ from collections import defaultdict
 from celery import shared_task
 from django import forms
 from django.contrib import messages
+from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery
@@ -22,9 +23,12 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from mastodon import (
     Mastodon,
+    MastodonError,
+    MastodonUnauthorizedError,
 )
 
 from accounts.management.commands.crawlone import crawlone
+from accounts.misskey_api import detect_software
 from accounts.models import Account, Instance
 from mastodon_auth.models import AccountAccess, AccountFollowing
 from starter_packs.models import (
@@ -954,13 +958,43 @@ def delete_starter_pack(request, starter_pack_slug):
 @login_required
 def follow_starter_pack(request, starter_pack_slug):
     starter_pack = get_object_or_404(StarterPack, slug=starter_pack_slug, deleted_at__isnull=True)
+    account_access = request.user.accountaccess
+    instance = account_access.instance
+    if not instance.is_misskey:
+        # Check the token before claiming success: if the user revoked our
+        # access on their instance, follow_bg would silently fail every follow.
+        mastodon = Mastodon(
+            api_base_url=instance.url,
+            client_id=instance.client_id,
+            client_secret=instance.client_secret,
+            access_token=account_access.access_token,
+            user_agent="fedidevs",
+        )
+        try:
+            mastodon.account_verify_credentials()
+        except MastodonUnauthorizedError:
+            logger.info("follow_starter_pack token revoked for %s", request.user.username)
+            auth_logout(request)
+            messages.error(
+                request,
+                _(
+                    "Your instance no longer allows fedidevs to follow accounts for you. "
+                    "Please log in again to follow this starter pack."
+                ),
+            )
+            return redirect("share_starter_pack", starter_pack_slug=starter_pack.slug)
+        except MastodonError:
+            logger.info("follow_starter_pack could not verify credentials for %s", request.user.username)
+            messages.error(request, _("Couldn't reach your instance. Please try again later."))
+            return redirect("share_starter_pack", starter_pack_slug=starter_pack.slug)
+
     accounts = Account.objects.filter(
         starterpackaccount__starter_pack=starter_pack,
         instance_model__deleted_at__isnull=True,
     ).select_related("accountlookup", "instance_model")
     account_following = []
     for account in accounts:
-        account_following.append(AccountFollowing(account=request.user.accountaccess.account, url=account.url))
+        account_following.append(AccountFollowing(account=account_access.account, url=account.url))
 
     AccountFollowing.objects.bulk_create(account_following, ignore_conflicts=True)
     transaction.on_commit(lambda: follow_bg.delay(request.user.id, starter_pack_slug))
@@ -990,6 +1024,19 @@ def remote_follow_starter_pack(request, starter_pack_slug):
         return redirect(pack_url)
 
     user, domain = parsed
+    if (detect_software(domain) or "").lower() == "mastodon":
+        # Mastodon can't follow an ActivityPub Collection, so its
+        # authorize_interaction page would just fail. Point them at the login.
+        messages.error(
+            request,
+            _(
+                "%(domain)s runs Mastodon, which can't follow a starter pack with a remote follow. "
+                "Log in with your instance instead."
+            )
+            % {"domain": domain},
+        )
+        return redirect(pack_url)
+
     # The pack URL must match the Collection id served by share_starter_pack
     # (same build_absolute_uri) so servers that verify the fetched object's id
     # against the requested uri accept it.
@@ -1046,6 +1093,10 @@ def follow_bg(user_id: int, starter_pack_slug: str):
                 resolve_and_follow_misskey(instance.url, account_access.access_token, account)
             else:
                 resolve_and_follow_account(mastodon, account, instance)
-        except FollowError:
+        except FollowError as e:
+            if isinstance(e.__cause__, MastodonUnauthorizedError):
+                # The token was revoked; every remaining follow would fail too.
+                logger.info("%s token unauthorized, stopping follow_bg", user.username)
+                break
             logger.info("%s failed to follow in bg %s", user.username, account.username_at_instance, exc_info=True)
             continue

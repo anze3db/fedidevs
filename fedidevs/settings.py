@@ -337,6 +337,10 @@ CSRF_COOKIE_SECURE = True
 LANGUAGE_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True  # Already done by default
 SECURE_HSTS_SECONDS = 15768000  # 6 months
+# We run behind a TLS-terminating proxy; trust its header so request.is_secure()
+# and build_absolute_uri() produce https:// URLs (e.g. the starter pack's
+# ActivityPub Collection id).
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
     sentry_sdk.init(

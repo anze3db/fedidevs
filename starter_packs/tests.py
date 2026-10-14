@@ -3,14 +3,19 @@ from unittest.mock import Mock, patch
 
 import httpx
 from ddt import data, ddt, unpack
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from mastodon import MastodonNetworkError, MastodonUnauthorizedError
 from model_bakery import baker
 
 from accounts.models import Account
 from starter_packs.models import MAX_OWNERS, MAX_PINNED_ACCOUNTS, StarterPackAccount, StarterPackInvitation
 from starter_packs.remote_follow import get_subscribe_url, parse_handle
+from starter_packs.utils import FollowError
+from starter_packs.views import follow_bg
+from stats.models import FollowAllClick
 
 
 class TestStarterPacks(TestCase):
@@ -1211,8 +1216,9 @@ class TestRemoteFollowStarterPack(TestCase):
         response = self.client.get(self.pack_url)
         self.assertNotContains(response, "Follow with your fediverse handle")
 
+    @patch("starter_packs.views.detect_software", return_value="wordpress")
     @patch("starter_packs.views.get_subscribe_url")
-    def test_redirects_to_subscribe_url(self, mock_get_subscribe_url):
+    def test_redirects_to_subscribe_url(self, mock_get_subscribe_url, mock_detect_software):
         mock_get_subscribe_url.return_value = (
             "https://notiz.blog/wp-json/activitypub/1.0/interactions?uri=http%3A%2F%2Ftestserver%2Fs%2Fabc%2F"
         )
@@ -1220,8 +1226,9 @@ class TestRemoteFollowStarterPack(TestCase):
         self.assertRedirects(response, mock_get_subscribe_url.return_value, fetch_redirect_response=False)
         mock_get_subscribe_url.assert_called_once_with("pfefferle", "notiz.blog", f"http://testserver{self.pack_url}")
 
+    @patch("starter_packs.views.detect_software", return_value=None)
     @patch("starter_packs.views.get_subscribe_url", return_value=None)
-    def test_error_when_no_subscribe_endpoint(self, mock_get_subscribe_url):
+    def test_error_when_no_subscribe_endpoint(self, mock_get_subscribe_url, mock_detect_software):
         response = self.client.post(self.url, {"handle": "user@example.com"}, follow=True)
         self.assertRedirects(response, self.pack_url)
         self.assertContains(response, "remote follow endpoint")
@@ -1236,6 +1243,15 @@ class TestRemoteFollowStarterPack(TestCase):
         self.assertRedirects(response, self.pack_url)
         self.assertContains(response, "Please enter a fediverse handle")
 
+    @patch("starter_packs.views.detect_software", return_value="mastodon")
+    @patch("starter_packs.views.get_subscribe_url")
+    def test_mastodon_handle_is_told_to_log_in(self, mock_get_subscribe_url, mock_detect_software):
+        response = self.client.post(self.url, {"handle": "@marco@nrw.social"}, follow=True)
+        self.assertRedirects(response, self.pack_url)
+        self.assertContains(response, "nrw.social runs Mastodon")
+        mock_detect_software.assert_called_once_with("nrw.social")
+        mock_get_subscribe_url.assert_not_called()
+
     def test_deleted_pack_404(self):
         pack = baker.make("starter_packs.StarterPack", deleted_at=timezone.now())
         url = reverse("remote_follow_starter_pack", kwargs={"starter_pack_slug": pack.slug})
@@ -1245,3 +1261,81 @@ class TestRemoteFollowStarterPack(TestCase):
     def test_get_not_allowed(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 405)
+
+
+class TestFollowStarterPack(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.starter_pack = baker.make("starter_packs.StarterPack", published_at=timezone.now())
+        cls.account = baker.make("accounts.Account", instance="example.social", discoverable=True)
+        baker.make("starter_packs.StarterPackAccount", starter_pack=cls.starter_pack, account=cls.account)
+        cls.user = baker.make(get_user_model())
+        cls.instance = baker.make("mastodon_auth.Instance", url="mastodon.example", software="")
+        cls.account_access = baker.make("mastodon_auth.AccountAccess", user=cls.user, instance=cls.instance)
+        cls.url = reverse("follow_starter_pack", kwargs={"starter_pack_slug": cls.starter_pack.slug})
+        cls.pack_url = reverse("share_starter_pack", kwargs={"starter_pack_slug": cls.starter_pack.slug})
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    @patch("starter_packs.views.follow_bg.delay")
+    @patch("starter_packs.views.Mastodon")
+    def test_success(self, mastodon_cls, follow_bg_delay):
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(self.url, follow=True)
+        self.assertRedirects(response, self.pack_url)
+        self.assertContains(response, "Following all accounts in the starter pack.")
+        mastodon_cls.return_value.account_verify_credentials.assert_called_once_with()
+        follow_bg_delay.assert_called_once_with(self.user.id, self.starter_pack.slug)
+        self.assertEqual(FollowAllClick.objects.filter(user=self.user, starter_pack=self.starter_pack).count(), 1)
+
+    @patch("starter_packs.views.follow_bg.delay")
+    @patch("starter_packs.views.Mastodon")
+    def test_revoked_token_logs_out(self, mastodon_cls, follow_bg_delay):
+        mastodon_cls.return_value.account_verify_credentials.side_effect = MastodonUnauthorizedError("revoked")
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(self.url, follow=True)
+        self.assertRedirects(response, self.pack_url)
+        self.assertContains(response, "Please log in again")
+        self.assertNotContains(response, "Following all accounts in the starter pack.")
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+        follow_bg_delay.assert_not_called()
+        self.assertFalse(FollowAllClick.objects.filter(user=self.user).exists())
+
+    @patch("starter_packs.views.follow_bg.delay")
+    @patch("starter_packs.views.Mastodon")
+    def test_instance_unreachable(self, mastodon_cls, follow_bg_delay):
+        mastodon_cls.return_value.account_verify_credentials.side_effect = MastodonNetworkError("down")
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(self.url, follow=True)
+        self.assertRedirects(response, self.pack_url)
+        self.assertContains(response, "Couldn&#x27;t reach your instance")
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+        follow_bg_delay.assert_not_called()
+
+
+class TestFollowBg(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.starter_pack = baker.make("starter_packs.StarterPack", published_at=timezone.now())
+        for _ in range(3):
+            account = baker.make("accounts.Account", discoverable=True)
+            baker.make("starter_packs.StarterPackAccount", starter_pack=cls.starter_pack, account=account)
+        cls.user = baker.make(get_user_model())
+        cls.instance = baker.make("mastodon_auth.Instance", url="mastodon.example", software="")
+        baker.make("mastodon_auth.AccountAccess", user=cls.user, instance=cls.instance)
+
+    @patch("starter_packs.views.Mastodon")
+    @patch("starter_packs.views.resolve_and_follow_account")
+    def test_stops_after_unauthorized(self, resolve_and_follow_account, mastodon_cls):
+        error = FollowError("Unauthorized")
+        error.__cause__ = MastodonUnauthorizedError("revoked")
+        resolve_and_follow_account.side_effect = error
+        follow_bg(self.user.id, self.starter_pack.slug)
+        self.assertEqual(resolve_and_follow_account.call_count, 1)
+
+    @patch("starter_packs.views.Mastodon")
+    @patch("starter_packs.views.resolve_and_follow_account", side_effect=FollowError("Account not found"))
+    def test_continues_after_other_errors(self, resolve_and_follow_account, mastodon_cls):
+        follow_bg(self.user.id, self.starter_pack.slug)
+        self.assertEqual(resolve_and_follow_account.call_count, 3)
