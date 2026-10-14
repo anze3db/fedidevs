@@ -1249,6 +1249,7 @@ class TestRemoteFollowStarterPack(TestCase):
         response = self.client.post(self.url, {"handle": "@marco@nrw.social"}, follow=True)
         self.assertRedirects(response, self.pack_url)
         self.assertContains(response, "nrw.social runs Mastodon")
+        self.assertContains(response, "WordPress sites using the ActivityPub plugin")
         mock_detect_software.assert_called_once_with("nrw.social")
         mock_get_subscribe_url.assert_not_called()
 

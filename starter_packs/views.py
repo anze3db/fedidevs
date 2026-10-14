@@ -1031,7 +1031,7 @@ def remote_follow_starter_pack(request, starter_pack_slug):
             request,
             _(
                 "%(domain)s runs Mastodon, which can't follow a starter pack with a remote follow. "
-                "Log in with your instance instead."
+                "Remote follow currently only works with WordPress sites using the ActivityPub plugin."
             )
             % {"domain": domain},
         )
