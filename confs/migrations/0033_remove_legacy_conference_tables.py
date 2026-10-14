@@ -438,12 +438,19 @@ def migrate_djangoconus_posts(apps, conference):
             batch_posts.append((post_data, account_data))
         if batch_posts:
             _flush_djangoconus_batch(
-                account_model_cls, post_model_cls, conference_post_model, conference, batch_accounts, batch_posts
+                account_model_cls,
+                post_model_cls,
+                conference_post_model,
+                conference=conference,
+                batch_accounts=batch_accounts,
+                batch_posts=batch_posts,
             )
     _refresh_account_counts(conference, conference_post_model, conference_account_model)
 
 
-def _flush_djangoconus_batch(account_model, post_model, conference_post_model, conference, batch_accounts, batch_posts):
+def _flush_djangoconus_batch(
+    account_model, post_model, conference_post_model, *, conference, batch_accounts, batch_posts
+):
     resolve_account = _resolve_accounts(account_model, batch_accounts)
     post_dicts = []
     for post_data, account_data in batch_posts:

@@ -46,10 +46,14 @@ START_TEMPLATES = [
 ]
 
 END_TEMPLATES = [
-    "That's a wrap on {name}! 👋\n\nThanks to everyone who joined the conversation on the fediverse. "
-    "You can still browse all the discussion on FediDevs:",
-    "{name} comes to a close today. 🎬\n\nThanks to everyone who took part in the fediverse conversation — "
-    "you can still revisit all of it on FediDevs:",
+    (
+        "That's a wrap on {name}! 👋\n\nThanks to everyone who joined the conversation on the fediverse. "
+        "You can still browse all the discussion on FediDevs:"
+    ),
+    (
+        "{name} comes to a close today. 🎬\n\nThanks to everyone who took part in the fediverse conversation — "
+        "you can still revisit all of it on FediDevs:"
+    ),
     "The final day of {name} is here. ✨\n\nMissed anything? Catch up on the whole conversation on FediDevs:",
     "{name} wraps up today! 🙌\n\nRelive the highlights from the fediverse conversation on FediDevs:",
 ]

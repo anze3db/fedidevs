@@ -51,7 +51,9 @@ def _load_fonts(size, bold=True):
 
 def _text_width(draw, text, fonts, size):
     main_font, emoji_font, additional_fonts = fonts
-    segments = split_text_emoji_segments(draw, text, main_font, emoji_font, additional_fonts, size)
+    segments = split_text_emoji_segments(
+        draw, text, main_font, emoji_font=emoji_font, additional_fonts=additional_fonts, emoji_size=size
+    )
     return sum(segment["width"] for segment in segments)
 
 
@@ -66,7 +68,7 @@ def _fit_font_size(draw, text, max_width, max_size, bold=True):
     return size, _load_fonts(size, bold)
 
 
-def _draw_centered(draw, image, text, center, max_width, max_size, fill, bold=True):
+def _draw_centered(draw, image, text, *, center, max_width, max_size, fill, bold=True):
     """Draw `text` horizontally centered at `center`, shrinking to fit `max_width`."""
     size, fonts = _fit_font_size(draw, text, max_width, max_size, bold)
     main_font, emoji_font, additional_fonts = fonts
@@ -157,10 +159,10 @@ def render_conference_og_image_to_image_obj(conference):
         draw,
         image,
         "Join the conversation",
-        (width / 2, round(0.20 * height)),
-        max_text_width,
-        round(38 * ss),
-        faint,
+        center=(width / 2, round(0.20 * height)),
+        max_width=max_text_width,
+        max_size=round(38 * ss),
+        fill=faint,
     )
 
     # Conference name — the visual anchor of the card.
@@ -168,10 +170,10 @@ def render_conference_og_image_to_image_obj(conference):
         draw,
         image,
         conference.name,
-        (width / 2, round(0.42 * height)),
-        max_text_width,
-        round(92 * ss),
-        white,
+        center=(width / 2, round(0.42 * height)),
+        max_width=max_text_width,
+        max_size=round(92 * ss),
+        fill=white,
     )
 
     # Dates (and location).
@@ -179,10 +181,10 @@ def render_conference_og_image_to_image_obj(conference):
         draw,
         image,
         _date_line(conference),
-        (width / 2, round(0.58 * height)),
-        max_text_width,
-        round(40 * ss),
-        faint,
+        center=(width / 2, round(0.58 * height)),
+        max_width=max_text_width,
+        max_size=round(40 * ss),
+        fill=faint,
     )
 
     # Hashtag inside a rounded pill.

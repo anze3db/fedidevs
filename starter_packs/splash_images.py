@@ -195,7 +195,7 @@ def is_character_in_font(character, font_path):
     return False
 
 
-def split_text_emoji_segments(image_draw, text, default_font, emoji_font, additional_fonts, emoji_size):
+def split_text_emoji_segments(image_draw, text, default_font, *, emoji_font, additional_fonts, emoji_size):
     """
     Split text into segments by font type, Unicode emojis, and custom emoji shortcodes.
     Returns a list of segments with content, font (or 'custom_emoji'), width, and height.
@@ -304,7 +304,7 @@ def split_text_emoji_segments(image_draw, text, default_font, emoji_font, additi
 
 
 def draw_text_with_emoji(
-    image_draw, image, position, text, fill, default_font, emoji_font, additional_fonts, emoji_size, anchor="lt"
+    image_draw, image, position, text, *, fill, default_font, emoji_font, additional_fonts, emoji_size, anchor="lt"
 ):
     """
     Use Pillow's text rendering function for a string that contains characters
@@ -314,7 +314,14 @@ def draw_text_with_emoji(
     Assumes a single-line string with ltr text direction, may behave strangely
     under other circumstances.
     """
-    segments = split_text_emoji_segments(image_draw, text, default_font, emoji_font, additional_fonts, emoji_size)
+    segments = split_text_emoji_segments(
+        image_draw,
+        text,
+        default_font,
+        emoji_font=emoji_font,
+        additional_fonts=additional_fonts,
+        emoji_size=emoji_size,
+    )
     total_width = sum(s["width"] for s in segments)
     current_x = position[0]
     if anchor[0] == "m":
@@ -489,7 +496,12 @@ def render_splash_image_to_image_obj(starter_pack, host_attribution, media_dir):
     additional_fonts = [ImageFont.truetype(path, 64) for path in additional_font_paths]
     title_emoji_size = 64  # Initial emoji size for measurement
     title_emoji_segments = split_text_emoji_segments(
-        outline_draw, starter_pack.title, title_font, title_emoji_font, additional_fonts, title_emoji_size
+        outline_draw,
+        starter_pack.title,
+        title_font,
+        emoji_font=title_emoji_font,
+        additional_fonts=additional_fonts,
+        emoji_size=title_emoji_size,
     )
     title_width = sum(s["width"] for s in title_emoji_segments)
     title_max_width = 0.9 * resolution[0]  # 5% margin left and right
