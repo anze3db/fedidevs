@@ -18,6 +18,8 @@ from pathlib import Path
 import environ
 import sentry_sdk
 from csp.constants import NONCE, NONE, SELF, UNSAFE_INLINE
+from potatoq.contrib import newrelic as potatoq_newrelic
+from potatoq.contrib.sentry import PotatoqIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -344,6 +346,7 @@ if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
                 event_level=logging.ERROR,  # Send warnings as events (default is logging.ERROR)
             ),
             DjangoIntegration(),
+            PotatoqIntegration(),
         ],
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
@@ -355,3 +358,7 @@ if SENTRY_DSN := env.str("SENTRY_DSN", default=None):
         send_default_pii=True,
         enable_logs=True,
     )
+
+# Web and worker processes run under newrelic-admin, which sets this.
+if os.environ.get("NEW_RELIC_CONFIG_FILE"):
+    potatoq_newrelic.instrument()
