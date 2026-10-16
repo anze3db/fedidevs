@@ -18,6 +18,7 @@ from pathlib import Path
 import environ
 import sentry_sdk
 from csp.constants import NONCE, NONE, SELF, UNSAFE_INLINE
+from potatoq import crontab
 from potatoq.contrib import newrelic as potatoq_newrelic
 from potatoq.contrib.sentry import PotatoqIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -278,6 +279,10 @@ FEDIDEVS_BOT_API_BASE_URL = env.str("FEDIDEVS_BOT_API_BASE_URL", default="https:
 
 # Potatoq (task queue) settings:
 POTATOQ_BROKER_URL = "redis://localhost:6379/1"
+POTATOQ_BEAT_SCHEDULE = {
+    "daily-job": {"task": "accounts.tasks.daily_job", "schedule": crontab(minute=0, hour=1)},
+    "hourly-job": {"task": "accounts.tasks.hourly_job", "schedule": crontab(minute=0)},
+}
 
 TESTS_RUNNING = "pytest" in sys.modules
 if TESTS_RUNNING or DEBUG:

@@ -28,12 +28,12 @@ uv run python manage.py tailwind start
 
 5. [optional] ... and start the background worker (only needed for syncing followers on login)
 ```
-uv run python manage.py rundramatiq --reload
+uv run python manage.py potatoq worker
 ```
 
 6. [optional] Populate the local database (takes about ~1hr)
 ```
-uv run python manage.py scheduler --run-now
+uv run python manage.py shell -c "from accounts.tasks import hourly_job, daily_job; hourly_job(); daily_job()"
 ```
 
 or run the crawler and indexer separately if you only want to populate account data (takes about ~5mins)
