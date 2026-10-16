@@ -36,7 +36,6 @@ dependencies = [
 dev = [
   "ddt",
   "django-browser-reload",
-  "django-coverage-plugin",
   "django-debug-toolbar",
   "django-rich",
   "django-tui",
@@ -122,20 +121,26 @@ custom_blocks = "slot,blocktrans,flag,switch,sample"
 # pyproject.toml
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra --cov=. --cov-report term-missing:skip-covered"
+addopts = "-ra --cov --cov-report term-missing:skip-covered"
 python_files = "tests.py"
 DJANGO_SETTINGS_MODULE = "fedidevs.settings"
 
 [tool.coverage.run]
-plugins = ["django_coverage_plugin"]
-core = "ctrace"
+core = "sysmon"
+source = [
+  "accounts",
+  "announcements",
+  "confs",
+  "fedidevs",
+  "mastodon_auth",
+  "posts",
+  "starter_packs",
+  "stats",
+  "utils",
+]
 omit = [
-  ".venv/*",
-  "staticfiles/*",
-  "manage.py",
   "fedidevs/wsgi.py",
   "fedidevs/asgi.py",
-  "theme/*",
 ]
 
 [tool.pytest-watcher]
