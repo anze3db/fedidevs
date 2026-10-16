@@ -45,6 +45,7 @@ dev = [
   "pre-commit>=4.0.1",
   "pytest-cov",
   "pytest-django",
+  "pytest-xdist>=3.8.0",
   "rich",
   "ruff",
 ]
