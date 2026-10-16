@@ -1,3 +1,4 @@
+import logging
 from textwrap import dedent
 
 from django import forms
@@ -5,6 +6,8 @@ from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 
 from posts.models import PostSubscription
+
+logger = logging.getLogger(__name__)
 
 SUBSCRIBE_INPUT_CLASS = (
     "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 "
@@ -34,18 +37,21 @@ def subscribe(request):
         form = SubscribeForm(request.POST)
         if form.is_valid():
             form.save()
-            send_mail(
-                "Fedidevs new subscriber!",
-                dedent(
-                    f"""
-                    New subscriber with email {form.cleaned_data["email"]}.
-                    Framework or lang: {form.cleaned_data["framework_or_lang"]}
-                """
-                ),
-                "anze@fedidevs.com",
-                ["anze@pecar.me"],
-                fail_silently=True,
-            )
+            try:
+                send_mail(
+                    "Fedidevs new subscriber!",
+                    dedent(
+                        f"""
+                        New subscriber with email {form.cleaned_data["email"]}.
+                        Framework or lang: {form.cleaned_data["framework_or_lang"]}
+                    """
+                    ),
+                    "anze@fedidevs.com",
+                    ["anze@pecar.me"],
+                )
+            except Exception:
+                # The subscription is already saved; a mail hiccup shouldn't fail the request.
+                logger.exception("Failed to send new subscriber notification")
             return redirect("posts_subscribe_success")
         else:
             return render(request, "subscribe.html", {"form": form})
