@@ -948,6 +948,37 @@ class TestShareStarterPack(TestCase):
 
         self.assertEqual(payload, expected_payload)
 
+    def _get_activitypub(self):
+        url = reverse("share_starter_pack", args=[self.starter_pack.slug])
+        return self.client.get(url, headers={"accept": "application/activity+json"})
+
+    def test_api_activitypub_leaves_out_accounts_without_activitypub_id(self):
+        baker.make(
+            "starter_packs.StarterPackAccount",
+            starter_pack=self.starter_pack,
+            account__discoverable=True,
+            account__instance_model=baker.make("accounts.Instance"),
+            account__activitypub_id=None,
+        )
+
+        response = self._get_activitypub()
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["totalItems"], 5)
+        self.assertEqual(payload["items"], ["https://instance.org/users/user"] * 5)
+        self.assertEqual(payload["attributedTo"], "https://instance.org/users/createdbyuser")
+
+    def test_api_activitypub_leaves_out_attributed_to_without_author_activitypub_id(self):
+        Account.objects.filter(accountaccess__user=self.user).update(activitypub_id=None)
+
+        response = self._get_activitypub()
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertNotIn("attributedTo", payload)
+        self.assertEqual(payload["totalItems"], 5)
+
 
 class TestPinAccountInStarterPack(TestCase):
     @classmethod

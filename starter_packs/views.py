@@ -12,7 +12,7 @@ from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import Exists, F, OuterRef, Q, Value
 from django.db.models.functions import Coalesce, Lower, NullIf
-from django.http import HttpResponse, HttpResponseServerError, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.templatetags.static import static
 from django.urls import reverse
@@ -787,16 +787,13 @@ def share_starter_pack(request, starter_pack_slug):
         return response
     elif get_preferred_format(request) == "activitypub":
         author = starter_pack.created_by.accountaccess.account
-        if author.activitypub_id is None:
-            # Owner of this starter pack does not have an ActivityPub ID stored yet.
-            # This should be resolved somewhere else by a background task, so we
-            # return an HTTP 500 error and leave it to the client to try again later.
-            return HttpResponseServerError()
-        items = [account.activitypub_id for account in accounts]
-        if None in items:
-            # One or more of the accounts in this starter pack do not have an
-            # ActivityPub ID stored yet. Same consideration as above.
-            return HttpResponseServerError()
+        # Accounts without a stored ActivityPub ID are left out (and the author's
+        # attributedTo, which is optional) rather than failing the whole pack. The
+        # nightly `webfinger` backfill fills them in over time.
+        activitypub_ids = list(accounts.values_list("activitypub_id", flat=True))
+        items = [activitypub_id for activitypub_id in activitypub_ids if activitypub_id]
+        if missing := len(activitypub_ids) - len(items):
+            logger.info("Starter pack %s: %d accounts without an ActivityPub ID left out", starter_pack.slug, missing)
         if starter_pack.splash_image:
             splash_image_uri = starter_pack.splash_image.url
         else:
@@ -809,7 +806,6 @@ def share_starter_pack(request, starter_pack_slug):
             ),
             "name": re.sub(r":\w+:", "", starter_pack.title).strip(),
             "summary": starter_pack.description,
-            "attributedTo": author.activitypub_id,
             "published": starter_pack.created_at,
             "updated": starter_pack.updated_at,
             "image": {
@@ -832,9 +828,13 @@ def share_starter_pack(request, starter_pack_slug):
                 "name": "Fedidevs",
                 "url": request.build_absolute_uri("/"),
             },
-            "totalItems": accounts.count(),
+            "totalItems": len(items),
             "items": items,
         }
+        if author.activitypub_id:
+            data["attributedTo"] = author.activitypub_id
+        else:
+            logger.info("Starter pack %s: author has no ActivityPub ID, attributedTo left out", starter_pack.slug)
         response = JsonResponse(data, status=200, content_type="application/activity+json; charset=utf-8")
         return response
 

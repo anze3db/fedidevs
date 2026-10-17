@@ -7,6 +7,7 @@ from asgiref.sync import async_to_sync
 from django.core import management
 from django.test import SimpleTestCase, TestCase, TransactionTestCase
 from django.utils import timezone
+from model_bakery import baker
 
 from accounts.activitypub import _media_url, _profile_url, actor_to_account_defaults
 from accounts.management.commands.crawler import Command as CrawlerCommand
@@ -728,3 +729,49 @@ class TestJobTimeLimits(SimpleTestCase):
         hard, soft = hourly_job.resolved_time_limits()
         self.assertEqual(hard, 30 * 60)
         self.assertLess(soft, hard)
+
+
+class TestWebfingerBackfill(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        instance = baker.make("accounts.Instance", domain="example.social")
+        live_pack = baker.make("starter_packs.StarterPack")
+        deleted_pack = baker.make("starter_packs.StarterPack", deleted_at=timezone.now())
+
+        def account(username, **kwargs):
+            fields = {"discoverable": True, "activitypub_id": None, **kwargs}
+            return baker.make(
+                "accounts.Account", username=username, instance="example.social", instance_model=instance, **fields
+            )
+
+        cls.member = account("member")
+        cls.failing_member = account("failing")
+        cls.author = account("author", discoverable=False)
+        cls.already_known = account("known", activitypub_id="https://example.social/users/known")
+        cls.in_deleted_pack = account("deleted")
+        cls.not_in_a_pack = account("loner")
+        for member in (cls.failing_member, cls.member, cls.already_known):
+            baker.make("starter_packs.StarterPackAccount", starter_pack=live_pack, account=member)
+        baker.make("starter_packs.StarterPackAccount", starter_pack=deleted_pack, account=cls.in_deleted_pack)
+        baker.make("mastodon_auth.AccountAccess", user=live_pack.created_by, account=cls.author)
+
+    def test_backfills_only_live_starter_pack_accounts_and_authors(self):
+        def lookup(acct, instance, _client):
+            if acct.startswith("failing@"):
+                raise ValueError("bad host-meta template")
+            return f"https://{instance}/users/{acct.split('@')[0]}"
+
+        with patch("accounts.management.commands.webfinger.get_activitypub_id_from_webfinger", side_effect=lookup) as m:
+            management.call_command("webfinger")
+
+        looked_up = sorted(call.args[0] for call in m.call_args_list)
+        self.assertEqual(looked_up, ["author@example.social", "failing@example.social", "member@example.social"])
+        for account, expected in [
+            (self.member, "https://example.social/users/member"),
+            (self.author, "https://example.social/users/author"),
+            (self.failing_member, None),
+            (self.in_deleted_pack, None),
+            (self.not_in_a_pack, None),
+        ]:
+            account.refresh_from_db()
+            self.assertEqual(account.activitypub_id, expected)

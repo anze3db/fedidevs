@@ -39,6 +39,8 @@ def daily_job():
     management.call_command("update_splash_images")
     logger.info("Updating conference OG images")
     management.call_command("update_conference_og_images")
+    logger.info("Backfilling starter pack ActivityPub IDs")
+    management.call_command("webfinger")
     logger.info("Daily job done")
 
 

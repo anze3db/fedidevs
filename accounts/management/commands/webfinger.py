@@ -4,9 +4,12 @@ from json import JSONDecodeError
 
 import defusedxml.ElementTree
 import httpx
+from django.db.models import Q
 from django_rich.management import RichCommand
 
 from accounts.models import Account
+from mastodon_auth.models import AccountAccess
+from starter_packs.models import StarterPackAccount
 
 logger = logging.getLogger(__name__)
 
@@ -71,18 +74,38 @@ def get_activitypub_id_from_webfinger(acct, instance, client: httpx.Client):
 
 
 class Command(RichCommand):
-    help = "Adds fingerprints to starter pack accounts"
+    help = "Adds missing ActivityPub IDs to the accounts and authors of live starter packs"
 
     def handle(self, *args, **options):
-        accounts_without_fingerprint = Account.objects.filter(activitypub_id__isnull=True).prefetch_related(
-            "instance_model"
+        # Only what share_starter_pack serves over ActivityPub: listed pack members and pack authors.
+        member_ids = StarterPackAccount.objects.filter(
+            starter_pack__deleted_at__isnull=True,
+            account__discoverable=True,
+            account__instance_model__isnull=False,
+            account__instance_model__deleted_at__isnull=True,
+        ).values("account_id")
+        author_ids = AccountAccess.objects.filter(user__starterpack__deleted_at__isnull=True).values("account_id")
+        accounts_without_fingerprint = (
+            Account.objects.filter(activitypub_id__isnull=True)
+            .filter(Q(id__in=member_ids) | Q(id__in=author_ids))
+            .select_related("instance_model")
+            .order_by("id")
         )
+        found = 0
         with httpx.Client() as client:
-            # We cache host-meta results per instance in a simple dict because they do not change per account.
-            for account in accounts_without_fingerprint:
+            # Host-meta lookups are cached per instance because they do not change per account.
+            for account in accounts_without_fingerprint.iterator():
                 acct = account.get_username_at_instance()
                 if acct[0] == "@":
                     acct = acct[1:]
-                account.activitypub_id = get_activitypub_id_from_webfinger(acct, account.instance, client)
-                if account.activitypub_id:
+                try:
+                    activitypub_id = get_activitypub_id_from_webfinger(acct, account.instance, client)
+                except Exception:
+                    # One bad server must not stop the backfill for everyone after it.
+                    logger.exception("%s Error: WebFinger lookup failed", acct)
+                    continue
+                if activitypub_id:
+                    account.activitypub_id = activitypub_id
                     account.save(update_fields=["activitypub_id"])
+                    found += 1
+        logger.info("Added ActivityPub IDs to %d accounts", found)
