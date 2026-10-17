@@ -49,12 +49,12 @@
             <button data-modal-target="authentication-modal"
                     data-modal-toggle="authentication-modal"
                     data-umami-event="conference-signup-modal"
-                    class="plausible-event-name=conference-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    class="plausible-event-name=conference-signup-modal text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 {% trans "Add a conference" %}
             </button>
         {% else %}
             <a href="{% url 'create_conference' %}"
-               class="plausible-event-name=conference-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{% trans "Add a conference" %}</a>
+               class="plausible-event-name=conference-signup-modal text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{% trans "Add a conference" %}</a>
         {% endif %}
     </section>
     <section class="mb-8">
@@ -63,7 +63,7 @@
             <span class="hidden">{% heroicon_outline 'plus' %}</span>
             <span class="hidden [&>svg]:h-4">{% heroicon_outline 'minus' %}</span>
         </h2>
-        <ul class="px-4 -mx-4 text-small ">
+        <ul class="px-4 -mx-4 text-small">
             {% for language in languages %}
                 <li class="m-1 inline-block">
                     <a href="{% url "conferences" %}{% if selected_lang.code != language.code %}{{ language.code }}{% endif %}?o={{ order }}"
@@ -96,7 +96,7 @@
             {% for framework in frameworks %}
                 <li class="m-1 inline-block">
                     <a href="{% url "conferences" %}{% if selected_framework.code != framework.code %}{{ framework.code }}{% endif %}?o={{ order }}"
-                       class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if selected_framework.code == framework.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
+                       class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 {% if selected_framework.code == framework.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
                        role="button">
                         <span class="flex gap-2">
                             <img src="{% static framework.image %}"

@@ -10,7 +10,7 @@
         text-decoration: underline;
     }
 </style>
-<div class="p-5 my-8 mx-2  bg-white shadow-md rounded-2xl md:flex-row   dark:bg-gray-800 ">
+<div class="p-5 my-8 mx-2 bg-white shadow-md rounded-2xl md:flex-row dark:bg-gray-800">
     <div class="flex items-start gap-2.5">
         <img class="h-16 w-16 rounded-xl"
              loading="lazy"
@@ -87,7 +87,7 @@
                 {% endif %}
                 {% if not post.media_attachments and post.card %}
                     <article class="max-w-sm">
-                        <div class=" bg-gray-100 rounded-lg shadow-lg md:flex-row  dark:bg-gray-700">
+                        <div class="bg-gray-100 rounded-lg shadow-lg md:flex-row dark:bg-gray-700">
                             {% if post.card.image %}
                                 <div class="p-4 pb-0">
                                     <a href="{{ post.card.url }}" target="_blank">
@@ -115,7 +115,7 @@
                 {% render_emojis post.content post.emojis %}
             </div>
             {% if post.media_attachments %}
-                <div class="grid grid-cols-2 gap-2 p-4 shadow-lg md:flex-row  bg-gray-100 dark:bg-gray-700 rounded-xl">
+                <div class="grid grid-cols-2 gap-2 p-4 shadow-lg md:flex-row bg-gray-100 dark:bg-gray-700 rounded-xl">
                     {% for media in post.media_attachments %}
                         <div>
                             {% if media.type == "image" %}
@@ -144,7 +144,7 @@
             {% endif %}
             {% if not post.media_attachments and post.card %}
                 <article class="max-w-sm">
-                    <div class=" bg-gray-100 rounded-lg shadow-lg md:flex-row  dark:bg-gray-700">
+                    <div class="bg-gray-100 rounded-lg shadow-lg md:flex-row dark:bg-gray-700">
                         {% if post.card.image %}
                             <div class="p-4 pb-0">
                                 <a href="{{ post.card.url }}" target="_blank">
@@ -168,7 +168,7 @@
             {% endif %}
         {% endif %}
     </div>
-    <div class="flex justify-around mt-6 mb-2 border-t pt-5 dark:border-gray-700 ">
+    <div class="flex justify-around mt-6 mb-2 border-t pt-5 dark:border-gray-700">
         <span class="flex gap-2">{% heroicon_outline 'star' %} {{ post.favourites_count }}</span>
         <span class="flex gap-2">{% heroicon_outline 'arrow-path-rounded-square' %} {{ post.reblogs_count }}</span>
         <span class="flex gap-2">{% heroicon_outline 'chat-bubble-bottom-center' %} {{ post.replies_count }}</span>

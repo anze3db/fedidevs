@@ -50,7 +50,7 @@
                            {% if review %}hx-params="review"{% endif %}
                            hx-post="{% url 'toggle_account_to_starter_pack' starter_pack.slug account.id %}"
                            {% if account.in_starter_pack %}checked="checked"{% endif %}
-                           class="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2  dark:border-gray-600">
+                           class="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:border-gray-600">
                 {% endif %}
             </div>
         </li>

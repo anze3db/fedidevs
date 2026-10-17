@@ -134,7 +134,7 @@
                                     inset: auto auto 0px 0px;
                                     margin: 0px;
                                     transform: translate3d(522.5px, 3847.5px, 0px)">
-                            {% if order != '-last_status_at' %}
+                            {% if order != "-last_status_at" %}
                                 <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
                                     aria-labelledby="dropdownRadioButton">
                                     <li>
@@ -223,7 +223,7 @@
                 <span class="hidden">{% heroicon_outline 'plus' %}</span>
                 <span class="hidden [&>svg]:h-4">{% heroicon_outline 'minus' %}</span>
             </h2>
-            <ul class="px-4 -mx-4 text-small ">
+            <ul class="px-4 -mx-4 text-small">
                 {% for language in languages %}
                     <li class="m-1 inline-block">
                         <a href="{% if selected_lang.code != language.code %}{% url 'index' language.code %}{% else %}{% url "index" %}{% endif %}{% querystring %}"
@@ -256,7 +256,7 @@
                 {% for framework in frameworks %}
                     <li class="m-1 inline-block">
                         <a href="{% if selected_framework.code != framework.code %}{% url 'index' framework.code %}{% else %}{% url "index" %}{% endif %}{% querystring %}"
-                           class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800  {% if selected_framework.code == framework.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
+                           class="flex text-sm gap-2 py-1 px-2 -ml-2 rounded-md hover:bg-white dark:hover:bg-gray-800 {% if selected_framework.code == framework.code %}bg-white shadow-sm dark:bg-gray-800{% endif %} justify-between items-center"
                            role="button">
                             <span class="flex gap-2">
                                 <img src="{% static framework.image %}"

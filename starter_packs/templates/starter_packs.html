@@ -8,26 +8,26 @@
             <ul class="flex flex-wrap justify-center -mb-px text-lg font-medium text-center text-gray-800 dark:text-gray-200">
                 <li class="me-2">
                     <c-tab tab="community" default>
-                    {% heroicon_solid 'user-group' %}
-                    {% trans "Community Starter Packs" %}
+                        {% heroicon_solid 'user-group' %}
+                        {% trans "Community Starter Packs" %}
                     </c-tab>
                 </li>
                 <li class="me-2">
                     <c-tab tab="your">
-                    {% heroicon_solid 'user' %}
-                    {% trans "Your Starter Packs" %}
+                        {% heroicon_solid 'user' %}
+                        {% trans "Your Starter Packs" %}
                     </c-tab>
                 </li>
                 <li class="me-2">
                     <c-tab tab="containing">
-                    {% heroicon_solid 'users' %}
-                    {% trans "Starter Packs Containing You" %}
+                        {% heroicon_solid 'users' %}
+                        {% trans "Starter Packs Containing You" %}
                     </c-tab>
                 </li>
             </ul>
         </div>
         <form class="max-w-3xl mt-4 mx-auto p-4" action="{% url "starter_packs" %}">
-            {% if request.GET.tab == 'containing' %}
+            {% if request.GET.tab == "containing" %}
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-stretch">
                     <div class="relative flex-1 sm:flex-[2] min-w-0">
                         <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
@@ -99,7 +99,8 @@
                     <div class="flex-1 min-w-0">
                         <select name="language"
                                 class="block w-full h-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <option value="" {% if not selected_language %}selected{% endif %}>{% trans "Any language" %}</option>
+                            <option value=""
+                                    {% if not selected_language %}selected{% endif %}>{% trans "Any language" %}</option>
                             {% for lang in pack_languages %}
                                 <option value="{{ lang.code }}"
                                         {% if selected_language == lang.code %}selected{% endif %}>
@@ -167,7 +168,7 @@
                                     </h4>
                                 </a>
                                 <div class="p-4">
-                                    {% if request.GET.tab != 'your' %}
+                                    {% if request.GET.tab != "your" %}
                                         <div class="flex items-center pb-2">
                                             <span class="pe-2 text-sm font-medium text-gray-700 dark:text-gray-400">{% trans "By" %}</span>
                                             {% include "owner_avatars.html" with owners=starter_pack.owners.all %}
@@ -222,17 +223,17 @@
                     </p>
                 {% endif %}
                 {% if request.user.is_anonymous %}
-                    {% if request.GET.tab == 'your' %}
+                    {% if request.GET.tab == "your" %}
                         <p class="w-full">{% trans "Please login to see your starter packs." %}</p>
-                    {% elif request.GET.tab == 'containing' %}
+                    {% elif request.GET.tab == "containing" %}
                         <p class="w-full">
                             {% trans "Please login to see your starter packs or search for your username@instance.org in the search form above" %}
                         </p>
                     {% endif %}
                 {% else %}
-                    {% if request.GET.tab == 'your' %}
+                    {% if request.GET.tab == "your" %}
                         <p class="w-full">{% trans "You haven't created any starter packs yet." %}</p>
-                    {% elif request.GET.tab == 'containing' %}
+                    {% elif request.GET.tab == "containing" %}
                         <p class="w-full">{% trans "You haven't been added to any starter packs yet." %}</p>
                     {% endif %}
                 {% endif %}
@@ -250,12 +251,12 @@
             <button data-modal-target="authentication-modal"
                     data-modal-toggle="authentication-modal"
                     data-umami-event="follow-signup-modal"
-                    class="plausible-event-name=follow-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    class="plausible-event-name=follow-signup-modal text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 {% trans "Create your starter pack" %}
             </button>
         {% else %}
             <a href="{% url 'create_starter_pack' %}"
-               class="plausible-event-name=follow-signup-modal text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{% trans "Create your starter pack" %}</a>
+               class="plausible-event-name=follow-signup-modal text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{% trans "Create your starter pack" %}</a>
         {% endif %}
     </section>
 {% endblock sidebar %}

@@ -61,7 +61,8 @@
                       class="plausible-event-name=remote-follow space-y-4">
                     {% csrf_token %}
                     <div>
-                        <label for="handle" class="block mb-2 text-sm font-medium">{% trans "Follow with your fediverse handle" %}</label>
+                        <label for="handle"
+                               class="block mb-2 text-sm font-medium">{% trans "Follow with your fediverse handle" %}</label>
                         <input type="text"
                                name="handle"
                                id="handle"
