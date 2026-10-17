@@ -567,7 +567,7 @@ requires-dist = [
     { name = "model-bakery", specifier = ">=1.19.5" },
     { name = "newrelic", specifier = ">=10.7.0" },
     { name = "pillow" },
-    { name = "potatoq", extras = ["redis"], specifier = ">=26.1a6" },
+    { name = "potatoq", extras = ["redis"], specifier = ">=26.1a7" },
     { name = "psycopg", extras = ["binary", "pool"] },
     { name = "pytest-watcher", specifier = ">=0.4.3" },
     { name = "requests", specifier = ">=2.32.3" },
@@ -1087,11 +1087,11 @@ wheels = [
 
 [[package]]
 name = "potatoq"
-version = "26.1a6"
+version = "26.1a7"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/65/f8/4960f11e087809f10c314217e3c6de2a1d2ded2a489a96a2a32fe4dc65f6/potatoq-26.1a6.tar.gz", hash = "sha256:9efc67f6841481a57d3a6b217c3349792a949bfbd8f8d600921979ab40e1953e", size = 144995, upload-time = "2026-10-16T20:56:27.048Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/99/c6/b9b1c2e221d2f2503762cd5b0fae9d3c00987fa29551f0d926d42c90af36/potatoq-26.1a7.tar.gz", hash = "sha256:90e7db7016104bd5b0368397ce89f987b22150d8951c0237898c6ad94d053b4b", size = 145326, upload-time = "2026-10-17T23:10:46.348Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b0/3b/0b93030a2c58946c9d7082b74e8db0e05c86cf42f40a8665bab02e7b3bba/potatoq-26.1a6-py3-none-any.whl", hash = "sha256:f53818c8c6f398e892569c317b43f70b47ee4db561c6b9bc2a6ce72b78b267c4", size = 166603, upload-time = "2026-10-16T20:56:25.534Z" },
+    { url = "https://files.pythonhosted.org/packages/bc/5d/904e84e723ad271a9bc13e6c79fad59af17d3dea3f4cff702a48367a0dad/potatoq-26.1a7-py3-none-any.whl", hash = "sha256:dbff32401cf30bf3324a0a83912a87b6c5cdaacfa2e3b4979e97eb768d3c0b4b", size = 166970, upload-time = "2026-10-17T23:10:44.6Z" },
 ]
 
 [package.optional-dependencies]

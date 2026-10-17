@@ -15,6 +15,7 @@ from accounts.mastodon_api import parse_discoverable
 from accounts.misskey import emojis_to_mastodon, user_to_mastodon
 from accounts.misskey_api import build_miauth_url, is_misskey_family
 from accounts.models import Account, Instance
+from accounts.tasks import daily_job, hourly_job
 from confs.models import Conference, ConferenceAccount
 
 
@@ -716,3 +717,14 @@ class TestInstanceIndexingBridgy(TransactionTestCase):
         self.assertEqual(instance.version, "")
         self.assertEqual(instance.registrations, {"enabled": True})
         self.assertEqual(instance.thumbnail, {"url": "https://fed.brid.gy/static/bridgy_logo_with_alpha.png"})
+
+
+class TestJobTimeLimits(SimpleTestCase):
+    def test_daily_job_has_no_time_limit(self):
+        # The nightly crawl runs for hours; a limit kills it before the stats run.
+        self.assertEqual(daily_job.resolved_time_limits(), (None, None))
+
+    def test_hourly_job_keeps_the_default_time_limit(self):
+        hard, soft = hourly_job.resolved_time_limits()
+        self.assertEqual(hard, 30 * 60)
+        self.assertLess(soft, hard)
