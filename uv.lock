@@ -537,6 +537,7 @@ dev = [
     { name = "django-rich" },
     { name = "django-tui" },
     { name = "djlint" },
+    { name = "flakytest" },
     { name = "mypy" },
     { name = "pre-commit" },
     { name = "pytest-cov" },
@@ -585,6 +586,7 @@ dev = [
     { name = "django-rich" },
     { name = "django-tui" },
     { name = "djlint" },
+    { name = "flakytest", specifier = ">=2026.0b1" },
     { name = "mypy" },
     { name = "pre-commit", specifier = ">=4.0.1" },
     { name = "pytest-cov" },
@@ -601,6 +603,20 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/35/f5/14097cca69f53794270d8c7970b48321636302affe3154c7e0ba114eeff9/filelock-4.0.7.tar.gz", hash = "sha256:da5915714a70b55d167fdc7e251ad91302b0a36816fb574dfafae8f4f2c9bb21", size = 248489, upload-time = "2026-09-29T23:04:05.995Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/06/cf/1731c0dd182ee35f80a39e63afb3d03056ea0dd561b7498932b10b2e34d9/filelock-4.0.7-py3-none-any.whl", hash = "sha256:a93c4d93269b339a6af4848342c7e940d0f9928ad95eff64764699e5f1bf8a6a", size = 109242, upload-time = "2026-09-29T23:04:04.696Z" },
+]
+
+[[package]]
+name = "flakytest"
+version = "2026.0b1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+    { name = "python-dotenv" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/2f/ec/a682e583b775a0743db7355fff3ac703d24926428099e8350f544f0e1566/flakytest-2026.0b1.tar.gz", hash = "sha256:d157871b32c9b91e462760c231e4753d4abed6c054d3956b823fe9cebf426493", size = 82934, upload-time = "2026-10-18T10:31:17.126Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/80/87/a2bb0f92823fdf2698bdf2a4d5a43dd754660038984796850d22111a9f12/flakytest-2026.0b1-py3-none-any.whl", hash = "sha256:c70baa50cc33f495874e3b550466115e407a02db50cb56b94cd06325389091bf", size = 90742, upload-time = "2026-10-18T10:31:15.307Z" },
 ]
 
 [[package]]
@@ -1328,6 +1344,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/0c/57/250bd238b966cece44328235eb85290045d059265fdaf7527a3a958123db/python_discovery-1.6.1.tar.gz", hash = "sha256:cf87d3627dfb4412437fdd5b13eae402607722998d21567993aedbc59b23c15e", size = 84338, upload-time = "2026-09-18T01:31:53.971Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/16/7d/e9ffbadfbf89c93848412d04594135c4ae8c1d37d9e053b9c3ed718fabc4/python_discovery-1.6.1-py3-none-any.whl", hash = "sha256:d43fcdef879fe795352bd13ccf8d185ba5a9f86f36cfcd00529f596e737442b3", size = 38664, upload-time = "2026-09-18T01:31:52.448Z" },
+]
+
+[[package]]
+name = "python-dotenv"
+version = "1.2.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/74/26/2fbeedb218a787a5eea551c7532cac4e009f83d689dd2faa0d0353473f86/python_dotenv-1.2.4.tar.gz", hash = "sha256:f0d53e69935a851c0dcc78f3ab7aaccd8cabef0b92382b576b824212902873c0", size = 60824, upload-time = "2026-10-01T05:36:10Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/60/d1/38f3a3405989a89ac18390803e70c6ad7c7760da4f9b83cbeca0c44a0c72/python_dotenv-1.2.4-py3-none-any.whl", hash = "sha256:42269a8a5b3fd54ffa6f3d84b18abed50064717576b4ecf03dc4a55d8aa04fdc", size = 23266, upload-time = "2026-10-01T05:36:08.633Z" },
 ]
 
 [[package]]
