@@ -40,7 +40,7 @@ dev = [
   "django-rich",
   "django-tui",
   "djlint",
-  "flakytest>=2026.0b1",
+  "flakytest[py-spy]>=2026.0b1",
   "mypy",
   "pre-commit>=4.0.1",
   "pytest-cov",
