@@ -1,7 +1,7 @@
 [project]
 name = "fedidevs"
 version = "2024"
-requires-python = "~=3.14.0"
+requires-python = "~=3.15.0"
 dependencies = [
   "defusedxml",
   "django",
@@ -40,7 +40,7 @@ dev = [
   "django-rich",
   "django-tui",
   "djlint",
-  "flakytest[py-spy]>=2026.0b1",
+  "flakytest>=2026.0b1",
   "mypy",
   "pre-commit>=4.0.1",
   "pytest-cov",
