@@ -4,6 +4,7 @@ from unittest.mock import Mock, patch
 import httpx
 from ddt import data, ddt, unpack
 from django.contrib.auth import get_user_model
+from django.core.serializers.json import DjangoJSONEncoder
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -870,8 +871,8 @@ class TestShareStarterPack(TestCase):
                 "title": self.starter_pack.title,
                 "description": self.starter_pack.description,
                 "created_by": self.starter_pack.created_by.username,
-                "created_at": self.starter_pack.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
-                "updated_at": self.starter_pack.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
+                "created_at": DjangoJSONEncoder().default(self.starter_pack.created_at),
+                "updated_at": DjangoJSONEncoder().default(self.starter_pack.updated_at),
                 "published_at": self.starter_pack.published_at,
                 "daily_follows": self.starter_pack.daily_follows,
                 "weekly_follows": self.starter_pack.weekly_follows,
@@ -882,7 +883,7 @@ class TestShareStarterPack(TestCase):
                         "handle": account.username_at_instance,
                         "url": account.url,
                         "activitypub_id": account.activitypub_id,
-                        "created_at": account.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
+                        "created_at": DjangoJSONEncoder().default(account.created_at),
                         "followers_count": account.followers_count,
                         "following_count": account.following_count,
                         "statuses_count": account.statuses_count,
@@ -929,8 +930,8 @@ class TestShareStarterPack(TestCase):
             "name": self.starter_pack.title,
             "summary": self.starter_pack.description,
             "attributedTo": self.starter_pack.created_by.accountaccess.account.activitypub_id,
-            "published": self.starter_pack.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
-            "updated": self.starter_pack.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
+            "published": DjangoJSONEncoder().default(self.starter_pack.created_at),
+            "updated": DjangoJSONEncoder().default(self.starter_pack.updated_at),
             "image": {
                 "type": "Image",
                 "mediaType": "image/png",
