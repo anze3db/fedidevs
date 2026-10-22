@@ -17,7 +17,6 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from mastodon import (
-    Mastodon,
     MastodonIllegalArgumentError,
     MastodonInternalServerError,
     MastodonNetworkError,
@@ -36,7 +35,7 @@ from accounts.misskey_api import (
 from accounts.models import Account
 from mastodon_auth.forms import MastodonLoginForm
 from mastodon_auth.models import AccountAccess, AccountFollowing, Instance
-from mastodon_auth.oauth import AppRegistrationError, authorize_url, is_pleroma, register_app
+from mastodon_auth.oauth import AppRegistrationError, Mastodon, authorize_url, is_pleroma, register_app
 from starter_packs.utils import FollowError, resolve_and_follow_account, resolve_and_follow_misskey
 from stats.models import FollowClick
 

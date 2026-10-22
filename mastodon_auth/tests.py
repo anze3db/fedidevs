@@ -1,8 +1,10 @@
 import datetime as dt
+import json
 import warnings
 from unittest.mock import MagicMock, patch
 
 import httpx
+import requests
 from django.contrib.messages import get_messages
 from django.core.cache import cache
 from django.test import SimpleTestCase, TestCase
@@ -12,7 +14,7 @@ from mastodon.errors import MastodonAPIError, MastodonIllegalArgumentError
 from accounts.models import Account
 from mastodon_auth.forms import MastodonLoginForm
 from mastodon_auth.models import AccountAccess, Instance
-from mastodon_auth.oauth import AppRegistrationError, authorize_url, is_pleroma, register_app
+from mastodon_auth.oauth import AppRegistrationError, Mastodon, authorize_url, is_pleroma, register_app
 from mastodon_auth.views import _is_valid_redirect_query, _parse_dt
 
 
@@ -273,6 +275,45 @@ class RegisterAppTests(SimpleTestCase):
         with self.assertRaises(AppRegistrationError) as ctx:
             register_app(**self._kwargs)
         self.assertEqual(ctx.exception.status_code, 200)
+
+
+class MastodonVersionCheckTests(SimpleTestCase):
+    @staticmethod
+    def _response(url, status_code, body):
+        response = requests.Response()
+        response.url = url
+        response.status_code = status_code
+        response.headers["Content-Type"] = "application/json"
+        response._content = json.dumps(body).encode()
+        return response
+
+    def test_log_in_survives_instance_endpoint_rejecting_requests(self):
+        """mastodon.py retries its version check after the token exchange; when
+        /api/v1/instance still fails it used to recurse until RecursionError,
+        hitting the instance ~1000 times. Login should just succeed."""
+
+        def request(_method, url, **_kwargs):
+            if url.endswith("/oauth/token"):
+                return self._response(url, 200, {"access_token": "the-token", "scope": "read follow"})
+            return self._response(url, 401, {"error": "This method requires an authenticated user"})
+
+        session = MagicMock()
+        session.request.side_effect = request
+        mastodon = Mastodon(
+            api_base_url="https://locked.example",
+            client_id="cid",
+            client_secret="secret",
+            version_check_mode="none",
+            session=session,
+        )
+
+        token = mastodon.log_in(
+            code="code", redirect_uri="https://fedidevs.com/mastodon_auth/", scopes=["read", "follow"]
+        )
+
+        self.assertEqual(token, "the-token")
+        self.assertEqual(mastodon.retrieve_mastodon_version(), "1.0.0")
+        self.assertLess(session.request.call_count, 10)
 
 
 class MastodonAuthCallbackTests(TestCase):

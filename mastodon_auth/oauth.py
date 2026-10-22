@@ -12,12 +12,37 @@ failure, or show an accurate message.
 from urllib.parse import urlencode
 
 import httpx
+from mastodon import Mastodon as BaseMastodon
 
 _TIMEOUT = 10
 
 # nodeinfo software.name values that use Pleroma's OAuth server. (Akkoma is a
 # Pleroma fork but is handled via MiAuth elsewhere, so it's not here.)
 PLEROMA_SOFTWARE = {"pleroma"}
+
+
+class Mastodon(BaseMastodon):
+    """mastodon.py client whose version check can't recurse forever.
+
+    After the token exchange, ``log_in()`` retries the version check. If the
+    instance still rejects ``/api/v1/instance`` (or reports no usable version),
+    mastodon.py's ``retrieve_mastodon_version()`` falls back to 1.0.0 and calls
+    ``verify_minimum_version()``, which sees the check didn't work and calls
+    ``retrieve_mastodon_version()`` again — hitting the instance twice per level
+    until ``RecursionError``. The outer call has already set the fallback version,
+    so a nested call returns it instead of starting over.
+    """
+
+    _retrieving_version = False
+
+    def retrieve_mastodon_version(self, fail_hard=False) -> str:
+        if self._retrieving_version:
+            return f"{self.mastodon_major}.{self.mastodon_minor}.{self.mastodon_patch}"
+        self._retrieving_version = True
+        try:
+            return super().retrieve_mastodon_version(fail_hard=fail_hard)
+        finally:
+            self._retrieving_version = False
 
 
 def is_pleroma(software: str | None) -> bool:
