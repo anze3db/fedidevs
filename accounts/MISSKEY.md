@@ -139,9 +139,11 @@ confusing without context:
 The starter-pack listing query (in `starter_packs/views.py:share_starter_pack`) requires:
 
 ```python
-discoverable=True
-instance_model__isnull=False
-instance_model__deleted_at__isnull=True
+Account.objects.filter(
+    discoverable=True,
+    instance_model__isnull=False,
+    instance_model__deleted_at__isnull=True,
+)
 ```
 
 `Account.should_index()` requires `discoverable=True AND not noindex`.
