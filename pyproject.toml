@@ -5,7 +5,7 @@ requires-python = "~=3.15.0"
 dependencies = [
   "defusedxml",
   "django",
-  "potatoq[redis]>=26.1a7",
+  "potatoq[redis]>=26.1a8",
   "django-environ",
   "django-tailwind",
   "emoji",

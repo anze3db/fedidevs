@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import Client, SimpleTestCase, TestCase
+from model_bakery import baker
 
 
 def _vary_tokens(response) -> set[str]:
@@ -109,3 +110,46 @@ class TestAnonymousCacheAndCsrf(TestCase):
     def test_plain_pages_are_indexable(self):
         response = self.client.get("/login/")
         self.assertNotContains(response, 'name="robots"')
+
+
+class TestPotatoqDashboard(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = baker.make(User)
+        cls.staff = baker.make(User, is_staff=True)
+        cls.superuser = baker.make(User, is_superuser=True, is_staff=False)
+        cls.inactive_staff = baker.make(User, is_staff=True, is_active=False)
+
+    def test_anonymous_is_sent_to_login(self):
+        response = self.client.get("/potatoq/")
+        self.assertRedirects(response, "/login/?next=/potatoq/", fetch_redirect_response=False)
+
+    def test_regular_user_is_forbidden(self):
+        self.client.force_login(self.user)
+        response = self.client.get("/potatoq/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_inactive_staff_is_treated_as_logged_out(self):
+        self.client.force_login(self.inactive_staff)
+        response = self.client.get("/potatoq/")
+        self.assertRedirects(response, "/login/?next=/potatoq/", fetch_redirect_response=False)
+
+    def test_staff_sees_dashboard(self):
+        self.client.force_login(self.staff)
+        response = self.client.get("/potatoq/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<script src="app.js" defer></script>')
+        self.assertEqual(response["Cache-Control"], "private, no-store")
+
+    def test_superuser_without_staff_flag_sees_dashboard(self):
+        self.client.force_login(self.superuser)
+        response = self.client.get("/potatoq/app.js")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/javascript; charset=utf-8")
+
+    def test_actions_skip_django_csrf_but_need_dashboard_header(self):
+        client = Client(enforce_csrf_checks=True)
+        client.force_login(self.staff)
+        response = client.post("/potatoq/api/tasks/some-task/revoke")
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json(), {"error": "Actions must come from the dashboard page"})
