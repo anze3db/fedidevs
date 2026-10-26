@@ -1,0 +1,39 @@
+# One pull request a month, on the 1st, that bumps everything: the GitHub Actions, the
+# uv.lock dependencies (transitive ones too) and the pre-commit hooks share a
+# multi-ecosystem group, so they land together. Security updates still open as soon as
+# an advisory is published, but they skip the multi-ecosystem group: the `security`
+# groups gather them into one pull request per ecosystem instead of one per dependency.
+version: 2
+
+multi-ecosystem-groups:
+  monthly:
+    schedule:
+      interval: cron
+      cronjob: "0 6 1 * *" # 06:00 UTC on the 1st
+    labels: [dependencies]
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    patterns: ["*"]
+    multi-ecosystem-group: monthly
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
+
+  - package-ecosystem: uv
+    directory: /
+    patterns: ["*"]
+    allow:
+      - dependency-type: all
+    multi-ecosystem-group: monthly
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
+
+  - package-ecosystem: pre-commit
+    directory: /
+    patterns: ["*"]
+    multi-ecosystem-group: monthly
