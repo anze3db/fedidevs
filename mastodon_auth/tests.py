@@ -10,6 +10,7 @@ from django.core.cache import cache
 from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
 from mastodon.errors import MastodonAPIError, MastodonIllegalArgumentError
+from requests.adapters import BaseAdapter
 
 from accounts.models import Account
 from mastodon_auth.forms import MastodonLoginForm
@@ -314,6 +315,50 @@ class MastodonVersionCheckTests(SimpleTestCase):
         self.assertEqual(token, "the-token")
         self.assertEqual(mastodon.retrieve_mastodon_version(), "1.0.0")
         self.assertLess(session.request.call_count, 10)
+
+
+class _PixelfedAdapter(BaseAdapter):
+    """Answers like Pixelfed: rate-limit remaining/limit headers, no reset."""
+
+    def send(self, request, **kwargs):
+        response = requests.Response()
+        response.request = request
+        response.url = request.url
+        response.status_code = 200
+        response.headers["Content-Type"] = "application/json"
+        response.headers["X-RateLimit-Limit"] = "300"
+        response.headers["X-RateLimit-Remaining"] = "299"
+        response._content = json.dumps({"id": "42", "username": "alice", "acct": "alice"}).encode()
+        return response
+
+    def close(self):
+        pass
+
+
+class MastodonRatelimitHeaderTests(SimpleTestCase):
+    def _mastodon(self):
+        session = requests.Session()
+        session.mount("https://", _PixelfedAdapter())
+        return Mastodon(
+            api_base_url="https://gram.example",
+            client_id="cid",
+            client_secret="secret",
+            access_token="token",
+            version_check_mode="none",
+            session=session,
+        )
+
+    def test_missing_ratelimit_reset_header_does_not_break_requests(self):
+        """Pixelfed omits X-RateLimit-Reset, which made mastodon.py raise
+        MastodonRatelimitError on every request (e.g. me() during login)."""
+        account = self._mastodon().me()
+
+        self.assertEqual(account["username"], "alice")
+
+    def test_creates_session_with_hook_when_none_given(self):
+        mastodon = Mastodon(api_base_url="https://gram.example", version_check_mode="none")
+
+        self.assertEqual(len(mastodon.session.hooks["response"]), 1)
 
 
 class MastodonAuthCallbackTests(TestCase):

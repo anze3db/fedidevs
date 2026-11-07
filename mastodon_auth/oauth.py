@@ -12,6 +12,7 @@ failure, or show an accurate message.
 from urllib.parse import urlencode
 
 import httpx
+import requests
 from mastodon import Mastodon as BaseMastodon
 
 _TIMEOUT = 10
@@ -21,8 +22,25 @@ _TIMEOUT = 10
 PLEROMA_SOFTWARE = {"pleroma"}
 
 
+def _drop_partial_ratelimit_headers(response, *_args, **_kwargs):
+    """Drop rate-limit headers that lack ``X-RateLimit-Reset``.
+
+    Pixelfed (e.g. gram.social) sends ``X-RateLimit-Remaining`` and
+    ``X-RateLimit-Limit`` but no ``X-RateLimit-Reset``. mastodon.py parses the
+    reset header whenever the remaining one is present and raises
+    ``MastodonRatelimitError`` on every request when it's missing, so the user
+    can never log in. Without the remaining header mastodon.py just skips
+    rate-limit tracking for that response.
+    """
+    if "X-RateLimit-Remaining" in response.headers and "X-RateLimit-Reset" not in response.headers:
+        del response.headers["X-RateLimit-Remaining"]
+    return response
+
+
 class Mastodon(BaseMastodon):
-    """mastodon.py client whose version check can't recurse forever.
+    """mastodon.py client that copes with non-Mastodon servers.
+
+    Pixelfed omits ``X-RateLimit-Reset``; see ``_drop_partial_ratelimit_headers``.
 
     After the token exchange, ``log_in()`` retries the version check. If the
     instance still rejects ``/api/v1/instance`` (or reports no usable version),
@@ -34,6 +52,11 @@ class Mastodon(BaseMastodon):
     """
 
     _retrieving_version = False
+
+    def __init__(self, *args, session: requests.Session | None = None, **kwargs):
+        session = session or requests.Session()
+        session.hooks["response"].append(_drop_partial_ratelimit_headers)
+        super().__init__(*args, session=session, **kwargs)
 
     def retrieve_mastodon_version(self, fail_hard=False) -> str:
         if self._retrieving_version:

@@ -21,7 +21,6 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from mastodon import (
-    Mastodon,
     MastodonError,
     MastodonUnauthorizedError,
 )
@@ -31,6 +30,7 @@ from accounts.management.commands.crawlone import crawlone
 from accounts.misskey_api import detect_software
 from accounts.models import Account, Instance
 from mastodon_auth.models import AccountAccess, AccountFollowing
+from mastodon_auth.oauth import Mastodon
 from starter_packs.models import (
     COMMON_LANGUAGE_CODES,
     LANGUAGE_CHOICES,
