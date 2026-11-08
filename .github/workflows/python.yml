@@ -73,3 +73,17 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           bash projects/fedidevs/.deploy/update.sh
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      with:
+        # The release's commits resolve the Sentry issues they name ("Fixes FEDIDEVS-123")
+        fetch-depth: 0
+    - name: Create Sentry release
+      uses: getsentry/action-release@v3
+      env:
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        SENTRY_ORG: anze3db
+        SENTRY_PROJECT: fedidevs
+      with:
+        environment: production
+        # The SDK reports the deployed commit's SHA as its release
+        release: ${{ github.sha }}
