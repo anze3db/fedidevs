@@ -1,7 +1,13 @@
+from unittest import mock
+
+import psycopg
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.db.backends.postgresql.base import DatabaseWrapper as PostgresDatabaseWrapper
 from django.test import Client, SimpleTestCase, TestCase
 from model_bakery import baker
+
+from fedidevs.db.postgresql.base import DatabaseWrapper
 
 
 def _vary_tokens(response) -> set[str]:
@@ -153,3 +159,71 @@ class TestPotatoqDashboard(TestCase):
         response = client.post("/potatoq/api/tasks/some-task/revoke")
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json(), {"error": "Actions must come from the dashboard page"})
+
+
+class TestRetryingPostgresBackend(SimpleTestCase):
+    def setUp(self):
+        self.wrapper = DatabaseWrapper(
+            {
+                "ENGINE": "fedidevs.db.postgresql",
+                "NAME": "fedidevs",
+                "USER": "",
+                "PASSWORD": "",
+                "HOST": "",
+                "PORT": "",
+                "OPTIONS": {},
+                "TIME_ZONE": None,
+                "CONN_MAX_AGE": 0,
+                "CONN_HEALTH_CHECKS": True,
+                "AUTOCOMMIT": True,
+                "ATOMIC_REQUESTS": False,
+                "TEST": {},
+            }
+        )
+
+    def test_conn_health_checks_enabled(self):
+        self.assertIs(settings.DATABASES["default"]["CONN_HEALTH_CHECKS"], True)
+
+    def test_postgres_engine_is_swapped_for_the_retrying_one(self):
+        engine = settings.DATABASES["default"]["ENGINE"]
+        self.assertNotEqual(engine, "django.db.backends.postgresql")
+        # potatoq detects Postgres with ENGINE.endswith("postgresql")
+        if "postgresql" in engine:
+            self.assertEqual(engine, "fedidevs.db.postgresql")
+
+    @mock.patch("fedidevs.db.postgresql.base.time.sleep")
+    def test_retries_while_postgres_is_unavailable(self, sleep):
+        connection = object()
+        refused = psycopg.OperationalError('connection failed: connect to server at "127.0.0.1": Connection refused')
+        with (
+            mock.patch.object(
+                PostgresDatabaseWrapper, "get_new_connection", side_effect=[refused, refused, connection]
+            ) as parent,
+            self.assertLogs("fedidevs.db.postgresql.base", level="WARNING"),
+        ):
+            self.assertIs(self.wrapper.get_new_connection({}), connection)
+        self.assertEqual(parent.call_count, 3)
+        self.assertEqual(sleep.call_args_list, [mock.call(0.5), mock.call(1)])
+
+    @mock.patch("fedidevs.db.postgresql.base.time.sleep")
+    def test_gives_up_after_the_last_retry(self, sleep):
+        shutting_down = psycopg.OperationalError("FATAL:  the database system is shutting down")
+        with (
+            mock.patch.object(PostgresDatabaseWrapper, "get_new_connection", side_effect=shutting_down) as parent,
+            self.assertLogs("fedidevs.db.postgresql.base", level="WARNING"),
+            self.assertRaises(psycopg.OperationalError),
+        ):
+            self.wrapper.get_new_connection({})
+        self.assertEqual(parent.call_count, 6)
+        self.assertEqual(sleep.call_args_list, [mock.call(d) for d in (0.5, 1, 2, 4, 8)])
+
+    @mock.patch("fedidevs.db.postgresql.base.time.sleep")
+    def test_does_not_retry_other_errors(self, sleep):
+        bad_password = psycopg.OperationalError('FATAL:  password authentication failed for user "fedidevs"')
+        with (
+            mock.patch.object(PostgresDatabaseWrapper, "get_new_connection", side_effect=bad_password) as parent,
+            self.assertRaises(psycopg.OperationalError),
+        ):
+            self.wrapper.get_new_connection({})
+        self.assertEqual(parent.call_count, 1)
+        sleep.assert_not_called()

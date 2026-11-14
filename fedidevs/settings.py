@@ -182,6 +182,11 @@ WSGI_APPLICATION = "fedidevs.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 DATABASES = {"default": env.db_url(default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")}
+# Discard persistent connections that died (e.g. in a Postgres restart) before reusing them.
+DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
+if DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql":
+    # Retries opening a connection while Postgres restarts (see fedidevs/db/postgresql/base.py).
+    DATABASES["default"]["ENGINE"] = "fedidevs.db.postgresql"
 
 
 # Password validation
